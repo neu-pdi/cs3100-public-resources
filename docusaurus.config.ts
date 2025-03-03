@@ -10,14 +10,14 @@ const config: Config = {
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://northeastern-cs3100.github.io',
+  url: 'https://neu-pdi.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/instructor-resources/',
+  baseUrl: '/cs3100-instructor-resources/',
 
   // GitHub pages deployment config.
-  organizationName: 'northeastern-cs3100', // Usually your GitHub org/user name.
-  projectName: 'instructor-resources', // Usually your repo name.
+  organizationName: 'neu-pdi', // Usually your GitHub org/user name.
+  projectName: 'cs3100-instructor-resources', // Usually your repo name.
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
