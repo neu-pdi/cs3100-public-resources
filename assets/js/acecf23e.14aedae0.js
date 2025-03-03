@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkinstructor_resources=self.webpackChunkinstructor_resources||[]).push([[1903],{1912:s=>{s.exports=JSON.parse('{"blogBasePath":"/instructor-resources/blog","blogTitle":"Blog","authorsListPath":"/instructor-resources/blog/authors"}')}}]);
