@@ -21,12 +21,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: yarn
+          cache: npm
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: npm install 
       - name: Build website
-        run: yarn build
+        run: npm run build
 
       # Popular action to deploy to GitHub Pages:
       # Docs: https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-docusaurus
@@ -41,5 +41,5 @@ jobs:
           # https://github.com/actions/checkout/issues/13#issuecomment-724415212
           # The GH actions bot is used by default if you didn't specify the two fields.
           # You can swap them out with your own user credentials.
-          user_name: github-actions[bot]
-          user_email: 41898282+github-actions[bot]@users.noreply.github.com 
+          user_name: jon-bell
+          user_email: jon@jonbell.net
