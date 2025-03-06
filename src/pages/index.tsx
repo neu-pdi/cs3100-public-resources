@@ -1,44 +1,27 @@
-import type {ReactNode} from 'react';
-import clsx from 'clsx';
-import Link from '@docusaurus/Link';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
-import HomepageFeatures from '@site/src/components/HomepageFeatures';
-import Heading from '@theme/Heading';
 
-import styles from './index.module.css';
+import { GlobalPluginData } from '@docusaurus/plugin-content-docs/client';
+import { usePluginData } from '@docusaurus/useGlobalData';
+import LectureSummary from '../components/LectureSummary';
+import { Box, Heading, Text } from '@chakra-ui/react';
+import { Blockquote } from "@chakra-ui/react"
+import { Highlight } from 'prism-react-renderer';
 
-function HomepageHeader() {
-  const {siteConfig} = useDocusaurusContext();
-  return (
-    <header className={clsx('hero hero--primary', styles.heroBanner)}>
-      <div className="container">
-        <Heading as="h1" className="hero__title">
-          {siteConfig.title}
-        </Heading>
-        <p className="hero__subtitle">{siteConfig.tagline}</p>
-        <div className={styles.buttons}>
-          <Link
-            className="button button--secondary button--lg"
-            to="/docs/intro">
-            Docusaurus Tutorial - 5min ⏱️
-          </Link>
-        </div>
-      </div>
-    </header>
-  );
-}
+export default function Hello() {
+    const pluginData = usePluginData('docusaurus-plugin-content-docs') as GlobalPluginData;
+    return (
+        <Layout title="Course Overview" description="CS 3100 Course Overview">
+            <Box p={4}>
+                <Heading size='xl'>CS 3100: Program Design and Implementation II</Heading>
+                <Blockquote.Root>
+                    <Blockquote.Content>
+                        Building on foundations introduced in CS 2100, examines program design at increasing scales of complexity. Reviews abstraction, encapsulation, inheritance, and interfaces in statically-typed object-oriented languages. Presents a comparative approach to software design patterns and paradigms, including object-oriented and functional programming. Fosters a deeper understanding of the principles of program design, including interface design, test-driven development, graphical design notations, reusable software components, and open-source ecosystems. Illustrates the impact of design-time decisions on software correctness, including accessibility, changeability, performance, reusability and privacy. Students collaborate throughout the semester to design and implement a large software project.
+                    </Blockquote.Content>
+                </Blockquote.Root>
 
-export default function Home(): ReactNode {
-  const {siteConfig} = useDocusaurusContext();
-  return (
-    <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />">
-      <HomepageHeader />
-      <main>
-        <HomepageFeatures />
-      </main>
-    </Layout>
-  );
+                <Heading size='lg'>Lecture Overview</Heading>
+                <LectureSummary version={pluginData.versions[0].name} />
+            </Box>
+        </Layout>
+    );
 }

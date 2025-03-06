@@ -15,13 +15,19 @@
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@chakra-ui/react": "^3.9.0",
     "@docusaurus/core": "3.7.0",
     "@docusaurus/preset-classic": "3.7.0",
+    "@docusaurus/theme-mermaid": "^3.7.0",
     "@mdx-js/react": "^3.0.0",
     "clsx": "^2.0.0",
+    "next-themes": "^0.4.4",
     "prism-react-renderer": "^2.3.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-icons": "^5.5.0",
+    "react-markdown": "^10.0.1",
+    "rehype-prism": "^2.3.3"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.7.0",
