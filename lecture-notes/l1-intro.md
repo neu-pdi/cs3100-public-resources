@@ -16,13 +16,17 @@ title: Course Overview and Introduction to Java
   - We will provide you with flashcards and other resources to help you learn the syntax. We expect you to use them, and will move quickly past the syntax in lecture.
 - Deliverables:
   - Weekly/bi-weekly programming assignments that build into a final project
+  - Quizzes
   - Exams
   - Labs
   - Participation
+    - Two kinds of activities that *you must do in order to receive an A in the course*. They are not graded for correctness: only on completion.
+      - Attendance in class, completion of in-class polls
+      - Completion of pre-lecture activities (e.g. flashcards)
 - Expectations:
   - N-M hours per week 
   - Do all of the mandatory readings in advance of each lecture
-  - Consider which optional readings are most relevant to your interests. Read at least 3 of them and share your thoughts on them on the course discussion board.
+  - Consider which optional readings are most relevant to your interests. 
   - Bi-weekly assignments expected to take 20 hours, do not wait until the last minute
 
 
@@ -36,13 +40,14 @@ Background material:
   - Sidebar: How did it go for Sun Microsystems? (Photo of front and back of current Facebook sign w/ Sun logo) How did it go for Oracle? (Google v. Oracle)
 - No matter what the product pitch was (cable tv set top boxes, web browsers, etc) the core marketing point was "write once, run anywhere" *with performance*
   - CPUs have different instruction sets, OS's have different APIs, how do you run a program on any machine?
-  - Python is an "interpreted" language: the program "Python" is a program that runs other programs. Python is also "write once, run anywhere" insofar as the Python interpreter can run on any machine.
-    - Sidebar: Is it really? Who has had the fun of having to "build wheel?"
-  - Interpreted languages are slower than compiled languages
+  - Both Python and Java are compiled into a "bytecode" (an intermediate representation of the source code) that is then executed by an interpreter. In this sense, they are both "write once, run anywhere" insofar as the interpreter can run on any machine.
+    - Sidebar: Is it really that easy? Who has had the fun of having to compile native Python extensions?
+  - Interpreting this bytecode is slower than running "native" code (e.g. C, or Rust, compiled into machine code).
       - Example: Interpeted vs compiled code for a simple "Hello, World" program. Interpeted code is slower because it has to read the source code and execute it line by line. Compiled code is faster because it is already in machine code. Instead of spending 100's of instructions to read the source code and execute it, the machine code is already in memory and can be executed directly.
       - Example: Basic optimizations. A compiler can identify branches that are never taken and remove them. An interpreter has to execute every line of code.
-  - Java popularized the concept of a "JIT runtime," which dynamically compiles code as it is executed. The program that runs the Java code is called the "JVM" (Java Virtual Machine).
+  - Java popularized the concept of a "JIT runtime," which dynamically compiles this bytecode as it is executed. The program that runs the Java code is called the "JVM" (Java Virtual Machine).
     - Sidebar: There are other languages that run on the JVM, like Clojure, Kotlin, Scala, and Groovy. These languages, like Java, are compiled into the language that the JVM speaks, which is called "Java bytecode."
+  - While much effort has gone into making a JIT for Python (like PyPy), there are fundamental language design differences that make it difficult to match the performance of a language like Java.
   - Sidebar: We started with cable boxes and web applets... how did that go? Where is Java used today?
     - Android (See Google v Oracle)
     - Enterprise applications
@@ -59,7 +64,7 @@ Background material:
   - `pip` -> `gradle`
   - `pytest` -> `junit`
   - `VSCode` -> `IntelliJ IDEA` | `VSCode`
-- In 2100, you learned about the relatively weak type system of Python. In contrast, Java is a "statically typed" language.
+- In 2100, you learned about how Python was not designed to be statically typed. In contrast, Java was designed from the outset to be a "statically typed" language.
 - In the 1990's, there was a lot of debate about the relative merits of static vs dynamic typing. The static type people argued that static typing would lead to more robust programs and better performance. The dynamic type people argued that dynamic typing would lead to more flexible programs and better programmer productivity.
 - The general culture of the industry is moving towards static typing, here are a few examples:
   - Facebook was originally written in PHP, which is a dynamically typed language. It is so hard to optimize dynamically typed code that it was determined cheaper to build a static type system on top of PHP and gradually migrate the codebase into it than it was to optimize PHP without the type system. https://www.fastcompany.com/3028778/why-facebook-invented-a-new-php-derived-language-called-hack
@@ -79,7 +84,7 @@ Background material:
   - `boolean` -> 1 byte boolean
   - By a "1 byte" integer, we mean that the integer can only take on 2^8 (1 byte) = 256 different values.
   - By a "4 byte" integer, we mean that the integer can only take on 2^32 (4 bytes) = 4,294,967,296 different values.
-  - :warning: This is a big change from python, where all numbers can take on an arbitrary number of digits.
+  - :warning: This is a big change from python, where all integers can take on an arbitrary number of digits.
   - A "Floating point" number is one that can take on a continuous range of values (e.g. 3.14, -1.0, 0.001, etc.).
   - A "boolean" is one that can only take on two values: `true` or `false`.
 - There are also "reference types" which are references to objects in memory.
@@ -115,8 +120,10 @@ Background material:
     - Discuss: What performance reason might exist make us want to avoid passing arrays by value?
   - You should understand the relevance of the size of your data:
     - A `long` is 8 bytes and a `byte` is 1 byte. The long can store many more values than the byte, but it also takes up more space.
-    - Imagine we are building an application that needs to store the age of every person in the world. We could use a `byte` to store the age, but then we would only be able to store 256 different ages. We could use a `long` to store the age, but then we would be wasting 7 bytes for every person.
+    - Imagine we are building an application that needs to store the age (in years) of every person in the world. We could use a `byte` to store the age, but then we would only be able to store 256 different ages. We could use a `long` to store the age, but then we would be wasting 7 bytes for every person.
       - But, at 8bn people (2023), this is the difference between 8GB and 64 GB.
       - This mattered a lot in the 1990's when memory was much more expensive than it is today.
+      - Note also that once you need more than 256 unique values, you need to use more bytes anyway.
+        - Here is a trick to help you remember the size of each type: 1 byte is 8 bits, so the maximum number of values it can hold is $2^8$, or $256$. 4 bytes is 32 bits, and $2^{10}= 1,024 \approx 1,000 = 10^3$, so $2^{32} \approx 10^9$ (1 with 9 zero's). 8 bytes is 64 bits, so $2^{64} \approx 10^{18}$ (1 with 18 zeros) - that's a lot!
       - Today you can often ignore this fact (look at Python!), but it becomes important when dealing with very large data sets (look at all of the C extensions to Python that you rely on like... numpy).
   - There is a lot more to say about types in Java, but we will save that for later.

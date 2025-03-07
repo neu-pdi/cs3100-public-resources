@@ -17,10 +17,9 @@ Background material:
 Here is a complete example of a Java program:
 
 ```java title="HelloWorld.java"
-package io.github.neu-pdp.cs3100.lecture2;
+package io.github.neu-pdi.cs3100.lecture2;
 
-import java.lang.String;
-import io.github.neu-pdp.cs3100.utils.OtherClass;
+import io.github.neu-pdi.cs3100.utils.OtherClass;
 
 /**
  * This is a simple program that prints "Hello, World" 10 times.
@@ -32,6 +31,7 @@ public class HelloWorld extends OtherClass {
      */
     public static void main(String[] args) {
         for (int i = 0; i < 10; i++) {
+            // Print a message to the console
             System.out.println("Hello, World #" + i);
         }
     }
@@ -47,8 +47,8 @@ Let's break down the syntax of this program.
 
 ### Import Declaration
 - The `import` keyword is used to import classes from other packages.
-- In this case, we are importing the `String` class from the `java.lang` package. Packages that start with `java` are part of the Java standard library.
-- We are also importing the `OtherClass` class from the `io.github.neu-pdp.cs3100.utils` package.
+- In this case, we are importing the `OtherClass` class from the `io.github.neu-pdp.cs3100.utils` package.
+- Note that we are *not* importing the `String` class or the `System` class. These are both classes in the `java.lang` package, that are imported by default. 
 
 ### Comments
 - Single line comments are denoted by `//`
