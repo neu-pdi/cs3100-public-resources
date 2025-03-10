@@ -2,7 +2,7 @@ import { usePluginData } from '@docusaurus/useGlobalData';
 import { GlobalDoc, GlobalPluginData } from '@docusaurus/plugin-content-docs/client';
 import Link from '@docusaurus/Link';
 import Markdown from 'react-markdown';
-import { Box, Card, HStack, List, Text, Heading } from '@chakra-ui/react';
+import { Box, Card, HStack, List, Text, Heading, Alert } from '@chakra-ui/react';
 
 export default function LectureSummary({ version }: { version: string }) {
     const pluginData = usePluginData('docusaurus-plugin-content-docs') as GlobalPluginData;
@@ -14,6 +14,7 @@ export default function LectureSummary({ version }: { version: string }) {
             docContent
         }
     });
+    docs.sort((a, b) => a.doc.id.localeCompare(b.doc.id, undefined, { numeric: true, sensitivity: 'accent' }))
     return (
         <Box>
             {docs.map(({ doc, docContent }) => {
