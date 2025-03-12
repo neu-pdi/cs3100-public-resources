@@ -3,6 +3,7 @@ import { GlobalDoc, GlobalPluginData } from '@docusaurus/plugin-content-docs/cli
 import Link from '@docusaurus/Link';
 import Markdown from 'react-markdown';
 import { Box, Card, HStack, List, Text, Heading, Alert } from '@chakra-ui/react';
+import {decode} from 'html-entities';
 
 export default function LectureSummary({ version }: { version: string }) {
     const pluginData = usePluginData('docusaurus-plugin-content-docs') as GlobalPluginData;
@@ -53,7 +54,7 @@ export default function LectureSummary({ version }: { version: string }) {
                             <List.Root>
                                 {headings.filter(heading => heading.level === 2).map((heading, idx) => (
                                     <List.Item key={idx} style={{ marginLeft: `${heading.level * 12}px` }}>
-                                        <Link to={`${doc.path}#${heading.id}`}>{heading.value.replace(/&quot;/g, '"').replace(/&amp;/g, '&')}</Link>
+                                        <Link to={`${doc.path}#${heading.id}`}>{decode(heading.value)}</Link>
                                     </List.Item>
                                 ))}
                             </List.Root>
