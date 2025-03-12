@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 lecture_number: 2
-title: Java, Part 2
+title: Inheritance in Java
 required_preparation: 
     - Complete sets 1 and 2 of the Java syntax flashcards
 optional_preparation:
@@ -10,6 +10,12 @@ optional_preparation:
 
 Background material:
 
+## Understand why inheritance is a core concept of object-oriented programming (10 minutes)
+
+- A core principle of program design is: make your data mean something.
+- We write software that manipulates data in some way, and oftentimes this data is related to some real-world concept.
+- When it comes to designign our program, we can leverage our domain knowledge of that real world concept to design a program that is both easy to understand and easy to maintain.
+- Inheritance is a core concept of object-oriented programming that allows us to model real-world "is-a" relationships between types.
 
 ## Reading Java Syntax (10 minutes)
 
@@ -81,6 +87,17 @@ Let's break down the syntax of this program.
     - The string `"Hello, World #"` is concatenated with the value of `i` and the `println` method is called with that string as an argument.
     - Lastly, the line ends with a semicolon, which is required in Java to denote the end of a statement. This is different than Python, where the end of a statement is denoted by a newline.
 
+
+## Define a class hierarchy and understand the relationship between superclasses and subclasses (10 minutes)
+Background material:
+- [Liskov & Gutag Ch 7](https://learning.oreilly.com/library/view/program-development-in/9780768685299/ch7.html)
+
+(Example of a real-world "is-a" hierarchy, uses UML and also some source code with javadoc)
+
+
+- Types can share common properties and behavior, but also provide their own methods, and also specialized implementations for certain methods.
+
+
 ## Understand the difference between static methods and instance methods (5 minutes)
 
 - The code example we saw above *declared* a static method, but utilized an instance method of the `OutputStream` class: `System.out.println("Hello, World #" + i)` invokes the instance method `println` on the `System.out` object.
@@ -116,6 +133,47 @@ The method `add` also shows how to construct a new object using the `new` keywor
 The class also has two private fields: `numerator` and `denominator`.
 They are private, which means they can only be accessed within the class.
 
+
+## Describe the JVM exception handling mechanism (10 minutes)
+
+All exceptions in Java are instances of the `Throwable` class. It is important to note that, since Java is a statically typed language, we can distinguish between different kinds of exceptions.
+
+There are two subclasses of `Throwable`: `Exception` and `Error`. 
+
+An `Error` is an exception that is typically fatal, and detected by the JVM itself, although you can also throw them explicitly. For example, the JVM throws an `OutOfMemoryError` if it runs out of memory, or a `StackOverflowError` if the stack overflows (too much recursive function calling). These are not expected to be caught by application code.
+
+Exceptions are further divided into two categories: `checked` and `unchecked`.
+
+- `checked` exceptions are those that are *required* to be caught by calling code
+- `unchecked` exceptions are those that are *not* required to be caught by calling code
+
+This is different than Python, where all exceptions are unchecked. In fact, no languages since Java have this distinction.
+
+An exception must be checked if it is a subclass of `Exception` and not a subclass of `RuntimeException`.
+
+This class diagram shows the relationship between the classes, along with four example exceptions:
+```mermaid
+classDiagram
+    class Throwable {
+    }
+    class Exception {
+    }
+    class RuntimeException {
+    }
+    class Error {
+    }
+    Throwable <|-- Exception
+    Throwable <|-- Error
+    Exception <|-- RuntimeException
+    Exception <|-- IOException
+    RuntimeException <|-- NullPointerException
+    RuntimeException <|-- IllegalArgumentException
+    RuntimeException <|-- IndexOutOfBoundsException
+    
+```
+
+- [Check parameters for validity](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch8.xhtml#lev49)
+
 ## Utilize Java methods for reading input and writing output to streams (10 minutes)
 In order to do anything useful, we probably need to be able to read input from the outside world (user, file, etc.) and write output to the outside world (user, file, etc.).
 
@@ -123,16 +181,4 @@ We saw how to write output to the console using `System.out.println`.
 
 (Explain what a stream is, how stdin/out/err are special streams, and how to use a `Scanner` to read input from the console.)
 
-## Describe the JVM exception handling mechanism (5 minutes)
-
-(Explain what checked and unchecked exceptions are, and how to throw and catch them.)
-
-- Compare exceptions in Python and Java
-## Identify when to throw checked or unchecked exceptions when writing procedures in Java (10 minutes)
-
-- [Check parameters for validity](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch8.xhtml#lev49)
-
-## Recognize and apply Java's core data structures (20 minutes)
-
-(Collections: Arrays, Lists, Maps, Sets, etc.)
 
