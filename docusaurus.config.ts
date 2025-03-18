@@ -130,6 +130,9 @@ const config: Config = {
       // ],
       copyright: `Copyright © ${new Date().getFullYear()} Jonathan Bell and contributors, Licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en">CC-BY-NC-SA 4.0</a>`,
     },
+    colorMode: {
+      respectPrefersColorScheme: true,
+    },
     prism: {
       additionalLanguages: ['java'],
       theme: prismThemes.github,
