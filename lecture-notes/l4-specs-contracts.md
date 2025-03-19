@@ -1,6 +1,6 @@
 ---
-sidebar_position: 5
-lecture_number: 5
+sidebar_position: 4
+lecture_number: 4
 title: Specifications and Common Contracts
 ---
 

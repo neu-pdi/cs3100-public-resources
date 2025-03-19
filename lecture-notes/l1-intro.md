@@ -72,6 +72,100 @@ Background material:
 - Truly understanding the performance implications of static vs dynamic typing probably requires taking a course in programming languages (we have some great ones!). But, as we learn about types in Java, we might start to get some intuition for this.
   - Sidebar: Measuring the productivity impact of a type system is a very hard problem. While some have tried to design research studies, they tend to have significant methodological issues - because it is so hard to study. The most poignant reason why this is hard is that you can't really compare abstractly "a static type system" vs "a dynamic type system" - you need to compare specific type systems. There are some unique case studies for this (e.g. JavaScript -> Dart, Elm, Typescript, PHP -> Hack), but each is really a unique case study. Did anyone in the class have prior Python experience before CS 2100 (without mypi)?
 
+## Be introduced to Java syntax (10 minutes)
+Again, we will not explicitly teach you Java syntax in the lectures for this course. We will provide you with flashcards to help you learn the syntax, tutorials for self-practice, and guided labs to help you practice. However, for this very first lecture, we will provide a very brief introduction to Java syntax.
+
+Here is a complete example of a Java program:
+
+```java title="HelloWorld.java"
+package io.github.neu-pdi.cs3100.lecture2;
+
+import io.github.neu-pdi.cs3100.utils.OtherClass;
+
+/**
+ * This is a simple program that prints "Hello, World" 10 times.
+ */
+public class HelloWorld {
+    /**
+     * This is the main method that is executed when the program is run.
+     * @param args The command line arguments.
+     */
+    public static void main(String[] args) {
+        OtherClass other = new OtherClass(10);
+        for (int i = 0; i < 10; i++) {
+            // Print a message to the console
+            System.out.println("Hello, World #" + i);
+        }
+        other.doSomething();
+    }
+}
+```
+
+```java title="OtherClass.java"
+package io.github.neu-pdp.cs3100.utils;
+
+public class OtherClass {
+    private int x;
+    public OtherClass(int x) {
+        this.x = x;
+    }
+    public void doSomething() {
+        System.out.println("Doing something with x = " + x);
+    }
+    public int getX() {
+        return x;
+    }
+}
+```
+Let's break down the syntax of this program, starting with HelloWorld.java.
+### Package Declaration
+- Code in Java is organized into packages. This is similar to how code in Python is organized into modules.
+- It's best practice to use a package that is named after the organization that wrote the code.
+- The convention for the package name is to use the reverse domain name of the organization.
+    - For example, GitHub user `octocat` would use the package name `io.github.octocat`.
+- You can, of course, choose whatever you want that satisfies the JVM's naming conventions.
+
+### Import Declaration
+- The `import` keyword is used to import classes from other packages.
+- In this case, we are importing the `OtherClass` class from the `io.github.neu-pdp.cs3100.utils` package.
+- Note that we are *not* importing the `String` class or the `System` class. These are both classes in the `java.lang` package, that are imported by default. 
+
+### Comments
+- Single line comments are denoted by `//`
+- Multi-line comments are denoted by `/*` and `*/`
+- Documentation comments are denoted by `/**` and `*/`, and are used to generate documentation for the code (more on this in an upcoming lecture)
+
+### Class Declaration
+- All code in Java must be contained within a class.
+- This class is `public` which means it can be used by other classes.
+   - If you don't specify the access modifier, it will default to `package-private` which means it can only be used by classes in the same package.
+- This class extends `OtherClass` which means it will inherit all of the methods and fields of `OtherClass`.
+- The *contents* of the class are contained within the `{` and `}` braces. This is not Python, where indentation matters.
+
+### Method Declaration
+- All code in Java must be contained within a method, which must be declared within a class.
+- This method is `public` which means it can be used by other classes. It also could be `private` which means it can only be used by the class itself.
+- This method is `static` which means it can be called on the class itself without creating an instance of the class.
+- This method is `void` which means it does not return a value.
+- This method is named `main` and takes as an argument an array of strings. This is the entry point of the program, as defined by the Java Virtual Machine (JVM). This means that when we run the command `java io.github.neu-pdp.cs3100.lecture2.HelloWorld`, the JVM will look for a `public static void main(String[] args)` method in the `HelloWorld` class and execute it.
+
+### Method Body
+- The contents of the method are contained within the `{` and `}` braces. This is not Python, where indentation matters.
+- The method creates an instance of `OtherClass` and calls its `doSomething` method.
+- The method contains a loop that will print "Hello, World" 10 times.
+    - Note how we declare a variable `i` and initialize it to 0, and also how we format a for-loop in Java
+    - Again: This is not Python, where indentation matters. `{}` are required to delimit the scope of the loop.
+- Let's disect the line `System.out.println("Hello, World #" + i);`:
+    - `System` refers to a class: `java.lang.System` (note that we didn't need to import this class since it is part of `java.lang` which is imported by default)
+    - `out` is a *static field* of the `System` class. Because it's `static`, we can access it directly on the class without creating an instance of the class.
+    - `System.out` is an instance of a class that Java provides called `PrintStream`, used for writing output to streams (more on streams in a few minutes).
+    - The string `"Hello, World #"` is concatenated with the value of `i` and the `println` method is called with that string as an argument.
+    - Lastly, the line ends with a semicolon, which is required in Java to denote the end of a statement. This is different than Python, where the end of a statement is denoted by a newline.
+
+### OtherClass.java
+- This class defines a private field `x` and a constructor that initializes it. Because it's `private`, it cannot be accessed directly from outside the class (it *can* be accessed from within the class, and because the class exposes the method `public int getX()`, we can access it from outside the class indirectly).
+- It also defines a `public` method `doSomething` that prints a message to the console.
+
 ## Understand the difference between core datatypes in Java: primitives, objects and array (15 minutes)
 - Here are the basic types of data in Java, which are called "primitive types":
   - `byte` -> 1 byte integer

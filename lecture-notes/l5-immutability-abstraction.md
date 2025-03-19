@@ -1,6 +1,6 @@
 ---
-sidebar_position: 6
-lecture_number: 6
+sidebar_position: 5
+lecture_number: 5
 title: Protection and Abstraction
 ---
 ## Opine on the dual role of specification and abstraction in achieving modularity via abstractions and compression (15 minutes)

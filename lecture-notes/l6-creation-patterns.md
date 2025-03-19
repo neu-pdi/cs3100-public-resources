@@ -1,6 +1,6 @@
 ---
-sidebar_position: 4
-lecture_number: 4
+sidebar_position: 6
+lecture_number: 6
 title: Object Creation Patterns in Java
 ---
 
@@ -8,8 +8,7 @@ Overview:
 
 
 
-## Understand the importance of compile-time type checking and the role of generics (15 minutes)
-- (Bloch 26-33)
+
 ## Compare object creation patterns in Java
 
 ### Factories (15 minutes)
