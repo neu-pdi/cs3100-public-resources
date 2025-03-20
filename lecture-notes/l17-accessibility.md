@@ -1,6 +1,6 @@
 ---
-sidebar_position: 21
-lecture_number: 21
+sidebar_position: 17
+lecture_number: 17
 title: Accessibility
 ---
 

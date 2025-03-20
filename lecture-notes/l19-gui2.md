@@ -1,6 +1,6 @@
 ---
-sidebar_position: 17
-lecture_number: 17
+sidebar_position: 19
+lecture_number: 19
 title: GUI II
 ---
 

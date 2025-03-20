@@ -1,6 +1,6 @@
 ---
-sidebar_position: 20
-lecture_number: 20
+sidebar_position: 16
+lecture_number: 16
 title: User-Centered Design
 ---
 
