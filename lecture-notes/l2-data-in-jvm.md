@@ -278,7 +278,6 @@ l.turnOn(); // This will call the turnOn method of the actual type of l, which i
 
 Regardless of the type of the variable in our code, the actual type at runtime is used to determine which method to call.
 
-
 ## Understand the difference between static methods and instance methods (5 minutes)
 
 Some methods are declared as `static`, which means they are associated with the class itself, rather than an instance of the class.
