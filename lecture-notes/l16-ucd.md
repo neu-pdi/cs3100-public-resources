@@ -8,4 +8,4 @@ title: User-Centered Design
 
 ## Describe the process of user-centered design and prototyping (15 minutes)
 
-## TODO
+## Describe specific mechanisms to anticipate changeability needs in software (15 minutes)

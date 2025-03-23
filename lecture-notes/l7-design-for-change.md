@@ -1,6 +1,6 @@
 ---
-sidebar_position: 8
-lecture_number: 8
+sidebar_position: 7
+lecture_number: 7
 title: Introducing Design for Change
 ---
 

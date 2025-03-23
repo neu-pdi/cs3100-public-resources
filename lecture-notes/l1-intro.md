@@ -29,6 +29,27 @@ title: Course Overview and Introduction to Java
   - Consider which optional readings are most relevant to your interests. 
   - Bi-weekly assignments expected to take 20 hours, do not wait until the last minute
 
+## Review the Systematic Program Design and Implementation Process (10 minutes)
+
+```mermaid
+flowchart TD
+    A[Identify Stakeholders and Their Values] --> B[Gather Requirements]
+    B --> C[Design]
+    C --> C1[Define Data Types and Relationships]
+    C --> C2[Define Specifications for Behaviors]
+    C --> C3[Example Inputs and Outputs]
+    C1 --> C2
+    C2 --> C3
+    C3 --> C1
+    C --> D[Implement the Designed Software]
+    D --> E[Test the Implementation]
+    E --> F[Deploy, Operate, and Collect Feedback]
+    F --> C
+    D --> C
+    C1 --> C
+    C2 --> C
+    C3 --> C
+```
 
 ## Understand the context of Java in the historical development of OO languages and "run anywhere" technology/JIT runtimes (10 minutes)
 

@@ -1,6 +1,6 @@
 ---
-sidebar_position: 6
-lecture_number: 6
+sidebar_position: 9
+lecture_number: 9
 title: Object Creation Patterns in Java
 ---
 
