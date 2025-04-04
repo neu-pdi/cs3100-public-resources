@@ -68,12 +68,12 @@ const config: Config = {
 
   themeConfig: {
     // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
+    image: 'img/qwan-social-card.jpg',
     navbar: {
       title: 'CS 3100 Instructor Resources',
       logo: {
-        alt: 'My Site Logo',
-        src: 'img/logo.svg',
+        alt: 'Pawtograder Logo',
+        src: 'img/logo-dark.svg',
       },
       items: [
         {

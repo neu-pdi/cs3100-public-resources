@@ -18,13 +18,7 @@ When we write a program, our goal is to make it easy to understand. When we brea
 
 There are, of course, other ways to make a program easier to understand, and these are topics for later lectures!
 
-Rough outline for this part:
-- What is modularity and abstraction, and why are they important?
-- What have we done so far in terms of writing specifications?
-- How does human understanding of specifications relate to how we write them?
-[Liskov & Gutag Ch 9.3](https://learning.oreilly.com/library/view/program-development-in/9780768685299/ch9.html)
-
-## Evaluate the efficacy of a given specification using the terminology of restrictiveness, generality, and clarity (25 minutes)
+## Evaluate the efficacy of a given specification using the terminology of restrictiveness, generality, and clarity (15 minutes)
 
 So, a good method specification is one that a developer can understand quickly and easily. Any implementation of that method that satisfies the specification should be correct (we will call this property *generality*), and any implementation that does not satisfy the specification is incorrect (we will call this property *restrictiveness*). Good specifications should also be *clear* (we will call this property *clarity*).
 
@@ -88,6 +82,7 @@ This specification is not restrictive because it does not specify the ordering o
  */
 public Iterator<E> iterator()
 ```
+
 
 ### Generality
 Good specifications must strike a balance between being too general and too restrictive.
@@ -194,10 +189,37 @@ public float presentValue(float income, float interestRate, int years)
 Adding this redundancy allows a reader to check their understanding of the concepts in the specification.
 Determining the balance between clarity and conciseness is a matter of good judgement, and is dependent on the problem domain and the method's clients.
 
-## Define the role of methods common to all Objects in Java (25 minutes)
+## Utilize type annotations to express invariants such as non-nullness (5 minutes)
+
+In an ideal world, programmers could express all invariants about a method using the language's type system.
+A broad research area in software engineering and programming languages: how to design a language that ergonomically allows programmers to express invariants about their code, and have the compiler enforce them.
+
+For example: rather than simply state in a comment that the parameter to a method is non-null, it would be great if we could express that invariant directly in the method's signature, and have the compiler enforce it.
+
+While Java was not designed with this in mind, [two researchers from the University of Washington led an effort to add support for "Type Annotations" to Java](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=b0a3c566dce1092150fff7b886d369cc90dfbd76), which is a feature that allows programmers to express invariants about their code in a way that is both clear and concise. (Fun fact: This is the ONLY accepted change to the Java language that was proposed by an academic). This feature was added in Java 8 (2014), which feels like a long time ago, but given the huge amount of legacy code written in Java, you may not find it widely used in codebases that you encounter.
+
+Here is an example of a type annotation:
+```java
+public int sum(@NonNull int[] arr) {
+    int sum = 0;
+    for (int i = 0; i < arr.length; i++) {
+        sum += arr[i];
+    }
+    return sum;
+}
+```
+
+With this annotation, the compiler will enforce that `arr` is not `null` when the `sum` method is called. If it is `null`, the compiler will generate an error. However, in order to automatically check for nullness, the compiler will require that we add nullness annotations to all of the parameters and fields of all classes in our program. The benefit of this is that we can catch nullness errors at compile time, rather than at runtime. When starting with a legacy codebase, this can be a lot of work. But, when you are starting with a new codebase, it is a great way to ensure that your code avoids a very common source of bugs.
+
+As is unfortunately typical for Java's community process, despite [a strong proposal to introduce a standard `@NonNull` annotation in the language](https://stackoverflow.com/a/35896657/6457585), it was rejected. So instead, you might encounter several dozen different definitions of `@NonNull` in the wild. A coallition of organizations who are frustrated by this (including Google, JetBrains, Microsoft, Uber, and even... Oracle?) have proposed a standard library of type annotations, [JSpecify](https://jspecify.dev/docs/start-here/). In this class, we will use the JSpecify annotations.
+
+While nullness is the most common type annotation to find, this is an active topic of research, and some day you might also be able to specify other properties with type annotations, such as [the immutability of a type](https://dl.acm.org/doi/10.1109/ICSE.2017.52).
+
+
+## Define the role of methods common to all Objects in Java 
 We previously mentioned that every Java class extends the `java.lang.Object` class. The `Object` class contains three methods that you should (consider) to override. They serve as a great example of the principles we have been discussing.
 
-### [`toString`](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#toString())
+### [`toString`](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#toString()) (3 minutes)
 Here is the specification for the `toString` method:
 
 > In general, the toString method returns a string that "textually represents" this object. The result should be a concise but informative representation that is easy for a person to read. It is recommended that all subclasses override this method. The string output is not necessarily stable over time or across JVM invocations.
@@ -211,7 +233,7 @@ Sidebar on generality: Note that the last sentence on stability was added in Jav
 
 With the default implementation, the line `System.out.println("Created new light: " + new DimmableLight(2700));` will print `Created new light: DimmableLight@abdfd` if `toString` is not overridden. This is not very useful for debugging. A more helpful representation might be `Created new light: DimmableLight(color=2700K, brightness=100, on=true)`.
 
-### [`equals`](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object))
+### [`equals`](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)) (5 minutes)
 The `equals` method is used to compare two objects for equality. It is an important method that is used widely. For example, it is used by each `Set` to determine if two objects are the same and by each `List` to support the `contains` method.
 
 `equals` has a somewhat lengthy specification, but one that is hopefully clear:
@@ -239,7 +261,7 @@ Here is a recipe for overriding `equals`:
 
 It might be tempting to try to define two objects as equal if they have similar fields but are different types (e.g. `TunableWhiteLight` and `DimmableLight`). However, it is generally not possible to do so without breaking the symmetry or transitivity of `equals`. So, we should not do this.
 
-### [`hashCode`](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#hashCode())
+### [`hashCode`](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#hashCode()) (5 minutes)
 [If you override `equals`, you *must* also override `hashCode`](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch3.xhtml#lev11), which has the following contract:
 > * Whenever it is invoked on the same object more than once during an execution of a Java application, the hashCode method must consistently return the same integer, provided no information used in equals comparisons on the object is modified. This integer need not remain consistent from one execution of an application to another execution of the same application.
 > * If two objects are equal according to the equals method, then calling the hashCode method on each of the two objects must produce the same integer result.
@@ -257,7 +279,7 @@ Here is a recipe for overriding `hashCode`:
 
 (See [Effective Java](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch3.xhtml#lev11) for more details.)
 
-### [`Comparable.compareTo`](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Comparable.html#compareTo(java.lang.Object))
+### [`Comparable.compareTo`](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Comparable.html#compareTo(java.lang.Object)) (5 minutes)
 There are many cases in a program where we might want to compare the order of two objects. For example, we might want to sort a list of objects, or find the smallest or largest object in a collection. This is common enough that Java provides a standard inferface to compare two objects, albeit one that is not required for all Objects.
 
 The `Comparable` interface is used to compare objects of a single type. For all classes, you should [consider implementing `Comparable`](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch3.xhtml#lev14). By implementing `Comparable`, you are allowing your class to interoperate with all of the many existing algorithms and data structures that expect this behavior. If there is an obvious natural ordering of your type, you should implement `Comparable` and use that ordering.

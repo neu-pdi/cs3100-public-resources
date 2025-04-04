@@ -4,18 +4,9 @@ lecture_number: 6
 title: Hiding and Immutability
 ---
 
+## Describe the role of information hiding and immutability in achieving program modularity and improving readability
 
-[CMU CS 17-214 "Responsibility Assignment"](https://docs.google.com/presentation/d/1aAyLLVDZFvaXWzQWzFyWQpBR5U63WNaGY04UX8z0SdQ/edit#slide=id.g2fbdf60e2c4_0_782)
-## From concepts to classes (10 minutes)
-
-### Review UML class diagrams
-
-### Review UML interaction diagrams
-
-
-## Understand the importance of hiding and immutability in achieving modularity (10 minutes)
-
-- Review the importance of method specifications in achieving modularity
+- Review the importance of method specifications in achieving modularity: understanding what a huge mess of code does is hard. But, if that same program is broken down into classes and modules with clear names and specifications, we can much more quickly reason about what the program does.
 - Errors in understanding and using abstractions are a major source of bugs and errors in programs
 - The sooner these errors are detected, the better. Bugs that are caught early (e.g. as you are writing the code, and you or the compiler can catch them) are cheaper to fix than those that are caught later (e.g. at runtime, or worse, after the code has been deployed)
 - Well-designed classes protect internal details from clients
@@ -26,6 +17,16 @@ title: Hiding and Immutability
   - Hide information (encapsulation)
   - Make data immutable where possible
 - These are design principles that you can apply at any scale: today, we'll focus on the scale of individual classes. But, later in the semester, we'll apply these principles at the scale of large modules and systems.
+
+
+[CMU CS 17-214 "Responsibility Assignment"](https://docs.google.com/presentation/d/1aAyLLVDZFvaXWzQWzFyWQpBR5U63WNaGY04UX8z0SdQ/edit#slide=id.g2fbdf60e2c4_0_782)
+## From concepts to classes (10 minutes)
+
+
+### Review UML class diagrams
+
+### Review UML interaction diagrams
+
 
 
 ## Explain tradeoffs in the accessibility of classes, methods and fields (15 minutes)

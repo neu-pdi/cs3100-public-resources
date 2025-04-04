@@ -7,19 +7,20 @@ title: Functional Programming and Readability
 ## Understand the historical context of functional programming in the JVM (10 minutes)
 "Functional programming" is a style of programming where functions are first-class values. That is, you can have primitives (e.g. ints, booleans, etc.) and objects that you store as variables, pass as arguments, and return from functions... *and* functions are also objects. This feature was introduced in Java 8 (2014), meaning that it's widely used in modern Java code, but you will also likely see a lot of older code that doesn't use it.
 
-Before we get to an example of what this programming style looks like, let's start with a code example that you are already familiar with. This code example sorts a list of DimmableLights by their brightness, using the `Comparator` interface. This differs from the `Comparable` interface that we saw last lecture, as the `Comparator` allows us to specify a comparison logic when we call the `sort` method. This is useful when we might want to sort the objects in a different way depending on the situation (e.g. a user can choose to sort by brightness, or by location, or by how long the lights have been on for, etc.).
+Before we get to an example of what this programming style looks like, let's start with a code example that you are already familiar with. This code example sorts a list of DimmableLights by their brightness, using the `Comparator` interface. This differs from the `Comparable` interface that we saw last lecture, as the `Comparator` allows us to specify a comparison logic when we call the `sort` method. `Comparable` is an interface that is defined on the class itself, so we can only define ONE way to compare objects of that class. In contrast, we can make a new `Comparator` is useful when we might want to sort the objects in a different way depending on the situation (e.g. a user can choose to sort by brightness, or by location, or by how long the lights have been on for, etc.).
 
 ```java
 // Before Java 8
-lights.sort(new Comparator<DimmableLight>() {
+Comparator<DimmableLight> brightnessComparator = new Comparator<DimmableLight>() {
     @Override
     public int compare(DimmableLight l1, DimmableLight l2) {
         return Integer.compare(l1.getBrightness(), l2.getBrightness());
     }
-});
+}
+lights.sort(brightnessComparator);
 ```
 
-The `Collections.sort` method takes a `Comparator` as an argument, which is a functional interface that has a single abstract method `compare`. The `Comparator` interface is a good example of a functional interface because it has a single abstract method that is used to compare two objects.
+The `Collections.sort` method takes a `Comparator` as an argument, which is an interface that declares a single method `compare`.  In Java, we refer to interfaces (like `Comparator`) that declare a single abstract method as "functional interfaces".
 
 It is important that we understand exactly how this works. Let's break it down:
 - `lights.sort` is a method that takes a `Comparator` as an argument.
@@ -45,14 +46,58 @@ As we'll see in this lecture, there are circumstances where the functional style
 
 ### Recognizing a functional interface
 
-### Variants of parameters
+As we saw in the previous example, the `Comparator` interface is a functional interface. We can recognize a functional interface by the fact that it declares a single abstract method. It is worth noting that the word "abstract" is doing a lot of work here: a functional interface can have other methods (e.g. a `static` method, or a method that is declard with a `default` implementation), but the single abstract method is what makes it a functional interface.
 
-No params, one param w w/o parens, multipel parameters, w/ w/o types
+Java provides a number of standard functional interfaces in the `java.util.function` package that can be used to quickly write lambda expressions.
 
-### Lambdas with multiple statements
+For example, the `Function<T, R>` interface declares a single abstract method `apply` that takes a parameter of type `T` and returns a value of type `R`.
+
+```java
+Function<String, String> quoteString = (String s) -> '"' + s + '"';
+String quotedString = quoteString.apply("Hello, world!"); // returns "\"Hello, world!\""
+```
+
+
+
+### Declaring lambdas
+
+There are several different variants of syntax that we can use to write lambda expressions.
+
+If a lambda expression has no parameters, we use empty parentheses to represent the parameters:
+```java
+Runnable r = () -> System.out.println("Hello, world!");
+r.run(); // prints "Hello, world!"
+```
+
+If a lambda expression has one parameter and the JVM can infer the type of the parameter, we can omit the parentheses:
+
+```java
+Function<String, String> quoteString = s -> '"' + s + '"';
+String quotedString = quoteString.apply("Hello, world!"); // returns "\"Hello, world!\""
+```
+
+If a lambda expression has multiple parameters, we must use the parentheses: 
+```java
+lights.sort((l1, l2) -> Integer.compare(l1.getBrightness(), l2.getBrightness()));
+```
+
+Note that we never specify the return type of a lambda expression. The return type is inferred its definition.
+
+These examples all are a single line of code, and thus are not wrapped in curly braces. If we want to write a lambda expression that is multiple lines of code, we must wrap it in curly braces:
+```java
+Runnable r = () -> {
+    System.out.println("Hello, world!");
+    System.out.println("Goodbye, world!");
+};
+r.run(); // prints "Hello, world!" and then "Goodbye, world!"
+```
+
 
 ### Method references
 There is an even more concise version of the lambda expression that we can use after introducing another piece of syntax: method references.
+
+Method references are a way to pass a *reference* to a method as an argument to a function. For example, the `Comparator` interface declares a static method called `comparingInt` that takes a method reference as an argument.
+It calls the method reference with the two objects that it is comparing, and then compares the results.
 
 ```java
 lights.sort(Comparator.comparingInt(DimmableLight::getBrightness));
@@ -62,9 +107,37 @@ The expression `DimmableLight::getBrightness` is a method reference. It is a way
 
 ### Accessing variables from enclosing scope
 
-## Compare the readability of Java code that uses functional vs OO styles
+A lambda expression shares variable names with the enclosing scope. For example, this code will throw a compile-time error:
+```java
+DimmableLight l1 = new DimmableLight();
+lights.sort((l1, l2) -> Integer.compare(l1.getBrightness(), l2.getBrightness())); //Error: l1 is already defined in the scope
+```
 
-### Compare the strategy pattern to higher-order functions (10 minutes)
+Since it shares variables with the enclosing scope, it is possible to access those variables:
+```java
+String message = "Hello, world!";
+Runnable r = () -> {
+    System.out.println(message);
+};
+r.run(); // prints "Hello, world!"
+```
+
+However, for reasons that are beyond the scope of this class, any variable that is accessed in a lambda expression must be `final` or *effectively* `final` (could be labeled with `final`). In the above example, `message` is effectively `final` because it is never modified after it is initialized.
+
+```java
+String message = "Hello, world!";
+for(int i = 0; i < 10; i++) {
+    Runnable r = () -> {
+        System.out.println("#" + i + " " + message); //Error: i is not final
+    };
+    r.run(); 
+}
+```
+
+## Compare the readability of Java code that uses functional vs OO styles
+Now that we have seen the syntax of functional programming in Java, let's compare it to the object-oriented style.
+
+### Compare the strategy pattern to higher-order functions: prefer lambdas over anonymous classes (10 minutes)
 
 The `Comparator` example also demonstrates a classic object-oriented design pattern: the strategy pattern.
 
@@ -150,31 +223,37 @@ lights.sort(new Comparator<DimmableLight>() {
 ```
 
 ```java
-// After Java 8, Lambda
-lights.sort((l1, l2) -> Integer.compare(l1.getBrightness(), l2.getBrightness()));
-```
-
-The lambda expression is more readable because it is more concise. If you are new to Java syntax, you might initially find the lambda expression confusing, as it requires you to understand how the `->` operator works. But: notice how much other Java boilerplate there is in the anonymous class version! The lambda version removes the boilerplate and makes the *behavior* much more clear.
-
-There is an even more concise version of the lambda expression that we can use after introducing another piece of syntax: method references.
-
-```java
+// After Java 8, Lambda with method reference
 lights.sort(Comparator.comparingInt(DimmableLight::getBrightness));
 ```
 
-The expression `DimmableLight::getBrightness` is a method reference. It is a way to refer to the `getBrightness` method of the `DimmableLight` class. In this case, we pass that method reference to `Comparator.comparingInt`, which takes a method reference as an argument. The `comparingInt` helper method returns a new `Comparator` that compares two objects by the value returned by the method reference that it receives as an argument.
+The lambda expression is more readable because it is more concise. If you are new to Java syntax, you might initially find the lambda expression confusing, as it requires you to understand how the `::` operator works. But: notice how much other Java boilerplate there is in the anonymous class version! The lambda version removes the boilerplate and makes the *behavior* much more clear.
 
+There is an even more concise version of the lambda expression that we can use after introducing another piece of syntax: method references.
 
-### [Prefer lambdas to anonymous classes](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch7.xhtml#lev42)
-We 
+For more on the benefits of lambdas vs anonymous classes, see [Prefer lambdas to anonymous classes](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch7.xhtml#lev42).
 
-### [Prefer method references to lambdas](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch7.xhtml#lev43)
+### Recognize when to NOT use lambdas (2 minutes)
+
+In the examples we've seen so far, we are using lambdas to define behavior for *very* short and simple functions --- they are almost always just a single line! However, as a lambda gets larger and larger, it also becomes more difficult to read. Lambdas do not have names, and they do not have documentation. If the behavior is not self-explanatory, or if the lambda exceeds three lines, it is better to use a named method or a class.
+
+### [Prefer method references to lambdas](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch7.xhtml#lev43) (3 minutes)
+
+Earlier in this lecture, we looked at an example of a lambda expression that we could replace with a method reference:
+
+```java title="Comparator with a lambda"
+lights.sort((l1, l2) -> Integer.compare(l1.getBrightness(), l2.getBrightness()));
+```
+
+```java title="Comparator with a method reference"
+lights.sort(Comparator.comparingInt(DimmableLight::getBrightness));
+```
+
+Our general rule of thumb is to prefer method references over lambdas, as they are more readable and concise.
+
+There are few cases where a lambda is preferred over a method reference: If the *names* of the parameters to the lambda are important to understand the code, use a lambda (as the method reference does not have names for the parameters).
 
 ### [Favor the use of standard functional interfaces](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch7.xhtml#lev44)
-
-
-## Utilize type annotations to express invariants such as non-nullness (15 minutes)
-(With a sidebar on JSR-308, nullaway)
 
 
 ## Understand common misconceptions about what makes code "readable" and draw on evidence-based research to evaluate the readability of code (10 minutes)
