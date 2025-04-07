@@ -2,17 +2,21 @@ import * as React from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
 import { createSystem } from '@chakra-ui/react';
 import { defaultConfig } from '@chakra-ui/react';
-import { ColorModeProvider, SetColorModeFromLocalStorage } from '../components/ui/color-mode';
+import { ColorModeProvider } from '../components/ui/color-mode';
 
-const system = createSystem(defaultConfig, { preflight: false })
+const system = createSystem(defaultConfig, {
+  cssVarsPrefix: 'embedded-chakra',
+  cssVarsRoot: '#chakra-root',
+})
 
-export default function Root({children}) {
+export default function Root({ children }) {
   return (
-    <ChakraProvider value={system}>
+    <div id="chakra-root">
+      <ChakraProvider value={system}>
         <ColorModeProvider>
-          <SetColorModeFromLocalStorage />
           {children}
         </ColorModeProvider>
-    </ChakraProvider>
+      </ChakraProvider>
+    </div>
   );
 }

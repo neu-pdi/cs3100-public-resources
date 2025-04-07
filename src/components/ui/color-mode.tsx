@@ -2,27 +2,14 @@
 
 import type { IconButtonProps, SpanProps } from "@chakra-ui/react"
 import { ClientOnly, IconButton, Skeleton, Span } from "@chakra-ui/react"
-import useGlobalData from "@docusaurus/useGlobalData"
-import { ThemeProvider, useTheme } from "next-themes"
 import type { ThemeProviderProps } from "next-themes"
+import { ThemeProvider, useTheme } from "next-themes"
 import * as React from "react"
 import { useEffect } from "react"
 import { LuMoon, LuSun } from "react-icons/lu"
 
 export interface ColorModeProviderProps extends ThemeProviderProps { }
 
-export function SetColorModeFromLocalStorage() {
-  const { setColorMode } = useColorMode()
-  useEffect(() => {
-    const theme = window.localStorage.getItem('theme')
-    if (theme === 'dark') {
-      setColorMode('dark')
-    } else if (theme === 'light') {
-      setColorMode('light')
-    }
-  }, [])
-  return <></>
-}
 export function ColorModeProvider(props: ColorModeProviderProps) {
   return (
     <ThemeProvider attribute="class" disableTransitionOnChange {...props} />
