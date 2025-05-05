@@ -110,7 +110,8 @@ package io.github.neu-pdi.cs3100.iot.lights;
 
 public class TunableWhiteLight extends DimmableLight {
     private int startupColorTemperature;
-    public TunableWhiteLight(int startupColorTemperature) {
+    public TunableWhiteLight(int startupColorTemperature, boolean isLED) {
+        super(isLED);
         this.startupColorTemperature = startupColorTemperature;
     }
     /**
@@ -151,6 +152,23 @@ This code snippet declares our `TunableWhiteLight` class, which extends `Dimmabl
     - `private` means the method can only be called by other methods in the class.
     - `protected` means the method can be called by other methods in the class, and by subclasses.
 - If you don't specify a visibility modifier, it defaults to `package-private`, which means the method can be called by other methods in the same package. This is generally regarded as a bad practice (and bad language feature) because it makes it hard to reason about the accessibility of methods, and we suggest you avoid it.
+
+On the keyword `super`:
+- `super` refers to the direct superclass the same way calling `this` refers to the present class. In this case calling `super` in `TunableWhiteLight` refers to `DimmableWhiteLight`
+
+- **Use case 1**: fields that are common between all instances of the superclass can be abstracted by calling the constructor of the superclass in the first line of the subclass constructor.  Based on how it is used above, the constructor of `DimmableLight` would look something like
+```java
+public class DimmableLight {
+    protected boolean isLED;
+    class DimmableLight(boolean isLED) {
+        this.isLED = isLED;
+    }
+    ...
+}
+```
+
+
+- **Use case 2**: you might wish to defer to the implementation of your superclass after some work in your subclass.  In that case, use `super.[someMethod]()` as `turnOn` does
 
 Some rules for overriding methods:
 - We use the `@Override` annotation to indicate that we are overriding a method from the superclass. This is not strictly required by the JVM, but is helpful for readability. It also allows the compiler to catch some errors: if you put `@Override` on a method that doesn't actually override a superclass method, the compiler will generate an error.
@@ -240,7 +258,37 @@ public interface Light extends IoTDevice {
 
 Here is an example of an abstract class:
 
-**TODO: Add example**
+```java
+public abstract HangingLight implements Light {
+    protected boolean isOn;
+
+    public HangingLight(boolean isOn) {
+        this.isOn = isOn;
+    }
+    @Override
+    public void turnOn() {
+        this.isOn = true;
+    }
+    /**
+     * Check if the light is on.
+     * @return true if the light is on, false otherwise.
+     */
+    public boolean isOn() {
+        return this.isOn;
+    }
+    /**
+     * Determines how low the light hangs.
+     * @return the distance from the ceiling to the bottom of the hanging light, in inches.
+     */
+    protected abstract int distanceFromCeiling(); 
+}
+```
+
+#### Key notes on abstract classes:
+- Fields in abstract classes are often `protected` so they can be accessed by subclasses
+- We implement some methods common between all subclasses to reduce duplication 
+- Not all methods from the interface need to be implemented by abstract classes since they are not directly instantiated, but those methods will still be required in concrete classes that `extend` them
+- We can use `abstract methods` such as `distanceFromCeiling` in abstract classes to enforce that subclasses implement additional behaviors
 
 ## Understand the JVM's implementation of dynamic dispatch (10 minutes)
 
