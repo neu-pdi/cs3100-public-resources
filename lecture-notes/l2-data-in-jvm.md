@@ -259,7 +259,7 @@ public interface Light extends IoTDevice {
 Here is an example of an abstract class:
 
 ```java
-public abstract HangingLight implements Light {
+public abstract class HangingLight implements Light {
     protected boolean isOn;
 
     public HangingLight(boolean isOn) {
