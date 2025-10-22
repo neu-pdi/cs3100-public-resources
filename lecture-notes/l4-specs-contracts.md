@@ -87,7 +87,7 @@ public Iterator<E> iterator()
 ### Generality
 Good specifications must strike a balance between being too general and too restrictive.
 A good spec is general if it does not rule out any implementations that are correct.
-Of course, there are may be an infinite number of possible correct implementations for a method, and it is not essential that we ensure that all of them are allowed by the specification - this is a place to exercise good judgement.
+Of course, there may be an infinite number of possible correct implementations for a method, and it is not essential that we ensure that all of them are allowed by the specification - this is a place to exercise good judgement.
 
 One way to ensure that a specification is general is to specify the *definition* of the method's behavior, rather than its *operational* steps.
 
@@ -124,9 +124,9 @@ This specification is more general because it permits implementations that do no
 
 Note that, of course, if it really is necessary to get the *first* occurrence of the target, this specification is not sufficiently restrictive.
 
-Determining the balance between generality and restrictiveness is requires a thorough understanding of the problem domain and the method's clients.
-
 A good way to check for generality is to examine every requirement of the specification. If you can think of a case where the specification does not permit an implementation that is correct, then it is not sufficiently general.
+
+Determining the balance between generality and restrictiveness is requires a thorough understanding of the problem domain and the method's clients. For the scope of the next few weeks, we will explicitly specify the domain constraints, but once we begin to discuss requirements gathering and domain modeling, you will need to use your own judgement to balance these constraints.
 
 ### Clarity
 
@@ -196,7 +196,7 @@ A broad research area in software engineering and programming languages: how to 
 
 For example: rather than simply state in a comment that the parameter to a method is non-null, it would be great if we could express that invariant directly in the method's signature, and have the compiler enforce it.
 
-While Java was not designed with this in mind, [two researchers from the University of Washington led an effort to add support for "Type Annotations" to Java](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=b0a3c566dce1092150fff7b886d369cc90dfbd76), which is a feature that allows programmers to express invariants about their code in a way that is both clear and concise. (Fun fact: This is the ONLY accepted change to the Java language that was proposed by an academic). This feature was added in Java 8 (2014), which feels like a long time ago, but given the huge amount of legacy code written in Java, you may not find it widely used in codebases that you encounter.
+While Java was not designed with this in mind, [two researchers from the University of Washington led an effort to add support for "Type Annotations" to Java](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=b0a3c566dce1092150fff7b886d369cc90dfbd76), which is a feature that allows programmers to express invariants about their code in a way that is both clear and concise. (Fun fact: This is one of very few accepted changes to the Java language that were proposed by an academic not affiliated with Sun/Oracle). This feature was added in Java 8 (2014), which feels like a long time ago, but given the huge amount of legacy code written in Java, you may not find it widely used in codebases that you encounter.
 
 Here is an example of a type annotation:
 ```java
@@ -234,7 +234,7 @@ Sidebar on generality: Note that the last sentence on stability was added in Jav
 With the default implementation, the line `System.out.println("Created new light: " + new DimmableLight(2700));` will print `Created new light: DimmableLight@abdfd` if `toString` is not overridden. This is not very useful for debugging. A more helpful representation might be `Created new light: DimmableLight(color=2700K, brightness=100, on=true)`.
 
 ### [`equals`](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)) (5 minutes)
-The `equals` method is used to compare two objects for equality. It is an important method that is used widely. For example, it is used by each `Set` to determine if two objects are the same and by each `List` to support the `contains` method.
+The `equals` method is used to compare two objects for equality (compare to Python's `__eq__` method). It is an important method that is used widely. For example, it is used by each `Set` to determine if two objects are the same and by each `List` to support the `contains` method.
 
 `equals` has a somewhat lengthy specification, but one that is hopefully clear:
 
@@ -262,6 +262,7 @@ Here is a recipe for overriding `equals`:
 It might be tempting to try to define two objects as equal if they have similar fields but are different types (e.g. `TunableWhiteLight` and `DimmableLight`). However, it is generally not possible to do so without breaking the symmetry or transitivity of `equals`. So, we should not do this.
 
 ### [`hashCode`](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#hashCode()) (5 minutes)
+In Python, classes that are not Hashable do not need to implement a `__hash__` method. However, in Java, **all** objects have a `hashCode` method, just like they all have an `equals` method.
 [If you override `equals`, you *must* also override `hashCode`](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch3.xhtml#lev11), which has the following contract:
 > * Whenever it is invoked on the same object more than once during an execution of a Java application, the hashCode method must consistently return the same integer, provided no information used in equals comparisons on the object is modified. This integer need not remain consistent from one execution of an application to another execution of the same application.
 > * If two objects are equal according to the equals method, then calling the hashCode method on each of the two objects must produce the same integer result.

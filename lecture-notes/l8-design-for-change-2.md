@@ -6,7 +6,7 @@ title: "Changeability III: Principles for inheritance"
 
 ## Other design principles related to changeability: SOLID (20 minutes)
 
-## Understand why to favor composition over inheritance by default (10 minutes)
+## Describe why to favor composition over inheritance by default (10 minutes)
 
 [Item 18: Favor composition over inheritance](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch4.xhtml#lev18)
 

@@ -5,7 +5,7 @@ title: "Changeability II: Coupling and Cohesion"
 ---
 
 ## Analyze the changeability of a software module for some hypothetical change using the language of coupling and cohesion (10 minutes)
-Recall from last lecture, that the specific requirements for a piece of software are often not fully specified at the beginning of a project. As a result, software designers need to be able to reason about how a software module will change in response to changes in requirements.
+Recall from last lecture that the specific requirements for a piece of software are often not fully specified at the beginning of a project. As a result, software designers need to be able to reason about how a software module will change in response to changes in requirements.
 
 In this lecture, we will use the language of coupling and cohesion to reason about how a software module will change in response to changes in requirements.
 
@@ -32,27 +32,90 @@ classDiagram
         +Student student
         +Assignment assignment
         +File[] code
-        +void addFeedback(String feedback, int points, int lineNumber)
+        +FeedbackItem[] feedbackList
+        +void addFeedback(String comment, int points, int lineNumber, NotificationService notifier)
+        +FeedbackItem[] getAllFeedback()
     }
-
+    
+    class FeedbackItem {
+        +String comment
+        +int points
+        +int lineNumber
+    }
+    
     class Assignment {
         +String name
         +String description
-        +String[] requirements
     }
-
+    
     class Student {
         +String name
         +String email
     }
+    
+    class NotificationService {
+        <<interface>>
+        +void notify(Student student, String message)
+    }
+    
+    Student --o Submission
+    Assignment --o Submission
+    FeedbackItem --o Submission
 ```
 
-In this implementation, the `Submission` class has surprisingly low coupling,
+In this implementation, the `Submission` class is coupled with the `Assignment` class, and the `Student` class, in that it uses these types. Note that the `Assignment` class is responsible for managing the submissions for an assignment, and the `Student` class is responsible for managing the student's information. The `Submission` class is responsible for managing the submission's information. A `NotificationService` is used to notify the student of the feedback.
+
+Here is another design that has much more coupling:
+
+```mermaid
+classDiagram
+    class Submission {
+        +Student student
+        +Feedback[] feedbackList
+        +void addFeedback(Feedback feedback)
+        +String getStudentEmail()
+        +String getStudentName()
+        +String getAssignmentName()
+    }
+    
+    class Feedback {
+        +Submission submission
+        +String comment
+        +int points
+        +void save()
+        +void sendNotification()
+    }
+    
+    class Assignment {
+        +String name
+        +Submission[] submissions
+    }
+    
+    class Student {
+        +String name
+        +String email
+        +Submission[] submissions
+    }
+    
+    Submission --o Student
+    Submission --o Feedback
+    Student --o Submission
+    Assignment --o Submission
+    Feedback --o Submission
+```
+
+This design adds some back-edges to the diagram: in addition to the `Assignment` knowing about the `Submission`s for that assignment, the `Student` class now knows about the `Submission`s for that student.
+Similarly, the `Feedback` class now knows about the `Submission` that it is associated with, and is now directly responsible for saving itself and notifying the student.
+
+This design might be satisfactory for the initial requirements, but what kinds of challenges might we run into when we need to add new features? For example:
+- If we need to change how submissions are entered, we need to change both the `Student` class and the `Assignment` class.
+- With the `Feedback` class being repsonsible for notifying the student, we need to change the `Feedback` class to add a new notification method.
+- The `Submission` class now is responsible for exposing student information: if we need to change how student information is represented, we also need to change the `Submission` class (and potentially any callers of it!).
 
 
 ## Define and recognize cases of data coupling, stamp coupling, control coupling, common coupling and content coupling (20 minutes)
 
-There are multiple ways that two modules can be coupled, and they are not all equally bad. 
+There are multiple ways that two modules can be coupled, and they are not all equally bad. We start with the least bad kinds of coupling, and work our way up to the worst kinds of coupling.
 
 ### Data and Stamp Coupling
 If two modules share data, then there is coupling between them.
@@ -64,6 +127,34 @@ When sharing data between modules, we might distinguish between two cases:
 Data coupling is generally considered harmless, as the type of data being passed between modules is unlikely to change (note that there can be an anti-pattern here, of passing tons of simple parameters in lieu of a more complex data structure to "avoid" stamp coupling).
 
 The "badness" of stamp coupling is that it indicates that a change to that data structure will require changes to the modules that use it. Put another way, stamp coupling indicates that a module is revealing unnecessary details of its implementation to callers. This can be mitigated by using carefully-designed interfaces.
+
+Here is an example of a feedback notification serivce that is implemented with data coupling:
+```java
+class EmailService {
+    void sendNotification(String toEmail, String studentName, String assignmentName) {
+        // Only receives exactly what it needs - no unused data
+        String body = "Hi " + studentName + ", you received feedback on " + assignmentName;
+        send(toEmail, "New Feedback", body);
+    }
+}
+```
+
+Here is an example of a feedback notification service that is implemented with stamp coupling:
+
+```java
+class EmailService {
+    void sendNotification(Submission submission) {
+        // Only uses 3 fields but receives entire complex structure
+        String toEmail = submission.student.email;        // ✓ Used
+        String name = submission.student.name;            // ✓ Used
+        String assignmentName = submission.assignment.name; // ✓ Used
+               String body = "Hi " + name + ", you received feedback on " + assignmentName;
+        send(toEmail, "New Feedback", body);
+    }
+}
+```
+
+Note that the second example couples the `EmailService` to the `Submission` class, as it is now responsible for extracting the necessary data from the `Submission` object. In the first example, the `EmailService` is only responsible for sending an email, and does not need to know about the `Submission` class.
 
 ### Control Coupling
 When one module calls methods in another, there is a risk of control coupling. Control coupling occurs when the parameter that is passed to that method is then used to control the flow of execution.
@@ -392,7 +483,7 @@ In this high-level view, we see how the business responsibilities of the overall
 
 ## Use the vocabulary of coupling and cohesion to review the Strategy pattern (10 minutes)
 
-Recall that the Strategy pattern is a design pattern that allows for different algorithms to be used interchangeably.
+Recall that the Strategy pattern is a design pattern that allows for different algorithms to be used interchangeably. In [Lecture 5](./l5-fp-readability-reusability.md), we discussed the Strategy pattern with an example of a `Comparator` that allows for different sorting algorithms to be used interchangeably.
 
 ```mermaid
 classDiagram
@@ -409,7 +500,7 @@ classDiagram
     Strategy <|-- ConcreteStrategyB
 ```
 
-For example, we might use the Strategy pattern to allow the `SubmissionService` to grade submissions that are in different programming languages, each of which has a different build, lint, and test process.
+In our Pawtograder example, we might use the Strategy pattern to allow the `SubmissionService` to grade submissions that are in different programming languages, each of which has a different build, lint, and test process.
 
 ```mermaid
 classDiagram

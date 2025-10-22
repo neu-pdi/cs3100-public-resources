@@ -3,6 +3,7 @@ import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import path from 'path';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
@@ -27,6 +28,37 @@ const config: Config = {
     mermaid: true,
   },
   themes: ['@docusaurus/theme-mermaid'],
+
+  plugins: [
+    [path.resolve(__dirname, './plugins/classasaurus/index.ts'), {
+      configPath: './course.config.json',
+      generateSchedule: true,
+      scheduleRoute: '/schedule',
+      validateLectureFiles: false, // Enable after all lectures are mapped
+    }],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'labs',
+        path: 'labs',
+        routeBasePath: 'labs',
+        sidebarPath: './sidebars.ts',
+        remarkPlugins: [remarkMath],
+        rehypePlugins: [rehypeKatex],
+      },
+    ],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'assignments',
+        path: 'assignments',
+        routeBasePath: 'assignments',
+        sidebarPath: './sidebars.ts',
+        remarkPlugins: [remarkMath],
+        rehypePlugins: [rehypeKatex],
+      },
+    ],
+  ],
 
 
   // Even if you don't use internationalization, you can use this field to set
@@ -77,12 +109,30 @@ const config: Config = {
       },
       items: [
         {
+          to: '/schedule',
+          position: 'left',
+          label: 'Schedule',
+        },
+        {
           type: 'docSidebar',
           sidebarId: 'lectureNotesSidebar',
           position: 'left',
           label: 'Lecture Notes',
         },
-      
+        {
+          type: 'docSidebar',
+          sidebarId: 'labsSidebar',
+          docsPluginId: 'labs',
+          position: 'left',
+          label: 'Labs',
+        },
+        {
+          type: 'docSidebar',
+          sidebarId: 'assignmentsSidebar',
+          docsPluginId: 'assignments',
+          position: 'left',
+          label: 'Assignments',
+        }
       ],
     },
     footer: {

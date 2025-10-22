@@ -1,0 +1,31 @@
+{
+  "name": "docusaurus-plugin-classasaurus",
+  "version": "0.1.0",
+  "description": "A Docusaurus plugin for managing course websites with rich scheduling",
+  "main": "index.ts",
+  "types": "types.ts",
+  "keywords": [
+    "docusaurus",
+    "plugin",
+    "course",
+    "schedule",
+    "education",
+    "teaching"
+  ],
+  "author": "Jonathan Bell",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/neu-pdi/cs3100-public-resources"
+  },
+  "files": [
+    "index.ts",
+    "types.ts",
+    "config-validator.ts",
+    "schedule-generator.ts",
+    "utils.ts",
+    "README.md",
+    "QUICKSTART.md"
+  ]
+}
+

@@ -4,9 +4,12 @@ lecture_number: 6
 title: "Changeability I: Modularity and Information Hiding"
 ---
 
-## Understand the importance of changeability as a goal of program design and implementation (10 minutes)
+## Describe the importance of changeability as a goal of program design and implementation (10 minutes)
 
 * Review the systematic program design and implementation process
+![Systematic Program Design and Implementation Process, including the steps of requirements gathering, design, implementation, validation, and operations](/img/software_design_process_fall_2025.png)
+
+
 * We haven't yet gone into significant detail on the "requirements gathering" step. 
 * When considering the total cost of software, it is important to consider how much effort it will take to truly get the software to meet the needs of the customer.
 * Put another way: the majority of the cost of software is not in the initial development, but in the maintenance and evolution of the software.
@@ -38,7 +41,7 @@ Today, we will focus on a low-level aspect of changeability: **information hidin
 * The core idea to information hiding is that we should design our system so that it is broken into "modules" that are relatively independent. 
 * What is a module?
     * A module is a self-contained unit of code. More specifically:
-        * Each module should have a well-defined interface that specifies the behavior of the module. That specification should be restrictive, general and clear (Lecture 4)
+        * Each module should have a well-defined interface that specifies the behavior of the module. That specification should be restrictive, general and clear ([Lecture 4](./l4-specs-contracts.md))
         * The implementation of the module should be hidden from other modules and can be independently compiled.
         * Each module should be self-contained and should not depend on the implementation details of other modules.
     * A module could be a class, a package, or even a whole program. Modules can be composed together to form larger modules.
@@ -54,17 +57,17 @@ Today, we will focus on a low-level aspect of changeability: **information hidin
 
 ## Describe the role of information hiding and immutability in enabling effective modularity (5 minutes)
 * Today's principle is: **information hiding**.
-* When information hiding was first proposed in the 1970s (by a software engineering researcher named David Parnas), there was little support for it from programming languages. As a designer, you could organize your code into modules, but there was very limited support to enforce that organization, or to prevent other parts of the code from accessing the implementation details of a module.
 * Why do we need information hiding?
   * Even if you have a good design that separates concerns into modules, some other developer might innevitably come along and find other ways to use your module in a way that was not anticipated. 
   * See [Hyrum's Law](https://www.hyrumslaw.com): "With a sufficient number of users of an API, it does not matter what you promise in the contract: all observable behaviors of a system will be depended on by somebody."
     * See also [XKCD #1172](https://xkcd.com/1172/)
   * So, insofar as a programming language can support information hiding, it is important to use it in order to ensure that our modules are used as anticipated.
 
+* When information hiding was first proposed in the 1970s ([by a software engineering researcher named David Parnas](https://dl.acm.org/doi/10.1145/361598.361623)), there was little support for it from programming languages. As a designer, you could organize your code into modules, but there was very limited support to enforce that organization, or to prevent other parts of the code from accessing the implementation details of a module. Modern languages have built-in support for information hiding.
 * We have already seen a core approach to achieve information hiding: creating *interfaces* that specify the behavior of a module without regard to its implementation.
    * The interface *hides* the implementation details of the module.
    * Changing *how* the interface is implemented can be done without affecting the code that uses the interface.
-* We will now look at some Java language features that help us achieve information hiding and immutability. In the context of object oriented design, these features are collectively known as enabling *encapsulation*.
+* We will now look at some other Java language features that help us achieve information hiding and immutability. In the context of object oriented design, these features are collectively known as enabling *encapsulation*.
 
 ## Be able to apply Java language features to achieve information hiding and immutability 
 
@@ -234,7 +237,7 @@ Hence, in order to ensure that the class is immutable, we must [make defensive c
 ```java
 public PhoneNumber(short[] number) {
     this.number = new short[number.length];
-    System.arraycopy(number, 0, this.number, 0, number.length); // equivalent to setting each element individually
+    System.arraycopy(number, 0, this.number, 0, number.length); // equivalent to setting each element individually, but significantly more efficient
 }
 ```
 
