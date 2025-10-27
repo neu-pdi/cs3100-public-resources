@@ -3,10 +3,9 @@
   "courseTitle": "Program Design and Implementation II",
   "semester": "Spring 2026",
   "academicYear": "2025-2026",
-  "startDate": "2026-01-07",
+  "startDate": "2026-01-06",
   "endDate": "2026-04-20",
   "timezone": "America/New_York",
-  
   "sections": [
     {
       "id": "01",
@@ -16,24 +15,30 @@
       "meetings": [
         {
           "type": "lecture",
-          "days": ["Monday", "Wednesday", "Thursday"],
+          "days": [
+            "Monday",
+            "Wednesday",
+            "Thursday"
+          ],
           "startTime": "10:30",
           "endTime": "11:35",
           "location": "TBD"
         },
         {
           "type": "lab",
-          "days": ["Tuesday"],
+          "days": [
+            "Tuesday"
+          ],
           "startTime": "14:00",
           "endTime": "15:40",
           "location": "Ryder Hall 431"
         }
       ],
-      "instructors": ["Jonathan Bell"]
+      "instructors": [
+        "Jonathan Bell"
+      ]
     }
-
   ],
-  
   "holidays": [
     {
       "date": "2026-01-19",
@@ -57,278 +62,559 @@
       "type": "holiday"
     }
   ],
-  
   "lectures": [
     {
       "lectureId": "l1-intro",
-      "dates": ["2026-01-07"],
-      "topics": ["Course Overview and Introduction to Java"]
+      "dates": [
+        "2026-01-07"
+      ],
+      "topics": [
+        "Course Overview and Introduction to Java"
+      ]
     },
     {
       "lectureId": "l2-data-in-jvm",
-      "dates": ["2026-01-08"],
-      "topics": ["Inheritance and Polymorphism in Java"]
+      "dates": [
+        "2026-01-08"
+      ],
+      "topics": [
+        "Inheritance and Polymorphism in Java"
+      ]
     },
     {
       "lectureId": "l3-more-java",
-      "dates": ["2026-01-12"],
-      "topics": ["Inheritance and Polymorphism in Java II"]
+      "dates": [
+        "2026-01-12"
+      ],
+      "topics": [
+        "Inheritance and Polymorphism in Java II"
+      ]
     },
     {
       "lectureId": "l4-specs-contracts",
-      "dates": ["2026-01-14"],
-      "topics": ["Specifications and Common Contracts"]
+      "dates": [
+        "2026-01-14"
+      ],
+      "topics": [
+        "Specifications and Common Contracts"
+      ]
     },
     {
       "lectureId": "l5-fp-readability-reusability",
-      "dates": ["2026-01-15"],
-      "topics": ["Functional Programming and Readability"]
+      "dates": [
+        "2026-01-15"
+      ],
+      "topics": [
+        "Functional Programming and Readability"
+      ]
     },
     {
       "lectureId": "l6-immutability-abstraction",
-      "dates": ["2026-01-21"],
-      "topics": ["Changeability I: Modularity and Information Hiding"]
+      "dates": [
+        "2026-01-21"
+      ],
+      "topics": [
+        "Changeability I: Modularity and Information Hiding"
+      ]
     },
     {
       "lectureId": "l7-design-for-change",
-      "dates": ["2026-01-22"],
-      "topics": ["Changeability II: Coupling and Cohesion"]
+      "dates": [
+        "2026-01-22"
+      ],
+      "topics": [
+        "Changeability II: Coupling and Cohesion"
+      ]
     },
     {
       "lectureId": "l8-design-for-change-2",
-      "dates": ["2026-01-26"],
-      "topics": ["Changeability III: Principles for inheritance"]
+      "dates": [
+        "2026-01-26"
+      ],
+      "topics": [
+        "Changeability III: Principles for inheritance"
+      ]
     },
     {
       "lectureId": "l9-creation-patterns",
-      "dates": ["2026-01-28"],
-      "topics": ["Object Creation Patterns in Java"]
+      "dates": [
+        "2026-01-28"
+      ],
+      "topics": [
+        "Object Creation Patterns in Java"
+      ]
     },
     {
       "lectureId": "l10-review1",
-      "dates": ["2026-01-29"],
-      "topics": ["Review 1"]
+      "dates": [
+        "2026-01-29"
+      ],
+      "topics": [
+        "Review 1"
+      ]
     },
     {
       "lectureId": "l11-exam1",
-      "dates": ["2026-02-02"],
-      "topics": ["Exam 1"]
+      "dates": [
+        "2026-02-02"
+      ],
+      "topics": [
+        "Exam 1"
+      ]
     },
     {
       "lectureId": "l12-intro-ai-agents",
-      "dates": ["2026-02-04"],
-      "topics": ["Introduction to AI Coding Agents"]
+      "dates": [
+        "2026-02-04"
+      ],
+      "topics": [
+        "Introduction to AI Coding Agents"
+      ]
     },
     {
       "lectureId": "l13-program-understanding",
-      "dates": ["2026-02-05"],
-      "topics": ["Program Understanding & Debugging"]
+      "dates": [
+        "2026-02-05"
+      ],
+      "topics": [
+        "Program Understanding & Debugging"
+      ]
     },
     {
       "lectureId": "l14-testing",
-      "dates": ["2026-02-09"],
-      "topics": ["Testing with mocks"]
+      "dates": [
+        "2026-02-09"
+      ],
+      "topics": [
+        "Testing with mocks"
+      ]
     },
     {
       "lectureId": "l15-testing2",
-      "dates": ["2026-02-11"],
-      "topics": ["Testing II: Testability and flakiness, CI"]
+      "dates": [
+        "2026-02-11"
+      ],
+      "topics": [
+        "Testing II: Testability and flakiness, CI"
+      ]
     },
     {
       "lectureId": "l16-requirements",
-      "dates": ["2026-02-12"],
-      "topics": ["Interpreting Requirements"]
+      "dates": [
+        "2026-02-12"
+      ],
+      "topics": [
+        "Interpreting Requirements"
+      ]
     },
     {
       "lectureId": "l17-domain-modeling",
-      "dates": ["2026-02-18"],
-      "topics": ["Domain Modeling"]
-    },
-    {
-      "lectureId": "l18-usability",
-      "dates": ["2026-02-19"],
-      "topics": ["Usability"]
-    },
-    {
-      "lectureId": "l19-ucd",
-      "dates": ["2026-02-23"],
-      "topics": ["User-Centered Design"]
-    },
-    {
-      "lectureId": "l20-accessibility",
-      "dates": ["2026-02-25"],
-      "topics": ["Accessibility and Inclusivity"]
-    },
-    {
-      "lectureId": "l21-gui1",
-      "dates": ["2026-02-26"],
-      "topics": ["GUIs in Java"]
-    },
-    {
-      "lectureId": "l22-gui2",
-      "dates": ["2026-03-09"],
-      "topics": ["Patterns for GUI design and implementation"]
+      "dates": [
+        "2026-02-18"
+      ],
+      "topics": [
+        "Domain Modeling"
+      ]
     },
     {
       "lectureId": "l23-oss",
-      "dates": ["2026-03-11"],
-      "topics": ["Open Source, Libraries, and Frameworks"]
-    },
-    {
-      "lectureId": "l24-review2",
-      "dates": ["2026-03-12"],
-      "topics": ["Review 2"]
-    },
-    {
-      "lectureId": "l25-exam2",
-      "dates": ["2026-03-16"],
-      "topics": ["Exam 2"]
+      "dates": [
+        "2026-02-19"
+      ],
+      "topics": [
+        "Open Source, Libraries, and Frameworks"
+      ]
     },
     {
       "lectureId": "l26-teams",
-      "dates": ["2026-03-18"],
-      "topics": ["Teams and collaboration"]
+      "dates": [
+        "2026-02-23"
+      ],
+      "topics": [
+        "Teams and Collaboration"
+      ]
     },
     {
       "lectureId": "l27-architecture-design",
-      "dates": ["2026-03-19"],
-      "topics": ["Architecture-Scale Design"]
+      "dates": [
+        "2026-02-25"
+      ],
+      "topics": [
+        "Architecture-Scale Design"
+      ]
     },
     {
       "lectureId": "l28-monoliths",
-      "dates": ["2026-03-23"],
-      "topics": ["MVC and Monolithic Architectures"]
+      "dates": [
+        "2026-02-26"
+      ],
+      "topics": [
+        "MVC and Monolithic Architectures"
+      ]
+    },
+    {
+      "lectureId": "l18-usability",
+      "dates": [
+        "2026-03-09"
+      ],
+      "topics": [
+        "Usability"
+      ]
+    },
+    {
+      "lectureId": "l19-ucd",
+      "dates": [
+        "2026-03-11"
+      ],
+      "topics": [
+        "User-Centered Design"
+      ]
+    },
+    {
+      "lectureId": "l20-accessibility",
+      "dates": [
+        "2026-03-12"
+      ],
+      "topics": [
+        "Accessibility and Inclusivity"
+      ]
+    },
+    {
+      "lectureId": "l24-review2",
+      "dates": [
+        "2026-03-16"
+      ],
+      "topics": [
+        "Review 2"
+      ]
+    },
+    {
+      "lectureId": "l25-exam2",
+      "dates": [
+        "2026-03-18"
+      ],
+      "topics": [
+        "Exam 2"
+      ]
+    },
+    {
+      "lectureId": "l21-gui1",
+      "dates": [
+        "2026-03-19"
+      ],
+      "topics": [
+        "GUIs in Java"
+      ]
+    },
+    {
+      "lectureId": "l22-gui2",
+      "dates": [
+        "2026-03-23"
+      ],
+      "topics": [
+        "Patterns for GUI design and implementation"
+      ]
     },
     {
       "lectureId": "l29-concurrency1",
-      "dates": ["2026-03-25"],
-      "topics": ["Concurrency I"]
+      "dates": [
+        "2026-03-25"
+      ],
+      "topics": [
+        "Concurrency I"
+      ]
     },
     {
       "lectureId": "l30-concurrency2",
-      "dates": ["2026-03-26"],
-      "topics": ["Concurrency II: Asynchronous Programming"]
+      "dates": [
+        "2026-03-26"
+      ],
+      "topics": [
+        "Concurrency II: Asynchronous Programming"
+      ]
     },
     {
       "lectureId": "l31-networks",
-      "dates": ["2026-03-30"],
-      "topics": ["Networks and Distributed Systems"]
+      "dates": [
+        "2026-03-30"
+      ],
+      "topics": [
+        "Networks and Distributed Systems"
+      ]
     },
     {
       "lectureId": "l32-event-architecture",
-      "dates": ["2026-04-01"],
-      "topics": ["Event-Driven Architecture"]
+      "dates": [
+        "2026-04-01"
+      ],
+      "topics": [
+        "Event-Driven Architecture"
+      ]
     },
     {
       "lectureId": "l33-performance",
-      "dates": ["2026-04-02"],
-      "topics": ["Performance"]
+      "dates": [
+        "2026-04-02"
+      ],
+      "topics": [
+        "Performance"
+      ]
     },
     {
       "lectureId": "l34-safety-reliability",
-      "dates": ["2026-04-06"],
-      "topics": ["Safety and Reliability"]
+      "dates": [
+        "2026-04-06"
+      ],
+      "topics": [
+        "Safety and Reliability"
+      ]
     },
     {
       "lectureId": "l35-serverless-architecture",
-      "dates": ["2026-04-08"],
-      "topics": ["Serverless Architecture"]
+      "dates": [
+        "2026-04-08"
+      ],
+      "topics": [
+        "Serverless Architecture"
+      ]
     },
     {
       "lectureId": "l36-sustainability",
-      "dates": ["2026-04-09"],
-      "topics": ["Sustainability"]
+      "dates": [
+        "2026-04-09"
+      ],
+      "topics": [
+        "Sustainability"
+      ]
     },
     {
       "lectureId": "l37-map-reduce",
-      "dates": ["2026-04-13"],
-      "topics": ["Design case-study: Map-Reduce"]
+      "dates": [
+        "2026-04-13"
+      ],
+      "topics": [
+        "Design case-study: Map-Reduce"
+      ]
     },
     {
       "lectureId": "l38-future-programming",
-      "dates": ["2026-04-15"],
-      "topics": ["The Future of Programming"]
+      "dates": [
+        "2026-04-15"
+      ],
+      "topics": [
+        "The Future of Programming"
+      ]
     },
     {
       "lectureId": "l39-review",
-      "dates": ["2026-04-16"],
-      "topics": ["Review"]
+      "dates": [
+        "2026-04-16"
+      ],
+      "topics": [
+        "Review"
+      ]
     }
   ],
-  
   "labs": [
     {
       "id": "lab1",
-      "title": "Lab 1: Git Basics and Collaboration",
-      "dates": ["2026-01-14"],
-      "url": "/labs/lab1-git-basics",
-      "description": "Practice essential Git commands and workflows",
-      "points": 10
+      "title": "Lab 1: Java Tooling and Setup",
+      "dates": [
+        "2026-01-06"
+      ],
+      "url": "/labs/lab1-java-setup"
     },
     {
       "id": "lab2",
-      "title": "Lab 2: Java Testing with JUnit",
-      "dates": ["2026-01-21"],
-      "url": "/labs/lab2-java-testing",
-      "description": "Learn unit testing with JUnit 5",
-      "points": 10
+      "title": "Lab 2: Java Abstraction and Data Types",
+      "dates": [
+        "2026-01-13"
+      ],
+      "url": "/labs/lab2-java-abstraction"
     },
     {
       "id": "lab3",
-      "title": "Lab 3: Implementing Design Patterns",
-      "dates": ["2026-01-28"],
-      "url": "/labs/lab3-design-patterns",
-      "description": "Implement Singleton, Factory, and Observer patterns",
-      "points": 10
+      "title": "Lab 3: Readabiltiy and Modularity",
+      "dates": [
+        "2026-01-20"
+      ],
+      "url": "/labs/lab3-readability"
+    },
+    {
+      "id": "lab4",
+      "title": "Lab 4: Changeability",
+      "dates": [
+        "2026-01-27"
+      ],
+      "url": "/labs/lab4-changeability"
+    },
+    {
+      "id": "lab5",
+      "title": "Lab 5: Object Creation Patterns",
+      "dates": [
+        "2026-02-03"
+      ],
+      "url": "/labs/lab5-patterns"
+    },
+    {
+      "id": "lab6",
+      "title": "Lab 6: AI Coding Agents",
+      "dates": [
+        "2026-02-10"
+      ],
+      "url": "/labs/lab6-copilot"
+    },
+    {
+      "id": "lab7",
+      "title": "Lab 7: Requirements ",
+      "dates": [
+        "2026-02-17"
+      ],
+      "url": "/labs/lab7-requirements"
+    },
+    {
+      "id": "lab8",
+      "title": "Lab 8: Dependencies",
+      "dates": [
+        "2026-02-24"
+      ],
+      "url": "/labs/lab8-dependencies"
+    },
+    {
+      "id": "lab10",
+      "title": "Lab 10: Architecture",
+      "dates": [
+        "2026-03-10"
+      ],
+      "url": "/labs/lab10-architecture"
+    },
+    {
+      "id": "lab11",
+      "title": "Lab 11: Usability",
+      "dates": [
+        "2026-03-17"
+      ],
+      "url": "/labs/lab11-heuristic-eval"
+    },
+    {
+      "id": "lab12",
+      "title": "Lab 12: GUI",
+      "dates": [
+        "2026-03-24"
+      ],
+      "url": "/labs/lab12-gui"
+    },
+    {
+      "id": "lab13",
+      "title": "Lab 13: Asynchronous Programming",
+      "dates": [
+        "2026-03-31"
+      ],
+      "url": "/labs/lab13-async"
+    },
+    {
+      "id": "lab14",
+      "title": "Lab 14: Networks and Distributed Systems",
+      "dates": [
+        "2026-04-07"
+      ],
+      "url": "/labs/lab14-networks"
+    },
+    {
+      "id": "lab15",
+      "title": "Lab 15: Serverless Architecture",
+      "dates": [
+        "2026-04-14"
+      ],
+      "url": "/labs/lab15-serverless"
     }
   ],
-  
   "assignments": [
     {
       "id": "hw1",
-      "title": "Homework 1: Java Warmup",
+      "title": "IA 1: SceneItAll Entity Model",
       "type": "homework",
-      "assignedDate": "2026-01-14",
-      "dueDate": "2026-01-27",
+      "assignedDate": "2026-01-08",
+      "dueDate": "2026-01-15",
       "dueTime": "20:00",
       "points": 100,
-      "url": "/assignments/hw1-java-warmup"
+      "url": "/assignments/hw1-sia-model"
     },
     {
       "id": "hw2",
-      "title": "Homework 2: Design Patterns",
+      "title": "IA 2: SceneItAll Entity Controller",
       "type": "homework",
-      "assignedDate": "2026-01-28",
-      "dueDate": "2026-02-10",
+      "assignedDate": "2026-01-15",
+      "dueDate": "2026-01-22",
       "dueTime": "20:00",
       "points": 100,
-      "url": "/assignments/hw2-design-patterns"
+      "url": "/assignments/hw2-sia-controller"
     },
     {
-      "id": "project1",
-      "title": "Project 1: Multiplayer Game",
-      "type": "project",
-      "assignedDate": "2026-02-04",
-      "dueDate": "2026-03-16",
+      "id": "hw3",
+      "title": "IA 3: SceneItAll Scene Model and Controller",
+      "type": "homework",
+      "assignedDate": "2026-01-22",
+      "dueDate": "2026-02-05",
       "dueTime": "20:00",
       "points": 300,
-      "url": "/assignments/project1-multiplayer-game"
+      "url": "/assignments/hw3-sia-design"
+    },
+    {
+      "id": "hw4",
+      "title": "SceneItAll Code Review",
+      "type": "homework",
+      "assignedDate": "2026-01-26",
+      "dueDate": "2026-01-29",
+      "dueTime": "20:00",
+      "points": 100,
+      "url": "/assignments/hw4-sia-review"
+    },
+    {
+      "id": "hw5",
+      "title": "SceneItAll Code Review 2",
+      "type": "homework",
+      "assignedDate": "2026-02-09",
+      "dueDate": "2026-02-12",
+      "dueTime": "20:00",
+      "points": 100,
+      "url": "/assignments/hw5-sia-review2"
+    },
+    {
+      "id": "hw6",
+      "title": "SceneItAll Mocks",
+      "type": "homework",
+      "assignedDate": "2026-02-12",
+      "dueDate": "2026-02-19",
+      "dueTime": "20:00",
+      "points": 100,
+      "url": "/assignments/hw6-sia-mocks"
+    },
+    {
+      "id": "team-form",
+      "title": "Team Forming",
+      "type": "homework",
+      "assignedDate": "2026-02-12",
+      "dueDate": "2026-02-19",
+      "dueTime": "20:00",
+      "points": 100,
+      "url": "/assignments/team-forming"
     }
+],
+"metadata": {
+  "department": "Khoury College of Computer Sciences",
+  "credits": 4,
+  "prerequisites": [
+    "CS 2100"
   ],
-  
-  "metadata": {
-    "department": "Khoury College of Computer Sciences",
-    "credits": 4,
-    "prerequisites": ["CS 2100"],
-    "description": "Building on foundations introduced in CS 2100, examines program design at increasing scales of complexity. Reviews abstraction, encapsulation, inheritance, and interfaces in statically-typed object-oriented languages. Presents a comparative approach to software design patterns and paradigms, including object-oriented and functional programming. Fosters a deeper understanding of the principles of program design, including interface design, test-driven development, graphical design notations, reusable software components, and open-source ecosystems. Illustrates the impact of design-time decisions on software correctness, including accessibility, changeability, performance, reusability and privacy. Students collaborate throughout the semester to design and implement a large software project.",
-    "officeHours": [
-      {
-        "instructor": "Jonathan Bell",
-        "schedule": "Tuesdays 2-3pm, Fridays 11am-12pm",
-        "location": "ISEC 621",
-        "bookingUrl": "https://calendly.com/example"
-      }
-    ]
-  }
+  "description": "Building on foundations introduced in CS 2100, examines program design at increasing scales of complexity. Reviews abstraction, encapsulation, inheritance, and interfaces in statically-typed object-oriented languages. Presents a comparative approach to software design patterns and paradigms, including object-oriented and functional programming. Fosters a deeper understanding of the principles of program design, including interface design, test-driven development, graphical design notations, reusable software components, and open-source ecosystems. Illustrates the impact of design-time decisions on software correctness, including accessibility, changeability, performance, reusability and privacy. Students collaborate throughout the semester to design and implement a large software project.",
+  "officeHours": [
+    {
+      "instructor": "Jonathan Bell",
+      "schedule": "Tuesdays 2-3pm, Fridays 11am-12pm",
+      "location": "ISEC 621",
+      "bookingUrl": "https://calendly.com/example"
+    }
+  ]
 }
-
+}

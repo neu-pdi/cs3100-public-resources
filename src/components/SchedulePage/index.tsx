@@ -8,7 +8,8 @@ import React from 'react';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
 import { parseISO, format, startOfWeek, endOfWeek, getDay, addDays, isWithinInterval, isSameWeek } from 'date-fns';
-import type { CourseSchedule, ScheduleEntry } from '@site/plugins/classasaurus/types';
+import type { CourseSchedule, ScheduleEntry, Lab, Assignment } from '@site/plugins/classasaurus/types';
+import { Box } from '@chakra-ui/react';
 
 // Type alias for date strings (ISO format)
 type DateString = string;
@@ -33,12 +34,12 @@ const DAY_NAME_TO_NUMBER: { [key: string]: number } = {
 function getDateForDayInWeek(weekStartDate: Date, dayName: string): DateString {
   const targetDayNumber = DAY_NAME_TO_NUMBER[dayName];
   const weekStartDayNumber = getDay(weekStartDate);
-  
+
   let daysToAdd = targetDayNumber - weekStartDayNumber;
   if (daysToAdd < 0) {
     daysToAdd += 7;
   }
-  
+
   const targetDate = addDays(weekStartDate, daysToAdd);
   return format(targetDate, 'yyyy-MM-dd');
 }
@@ -46,43 +47,43 @@ function getDateForDayInWeek(weekStartDate: Date, dayName: string): DateString {
 // Helper to generate week structure for the schedule
 function generateWeekStructure(entries: ScheduleEntry[], meetingDays: string[]): Map<number, Map<string, DateString>> {
   if (entries.length === 0) return new Map();
-  
+
   // Find the range of dates
   const dates = entries.map(e => parseISO(e.date)).sort((a, b) => a.getTime() - b.getTime());
   const firstDate = dates[0];
   const lastDate = dates[dates.length - 1];
-  
+
   // Start from the beginning of the week containing the first date
   const weekStart = startOfWeek(firstDate, { weekStartsOn: 0 }); // Sunday
-  
+
   const weeks = new Map<number, Map<string, DateString>>();
   let currentWeekStart = weekStart;
   let weekNumber = 1;
-  
+
   // Generate weeks until we pass the last date
   while (currentWeekStart <= lastDate) {
     const weekDates = new Map<string, DateString>();
-    
+
     // For each meeting day, calculate what date it would be in this week
     meetingDays.forEach(dayName => {
       const dateStr = getDateForDayInWeek(currentWeekStart, dayName);
       const date = parseISO(dateStr);
-      
+
       // Only include if it's within the course date range
       if (date >= firstDate && date <= lastDate) {
         weekDates.set(dayName, dateStr);
       }
     });
-    
+
     // Only add week if it has at least one meeting day
     if (weekDates.size > 0) {
       weeks.set(weekNumber, weekDates);
       weekNumber++;
     }
-    
+
     currentWeekStart = addDays(currentWeekStart, 7);
   }
-  
+
   return weeks;
 }
 
@@ -91,170 +92,115 @@ interface ScheduleTableProps {
   sectionName?: string;
   lectureDays: string[]; // Days this section has lectures
   labDays: string[]; // Days this section has labs
-  assignments: any[]; // Course assignments
+  assignments: Assignment[]; // Course assignments
 }
 
 function ScheduleTable({ entries, sectionName, lectureDays, labDays, assignments }: ScheduleTableProps) {
-  // Separate entries by meeting type
-  const lectureEntries = entries.filter(e => e.meeting.type !== 'lab');
-  const labEntries = entries.filter(e => e.meeting.type === 'lab');
-  
-  // Create a map of date -> entry for quick lookup
-  const lectureEntryMap = new Map<DateString, ScheduleEntry>();
-  lectureEntries.forEach(entry => {
-    lectureEntryMap.set(entry.date, entry);
+  // Combine all meeting days (lectures and labs)
+  const allMeetingDays = Array.from(new Set([...lectureDays, ...labDays]));
+
+  // Create a map of date -> entry for quick lookup (all entries, not just lectures)
+  const entryMap = new Map<DateString, ScheduleEntry>();
+  entries.forEach(entry => {
+    entryMap.set(entry.date, entry);
   });
-  
-  const labEntryMap = new Map<DateString, ScheduleEntry>();
-  labEntries.forEach(entry => {
-    labEntryMap.set(entry.date, entry);
-  });
-  
-  // Generate the week structure based on lecture days
-  const weekStructure = generateWeekStructure(lectureEntries, lectureDays);
+
+  // Generate the week structure based on all meeting days
+  const weekStructure = generateWeekStructure(entries, allMeetingDays);
   const weekNumbers = Array.from(weekStructure.keys()).sort((a, b) => a - b);
-  
+
   // Create assignment map by week (find assignments released or due during this week)
-  const assignmentsByWeek = new Map<number, any[]>();
+  const assignmentsByWeek = new Map<number, Assignment[]>();
   weekNumbers.forEach(weekNum => {
     const weekDates = weekStructure.get(weekNum)!;
     const allDatesInWeek = Array.from(weekDates.values());
-    
+
     if (allDatesInWeek.length > 0) {
       // Use the first date to establish the week interval
       const referenceDate = parseISO(allDatesInWeek[0]);
       const weekStart = startOfWeek(referenceDate, { weekStartsOn: 0 });
       const weekEnd = endOfWeek(referenceDate, { weekStartsOn: 0 });
-      
+
       // Find assignments released or due during this week
       const weekAssignments = assignments.filter(a => {
+        // Skip assignments without dates
+        if (!a.assignedDate || !a.dueDate) return false;
+        
         const assignedDate = parseISO(a.assignedDate);
         const dueDate = parseISO(a.dueDate);
-        
+
         // Include if assigned or due during this week using isWithinInterval
         return isWithinInterval(assignedDate, { start: weekStart, end: weekEnd }) ||
-               isWithinInterval(dueDate, { start: weekStart, end: weekEnd });
+          isWithinInterval(dueDate, { start: weekStart, end: weekEnd });
       });
-      
+
       if (weekAssignments.length > 0) {
         assignmentsByWeek.set(weekNum, weekAssignments);
       }
     }
   });
-  
-  // Create lab map by week (find labs scheduled within the week boundary)
-  const labsByWeek = new Map<number, any[]>();
-  weekNumbers.forEach(weekNum => {
-    const weekDates = weekStructure.get(weekNum)!;
-    const allDatesInWeek = Array.from(weekDates.values());
-    
-    if (allDatesInWeek.length > 0) {
-      // Use the first date to establish the week
-      const referenceDate = parseISO(allDatesInWeek[0]);
-      
-      // Find all labs that fall in the same week as the reference date
-      const weekLabs: any[] = [];
-      labEntries.forEach(entry => {
-        if (entry.lab) {
-          const labDate = parseISO(entry.date);
-          // Use isSameWeek to check if lab is in this week
-          if (isSameWeek(labDate, referenceDate, { weekStartsOn: 0 })) {
-            // Avoid duplicates
-            if (!weekLabs.find(l => l.id === entry.lab!.id)) {
-              weekLabs.push(entry.lab);
-            }
-          }
-        }
-      });
-      
-      if (weekLabs.length > 0) {
-        labsByWeek.set(weekNum, weekLabs);
-      }
-    }
-  });
-  
+
   // Use the section's actual meeting days for columns (in proper order)
   const allDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const daysOfWeek = allDays.filter(day => lectureDays.includes(day));
-  
+  const daysOfWeek = allDays.filter(day => allMeetingDays.includes(day));
+
   return (
-    <div style={{ overflowX: 'auto' }}>
+    <div>
       {sectionName && <h2>{sectionName}</h2>}
-      <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '2rem' }}>
-        <thead>
-          <tr style={{ borderBottom: '2px solid var(--ifm-color-emphasis-300)' }}>
-            <th style={{ padding: '0.75rem', textAlign: 'left', width: '80px' }}>Week</th>
-            <th style={{ padding: '0.75rem', textAlign: 'left', minWidth: '150px', borderRight: '3px solid var(--ifm-color-emphasis-700)' }}>
-              Lab
-            </th>
-            {daysOfWeek.map(day => (
-              <th key={day} style={{ padding: '0.75rem', textAlign: 'left' }}>
-                {day.slice(0, 3)}
+      <div style={{ overflowX: 'auto', overflowY: 'visible' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '2rem' }}>
+          <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
+            <tr style={{ borderBottom: '2px solid var(--ifm-color-emphasis-300)' }}>
+              <th style={{ 
+                padding: '0.75rem', 
+                textAlign: 'left', 
+                width: '80px',
+                backgroundColor: 'var(--ifm-background-color)',
+                borderBottom: '2px solid var(--ifm-color-emphasis-300)'
+              }}>
+                Week
               </th>
-            ))}
-          </tr>
-        </thead>
+              {daysOfWeek.map(day => (
+                <th key={day} style={{ 
+                  padding: '0.75rem', 
+                  textAlign: 'left',
+                  backgroundColor: 'var(--ifm-background-color)',
+                  borderBottom: '2px solid var(--ifm-color-emphasis-300)'
+                }}>
+                  {day.slice(0, 3)}
+                </th>
+              ))}
+            </tr>
+          </thead>
         <tbody>
           {weekNumbers.map((weekNum) => {
             const datesByDay = weekStructure.get(weekNum)!;
-            
+
             return (
               <tr key={weekNum} style={{ borderBottom: '1px solid var(--ifm-color-emphasis-200)' }}>
-                <td style={{ 
-                  padding: '0.75rem', 
+                <td style={{
+                  padding: '0.75rem',
                   fontWeight: 'bold',
                   verticalAlign: 'top',
                   backgroundColor: 'var(--ifm-color-emphasis-50)'
                 }}>
                   {weekNum}
                 </td>
-                
-                {/* Lab column */}
-                <td style={{ 
-                  padding: '0.75rem', 
-                  verticalAlign: 'top',
-                  borderRight: '3px solid var(--ifm-color-emphasis-700)'
-                }}>
-                  {labsByWeek.has(weekNum) ? (
-                    <div>
-                      {labsByWeek.get(weekNum)!.map((lab, idx) => (
-                        <div key={lab.id} style={{ marginBottom: idx < labsByWeek.get(weekNum)!.length - 1 ? '0.75rem' : '0' }}>
-                          {lab.url ? (
-                            <Link to={lab.url}>
-                              <div style={{ fontSize: '0.9rem' }}>{lab.title}</div>
-                            </Link>
-                          ) : (
-                            <div style={{ fontSize: '0.9rem' }}>{lab.title}</div>
-                          )}
-                          {lab.points && (
-                            <div style={{ fontSize: '0.75rem', color: 'var(--ifm-color-emphasis-600)', marginTop: '0.25rem' }}>
-                              {lab.points} points
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div style={{ fontSize: '0.8rem', fontStyle: 'italic', color: 'var(--ifm-color-emphasis-600)' }}>
-                      —
-                    </div>
-                  )}
-                </td>
-                
+
                 {daysOfWeek.map(day => {
                   const dateStr = datesByDay.get(day);
-                  
+
                   // No date for this day in this week - show gray cell
                   if (!dateStr) {
                     return (
-                      <td key={day} style={{ 
+                      <td key={day} style={{
                         padding: '0.75rem',
                         backgroundColor: 'var(--ifm-color-emphasis-100)',
                         verticalAlign: 'top',
                         minHeight: '60px'
                       }}>
-                        <div style={{ 
-                          fontSize: '0.75rem', 
+                        <div style={{
+                          fontSize: '0.75rem',
                           color: 'var(--ifm-color-emphasis-500)',
                           fontStyle: 'italic',
                           textAlign: 'center'
@@ -264,18 +210,18 @@ function ScheduleTable({ entries, sectionName, lectureDays, labDays, assignments
                       </td>
                     );
                   }
-                  
-                  const entry = lectureEntryMap.get(dateStr);
+
+                  const entry = entryMap.get(dateStr);
                   // Date exists but no entry found - should not happen but handle gracefully
                   if (!entry) {
                     return (
-                      <td key={day} style={{ 
+                      <td key={day} style={{
                         padding: '0.75rem',
                         backgroundColor: 'var(--ifm-color-emphasis-100)',
                         verticalAlign: 'top'
                       }}>
-                        <div style={{ 
-                          fontSize: '0.75rem', 
+                        <div style={{
+                          fontSize: '0.75rem',
                           color: 'var(--ifm-color-emphasis-500)',
                           fontStyle: 'italic',
                           textAlign: 'center'
@@ -285,28 +231,28 @@ function ScheduleTable({ entries, sectionName, lectureDays, labDays, assignments
                       </td>
                     );
                   }
-                  
+
                   const date = parseISO(entry.date);
                   const formattedDate = format(date, 'MMM d');
-                  
+
                   // Check if this is a holiday
                   const isHolidayCell = !!entry.holiday;
                   const holidayName = entry.holiday?.name || '';
-                  
+
                   // Display topics if available, otherwise show lectureId
-                  const topic = entry.lecture?.title 
+                  const topic = entry.lecture?.title
                     || (entry.lecture?.topics && entry.lecture.topics.length > 0 ? entry.lecture.topics[0] : '')
-                    || entry.lecture?.lectureId 
+                    || entry.lecture?.lectureId
                     || '';
                   const notes = entry.notes || entry.meeting.notes || '';
-                  
+
                   const cellStyle: React.CSSProperties = {
                     padding: '0.75rem',
                     verticalAlign: 'top',
                     backgroundColor: isHolidayCell ? '#fff3cd' : undefined,
                     borderLeft: isHolidayCell ? '3px solid #ffc107' : undefined,
                   };
-                  
+
                   return (
                     <td key={day} style={cellStyle}>
                       <div style={{ fontSize: '0.85rem', color: 'var(--ifm-color-emphasis-700)', marginBottom: '0.25rem' }}>
@@ -314,15 +260,15 @@ function ScheduleTable({ entries, sectionName, lectureDays, labDays, assignments
                       </div>
                       {isHolidayCell ? (
                         <>
-                          <div style={{ 
+                          <div style={{
                             fontWeight: 'bold',
                             color: '#856404',
                             marginBottom: '0.25rem'
                           }}>
                             {holidayName}
                           </div>
-                          <div style={{ 
-                            fontSize: '0.8rem', 
+                          <div style={{
+                            fontSize: '0.8rem',
                             color: '#856404',
                             fontStyle: 'italic'
                           }}>
@@ -341,44 +287,67 @@ function ScheduleTable({ entries, sectionName, lectureDays, labDays, assignments
                         </div>
                       )}
                       {notes && !isHolidayCell && (
-                        <div style={{ 
-                          fontSize: '0.8rem', 
+                        <div style={{
+                          fontSize: '0.8rem',
                           color: 'var(--ifm-color-emphasis-600)',
                           fontStyle: 'italic'
                         }}>
                           {notes}
                         </div>
                       )}
-                      
+
+                      {/* Show lab if scheduled on this date */}
+                      {entry.lab && !isHolidayCell && (
+                        <Box>
+                          {entry.lab.url ? (
+                            <Link to={entry.lab.url}>
+                              <div>{entry.lab.title}</div>
+                            </Link>
+                          ) : (
+                            <div>{entry.lab.title}</div>
+                          )}
+                          {entry.lab.points && (
+                            <div style={{ fontSize: '0.75rem', color: 'var(--ifm-color-emphasis-700)', marginTop: '0.25rem' }}>
+                              {entry.lab.points} points
+                            </div>
+                          )}
+                        </Box>
+                      )}
+
                       {/* Show assignments in relevant date cells */}
                       {assignmentsByWeek.has(weekNum) && (() => {
                         const cellDate = parseISO(dateStr);
                         const cellAssignments = assignmentsByWeek.get(weekNum)!.filter(assignment => {
+                          // Skip assignments without dates (shouldn't happen due to earlier filter)
+                          if (!assignment.assignedDate || !assignment.dueDate) return false;
+                          
                           const assignedDate = parseISO(assignment.assignedDate);
                           const dueDate = parseISO(assignment.dueDate);
-                          
+
                           // Check if this cell's date matches the assigned or due date
                           return format(assignedDate, 'yyyy-MM-dd') === dateStr ||
-                                 format(dueDate, 'yyyy-MM-dd') === dateStr;
+                            format(dueDate, 'yyyy-MM-dd') === dateStr;
                         });
-                        
+
                         if (cellAssignments.length === 0) return null;
-                        
+
                         return (
-                          <div style={{
-                            marginTop: '0.75rem',
-                            padding: '0.5rem',
-                            border: '1px solid var(--ifm-color-emphasis-300)',
-                            borderRadius: '4px',
-                            backgroundColor: 'var(--ifm-color-emphasis-50)'
-                          }}>
+                          <Box
+                            borderRadius="md"
+                            p="2"
+                            mt="2"
+                            bg="bg.emphasized"
+                          >
                             {cellAssignments.map((assignment, idx) => {
+                              // These should always exist due to filtering, but check anyway
+                              if (!assignment.assignedDate || !assignment.dueDate) return null;
+                              
                               const assignedDate = parseISO(assignment.assignedDate);
                               const dueDate = parseISO(assignment.dueDate);
-                              
+
                               const isReleased = format(assignedDate, 'yyyy-MM-dd') === dateStr;
                               const isDue = format(dueDate, 'yyyy-MM-dd') === dateStr;
-                              
+
                               return (
                                 <div key={assignment.id} style={{ marginBottom: idx < cellAssignments.length - 1 ? '0.5rem' : '0' }}>
                                   <div style={{ fontSize: '0.8rem' }}>
@@ -411,7 +380,7 @@ function ScheduleTable({ entries, sectionName, lectureDays, labDays, assignments
                                 </div>
                               );
                             })}
-                          </div>
+                          </Box>
                         );
                       })()}
                     </td>
@@ -422,6 +391,7 @@ function ScheduleTable({ entries, sectionName, lectureDays, labDays, assignments
           })}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }
@@ -450,11 +420,11 @@ export default function SchedulePage({ scheduleData }: Props) {
           {config.sections.map((section) => {
             const sectionEntries = scheduleBySection[section.id];
             const meetingDaysDisplay = section.meetings.map(m => m.days.join('/')).join(', ');
-            
+
             // Separate lecture and lab days
             const lectureDays = new Set<string>();
             const labDays = new Set<string>();
-            
+
             section.meetings.forEach(m => {
               if (m.type === 'lab') {
                 m.days.forEach(day => labDays.add(day));
@@ -462,10 +432,10 @@ export default function SchedulePage({ scheduleData }: Props) {
                 m.days.forEach(day => lectureDays.add(day));
               }
             });
-            
+
             const lectureDaysArray = Array.from(lectureDays);
             const labDaysArray = Array.from(labDays);
-            
+
             return (
               <div key={section.id} style={{ marginBottom: '3rem' }}>
                 <div style={{ marginBottom: '1rem' }}>
@@ -477,10 +447,10 @@ export default function SchedulePage({ scheduleData }: Props) {
                   )}
                   <p><strong>Total Meetings:</strong> {sectionEntries.length}</p>
                 </div>
-                <ScheduleTable 
-                  entries={sectionEntries} 
-                  sectionName={section.name} 
-                  lectureDays={lectureDaysArray} 
+                <ScheduleTable
+                  entries={sectionEntries}
+                  sectionName={section.name}
+                  lectureDays={lectureDaysArray}
                   labDays={labDaysArray}
                   assignments={config.assignments || []}
                 />
@@ -515,10 +485,10 @@ export default function SchedulePage({ scheduleData }: Props) {
                     </td>
                     <td style={{ padding: '0.75rem' }}>{assignment.type}</td>
                     <td style={{ padding: '0.75rem' }}>
-                      {format(parseISO(assignment.assignedDate), 'MMM d, yyyy')}
+                      {assignment.assignedDate ? format(parseISO(assignment.assignedDate), 'MMM d, yyyy') : 'TBD'}
                     </td>
                     <td style={{ padding: '0.75rem' }}>
-                      {format(parseISO(assignment.dueDate), 'MMM d, yyyy')}
+                      {assignment.dueDate ? format(parseISO(assignment.dueDate), 'MMM d, yyyy') : 'TBD'}
                       {assignment.dueTime && ` ${assignment.dueTime}`}
                     </td>
                     <td style={{ padding: '0.75rem' }}>{assignment.points || '-'}</td>

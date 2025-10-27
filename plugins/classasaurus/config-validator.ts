@@ -9,6 +9,7 @@ import type {
   LectureMapping,
   CourseSection,
   Holiday,
+  Lab,
 } from './types';
 
 export class ValidationError extends Error {
@@ -177,6 +178,29 @@ export function validateLecture(lecture: LectureMapping): void {
 }
 
 /**
+ * Validate lab
+ */
+export function validateLab(lab: Lab): void {
+  if (!lab.id || lab.id.trim() === '') {
+    throw new ValidationError('Lab must have a non-empty id');
+  }
+  
+  if (!lab.title || lab.title.trim() === '') {
+    throw new ValidationError(`Lab ${lab.id} must have a non-empty title`);
+  }
+  
+  if (!lab.dates || lab.dates.length === 0) {
+    throw new ValidationError(
+      `Lab ${lab.id} must have at least one date`
+    );
+  }
+  
+  lab.dates.forEach((date: string, idx: number) => {
+    validateDate(date, `Lab ${lab.id}, date ${idx}`);
+  });
+}
+
+/**
  * Validate entire course configuration
  */
 export function validateCourseConfig(config: CourseConfig): void {
@@ -237,6 +261,29 @@ export function validateCourseConfig(config: CourseConfig): void {
       });
     }
   });
+  
+  // Validate labs if present
+  if (config.labs) {
+    const labIds = new Set<string>();
+    config.labs.forEach((lab) => {
+      if (labIds.has(lab.id)) {
+        throw new ValidationError(`Duplicate lab id: ${lab.id}`);
+      }
+      labIds.add(lab.id);
+      validateLab(lab);
+      
+      // Validate section references
+      if (lab.sections) {
+        lab.sections.forEach((sectionId) => {
+          if (!sectionIds.has(sectionId)) {
+            throw new ValidationError(
+              `Lab ${lab.id} references unknown section: ${sectionId}`
+            );
+          }
+        });
+      }
+    });
+  }
   
   // Validate Canvas config if present
   if (config.canvas) {

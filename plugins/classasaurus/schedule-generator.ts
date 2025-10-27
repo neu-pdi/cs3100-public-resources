@@ -10,6 +10,7 @@ import type {
   DateString,
   DayOfWeek,
   Holiday,
+  Lab,
   LectureMapping,
   MeetingPattern,
   ScheduleEntry,
@@ -120,8 +121,8 @@ function findLectureForDate(
 function findLabForDate(
   date: DateString,
   sectionId: string,
-  labs: any[]
-): any | undefined {
+  labs: Lab[]
+): Lab | undefined {
   if (!labs || labs.length === 0) return undefined;
   
   return labs.find((lab) => {
