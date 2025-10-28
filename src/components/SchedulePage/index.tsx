@@ -9,7 +9,8 @@ import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
 import { parseISO, format, startOfWeek, endOfWeek, getDay, addDays, isWithinInterval, isSameWeek } from 'date-fns';
 import type { CourseSchedule, ScheduleEntry, Lab, Assignment } from '@site/plugins/classasaurus/types';
-import { Box } from '@chakra-ui/react';
+import { Alert, Box } from '@chakra-ui/react';
+import { LuConstruction } from 'react-icons/lu';
 
 // Type alias for date strings (ISO format)
 type DateString = string;
@@ -147,6 +148,17 @@ function ScheduleTable({ entries, sectionName, lectureDays, labDays, assignments
   return (
     <div>
       {sectionName && <h2>{sectionName}</h2>}
+      <Alert.Root status='warning'>
+                    <Alert.Indicator>
+                        <LuConstruction />
+                    </Alert.Indicator>
+                    <Alert.Title>Draft Content</Alert.Title>
+                    <Alert.Content>
+                        <Alert.Description>
+                            This content is a work in progress.
+                        </Alert.Description>
+                    </Alert.Content>
+                </Alert.Root>
       <div style={{ overflowX: 'auto', overflowY: 'visible' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '2rem' }}>
           <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
