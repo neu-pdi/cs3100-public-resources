@@ -126,7 +126,7 @@ function ScheduleTable({ entries, sectionName, lectureDays, labDays, assignments
       const weekAssignments = assignments.filter(a => {
         // Skip assignments without dates
         if (!a.assignedDate || !a.dueDate) return false;
-        
+
         const assignedDate = parseISO(a.assignedDate);
         const dueDate = parseISO(a.dueDate);
 
@@ -149,23 +149,23 @@ function ScheduleTable({ entries, sectionName, lectureDays, labDays, assignments
     <div>
       {sectionName && <h2>{sectionName}</h2>}
       <Alert.Root status='warning'>
-                    <Alert.Indicator>
-                        <LuConstruction />
-                    </Alert.Indicator>
-                    <Alert.Title>Draft Content</Alert.Title>
-                    <Alert.Content>
-                        <Alert.Description>
-                            This content is a work in progress.
-                        </Alert.Description>
-                    </Alert.Content>
-                </Alert.Root>
+        <Alert.Indicator>
+          <LuConstruction />
+        </Alert.Indicator>
+        <Alert.Title>Draft Content</Alert.Title>
+        <Alert.Content>
+          <Alert.Description>
+            This content is a work in progress. Note that not all labs are on Tuesday, this page will be updated to show the complete distribution of lab dates.
+          </Alert.Description>
+        </Alert.Content>
+      </Alert.Root>
       <div style={{ overflowX: 'auto', overflowY: 'visible' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '2rem' }}>
           <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
             <tr style={{ borderBottom: '2px solid var(--ifm-color-emphasis-300)' }}>
-              <th style={{ 
-                padding: '0.75rem', 
-                textAlign: 'left', 
+              <th style={{
+                padding: '0.75rem',
+                textAlign: 'left',
                 width: '80px',
                 backgroundColor: 'var(--ifm-background-color)',
                 borderBottom: '2px solid var(--ifm-color-emphasis-300)'
@@ -173,8 +173,8 @@ function ScheduleTable({ entries, sectionName, lectureDays, labDays, assignments
                 Week
               </th>
               {daysOfWeek.map(day => (
-                <th key={day} style={{ 
-                  padding: '0.75rem', 
+                <th key={day} style={{
+                  padding: '0.75rem',
                   textAlign: 'left',
                   backgroundColor: 'var(--ifm-background-color)',
                   borderBottom: '2px solid var(--ifm-color-emphasis-300)'
@@ -184,225 +184,225 @@ function ScheduleTable({ entries, sectionName, lectureDays, labDays, assignments
               ))}
             </tr>
           </thead>
-        <tbody>
-          {weekNumbers.map((weekNum) => {
-            const datesByDay = weekStructure.get(weekNum)!;
+          <tbody>
+            {weekNumbers.map((weekNum) => {
+              const datesByDay = weekStructure.get(weekNum)!;
 
-            return (
-              <tr key={weekNum} style={{ borderBottom: '1px solid var(--ifm-color-emphasis-200)' }}>
-                <td style={{
-                  padding: '0.75rem',
-                  fontWeight: 'bold',
-                  verticalAlign: 'top',
-                  backgroundColor: 'var(--ifm-color-emphasis-50)'
-                }}>
-                  {weekNum}
-                </td>
-
-                {daysOfWeek.map(day => {
-                  const dateStr = datesByDay.get(day);
-
-                  // No date for this day in this week - show gray cell
-                  if (!dateStr) {
-                    return (
-                      <td key={day} style={{
-                        padding: '0.75rem',
-                        backgroundColor: 'var(--ifm-color-emphasis-100)',
-                        verticalAlign: 'top',
-                        minHeight: '60px'
-                      }}>
-                        <div style={{
-                          fontSize: '0.75rem',
-                          color: 'var(--ifm-color-emphasis-500)',
-                          fontStyle: 'italic',
-                          textAlign: 'center'
-                        }}>
-                          No class
-                        </div>
-                      </td>
-                    );
-                  }
-
-                  const entry = entryMap.get(dateStr);
-                  // Date exists but no entry found - should not happen but handle gracefully
-                  if (!entry) {
-                    return (
-                      <td key={day} style={{
-                        padding: '0.75rem',
-                        backgroundColor: 'var(--ifm-color-emphasis-100)',
-                        verticalAlign: 'top'
-                      }}>
-                        <div style={{
-                          fontSize: '0.75rem',
-                          color: 'var(--ifm-color-emphasis-500)',
-                          fontStyle: 'italic',
-                          textAlign: 'center'
-                        }}>
-                          No class
-                        </div>
-                      </td>
-                    );
-                  }
-
-                  const date = parseISO(entry.date);
-                  const formattedDate = format(date, 'MMM d');
-
-                  // Check if this is a holiday
-                  const isHolidayCell = !!entry.holiday;
-                  const holidayName = entry.holiday?.name || '';
-
-                  // Display topics if available, otherwise show lectureId
-                  const topic = entry.lecture?.title
-                    || (entry.lecture?.topics && entry.lecture.topics.length > 0 ? entry.lecture.topics[0] : '')
-                    || entry.lecture?.lectureId
-                    || '';
-                  const notes = entry.notes || entry.meeting.notes || '';
-
-                  const cellStyle: React.CSSProperties = {
+              return (
+                <tr key={weekNum} style={{ borderBottom: '1px solid var(--ifm-color-emphasis-200)' }}>
+                  <td style={{
                     padding: '0.75rem',
+                    fontWeight: 'bold',
                     verticalAlign: 'top',
-                    backgroundColor: isHolidayCell ? '#fff3cd' : undefined,
-                    borderLeft: isHolidayCell ? '3px solid #ffc107' : undefined,
-                  };
+                    backgroundColor: 'var(--ifm-color-emphasis-50)'
+                  }}>
+                    {weekNum}
+                  </td>
 
-                  return (
-                    <td key={day} style={cellStyle}>
-                      <div style={{ fontSize: '0.85rem', color: 'var(--ifm-color-emphasis-700)', marginBottom: '0.25rem' }}>
-                        {formattedDate}
-                      </div>
-                      {isHolidayCell ? (
-                        <>
+                  {daysOfWeek.map(day => {
+                    const dateStr = datesByDay.get(day);
+
+                    // No date for this day in this week - show gray cell
+                    if (!dateStr) {
+                      return (
+                        <td key={day} style={{
+                          padding: '0.75rem',
+                          backgroundColor: 'var(--ifm-color-emphasis-100)',
+                          verticalAlign: 'top',
+                          minHeight: '60px'
+                        }}>
                           <div style={{
-                            fontWeight: 'bold',
-                            color: '#856404',
-                            marginBottom: '0.25rem'
+                            fontSize: '0.75rem',
+                            color: 'var(--ifm-color-emphasis-500)',
+                            fontStyle: 'italic',
+                            textAlign: 'center'
                           }}>
-                            {holidayName}
+                            No class
                           </div>
+                        </td>
+                      );
+                    }
+
+                    const entry = entryMap.get(dateStr);
+                    // Date exists but no entry found - should not happen but handle gracefully
+                    if (!entry) {
+                      return (
+                        <td key={day} style={{
+                          padding: '0.75rem',
+                          backgroundColor: 'var(--ifm-color-emphasis-100)',
+                          verticalAlign: 'top'
+                        }}>
+                          <div style={{
+                            fontSize: '0.75rem',
+                            color: 'var(--ifm-color-emphasis-500)',
+                            fontStyle: 'italic',
+                            textAlign: 'center'
+                          }}>
+                            No class
+                          </div>
+                        </td>
+                      );
+                    }
+
+                    const date = parseISO(entry.date);
+                    const formattedDate = format(date, 'MMM d');
+
+                    // Check if this is a holiday
+                    const isHolidayCell = !!entry.holiday;
+                    const holidayName = entry.holiday?.name || '';
+
+                    // Display topics if available, otherwise show lectureId
+                    const topic = entry.lecture?.title
+                      || (entry.lecture?.topics && entry.lecture.topics.length > 0 ? entry.lecture.topics[0] : '')
+                      || entry.lecture?.lectureId
+                      || '';
+                    const notes = entry.notes || entry.meeting.notes || '';
+
+                    const cellStyle: React.CSSProperties = {
+                      padding: '0.75rem',
+                      verticalAlign: 'top',
+                      backgroundColor: isHolidayCell ? '#fff3cd' : undefined,
+                      borderLeft: isHolidayCell ? '3px solid #ffc107' : undefined,
+                    };
+
+                    return (
+                      <td key={day} style={cellStyle}>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--ifm-color-emphasis-700)', marginBottom: '0.25rem' }}>
+                          {formattedDate}
+                        </div>
+                        {isHolidayCell ? (
+                          <>
+                            <div style={{
+                              fontWeight: 'bold',
+                              color: '#856404',
+                              marginBottom: '0.25rem'
+                            }}>
+                              {holidayName}
+                            </div>
+                            <div style={{
+                              fontSize: '0.8rem',
+                              color: '#856404',
+                              fontStyle: 'italic'
+                            }}>
+                              No Class
+                            </div>
+                          </>
+                        ) : entry.lecture?.lectureId ? (
+                          <div style={{ marginBottom: '0.25rem' }}>
+                            <Link to={`/lecture-notes/${entry.lecture.lectureId}`}>
+                              {topic}
+                            </Link>
+                          </div>
+                        ) : (
+                          <div style={{ marginBottom: '0.25rem' }}>
+                            {topic}
+                          </div>
+                        )}
+                        {notes && !isHolidayCell && (
                           <div style={{
                             fontSize: '0.8rem',
-                            color: '#856404',
+                            color: 'var(--ifm-color-emphasis-600)',
                             fontStyle: 'italic'
                           }}>
-                            No Class
+                            {notes}
                           </div>
-                        </>
-                      ) : entry.lecture?.lectureId ? (
-                        <div style={{ marginBottom: '0.25rem' }}>
-                          <Link to={`/lecture-notes/${entry.lecture.lectureId}`}>
-                            {topic}
-                          </Link>
-                        </div>
-                      ) : (
-                        <div style={{ marginBottom: '0.25rem' }}>
-                          {topic}
-                        </div>
-                      )}
-                      {notes && !isHolidayCell && (
-                        <div style={{
-                          fontSize: '0.8rem',
-                          color: 'var(--ifm-color-emphasis-600)',
-                          fontStyle: 'italic'
-                        }}>
-                          {notes}
-                        </div>
-                      )}
+                        )}
 
-                      {/* Show lab if scheduled on this date */}
-                      {entry.lab && !isHolidayCell && (
-                        <Box>
-                          {entry.lab.url ? (
-                            <Link to={entry.lab.url}>
+                        {/* Show lab if scheduled on this date */}
+                        {entry.lab && !isHolidayCell && (
+                          <Box>
+                            {entry.lab.url ? (
+                              <Link to={entry.lab.url}>
+                                <div>{entry.lab.title}</div>
+                              </Link>
+                            ) : (
                               <div>{entry.lab.title}</div>
-                            </Link>
-                          ) : (
-                            <div>{entry.lab.title}</div>
-                          )}
-                          {entry.lab.points && (
-                            <div style={{ fontSize: '0.75rem', color: 'var(--ifm-color-emphasis-700)', marginTop: '0.25rem' }}>
-                              {entry.lab.points} points
-                            </div>
-                          )}
-                        </Box>
-                      )}
-
-                      {/* Show assignments in relevant date cells */}
-                      {assignmentsByWeek.has(weekNum) && (() => {
-                        const cellDate = parseISO(dateStr);
-                        const cellAssignments = assignmentsByWeek.get(weekNum)!.filter(assignment => {
-                          // Skip assignments without dates (shouldn't happen due to earlier filter)
-                          if (!assignment.assignedDate || !assignment.dueDate) return false;
-                          
-                          const assignedDate = parseISO(assignment.assignedDate);
-                          const dueDate = parseISO(assignment.dueDate);
-
-                          // Check if this cell's date matches the assigned or due date
-                          return format(assignedDate, 'yyyy-MM-dd') === dateStr ||
-                            format(dueDate, 'yyyy-MM-dd') === dateStr;
-                        });
-
-                        if (cellAssignments.length === 0) return null;
-
-                        return (
-                          <Box
-                            borderRadius="md"
-                            p="2"
-                            mt="2"
-                            bg="bg.emphasized"
-                          >
-                            {cellAssignments.map((assignment, idx) => {
-                              // These should always exist due to filtering, but check anyway
-                              if (!assignment.assignedDate || !assignment.dueDate) return null;
-                              
-                              const assignedDate = parseISO(assignment.assignedDate);
-                              const dueDate = parseISO(assignment.dueDate);
-
-                              const isReleased = format(assignedDate, 'yyyy-MM-dd') === dateStr;
-                              const isDue = format(dueDate, 'yyyy-MM-dd') === dateStr;
-
-                              return (
-                                <div key={assignment.id} style={{ marginBottom: idx < cellAssignments.length - 1 ? '0.5rem' : '0' }}>
-                                  <div style={{ fontSize: '0.8rem' }}>
-                                    {isReleased && (
-                                      <div style={{ marginBottom: isDue ? '0.25rem' : '0' }}>
-                                        <strong>RELEASED:</strong>{' '}
-                                        {assignment.url ? (
-                                          <Link to={assignment.url}>{assignment.title}</Link>
-                                        ) : (
-                                          assignment.title
-                                        )}
-                                      </div>
-                                    )}
-                                    {isDue && (
-                                      <div>
-                                        <strong>DUE:</strong>{' '}
-                                        {assignment.url ? (
-                                          <Link to={assignment.url}>{assignment.title}</Link>
-                                        ) : (
-                                          assignment.title
-                                        )}
-                                        {assignment.dueTime && (
-                                          <span style={{ fontSize: '0.7rem', color: 'var(--ifm-color-emphasis-600)' }}>
-                                            {' '}at {assignment.dueTime}
-                                          </span>
-                                        )}
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              );
-                            })}
+                            )}
+                            {entry.lab.points && (
+                              <div style={{ fontSize: '0.75rem', color: 'var(--ifm-color-emphasis-700)', marginTop: '0.25rem' }}>
+                                {entry.lab.points} points
+                              </div>
+                            )}
                           </Box>
-                        );
-                      })()}
-                    </td>
-                  );
-                })}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                        )}
+
+                        {/* Show assignments in relevant date cells */}
+                        {assignmentsByWeek.has(weekNum) && (() => {
+                          const cellDate = parseISO(dateStr);
+                          const cellAssignments = assignmentsByWeek.get(weekNum)!.filter(assignment => {
+                            // Skip assignments without dates (shouldn't happen due to earlier filter)
+                            if (!assignment.assignedDate || !assignment.dueDate) return false;
+
+                            const assignedDate = parseISO(assignment.assignedDate);
+                            const dueDate = parseISO(assignment.dueDate);
+
+                            // Check if this cell's date matches the assigned or due date
+                            return format(assignedDate, 'yyyy-MM-dd') === dateStr ||
+                              format(dueDate, 'yyyy-MM-dd') === dateStr;
+                          });
+
+                          if (cellAssignments.length === 0) return null;
+
+                          return (
+                            <Box
+                              borderRadius="md"
+                              p="2"
+                              mt="2"
+                              bg="bg.emphasized"
+                            >
+                              {cellAssignments.map((assignment, idx) => {
+                                // These should always exist due to filtering, but check anyway
+                                if (!assignment.assignedDate || !assignment.dueDate) return null;
+
+                                const assignedDate = parseISO(assignment.assignedDate);
+                                const dueDate = parseISO(assignment.dueDate);
+
+                                const isReleased = format(assignedDate, 'yyyy-MM-dd') === dateStr;
+                                const isDue = format(dueDate, 'yyyy-MM-dd') === dateStr;
+
+                                return (
+                                  <div key={assignment.id} style={{ marginBottom: idx < cellAssignments.length - 1 ? '0.5rem' : '0' }}>
+                                    <div style={{ fontSize: '0.8rem' }}>
+                                      {isReleased && (
+                                        <div style={{ marginBottom: isDue ? '0.25rem' : '0' }}>
+                                          <strong>RELEASED:</strong>{' '}
+                                          {assignment.url ? (
+                                            <Link to={assignment.url}>{assignment.title}</Link>
+                                          ) : (
+                                            assignment.title
+                                          )}
+                                        </div>
+                                      )}
+                                      {isDue && (
+                                        <div>
+                                          <strong>DUE:</strong>{' '}
+                                          {assignment.url ? (
+                                            <Link to={assignment.url}>{assignment.title}</Link>
+                                          ) : (
+                                            assignment.title
+                                          )}
+                                          {assignment.dueTime && (
+                                            <span style={{ fontSize: '0.7rem', color: 'var(--ifm-color-emphasis-600)' }}>
+                                              {' '}at {assignment.dueTime}
+                                            </span>
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </Box>
+                          );
+                        })()}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     </div>
   );
@@ -450,15 +450,25 @@ export default function SchedulePage({ scheduleData }: Props) {
 
             return (
               <div key={section.id} style={{ marginBottom: '3rem' }}>
-                <div style={{ marginBottom: '1rem' }}>
-                  <h3>{section.name}</h3>
-                  {section.crn && <p><strong>CRN:</strong> {section.crn}</p>}
+                <Box>
+                  Loosely, the course is organized as follows:
+                  <ul>
+                    <li>Module 1 (weeks 1 - 5): Design principles and patterns, Java fundamentals</li>
+                    <li>Module 2 (weeks 6 - 11): Development practices and user-centered design</li>
+                    <li>Module 3 (weeks 12 - 15): Design in the large: architecture and distributed systems</li>
+                  </ul>
+                  Module 1 and 2 are followed by exams, and Module 3 is followed by a cumulative final exam.
+
+                </Box>
+                {/* <div style={{ marginBottom: '1rem' }}> */}
+                {/* <h3>{section.name}</h3> */}
+                {/* {section.crn && <p><strong>CRN:</strong> {section.crn}</p>}
                   <p><strong>Meeting Days:</strong> {meetingDaysDisplay}</p>
                   {section.instructors && section.instructors.length > 0 && (
                     <p><strong>Instructor(s):</strong> {section.instructors.join(', ')}</p>
                   )}
-                  <p><strong>Total Meetings:</strong> {sectionEntries.length}</p>
-                </div>
+                  <p><strong>Total Meetings:</strong> {sectionEntries.length}</p> */}
+                {/* </div> */}
                 <ScheduleTable
                   entries={sectionEntries}
                   sectionName={section.name}
