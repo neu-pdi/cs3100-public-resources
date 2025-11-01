@@ -10,32 +10,145 @@ The project follows a carefully scaffolded approach where each weekly assignment
 
 The final phase of the project emphasizes real-world development practices and user-centered design. You'll implement both CLI and GUI interfaces, focusing on usability and user experience while managing the complexity of asynchronous operations like OCR processing. Working in teams of four during the last module, you'll tackle architectural challenges including integrating multiple external services (Tesseract and Claude API for OCR), implementing design patterns like Strategy and Builder, and handling the complexities of concurrent operations in a desktop application. Throughout this journey, you'll not only master Java and JavaFX, but also develop crucial software engineering skills: interpreting requirements, designing for change, writing maintainable code, and collaborating effectively in a team.
 
-**License:** The project code is Copyright (c) 2025 Jonathan Bell and contributors. Students are permitted to use the code that they are provided for the purpose of completing the assignments in this course, but are expressly prohibited from distributing the code in any way without express written permission from the instructor.
-
-## Summary of Deliverables
-
-## **Assignment Schedule and Learning Objectives**
-
-| Week | Assignment | Learning Objectives |
-|------|------------|-------------------|
-| 1 | **A1: Recipe Domain Model** — Implement `Ingredient` hierarchy and basic domain classes | Inheritance and polymorphism in Java, implementing core Object methods (`equals`, `hashCode`, `toString`), domain modeling fundamentals |
-| 2 | **A2: Quantity System** — Build quantity types with unit conversion support | Design by contract and specifications, handling edge cases and validation, creating type hierarchies for flexibility, unit conversion logic |
-| 3 | **A3: Recipe and Instruction Classes** — Complete core recipe model with proper encapsulation | Information hiding and encapsulation, designing immutable objects, managing object relationships, modularity principles |
-| 4 | **A4: Builder Patterns and Factory Methods** — Add creation patterns for complex objects | Object creation patterns, fluent interfaces and method chaining, factory methods for parsing, managing construction complexity |
-| 5 | **A5: JSON Serialization Layer** — Custom Jackson serializers for polymorphic types | Polymorphic serialization strategies, working with external libraries (Jackson), **first use of AI coding assistants**, data persistence patterns |
-| 6 | **A6: Comprehensive Testing Suite** — Unit tests with mocking and 80%+ coverage | Unit testing with JUnit, mocking external dependencies, test coverage and quality metrics, AI-assisted test generation |
-| 7 | **A7: Cookbook and Library Model** — Implement cookbook organization and library management | Requirements interpretation, designing for extensibility, complex domain relationships, aggregate design patterns |
-| 8 | **A8: Service Layer Architecture** — Create service interfaces with MVC pattern; **Team Formation** | Service-oriented architecture, MVC pattern implementation, separation of concerns, interface design and contracts |
-| 9 | *Spring Break* | *No assignment* |
-| 10 | **A9: CLI Interface** — Interactive command-line interface with autocomplete | User-centered design principles, CLI usability patterns, error handling and recovery, interactive user feedback |
-| 11 | **A10: Basic JavaFX GUI** — Main window with navigation and list views | GUI programming with JavaFX, event-driven programming, MVC in desktop applications, basic layout and navigation |
-| 12 | **Group A1: Advanced GUI Features** — Async operations, editing dialogs, drag-and-drop | Asynchronous UI operations, advanced JavaFX components, progress indication patterns, team collaboration with Git |
-| 13 | **Group A2: OCR Service Integration** — Multiple OCR backends with strategy pattern | Strategy pattern implementation, external API integration, event-driven architecture, performance optimization |
-| 14 | **Group A3: Final Integration and Polish** — Complete application with advanced features | System integration, error handling at scale, performance profiling, data safety and recovery |
-| 15 | **Final Presentation** — Demo and architecture discussion | Technical presentation skills, architecture documentation, reflecting on design decisions, professional software delivery |
-
 **Notes:**
-- Each assignment builds on the provided solution from the previous week
-- AI coding assistants are introduced in Week 5 and encouraged thereafter
+- Each assignment builds on the provided solution from the previous week. Students are trusted to not share these solutions, or to seek them out.
+- AI coding assistants are introduced in Week 5 and encouraged thereafter. Students are strongly discouraged from using them in the first four assignments.
 - Group work begins in Week 10 (teams formed in Week 8)
-- Labs complement but don't depend on the main project assignments
+- Labs complement but don't depend on the main project assignments - they always build on a solution from a week earlier.
+
+
+## **Module 1: Design Principles and Patterns**
+
+### **Week 1: Java Fundamentals & Domain Modeling**
+- [**Assignment 1: Recipe Domain Model**](/assignments/cyb1-recipes) (Due Week 2, Thursday)
+  - Implement basic domain classes: `Ingredient`, `MeasuredIngredient`, `VagueIngredient`
+  - Implement `Quantity` hierarchy: `ExactQuantity`, `FractionalQuantity`, `RangeQuantity`
+  - Practice inheritance and polymorphism
+- [**Lab 1: Java Tooling and Setup**](/labs/lab1-java-setup)
+  - Set up development environment, practice with Gradle, Git
+
+### **Week 2: Specifications and Contracts**
+- [**Assignment 2: Unit Conversion**](/assignments/cyb2-unit-conversion) (Due Week 3, Thursday)
+  - Build on A1 solution (provided)
+  - Implement `equals()`, `hashCode()`, `toString()`
+  - Write specifications (Javadoc), handle edge cases
+  - Implement unit conversions
+- [**Lab 2: Java Abstraction and Data Types**](/labs/lab2-java-abstraction)
+  - Practice with abstract classes vs interfaces
+
+### **Week 3: Modularity and Information Hiding**
+- [**Assignment 3: Recipe and Instruction Classes**](/assignments/cyb3-recipe-instruction) (Due Week 4, Thursday)
+  - Build on A2 solution (provided)
+  - Implement `Recipe`, `Instruction`, `RecipeNote` classes
+  - Focus on encapsulation, information hiding
+  - Design immutable objects where appropriate
+- [**Lab 3: Readability and Modularity**](/labs/lab3-readability)
+  - Refactoring exercise on provided "bad" code
+
+### **Week 4: Object Creation Patterns**
+- [**Assignment 4: Builder Patterns and Factory Methods**](/assignments/cyb4-builders-factories) (Due Week 5, Thursday)
+  - Build on A3 solution (provided)
+  - Implement builders for `Recipe` and complex ingredients
+  - Create factory methods for parsing ingredient strings
+  - Focus on fluent interfaces
+- [**Lab 4: Changeability**](/labs/lab4-changeability)
+  - Analyze coupling/cohesion in provided code samples
+
+### **Week 5: Exam Week & Introduction to AI Tools**
+- [**Assignment 5: JSON Serialization Layer**](/assignments/cyb5-json-serialization) (Due Week 6, Thursday)
+  - Build on A4 solution (provided)
+  - Implement custom Jackson serializers/deserializers
+  - Handle polymorphic serialization
+  - First assignment where AI assistants are allowed/encouraged
+- [**Lab 5: Object Creation Patterns**](/labs/lab5-patterns)
+  - Practice with various creation patterns
+
+## **Module 2: Development Practices and User-Centered Design**
+
+### **Week 6: Testing and Mocking**
+- [**Assignment 6: Comprehensive Testing Suite**](/assignments/cyb6-testing) (Due Week 7, Thursday)
+  - Build on A5 solution (provided)
+  - Write unit tests with JUnit
+  - Mock external dependencies (file system, OCR services)
+  - Achieve 80%+ code coverage
+  - AI assistants encouraged for test generation
+- [**Lab 6: AI Coding Agents**](/labs/lab6-copilot)
+  - Learn to effectively prompt AI for code generation
+
+### **Week 7: Domain Modeling & Requirements**
+- [**Assignment 7: Cookbook and Library Model**](/assignments/cyb7-cookbook-library) (Due Week 8, Thursday)
+  - Build on A6 solution (provided)
+  - Implement `Cookbook`, `UserLibrary`, `TableOfContents`
+  - Implement recipe scaling
+  - Parse and interpret requirements documents
+  - Design for extensibility
+- [**Lab 7: Requirements Interpretation**](/labs/lab7-requirements)
+  - Practice translating user stories to technical specs
+
+### **Week 8: Architecture and MVC**
+- [**Assignment 8: Service Layer Architecture**](/assignments/cyb8-service-architecture) (Due Week 10, Thursday - after break)
+  - Build on A7 solution (provided)
+  - Implement service interfaces: `ImportService`, `ExportService`, `LibraryService`
+  - Apply MVC pattern
+  - Design service contracts
+  - **Team Formation**: Find your group of 4
+- [**Lab 8: Dependencies**](/labs/lab8-dependencies)
+  - Dependency injection exercise
+
+### **Week 9: Spring Break**
+- No assignments
+
+### **Week 10: Usability and User-Centered Design**
+- [**Assignment 9: CLI Interface**](/assignments/cyb9-cli-interface) (Due Week 11, Thursday)
+  - Build on A8 solution (provided)
+  - Implement interactive CLI with autocomplete, supporting recipe export and import
+  - Focus on usability and user feedback
+  - Error handling and recovery
+- [**Lab 10: Architecture**](/labs/lab10-architecture)
+  - Design architecture diagrams for recipe system
+
+### **Week 11: GUI Development**
+- [**Assignment 10: Basic JavaFX GUI**](/assignments/cyb10-javafx-gui) (Due Week 12, Thursday)
+  - Build on A9 solution (provided)
+  - Create main window with tabs
+  - Implement recipe list view
+  - Basic navigation
+- [**Lab 11: Heuristic Evaluation**](/labs/lab11-heuristic-eval)
+  - Conduct heuristic evaluation on a strawman GUI for CookYourBooks
+
+## **Module 3: Design in the Large (Group Work Begins)**
+
+### **Week 12: GUI Patterns and Concurrency**
+- [**Group Assignment 1: Advanced GUI Features**](/assignments/cyb11-gui-advanced) (Due Week 13, Thursday)
+  - Build on A10 solution (provided)
+  - Implement async image loading
+  - Add recipe editing dialogs
+  - Implement drag-and-drop for images
+  - Handle long-running operations (OCR) with progress indicators
+- [**Lab 12: GUI Programming**](/labs/lab12-gui)
+  - JavaFX workshop
+
+### **Week 13: Distributed Systems and Events**   
+- [**Group Assignment 2: OCR Service Integration**](/assignments/cyb12-ocr-integration) (Due Week 14, Thursday)
+  - Integrate multiple OCR backends (Tesseract, Claude API)
+  - Implement strategy pattern for OCR parsing
+  - Add event-driven updates to the GUI
+  - Performance optimization for batch processing
+- [**Lab 13: Asynchronous Programming**](/labs/lab13-async)
+  - Practice with CompletableFutures
+
+### **Week 14: Safety, Reliability, and Polish**
+- [**Group Assignment 3: Final Integration and Polish**](/assignments/cyb13-final-integration) (Due Week 15, Thursday)
+  - Complete integration of all components
+  - Report on the safety and reliability requirements for the next iteration of CookYourBooks
+  - Conduct performance profiling and optimization
+- [**Lab 14: Networks and Distributed Systems**](/labs/lab14-networks)
+  - Implement simple client-server recipe sharing
+
+### **Week 15: Final Report**
+- [**Final Project Report**](/assignments/cyb14-final-report) 
+  - Reflect on the project as a whole
+  - Discuss challenges and solutions
+  - Provide recommendations for future iterations of CookYourBooks
+- [**Lab 15: Serverless Architecture**](/labs/lab15-serverless)
+  - Deploy recipe API to cloud platform

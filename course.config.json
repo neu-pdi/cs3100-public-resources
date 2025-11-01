@@ -531,72 +531,142 @@
   ],
   "assignments": [
     {
-      "id": "hw1",
-      "title": "IA 1: SceneItAll Entity Model",
+      "id": "cyb1",
+      "title": "Assignment 1: Recipe Domain Model",
       "type": "homework",
       "assignedDate": "2026-01-08",
       "dueDate": "2026-01-15",
-      "dueTime": "20:00",
+      "dueTime": "23:59",
       "points": 100,
-      "url": "/assignments/hw1-sia-model"
+      "url": "/assignments/cyb1-recipes"
     },
     {
-      "id": "hw2",
-      "title": "IA 2: SceneItAll Entity Controller",
+      "id": "cyb2",
+      "title": "Assignment 2: Unit Conversion",
       "type": "homework",
       "assignedDate": "2026-01-15",
       "dueDate": "2026-01-22",
-      "dueTime": "20:00",
+      "dueTime": "23:59",
       "points": 100,
-      "url": "/assignments/hw2-sia-controller"
+      "url": "/assignments/cyb2-unit-conversion"
     },
     {
-      "id": "hw3",
-      "title": "IA 3: SceneItAll Scene Model and Controller",
+      "id": "cyb3",
+      "title": "Assignment 3: Recipe and Instruction Classes",
       "type": "homework",
       "assignedDate": "2026-01-22",
-      "dueDate": "2026-02-05",
-      "dueTime": "20:00",
-      "points": 300,
-      "url": "/assignments/hw3-sia-design"
-    },
-    {
-      "id": "hw4",
-      "title": "SceneItAll Code Review",
-      "type": "homework",
-      "assignedDate": "2026-01-26",
       "dueDate": "2026-01-29",
-      "dueTime": "20:00",
+      "dueTime": "23:59",
       "points": 100,
-      "url": "/assignments/hw4-sia-review"
+      "url": "/assignments/cyb3-recipe-instruction"
     },
     {
-      "id": "hw5",
-      "title": "SceneItAll Code Review 2",
+      "id": "cyb4",
+      "title": "Assignment 4: Builder Patterns and Factory Methods",
       "type": "homework",
-      "assignedDate": "2026-02-09",
-      "dueDate": "2026-02-12",
-      "dueTime": "20:00",
+      "assignedDate": "2026-01-29",
+      "dueDate": "2026-02-05",
+      "dueTime": "23:59",
       "points": 100,
-      "url": "/assignments/hw5-sia-review2"
+      "url": "/assignments/cyb4-builders-factories"
     },
     {
-      "id": "hw6",
-      "title": "SceneItAll Mocks",
+      "id": "cyb5",
+      "title": "Assignment 5: JSON Serialization Layer",
+      "type": "homework",
+      "assignedDate": "2026-02-05",
+      "dueDate": "2026-02-12",
+      "dueTime": "23:59",
+      "points": 100,
+      "url": "/assignments/cyb5-json-serialization"
+    },
+    {
+      "id": "cyb6",
+      "title": "Assignment 6: Comprehensive Testing Suite",
       "type": "homework",
       "assignedDate": "2026-02-12",
       "dueDate": "2026-02-19",
-      "dueTime": "20:00",
+      "dueTime": "23:59",
       "points": 100,
-      "url": "/assignments/hw6-sia-mocks"
+      "url": "/assignments/cyb6-testing"
+    },
+    {
+      "id": "cyb7",
+      "title": "Assignment 7: Cookbook and Library Model",
+      "type": "homework",
+      "assignedDate": "2026-02-19",
+      "dueDate": "2026-02-26",
+      "dueTime": "23:59",
+      "points": 100,
+      "url": "/assignments/cyb7-cookbook-library"
+    },
+    {
+      "id": "cyb8",
+      "title": "Assignment 8: Service Layer Architecture",
+      "type": "homework",
+      "assignedDate": "2026-02-26",
+      "dueDate": "2026-03-12",
+      "dueTime": "23:59",
+      "points": 100,
+      "url": "/assignments/cyb8-service-architecture"
+    },
+    {
+      "id": "cyb9",
+      "title": "Assignment 9: CLI Interface",
+      "type": "homework",
+      "assignedDate": "2026-03-12",
+      "dueDate": "2026-03-19",
+      "dueTime": "23:59",
+      "points": 100,
+      "url": "/assignments/cyb9-cli-interface"
+    },
+    {
+      "id": "cyb10",
+      "title": "Assignment 10: Basic JavaFX GUI",
+      "type": "homework",
+      "assignedDate": "2026-03-19",
+      "dueDate": "2026-03-26",
+      "dueTime": "23:59",
+      "points": 100,
+      "url": "/assignments/cyb10-javafx-gui"
+    },
+    {
+      "id": "cyb11",
+      "title": "Group Assignment 1: Advanced GUI Features",
+      "type": "homework",
+      "assignedDate": "2026-03-26",
+      "dueDate": "2026-04-02",
+      "dueTime": "23:59",
+      "points": 100,
+      "url": "/assignments/cyb11-gui-advanced"
+    },
+    {
+      "id": "cyb12",
+      "title": "Group Assignment 2: OCR Service Integration",
+      "type": "homework",
+      "assignedDate": "2026-04-02",
+      "dueDate": "2026-04-09",
+      "dueTime": "23:59",
+      "points": 100,
+      "url": "/assignments/cyb12-ocr-integration"
+    },
+    {
+      "id": "cyb13",
+      "title": "Group Assignment 3: Final Integration and Polish",
+      "type": "homework",
+      "assignedDate": "2026-04-09",
+      "dueDate": "2026-04-16",
+      "dueTime": "23:59",
+      "points": 100,
+      "url": "/assignments/cyb13-final-integration"
     },
     {
       "id": "team-form",
       "title": "Team Forming",
       "type": "homework",
-      "assignedDate": "2026-02-12",
-      "dueDate": "2026-02-19",
-      "dueTime": "20:00",
+      "assignedDate": "2026-02-26",
+      "dueDate": "2026-03-12",
+      "dueTime": "23:59",
       "points": 100,
       "url": "/assignments/team-forming"
     }
