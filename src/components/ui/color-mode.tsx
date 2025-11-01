@@ -10,8 +10,47 @@ import { LuMoon, LuSun } from "react-icons/lu"
 export interface ColorModeProviderProps extends ThemeProviderProps { }
 
 export function ColorModeProvider(props: ColorModeProviderProps) {
+  // CRITICAL: Run synchronously during render (not in effect) to catch initial state
+  // This runs before React finishes mounting, ensuring .dark/.light class is set immediately
+  if (typeof document !== 'undefined') {
+    const theme = document.documentElement.getAttribute('data-theme');
+    if (theme === 'dark' || theme === 'light') {
+      document.documentElement.classList.remove('light', 'dark');
+      document.documentElement.classList.add(theme);
+    }
+  }
+  
+  // Also watch for changes using useLayoutEffect
+  React.useLayoutEffect(() => {
+    const syncClass = () => {
+      const theme = document.documentElement.getAttribute('data-theme');
+      if (theme === 'dark' || theme === 'light') {
+        document.documentElement.classList.remove('light', 'dark');
+        document.documentElement.classList.add(theme);
+      }
+    };
+    
+    // Run immediately to catch any changes
+    syncClass();
+    
+    // Watch for attribute changes (next-themes updates data-theme)
+    const observer = new MutationObserver(() => {
+      syncClass();
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme']
+    });
+    
+    return () => observer.disconnect();
+  }, []);
+  
   return (
-    <ThemeProvider attribute="class" disableTransitionOnChange {...props} />
+    <ThemeProvider 
+      attribute="data-theme" 
+      disableTransitionOnChange 
+      {...props} 
+    />
   )
 }
 
@@ -24,10 +63,12 @@ export interface UseColorModeReturn {
 }
 
 export function useColorMode(): UseColorModeReturn {
-  const { resolvedTheme, setTheme } = useTheme()
+  const { resolvedTheme, setTheme, theme } = useTheme()
   const toggleColorMode = () => {
     setTheme(resolvedTheme === "dark" ? "light" : "dark")
   }
+  // resolvedTheme will be undefined during SSR/hydration
+  // Once it's available, it's ready to use
   return {
     colorMode: resolvedTheme as ColorMode,
     setColorMode: setTheme,
