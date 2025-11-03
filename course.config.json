@@ -136,12 +136,12 @@
       ]
     },
     {
-      "lectureId": "l9-creation-patterns",
+      "lectureId": "l9-domain-modeling",
       "dates": [
         "2026-01-28"
       ],
       "topics": [
-        "Object Creation Patterns in Java"
+        "Domain Modeling"
       ]
     },
     {
@@ -208,30 +208,30 @@
       ]
     },
     {
-      "lectureId": "l17-domain-modeling",
+      "lectureId": "l17-oss",
       "dates": [
         "2026-02-18"
-      ],
-      "topics": [
-        "Domain Modeling"
-      ]
-    },
-    {
-      "lectureId": "l23-oss",
-      "dates": [
-        "2026-02-19"
       ],
       "topics": [
         "Open Source, Libraries, and Frameworks"
       ]
     },
     {
-      "lectureId": "l26-teams",
+      "lectureId": "l23-teams",
+      "dates": [
+        "2026-02-19"
+      ],
+      "topics": [
+        "Teams and Collaboration"
+      ]
+    },
+    {
+      "lectureId": "l26-creation-patterns",
       "dates": [
         "2026-02-23"
       ],
       "topics": [
-        "Teams and Collaboration"
+        "Object Creation Patterns in Java"
       ]
     },
     {
@@ -450,11 +450,11 @@
     },
     {
       "id": "lab5",
-      "title": "Lab 5: Object Creation Patterns",
+      "title": "Lab 5: Domain Modeling",
       "dates": [
         "2026-02-03"
       ],
-      "url": "/labs/lab5-patterns"
+      "url": "/labs/lab5-domain-modeling"
     },
     {
       "id": "lab6",
