@@ -1,6 +1,6 @@
 ---
 title: "Group Assignment 3: Final Integration and Polish"
-sidebar_position: 14
+sidebar_position: 10 
 ---
 
 ## Overview

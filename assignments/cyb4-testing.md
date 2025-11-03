@@ -1,5 +1,5 @@
 ---
-title: "Assignment 4: Builder Patterns and Factory Methods"
+title: "Assignment 4: Cookbook and Library Model, Comprehensive Test Suite"
 sidebar_position: 5
 ---
 

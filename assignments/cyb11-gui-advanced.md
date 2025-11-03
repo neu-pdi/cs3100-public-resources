@@ -1,6 +1,6 @@
 ---
-title: "Group Assignment 1: Advanced GUI Features"
-sidebar_position: 12
+title: "Group Assignment 1: GUI"
+sidebar_position: 8
 ---
 
 ## Overview

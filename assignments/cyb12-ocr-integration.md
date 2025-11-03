@@ -1,6 +1,6 @@
 ---
 title: "Group Assignment 2: OCR Service Integration"
-sidebar_position: 13
+sidebar_position: 9
 ---
 
 ## Overview

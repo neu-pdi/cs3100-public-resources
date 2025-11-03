@@ -1,6 +1,6 @@
 ---
-title: "Assignment 5: JSON Serialization Layer"
-sidebar_position: 6
+title: "Assignment 3: JSON Serialization Layer"
+sidebar_position: 4
 ---
 
 ## Overview

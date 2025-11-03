@@ -1,6 +1,6 @@
 ---
-title: "Assignment 8: Service Layer Architecture"
-sidebar_position: 9
+title: "Assignment 5: Service Layer Architecture, CLI Interface"
+sidebar_position: 6
 ---
 
 ## Overview

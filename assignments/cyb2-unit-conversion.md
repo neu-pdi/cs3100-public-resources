@@ -1,5 +1,5 @@
 ---
-title: "Assignment 2: Unit Conversion"
+title: "Assignment 2: Unit Conversion, Recipe and Instruction Classes"
 sidebar_position: 3
 ---
 
