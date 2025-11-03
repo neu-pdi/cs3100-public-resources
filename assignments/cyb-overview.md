@@ -56,8 +56,8 @@ Assignments are structured to provide a steady, manageable pace throughout the s
   - Implement custom Jackson serializers/deserializers
   - Handle polymorphic serialization
   - First assignment where AI assistants are allowed/encouraged
-- [**Lab 5: Object Creation Patterns**](/labs/lab5-patterns)
-  - Practice with various creation patterns
+- [**Lab 5: Domain Modeling**](/labs/lab5-domain-modeling)
+  - Create a domain model for Pawtograder course operations platform
 - [**Lab 6: AI Coding Agents**](/labs/lab6-copilot)
   - Learn to effectively prompt AI for code generation
 
