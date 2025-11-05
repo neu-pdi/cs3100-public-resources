@@ -8,7 +8,10 @@ title: Event-Driven Architecture
 
 ## Compare and contrast event-driven architecture and synchronous communication (10 minutes)
 
-## Describe common patterns in event-driven architecture (20 minutes)
+## Define "consistency models" and determine the appropriate consistency model for a given software requirement (20 minutes)
+
+
+## Describe common patterns in event-driven architecture (10 minutes)
 - Rate Limiting
 - Circuit Breaker
 - Retry

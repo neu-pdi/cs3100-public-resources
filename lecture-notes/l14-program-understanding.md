@@ -1,6 +1,6 @@
 ---
-sidebar_position: 13
-lecture_number: 13
+sidebar_position: 14
+lecture_number: 14
 title: Program Understanding & Debugging
 ---
 

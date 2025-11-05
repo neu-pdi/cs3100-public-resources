@@ -16,13 +16,14 @@ Building on foundations introduced in CS 2100, examines program design at increa
 ## Course Objectives
 
 Upon successful completion of this course, students will be able to:
+- Analyze software requirements and synthesize an object-oriented design utilizing open-source libraries
+- Identify the stakeholders of a software module, along with their values and interests 
+- Utilize the vocabulary of design patterns to compare the impact of design decisions on non-functional requirements such as accessibility, changeability, performance, reusability and privacy
+- Given a software module, identify its potential failure modes, the impact of those potential failures for all stakeholders, and propose modifications to the software design to mitigate those risks
+- Design and implement an effective test suite for a piece of software
+- Implement a software project in the Java programming language
+- Work with another student on programming and design activities
 
-- Apply software design patterns and architectural principles to complex programming problems
-- Develop and test software using test-driven development methodologies
-- Design and implement user interfaces with attention to usability and accessibility
-- Work effectively in teams on large-scale software projects
-- Understand and contribute to open-source software ecosystems
-- Evaluate software correctness, performance, and maintainability
 
 ## Course Structure
 
@@ -86,6 +87,16 @@ Each assignment will have a clear indicator at the top indicating the suggested 
 Part of the reason for these being guidelines, rather than academic integrity policies, is that some interaction with LLMs is now unavoidable -- using a search engine now will give you an AI generated overview, and similar interactions with models (trying to understand concepts) is not necessarily discouraged, though we would always encourage you to bring larger questions to our course staff, who will likely be able to give you better answers, more suited to your background, to our curriculum, etc. Finally, if you do use LLMs for search, you are responsible for validating any information you find.
 
 Make sure to refer to sources of ground truth for reliable information such as the official language documentation, our course textbook, course staff, and the course website. Reading documentation can be challenging at first, but it is an important skill to develop in any technical field. Learning to navigate technical documents helps you develop a precise understanding of how something works—which is a valuable transferable skill that you can use to gain competence with new tools and help you solve problems independently.
+
+### Use of Artificial Intelligence by the Course Staff
+Some course materials have been developed with the assistance of AI tools. All
+such content has been reviewed and edited by the instructor for accuracy. The following is a non-exhaustive list of methods used to assist in the development of course materials:
+- To expand the learning objectives and summary of some lectures into draft lecture notes
+- To draft the project requirements, instructions, reference solutions, buggy solutions, and initial rubrics
+- To summarize course content into flashcards
+- To create OctoPaws, the PDI/Pawtograder logo
+
+Using AI tools to assist in these tasks has helped us to produce more accurate and engaging course materials, and to focus on the most important aspects of the course that can not be synthesized by an LLM. 
 
 ## Contact
 We will be using [Pawtograder](https://app.pawtograder.com) for discussion and Q&A. We strongly encourage you to post your questions with the "full-course" visibility, so that other students can benefit from the discussion. If you have a private matter, you can post this on Pawtograder with the "staff only" visibility. If all else fails, you can directly email your instructor.

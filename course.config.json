@@ -136,12 +136,12 @@
       ]
     },
     {
-      "lectureId": "l9-domain-modeling",
+      "lectureId": "l9-requirements",
       "dates": [
         "2026-01-28"
       ],
       "topics": [
-        "Domain Modeling"
+        "Interpreting Requirements"
       ]
     },
     {
@@ -163,48 +163,48 @@
       ]
     },
     {
-      "lectureId": "l12-intro-ai-agents",
+      "lectureId": "l12-domain-modeling",
       "dates": [
         "2026-02-04"
+      ],
+      "topics": [
+        "Domain Modeling"
+      ]
+    },
+    {
+      "lectureId": "l13-intro-ai-agents",
+      "dates": [
+        "2026-02-05"
       ],
       "topics": [
         "Introduction to AI Coding Agents"
       ]
     },
     {
-      "lectureId": "l13-program-understanding",
+      "lectureId": "l14-program-understanding",
       "dates": [
-        "2026-02-05"
+        "2026-02-09"
       ],
       "topics": [
         "Program Understanding & Debugging"
       ]
     },
     {
-      "lectureId": "l14-testing",
+      "lectureId": "l15-testing",
       "dates": [
-        "2026-02-09"
+        "2026-02-11"
       ],
       "topics": [
         "Testing with mocks"
       ]
     },
     {
-      "lectureId": "l15-testing2",
-      "dates": [
-        "2026-02-11"
-      ],
-      "topics": [
-        "Testing II: Testability and flakiness, CI"
-      ]
-    },
-    {
-      "lectureId": "l16-requirements",
+      "lectureId": "l16-testing2",
       "dates": [
         "2026-02-12"
       ],
       "topics": [
-        "Interpreting Requirements"
+        "Testing II: Testability and flakiness, CI"
       ]
     },
     {
@@ -339,7 +339,7 @@
         "2026-03-30"
       ],
       "topics": [
-        "Networks and Distributed Systems"
+        "Networks and Security"
       ]
     },
     {
