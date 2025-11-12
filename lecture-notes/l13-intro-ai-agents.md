@@ -10,6 +10,7 @@ title: Introduction to AI Programming Agents
 - AI tools free developers to focus on optimization and business value
 - Software is used in a complex socio-technical system. Humans struggle to define that complete context, and AI tools have limited context windows. Humans will always be needed to understand the complete context of a software system.
 - Software development is a creative process, and AI tools can help with the creative process, but they can not replace the human creativity and intuition.
+- AI tools are constantly improving, and their capabilities will continue to improve, but there will *always* be a need for human creativity, judgement, and oversight.
 
 ### What are AI Coding Agents?
 
@@ -62,7 +63,7 @@ Many modern coding agents can execute test cases and use the results to refine i
 This creates a rapid iteration cycle where the agent can self-correct based on concrete feedback, rather than relying solely on pattern matching from training data. The combination of static analysis (linters, type checkers) and dynamic verification (test execution) allows coding agents to produce more reliable code with less manual intervention.
 
 ### Strengths of AI Programming Agents:
-- **Pattern Recognition**: Excel at recognizing and reproducing common coding patterns from their training data
+- **Pattern Recognition**: Excel at recognizing and reproducing common coding patterns from their training data or applying patterns from one part of the codebase to another
 - **Syntax Knowledge**: Have extensive knowledge of language syntax, standard libraries, and common frameworks
 - **Cross-Domain Transfer**: Can apply patterns from one domain or language to another
 - **Natural Language Understanding**: Can translate requirements and comments into working code
@@ -148,13 +149,52 @@ It's technically possible to use AI coding agents in a way where you never direc
 
 To effectively use AI coding agents, you must be able to evaluate the *code* itself, not just its execution. This means understanding what the code does, recognizing when it's wrong or inefficient, and being able to guide the AI toward better solutions. The ability to read, understand, and reason about code is what makes AI assistance productive rather than a crutch that ultimately slows you down.
 
-## Example: using AI programming agents to prototype a new project (15 minutes)
-- Go through identify, engage, evaluate steps for requirements gathering and domain modeling for SceneItAll project.
-- Highlight the importance of context and the need to provide the right amount of context at the right level of abstraction.
-- Describe the different approaches for "identify", "engage" and "evaluate" steps.
-- Demonstrate the importance of clearly stating the desired outcomes and success criteria.
+## Example: using AI programming agents to prototype a new project (25 minutes)
 
-## Determine the appropriate level of abstraction and context to provide to the AI programming agent (10 minutes)
+We will use the "SceneItAll" IoT control platform (loosely explored in Lecture 2) as a running example to demonstrate the workflow. SceneItAll is an IoT/smarthome control app with the following domain concepts:
+- Lights (can be switched, dimmable, or even RGBW tunable)
+- Fans (can be on/off and speeds 1-4)
+- Shades (can be open/closed by 1-100%)
+- Areas (group devices by physical area, can also be nested)
+- Scenes (define preset conditions for devices, can also be associated with areas to create "AreaScenes" that clearly set the scene for all devices in an area, and have a nesting property such that setting AreaScene "Nighttime" on a top-level area will cascade to nested areas with a "Nighttime" scene)
+
+### 1. Go through identify, engage, evaluate steps for requirements gathering and domain modeling
+
+**Identify**: Before engaging with the AI, we need to recognize what information the AI needs. For requirements gathering and domain modeling, we need to identify:
+- What domain concepts exist (we have a basic list above)
+- What level of detail is needed for the initial domain model
+- What requirements information should be captured (user stories, functional requirements, non-functional requirements)
+- What design artifacts would be useful for us to generate and maintain
+
+**Engage**: Here is an example initial prompt:
+
+```
+We are designing a new Java project called "SceneItAll". Our first step is to enumerate some key requirements. Suggest more detailed requirements based on this project concept:
+
+SceneItAll is an IoT/smarthome control app. It has the following domain concepts:
+- Lights (can be switched, dimmable, or even RGBW tunable)
+- Fans (can be on/off and speeds 1-4)
+- Shades (can be open/closed by 1-100%)
+- Areas (group devices by physical area, can also be nested)
+- Scenes (define preset conditions for devices, can also be associated with areas to create "AreaScenes" that clearly set the scene for all devices in an area, and have a nesting property such that setting AreaScene "Nighttime" on a top-level area will cascade to nested areas with a "Nighttime" scene)
+
+We are going to follow a procedure where first we refine the domain model, then proceed to choosing requirements to implement. Our domain model should emphasize "design for change" so that we can defer making decisions on specific requirements, and we can get an MVP up soon for user feedback. 
+
+Propose a domain model and high-level requirements (specified as user stories) that I can iterate on. Generate a file "PLAN.md" that outlines the plan for the project, and "MODEL.md" that contains several design alternatives for our data model expressed as mermaid class diagrams.
+```
+
+**Evaluate**: After receiving the AI's output, we need to critically assess:
+- Does the domain model capture all the key concepts we identified?
+- Are the proposed design alternatives reasonable and do they support "design for change"?
+- Do the user stories align with our vision for the project?
+- Are there important aspects missing that we need to add?
+
+This prompt is a good starting point, but we note that it is certainly not perfect. We will need to iterate on it to get it to a point where it is useful. Note also that, as AI coding agents improve, specific prompting strategies are likely to evolve, as well.
+
+**Output**: This output was generated by Claude Sonnet 4.5 via GitHub Copilot. For brevity, we've only included the domain model (it also generated a variety of more detailed requirements, user stories, and a list of architectural questions to consider).
+
+
+### 2. Sidebar: Context is important!
 
 Effective AI-assisted development requires providing the right amount of context at the right level of abstraction. Too little context leads to generic or incorrect outputs, while too much context can overwhelm the AI's context window and obscure what's actually important. The key is understanding what information the AI needs based on where you are in the development process. Software development follows a systematic process: Requirements → Design → Implementation → Validation → Operations. Each phase builds on decisions made in earlier phases, and this context is crucial for AI to generate appropriate code.
 
@@ -179,7 +219,7 @@ This automatic context discovery is excellent for *implementation-level* tasks�
 
 **Why big picture context requires human management:**
 - **Design decisions aren't in the code**: The code shows *what* was implemented, but not *why* certain approaches were chosen or *what* alternatives were considered and rejected
-- **Requirements aren't captured in implementation**: The code doesn't explain which requirements are most important, which were deferred, or what trade-offs were made
+- **Requirements aren't captured in implementation**: The code doesn't explain which requirements are most important, which were deferred, or what trade-offs were made. Ultimately, there is always some level of decision that will never be captured in code or documentation.
 - **Architectural rationale is implicit**: The structure of your code reflects architectural decisions, but the reasoning behind those decisions isn't visible in the code itself
 - **Context windows are limited**: Even with automatic discovery, the AI can't include everything. You need to curate what matters most
 
@@ -214,39 +254,586 @@ This is why design artifacts are so important—they capture the big picture con
 - Use AI to help generate initial artifacts, but always review and refine them yourself
 - Treat artifacts as communication tools: they should be clear enough that both you and the AI can understand them
 
-**Example workflow:**
-1. **Identify**: "I need to design a user authentication system"
-2. **Engage**: Ask AI to generate a DESIGN.md with authentication alternatives
-3. **Evaluate**: Review the alternatives, considering your specific requirements
-4. **Calibrate**: Choose an approach and update DESIGN.md with your decision and rationale
-5. **Engage**: "Based on DESIGN.md, implement the chosen authentication approach"
-6. **Evaluate**: Check if the generated code matches the design
-7. **Tweak**: Refine DESIGN.md if implementation reveals design issues
-8. **Finalize**: Update all artifacts to reflect what was actually built
+### 3. Describe the different approaches for "identify", "engage" and "evaluate" steps
 
-This artifact-driven approach ensures that AI assistance amplifies your design thinking rather than replacing it, maintaining human oversight while leveraging AI's pattern recognition capabilities.
+In order to extract the most value from the AI programming agent, you need to be able to effectively communicate your needs to the agent. How you communicate those needs is determined by:
+- Your expertise in the domain and the technologies involved
+- The AI model's capabilities and limitations
 
-## Utilize an AI programming agent to assist with a design and implementation task (20 minutes)
+Hence, we can not teach a single method to follow here, but present several different approaches that you can choose between based on context:
 
-As an example, we will use an AI programming agent to help bootstrap the design and implementation of the "SceneItAll" IoT control platform that we loosely explored in Lecture 2.
+**Different approaches for Identify:**
+- **Top-down**: Start with high-level goals and break them down (e.g., "I need to design a domain model for SceneItAll that supports nested areas and cascading scenes")
+- **Bottom-up**: Start with specific problems or code issues and identify what information is needed to solve them (e.g., "I'm having trouble representing nested areas in SceneItAll—what domain concepts do I need to clarify?")
+- **Artifact-driven**: Review existing design artifacts (PLAN.md, MODEL.md) to identify gaps or areas needing clarification (e.g., "Our existing SceneItAll MODEL.md does not have a clear definition of how device states are represented")
+- **Domain exploration**: For new domains, identify key concepts, relationships, and constraints through research or stakeholder engagement (e.g., "What are the key concepts in IoT control systems that SceneItAll needs to model?")
 
-For the purposes of this interactive example, we will step through the process of refining the domain model and requirements, and then using the AI to generate code.
+**Different approaches for Engage:**
+- **Direct request**: "Generate a PLAN.md file for SceneItAll"
+- **Context-rich prompt**: Provide detailed background, constraints, and desired outcomes (like the SceneItAll prompt shown in section 1)
+- **Iterative refinement**: Start with a simple prompt, then add context based on initial responses (e.g., start with "Design SceneItAll domain model" then add "with emphasis on design for change" after seeing initial output)
+- **Template-based**: Use structured templates or examples to guide the AI's output format (e.g., "Generate a MODEL.md following the same format as our previous projects")
+- **Artifact-referencing**: "Based on MODEL.md, implement the chosen SceneItAll domain model as Java classes"
 
-Here is an example prompt to get started:
+**Different approaches for Evaluate:**
+- **Code review**: Read and understand the generated code, checking for correctness, style, and alignment with design
+- **Artifact comparison**: Compare AI suggestions against stated goals in PLAN.md or REQUIREMENTS.md
+- **Test-driven**: Write tests first, then evaluate if AI-generated code passes them
+- **Pattern matching**: Check if generated code follows established patterns in your codebase
+- **Domain knowledge check**: Verify that the output makes sense given your understanding of the domain
 
+### 4. Demonstrate the importance of clearly stating the desired outcomes and success criteria
+
+The SceneItAll prompt above demonstrates several key aspects of stating desired outcomes:
+
+**Explicit deliverables**: The prompt specifies exactly what artifacts should be generated ("Generate a file 'PLAN.md'... and 'MODEL.md'"). Without this, the AI might generate prose descriptions instead of files, or might not know what format to use.
+
+**Success criteria**: The prompt includes criteria for evaluation:
+- "Our domain model should emphasize 'design for change'"
+- "We can get an MVP up soon for user feedback"
+- "Specified as user stories" (format requirement)
+
+**Context at the right level**: The prompt provides domain concepts but doesn't overwhelm with implementation details. It focuses on what's needed for requirements gathering and domain modeling, not implementation specifics.
+
+**Clear process**: The prompt states the intended workflow ("first we refine the domain model, then proceed to choosing requirements to implement"), which helps the AI understand the purpose and scope of the request.
+
+Without clear desired outcomes and success criteria, the AI might:
+- Generate outputs that don't match your needs
+- Miss important requirements or constraints
+- Produce artifacts in the wrong format or level of detail
+- Require multiple rounds of iteration to get usable results
+
+By explicitly stating what you want and how you'll evaluate it, you enable the AI to produce more useful outputs on the first attempt, and you make it easier to evaluate whether the output meets your needs.
+
+--------------------------------
+
+## SceneItAll - Domain Model Alternatives
+The following output is verbatim copy/paste from the `MODEL.md` file generated by Claude Sonnet 4.5 via GitHub Copilot. For brevity, we've only included the domain model (it also generated a variety of more detailed requirements, user stories, and a list of architectural questions to consider).
+
+### Design Considerations
+
+#### Key Questions
+1. **Device Capabilities**: How do we model different device types with varying capabilities?
+2. **Area Hierarchy**: How do we represent nested areas efficiently?
+3. **Scene Composition**: How do scenes relate to areas and devices?
+4. **State Management**: Where does device state live?
+5. **Extensibility**: How easy is it to add new device types?
+
+#### Design Patterns to Consider
+- **Strategy Pattern**: For device-specific control behaviors
+- **Composite Pattern**: For area hierarchies
+- **Command Pattern**: For scene activation
+- **Observer Pattern**: For state change notifications
+- **Plugin/Provider Pattern**: For IoT platform abstraction
+
+---
+
+### Alternative 1: Type-Safe Device Hierarchy
+
+#### Philosophy
+Use concrete classes for each device type with a common base. Type safety at compile time.
+
+#### Pros
+- ✅ Type-safe operations
+- ✅ Easy to understand and maintain
+- ✅ IDE support for device-specific methods
+- ✅ Clear separation of device behaviors
+
+#### Cons
+- ❌ Adding new device types requires code changes
+- ❌ More classes to maintain
+- ❌ Harder to support dynamic device discovery
+
+```mermaid
+classDiagram
+    class Device {
+        <<abstract>>
+        -String id
+        -String name
+        -Area area
+        +String getId()
+        +String getName()
+        +void setArea(Area area)
+        +DeviceState getState()*
+        +void setState(DeviceState state)*
+    }
+    
+    class Light {
+        -boolean on
+        -int brightness
+        -Color color
+        +void turnOn()
+        +void turnOff()
+        +void setBrightness(int level)
+        +void setColor(Color color)
+    }
+    
+    class Fan {
+        -boolean on
+        -int speed
+        +void turnOn()
+        +void turnOff()
+        +void setSpeed(int speed)
+    }
+    
+    class Shade {
+        -int position
+        +void open()
+        +void close()
+        +void setPosition(int percent)
+    }
+    
+    class Area {
+        -String id
+        -String name
+        -Area parent
+        -List~Area~ children
+        -List~Device~ devices
+        +void addDevice(Device device)
+        +void addChildArea(Area child)
+        +List~Device~ getAllDevices()
+        +List~Area~ getDescendants()
+    }
+    
+    class Scene {
+        -String id
+        -String name
+        -Map~Device, DeviceState~ deviceStates
+        +void addDeviceState(Device device, DeviceState state)
+        +void activate()
+    }
+    
+    class AreaScene {
+        -String sceneName
+        -Area area
+        -Map~Device, DeviceState~ deviceStates
+        -boolean cascadeToChildren
+        +void activate()
+        +void activateHierarchical()
+    }
+    
+    Device <|-- Light
+    Device <|-- Fan
+    Device <|-- Shade
+    Area "1" o-- "*" Device
+    Area "1" o-- "*" Area : children
+    Scene "1" --> "*" Device
+    AreaScene --> Area
+    AreaScene --> Scene : uses
 ```
-We are designing a new Java project called "SceneItAll". Our first step is to enumerate some key requirements. Suggest more detailed requirements based on this project concept:
 
-SceneItAll is an IoT/smarthome control app. It has the following domain concepts:
-- Lights (can be switched, dimmable, or even RGBW tunable)
-- Fans (can be on/off and speeds 1-4)
-- Shades (can be open/closed by 1-100%)
-- Areas (group devices by physical area, can also be nested)
-- Scenes (define preset conditions for devices, can also be associated with areas to create "AreaScenes" that clearly set the scene for all devices in an area, and have a nesting property such that setting AreaScene "Nighttime" on a top-level area will cascade to nested areas with a "Nighttime" scene)
+---
 
-We are going to follow a procedure where first we refine the domain model, then proceed to choosing requirements to implement. Our domain model should emphasize "design for change" so that we can defer making decisions on specific requirements, and we can get an MVP up soon for user feedback. 
+### Alternative 2: Capability-Based Model
 
-Propose a domain model and high-level requirements (specifeid as user stories) that I can iterate on. Generate a file "PLAN.md" that outlines the plan for the project, and "MODEL.md" that contains several design alternatives for our data model expressed as mermaid class diagrams.
+#### Philosophy
+Devices have capabilities (traits/features) that define what they can do. Composition over inheritance.
+
+#### Pros
+- ✅ Highly flexible and extensible
+- ✅ Easy to add new capabilities
+- ✅ Supports devices with multiple capabilities
+- ✅ Works well with dynamic device discovery
+
+#### Cons
+- ❌ Less type safety
+- ❌ More runtime checking required
+- ❌ Can be harder to reason about
+- ❌ More complex implementation
+
+```mermaid
+classDiagram
+    class Device {
+        -String id
+        -String name
+        -Area area
+        -Set~Capability~ capabilities
+        +boolean hasCapability(CapabilityType type)
+        +Capability getCapability(CapabilityType type)
+        +void addCapability(Capability cap)
+    }
+    
+    class Capability {
+        <<interface>>
+        +CapabilityType getType()
+        +Map~String, Object~ getState()
+        +void setState(Map~String, Object~ state)
+    }
+    
+    class OnOffCapability {
+        -boolean on
+        +void turnOn()
+        +void turnOff()
+        +boolean isOn()
+    }
+    
+    class DimmableCapability {
+        -int brightness
+        +void setBrightness(int level)
+        +int getBrightness()
+    }
+    
+    class ColorCapability {
+        -Color color
+        +void setColor(Color color)
+        +Color getColor()
+    }
+    
+    class FanSpeedCapability {
+        -int speed
+        +void setSpeed(int speed)
+        +int getSpeed()
+    }
+    
+    class PositionCapability {
+        -int position
+        +void setPosition(int percent)
+        +int getPosition()
+    }
+    
+    class Area {
+        -String id
+        -String name
+        -Area parent
+        -List~Area~ children
+        -List~Device~ devices
+        +void addDevice(Device device)
+        +void addChildArea(Area child)
+        +List~Device~ getDevicesWithCapability(CapabilityType type)
+    }
+    
+    class Scene {
+        -String id
+        -String name
+        -List~DeviceCommand~ commands
+        +void addCommand(DeviceCommand cmd)
+        +void activate()
+    }
+    
+    class DeviceCommand {
+        -Device device
+        -CapabilityType capability
+        -Map~String, Object~ targetState
+        +void execute()
+    }
+    
+    Capability <|.. OnOffCapability
+    Capability <|.. DimmableCapability
+    Capability <|.. ColorCapability
+    Capability <|.. FanSpeedCapability
+    Capability <|.. PositionCapability
+    Device "1" o-- "*" Capability
+    Area "1" o-- "*" Device
+    Area "1" o-- "*" Area : children
+    Scene "1" o-- "*" DeviceCommand
+    DeviceCommand --> Device
 ```
 
-This prompt is a good starting point, but we note that it is certainly not perfect. We will need to iterate on it to get it to a point where it is useful. Note also that, as AI coding agents improve, specific prompting strategies are likely to evolve, as well.
+---
+
+### Alternative 3: Hybrid Approach
+
+#### Philosophy
+Concrete device types for common cases, with capability extension points for flexibility.
+
+#### Pros
+- ✅ Balance of type safety and flexibility
+- ✅ Clear model for common devices
+- ✅ Extensible for unusual devices
+- ✅ Good performance
+
+#### Cons
+- ❌ More complex than pure approaches
+- ❌ Need to maintain both type hierarchies and capabilities
+- ❌ Risk of confusion about when to use which
+
+```mermaid
+classDiagram
+    class Device {
+        <<abstract>>
+        -String id
+        -String name
+        -Area area
+        -Map~String, Capability~ extraCapabilities
+        +String getId()
+        +DeviceType getType()*
+        +DeviceState getState()*
+        +void setState(DeviceState state)*
+        +Optional~Capability~ getCapability(String name)
+    }
+    
+    class ControllableDevice {
+        <<interface>>
+        +void sendCommand(Command cmd)
+    }
+    
+    class Light {
+        -LightState state
+        +void turnOn()
+        +void turnOff()
+        +void setBrightness(int level)
+        +void setColor(Color color)
+    }
+    
+    class Fan {
+        -FanState state
+        +void turnOn()
+        +void turnOff()
+        +void setSpeed(int speed)
+    }
+    
+    class Shade {
+        -ShadeState state
+        +void setPosition(int percent)
+    }
+    
+    class GenericDevice {
+        -Map~String, Capability~ capabilities
+        +void executeCapability(String name, Map params)
+    }
+    
+    class Area {
+        -String id
+        -String name
+        -Area parent
+        -List~Area~ children
+        -List~Device~ devices
+        +void addDevice(Device device)
+        +void addChildArea(Area child)
+        +void executeInHierarchy(Consumer~Area~ action)
+    }
+    
+    class Scene {
+        -String id
+        -String name
+        -List~SceneAction~ actions
+        +void addAction(SceneAction action)
+        +void activate()
+    }
+    
+    class AreaScene {
+        -Area targetArea
+        -String sceneName
+        -boolean cascade
+        +void activate()
+        -void applyToArea(Area area)
+    }
+    
+    class SceneAction {
+        <<interface>>
+        +void execute()
+    }
+    
+    class DeviceAction {
+        -Device device
+        -DeviceState targetState
+        +void execute()
+    }
+    
+    Device <|-- Light
+    Device <|-- Fan
+    Device <|-- Shade
+    Device <|-- GenericDevice
+    ControllableDevice <|.. Device
+    Area "1" o-- "*" Device
+    Area "1" o-- "*" Area : children
+    Scene "1" o-- "*" SceneAction
+    SceneAction <|.. DeviceAction
+    AreaScene --> Area
+    AreaScene "1" o-- "*" Scene : contains
+    DeviceAction --> Device
+```
+
+---
+
+### Alternative 4: Command-Oriented Model
+
+#### Philosophy
+Focus on commands and events rather than device state. Better for async IoT operations.
+
+#### Pros
+- ✅ Natural fit for async IoT protocols
+- ✅ Easy to add command history/undo
+- ✅ Clear separation of concerns
+- ✅ Works well with event-driven architectures
+
+#### Cons
+- ❌ More abstract, steeper learning curve
+- ❌ State management becomes more complex
+- ❌ May be over-engineered for simple use cases
+
+```mermaid
+classDiagram
+    class Device {
+        -String id
+        -String name
+        -DeviceType type
+        -Area area
+        +void acceptCommand(DeviceCommand cmd)
+        +DeviceState queryState()
+    }
+    
+    class DeviceCommand {
+        <<interface>>
+        +String getDeviceId()
+        +void execute(DeviceController controller)
+    }
+    
+    class TurnOnCommand {
+        -String deviceId
+        +void execute(DeviceController controller)
+    }
+    
+    class SetBrightnessCommand {
+        -String deviceId
+        -int brightness
+        +void execute(DeviceController controller)
+    }
+    
+    class SetSpeedCommand {
+        -String deviceId
+        -int speed
+        +void execute(DeviceController controller)
+    }
+    
+    class DeviceController {
+        <<interface>>
+        +void executeCommand(DeviceCommand cmd)
+        +DeviceState getState(String deviceId)
+    }
+    
+    class Area {
+        -String id
+        -String name
+        -Area parent
+        -List~Area~ children
+        -List~Device~ devices
+        +List~Device~ getAllDevices()
+        +void executeCommandOnAll(DeviceCommand template)
+    }
+    
+    class Scene {
+        -String id
+        -String name
+        -List~DeviceCommand~ commands
+        +void activate(DeviceController controller)
+    }
+    
+    class AreaScene {
+        -Area area
+        -String sceneName
+        -List~DeviceCommand~ commands
+        -boolean cascade
+        +void activate(DeviceController controller)
+    }
+    
+    class CommandExecutor {
+        -DeviceController controller
+        -Queue~DeviceCommand~ commandQueue
+        +void submit(DeviceCommand cmd)
+        +void submitBatch(List~DeviceCommand~ cmds)
+        +Future execute(DeviceCommand cmd)
+    }
+    
+    DeviceCommand <|.. TurnOnCommand
+    DeviceCommand <|.. SetBrightnessCommand
+    DeviceCommand <|.. SetSpeedCommand
+    Device --> DeviceCommand : receives
+    DeviceController --> Device : controls
+    Area "1" o-- "*" Device
+    Area "1" o-- "*" Area : children
+    Scene "1" o-- "*" DeviceCommand
+    AreaScene --> Area
+    AreaScene "1" o-- "*" DeviceCommand
+    CommandExecutor --> DeviceController
+    CommandExecutor --> DeviceCommand
+```
+
+---
+
+### Comparison Matrix
+
+| Criteria | Alt 1: Type-Safe | Alt 2: Capability | Alt 3: Hybrid | Alt 4: Command |
+|----------|-----------------|-------------------|---------------|----------------|
+| Type Safety | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
+| Extensibility | ⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
+| Simplicity | ⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
+| Testability | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| IoT Platform Fit | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| MVP Speed | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
+| Learning Curve | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐ |
+
+---
+
+### Recommendation
+
+**Start with Alternative 3: Hybrid Approach**
+
+#### Rationale
+1. **Balanced Design**: Provides type safety for common cases while allowing flexibility
+2. **Fast MVP**: Can quickly implement Light, Fan, Shade as concrete classes
+3. **Future-Proof**: Capability extension points allow for unusual devices later
+4. **Familiar**: Most developers understand class hierarchies
+5. **Pragmatic**: Doesn't over-engineer for hypothetical needs
+
+#### Evolution Path
+1. **Phase 1 (MVP)**: Implement concrete device classes only
+2. **Phase 2**: Add capability system for edge cases
+3. **Phase 3**: Consider command pattern for undo/history features
+4. **Phase 4**: Evaluate full capability model if device types explode
+
+#### Plugin Interface
+Regardless of domain model choice, define a clear plugin interface:
+
+```mermaid
+classDiagram
+    class IoTPlugin {
+        <<interface>>
+        +String getName()
+        +void initialize(Configuration config)
+        +List~Device~ discoverDevices()
+        +void sendCommand(String deviceId, Command cmd)
+        +DeviceState queryState(String deviceId)
+        +void subscribe(DeviceStateListener listener)
+    }
+    
+    class DeviceStateListener {
+        <<interface>>
+        +void onStateChanged(String deviceId, DeviceState state)
+    }
+    
+    class MockPlugin {
+        +List~Device~ discoverDevices()
+        +void sendCommand(String deviceId, Command cmd)
+    }
+    
+    class HomeAssistantPlugin {
+        -WebSocketClient wsClient
+        -RestClient restClient
+        +List~Device~ discoverDevices()
+        +void sendCommand(String deviceId, Command cmd)
+    }
+    
+    IoTPlugin <|.. MockPlugin
+    IoTPlugin <|.. HomeAssistantPlugin
+    IoTPlugin --> DeviceStateListener
+```
+
+---
+
+### Next Decision Points
+
+1. **Confirm Model Choice**: Review alternatives with team
+2. **Define State Classes**: LightState, FanState, etc.
+3. **Scene Storage**: JSON files vs database vs in-memory
+4. **Area Hierarchy Operations**: How to handle cascade logic
+5. **UI Framework**: JavaFX, Swing, or web-based?
+
+### Open Questions
+
+1. Should scenes store absolute states or relative changes (e.g., "dim by 20%")?
+2. How do we handle conflicts (e.g., device in multiple scenes)?
+3. Should areas support multiple parents (graph vs tree)?
+4. How do we handle offline devices?
+5. What's the scene activation confirmation mechanism?
+
