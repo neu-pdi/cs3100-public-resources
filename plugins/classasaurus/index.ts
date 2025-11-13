@@ -175,12 +175,11 @@ sidebar: false
                 courseMarkdown += `## [${title}](${lectureUrl})\n\n`;
             }
             
-            // Extract level 2 headings
+            // Extract level 2 headings (as plain text, not links)
             const headings = extractHeadings(lectureFile.content);
             if (headings.length > 0) {
                 for (const heading of headings) {
-                    const headingUrl = `${lectureUrl}#${heading.id}`;
-                    courseMarkdown += `- [${heading.text}](${headingUrl})\n`;
+                    courseMarkdown += `- ${heading.text}\n`;
                 }
                 courseMarkdown += '\n';
             }
@@ -306,11 +305,19 @@ sidebar: false
             const overviewMdPath = path.join(pagesDir, 'overview.md');
             fs.writeFileSync(overviewMdPath, courseMarkdown, 'utf-8');
             
+            // Verify file was written
+            if (fs.existsSync(overviewMdPath)) {
+                const stats = fs.statSync(overviewMdPath);
+                console.log(`✅ Generated overview.md at ${overviewMdPath} (${stats.size} bytes)`);
+            } else {
+                console.error(`❌ Failed to generate overview.md at ${overviewMdPath}`);
+            }
+            
             // Also write to root for reference
             const rootOverviewMdPath = path.join(context.siteDir, 'overview.md');
             fs.writeFileSync(rootOverviewMdPath, courseMarkdown, 'utf-8');
             
-            console.log(`📚 Overview page will be available at /overview (generated at ${overviewMdPath})`);
+            console.log(`📚 Overview page will be available at /overview`);
             
             // Optionally generate a schedule page
             if (options.generateSchedule !== false) {
