@@ -50,3 +50,465 @@
   --ifm-list-paragraph-margin: 0.5em;
   --ifm-paragraph-margin-bottom: 0.5em;
 }
+
+/* RevealJS integration styles */
+.reveal {
+  position: relative;
+  width: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+.reveal .slides {
+  text-align: left;
+}
+
+.reveal .slides section {
+  text-align: left;
+}
+
+/* Ensure HTML elements render correctly in RevealJS slides */
+.reveal .slides section div,
+.reveal .slides section p,
+.reveal .slides section li {
+  display: block;
+  visibility: visible;
+}
+
+/* Ensure lists maintain their list display type for proper numbering/bullets */
+.reveal .slides section ul,
+.reveal .slides section ol {
+  display: block;
+  visibility: visible;
+  list-style-position: outside !important;
+  padding-left: 2.5em !important;
+  margin-left: 0;
+  overflow: visible !important;
+}
+
+/* Ensure ordered lists show numbers - override any 'none' values */
+.reveal .slides section ol {
+  list-style-type: decimal !important;
+  list-style-position: outside !important;
+  list-style-image: none !important;
+  list-style: decimal outside none !important;
+}
+
+/* Ensure list items in ordered lists show numbers */
+.reveal .slides section ol li {
+  list-style-type: decimal !important;
+  display: list-item !important;
+}
+
+/* Ensure markers are visible for ordered lists */
+.reveal .slides section ol li::marker {
+  display: inline-block !important;
+  visibility: visible !important;
+  color: inherit !important;
+  content: counter(list-item, decimal) "." !important;
+  font-weight: normal !important;
+}
+
+/* Set up counter for ordered lists */
+.reveal .slides section ol {
+  counter-reset: list-item !important;
+}
+
+.reveal .slides section ol li {
+  counter-increment: list-item !important;
+}
+
+/* Ensure unordered lists show bullets */
+.reveal .slides section ul {
+  list-style-type: disc !important;
+  list-style: disc outside !important;
+}
+
+/* Ensure list items in unordered lists show bullets */
+.reveal .slides section ul li {
+  list-style-type: disc !important;
+  display: list-item !important;
+}
+
+.reveal .slides section div[style] {
+  display: flex !important;
+}
+
+/* Ensure code blocks in RevealJS slides use full width */
+.reveal .slides section pre,
+.reveal .slides section pre code,
+.reveal .slides section .prism-code,
+.reveal .slides section .codeBlock,
+.reveal .slides section .codeBlockContent {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+/* Inline code styling - ensure it displays inline with light-mode colors */
+.reveal .slides section code:not(pre code) {
+  display: inline !important;
+  padding: 0.2em 0.4em !important;
+  margin: 0 !important;
+  font-size: 0.9em !important;
+  background-color: #f6f8fa !important;
+  border: 1px solid #d1d9e0 !important;
+  border-radius: 3px !important;
+  color: #24292f !important;
+  font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', monospace !important;
+  white-space: nowrap !important;
+  vertical-align: baseline !important;
+}
+
+/* Light mode (white theme) inline code colors */
+.reveal[data-theme="white"] .slides section code:not(pre code),
+.reveal.has-white .slides section code:not(pre code) {
+  background-color: #f6f8fa !important;
+  border-color: #d1d9e0 !important;
+  color: #24292f !important;
+}
+
+/* Dark mode (black theme) inline code colors */
+.reveal[data-theme="black"] .slides section code:not(pre code),
+.reveal.has-black .slides section code:not(pre code) {
+  background-color: #2d333b !important;
+  border-color: #444c56 !important;
+  color: #adbac7 !important;
+}
+
+/* Ensure code block containers don't constrain width */
+.reveal .slides section .codeBlockContent {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Allow code blocks to overflow horizontally if needed */
+.reveal .slides section pre {
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+}
+
+/* Ensure RevealJS presentations take full width in Docusaurus */
+.theme-doc-markdown .reveal {
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Override Docusaurus container constraints for RevealJS */
+.theme-doc-markdown .reveal-container {
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+/* Ensure RevealJS viewport gets correct background based on theme */
+/* When theme is 'white', ensure white background */
+.reveal-viewport:has(.reveal[data-theme="white"]),
+.reveal-viewport.has-white {
+  background: #fff !important;
+}
+
+/* When theme is 'black', ensure black background */
+.reveal-viewport:has(.reveal[data-theme="black"]),
+.reveal-viewport.has-black {
+  background: #191919 !important;
+}
+
+/* Fallback: Apply background directly to reveal container based on theme */
+.reveal[data-theme="white"],
+.reveal.has-white {
+  background: #fff !important;
+}
+
+.reveal[data-theme="black"],
+.reveal.has-black {
+  background: #191919 !important;
+}
+
+/* Ensure slides container also respects theme */
+.reveal[data-theme="white"] .slides,
+.reveal.has-white .slides {
+  background: transparent;
+}
+
+.reveal[data-theme="black"] .slides,
+.reveal.has-black .slides {
+  background: transparent;
+}
+
+/* Fix text colors for RevealJS themes */
+/* White theme (light mode) - use dark text */
+.reveal[data-theme="white"] h1,
+.reveal[data-theme="white"] h2,
+.reveal[data-theme="white"] h3,
+.reveal[data-theme="white"] h4,
+.reveal[data-theme="white"] h5,
+.reveal[data-theme="white"] h6,
+.reveal.has-white h1,
+.reveal.has-white h2,
+.reveal.has-white h3,
+.reveal.has-white h4,
+.reveal.has-white h5,
+.reveal.has-white h6 {
+  color: #222 !important;
+}
+
+.reveal[data-theme="white"] p,
+.reveal[data-theme="white"] li,
+.reveal[data-theme="white"] td,
+.reveal[data-theme="white"] th,
+.reveal.has-white p,
+.reveal.has-white li,
+.reveal.has-white td,
+.reveal.has-white th {
+  color: #333 !important;
+}
+
+/* Black theme (dark mode) - use light text */
+.reveal[data-theme="black"] h1,
+.reveal[data-theme="black"] h2,
+.reveal[data-theme="black"] h3,
+.reveal[data-theme="black"] h4,
+.reveal[data-theme="black"] h5,
+.reveal[data-theme="black"] h6,
+.reveal.has-black h1,
+.reveal.has-black h2,
+.reveal.has-black h3,
+.reveal.has-black h4,
+.reveal.has-black h5,
+.reveal.has-black h6 {
+  color: #eee !important;
+}
+
+.reveal[data-theme="black"] p,
+.reveal[data-theme="black"] li,
+.reveal[data-theme="black"] td,
+.reveal[data-theme="black"] th,
+.reveal.has-black p,
+.reveal.has-black li,
+.reveal.has-black td,
+.reveal.has-black th {
+  color: #ddd !important;
+}
+
+/* Fullscreen mode - hide ALL Docusaurus UI elements */
+html.reveal-fullscreen body {
+  overflow: hidden !important;
+}
+
+/* Hide all Docusaurus navigation and UI */
+html.reveal-fullscreen #__docusaurus {
+  display: none !important;
+}
+
+/* Show only the portal container */
+html.reveal-fullscreen #reveal-fullscreen-portal {
+  display: block !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 99999 !important;
+}
+
+/* Compact title slide - makes h1 smaller to give more room for content */
+.reveal .slides section.compactTitle h1 {
+  font-size: 2em !important;
+  margin-bottom: 0.5em !important;
+}
+
+.reveal .slides section.compactTitle h3 {
+  font-size: 1.2em !important;
+  margin-bottom: 1em !important;
+}
+
+/* Table styling for RevealJS slides - auto-fit to slide width */
+.reveal .slides section table {
+  width: 100% !important;
+  max-width: 100% !important;
+  table-layout: auto !important;
+  font-size: 0.8em !important;
+  margin: 1em 0 !important;
+  border-collapse: collapse !important;
+}
+
+.reveal .slides section table th,
+.reveal .slides section table td {
+  padding: 0.5em 0.75em !important;
+  text-align: left !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+.reveal .slides section table th {
+  font-weight: bold !important;
+  border-bottom: 2px solid currentColor !important;
+}
+
+.reveal .slides section table td {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Dark theme table borders */
+.reveal[data-theme="black"] .slides section table th,
+.reveal.has-black .slides section table th {
+  border-bottom-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.reveal[data-theme="black"] .slides section table td,
+.reveal.has-black .slides section table td {
+  border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Software Engineering Process Phase Slides - Custom Layout */
+.reveal .slides section.processPhase {
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 2em !important;
+  height: 100% !important;
+}
+
+.reveal .slides section.processPhase h3 {
+  font-size: 2em !important;
+  margin-bottom: 0.5em !important;
+  padding-bottom: 0.5em !important;
+  border-bottom: 3px solid currentColor !important;
+}
+
+.reveal .slides section.processPhase .phaseGoal {
+  font-size: 1.2em !important;
+  font-weight: 600 !important;
+  margin: 1em 0 !important;
+  padding: 0.75em 1em !important;
+  border-left: 4px solid currentColor !important;
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-radius: 4px !important;
+}
+
+.reveal[data-theme="black"] .slides section.processPhase .phaseGoal,
+.reveal.has-black .slides section.processPhase .phaseGoal {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.reveal .slides section.processPhase .phaseSteps {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1em !important;
+  margin: 1.5em 0 !important;
+}
+
+.reveal .slides section.processPhase .phaseStep {
+  padding: 1em !important;
+  border-left: 3px solid currentColor !important;
+  background: rgba(0, 0, 0, 0.02) !important;
+  border-radius: 4px !important;
+  transition: transform 0.2s, box-shadow 0.2s !important;
+}
+
+.reveal[data-theme="black"] .slides section.processPhase .phaseStep,
+.reveal.has-black .slides section.processPhase .phaseStep {
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+.reveal .slides section.processPhase .phaseStep:hover {
+  transform: translateX(5px) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.reveal .slides section.processPhase .phaseStep strong {
+  display: block !important;
+  font-size: 1.1em !important;
+  margin-bottom: 0.5em !important;
+  color: currentColor !important;
+}
+
+.reveal .slides section.processPhase .phaseStep ul {
+  margin: 0.5em 0 0 1.5em !important;
+  padding: 0 !important;
+}
+
+.reveal .slides section.processPhase .phaseStep li {
+  margin: 0.3em 0 !important;
+  line-height: 1.5 !important;
+}
+
+.reveal .slides section.processPhase .exitCondition {
+  margin-top: auto !important;
+  padding: 0.75em 1em !important;
+  background: rgba(200, 0, 0, 0.1) !important;
+  border-left: 4px solid #c80000 !important;
+  border-radius: 4px !important;
+  font-size: 0.9em !important;
+}
+
+.reveal[data-theme="black"] .slides section.processPhase .exitCondition,
+.reveal.has-black .slides section.processPhase .exitCondition {
+  background: rgba(255, 100, 100, 0.15) !important;
+  border-left-color: #ff6464 !important;
+}
+
+/* Phase-specific color coding */
+.reveal .slides section.processPhase.phase1 {
+  color: #2563eb !important; /* Blue for Requirements */
+}
+
+.reveal .slides section.processPhase.phase2 {
+  color: #7c3aed !important; /* Purple for Design */
+}
+
+.reveal .slides section.processPhase.phase3 {
+  color: #dc2626 !important; /* Red for Implementation */
+}
+
+.reveal .slides section.processPhase.phase4 {
+  color: #059669 !important; /* Green for Validation */
+}
+
+.reveal .slides section.processPhase.phase5 {
+  color: #d97706 !important; /* Orange for Operations */
+}
+
+/* Overview slide styling */
+.reveal .slides section.processOverview {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 2em !important;
+}
+
+.reveal .slides section.processOverview h2 {
+  font-size: 2.5em !important;
+  margin-bottom: 0.5em !important;
+}
+
+.reveal .slides section.processOverview h3 {
+  font-size: 1.5em !important;
+  margin-bottom: 1.5em !important;
+  color: #666 !important;
+}
+
+.reveal[data-theme="black"] .slides section.processOverview h3,
+.reveal.has-black .slides section.processOverview h3 {
+  color: #aaa !important;
+}
+
+.reveal .slides section.processOverview .keyInsight {
+  margin-top: 2em !important;
+  padding: 1em 1.5em !important;
+  background: rgba(59, 130, 246, 0.1) !important;
+  border-left: 4px solid #3b82f6 !important;
+  border-radius: 4px !important;
+  font-size: 1.1em !important;
+  font-weight: 600 !important;
+}
+
+.reveal[data-theme="black"] .slides section.processOverview .keyInsight,
+.reveal.has-black .slides section.processOverview .keyInsight {
+  background: rgba(59, 130, 246, 0.2) !important;
+}

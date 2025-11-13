@@ -280,6 +280,7 @@ export interface CourseConfig {
     credits?: number;
     prerequisites?: string[];
     description?: string;
+    mechanicalDescription?: string; // Mechanical/logistical description (e.g., course structure, policies)
     syllabus?: string; // URL to syllabus
     officeHours?: {
       instructor: string;

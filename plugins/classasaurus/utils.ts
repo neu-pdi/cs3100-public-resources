@@ -341,3 +341,54 @@ export function scheduleToICalendar(
   return ical;
 }
 
+/**
+ * Extract level 2 headings from markdown content
+ */
+export function extractHeadings(markdown: string): Array<{ text: string; id: string }> {
+  const headings: Array<{ text: string; id: string }> = [];
+  const lines = markdown.split('\n');
+  
+  for (const line of lines) {
+    // Match level 2 headings (## Heading text)
+    const match = line.match(/^##\s+(.+)$/);
+    if (match) {
+      const text = match[1].trim();
+      // Generate Docusaurus-style anchor ID (lowercase, replace spaces with hyphens, remove special chars)
+      const id = text
+        .toLowerCase()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim();
+      headings.push({ text, id });
+    }
+  }
+  
+  return headings;
+}
+
+/**
+ * Format a date string for display
+ */
+export function formatDateDisplay(dateStr: DateString): string {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('en-US', {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
+/**
+ * Generate anchor ID from heading text (Docusaurus-style)
+ */
+export function generateAnchorId(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim();
+}
+

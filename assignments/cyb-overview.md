@@ -55,6 +55,7 @@ Assignments are structured to provide a steady, manageable pace throughout the s
   - Implement builders for `Recipe` and complex ingredients
   - Implement custom Jackson serializers/deserializers
   - Handle polymorphic serialization
+  - Export annotated and scaled recipes to markdown
   - First assignment where AI assistants are allowed/encouraged
 - [**Lab 5: Domain Modeling**](/labs/lab5-domain-modeling)
   - Create a domain model for Pawtograder course operations platform
@@ -68,6 +69,7 @@ Assignments are structured to provide a steady, manageable pace throughout the s
 - [**Assignment 4: Cookbook and Library Model, Comprehensive Test Suite**](/assignments/cyb4-testing) (Due 2026-02-26)
   - Build on A3 solution (provided)
   - Implement `Cookbook`, `UserLibrary`, `TableOfContents`
+  - Create a comprehensive logging system for the application
   - Write unit tests with JUnit
   - Mock external dependencies (file system, OCR services)
   - Achieve branch code coverage and fault coverage
@@ -118,16 +120,17 @@ Assignments are structured to provide a steady, manageable pace throughout the s
   - Integrate multiple OCR backends (Tesseract, Claude API)
   - Implement strategy pattern for OCR parsing
   - Add event-driven updates
-  - Integrate with shared table of contents service
+  - Develop shared table of contents service
+  - Add license and citation support to recipes
   - Performance optimization for batch processing
 - [**Lab 13: Asynchronous Programming**](/labs/lab13-async)
   - Practice with CompletableFutures
 
 ### **Week 13: Final Integration and Polish**
 - [**Group Assignment 3: Final Integration and Polish**](/assignments/cyb13-final-integration) (Due 2026-04-16)
-  - Complete integration of all components
+  - Basic social features: recipe rating, commenting, and sharing if licensed for redistribution
+  - Reflect on the sustainability of the application
   - Report on the safety and reliability requirements for the next iteration of CookYourBooks
-  - Conduct performance profiling and optimization
 - [**Lab 14: Networks and Distributed Systems**](/labs/lab14-networks)
   - Implement simple client-server recipe sharing
 

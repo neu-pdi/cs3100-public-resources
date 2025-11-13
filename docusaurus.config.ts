@@ -60,6 +60,18 @@ const config: Config = {
         rehypePlugins: [rehypeKatex],
       },
     ],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'lecture-slides',
+        path: 'lecture-slides',
+        routeBasePath: 'lecture-slides',
+        editUrl: 'https://github.com/neu-pdi/cs3100-public-resources/edit/main/',
+        sidebarPath: './sidebars.ts',
+        remarkPlugins: [remarkMath],
+        rehypePlugins: [rehypeKatex],
+      },
+    ],
   ],
 
 
@@ -139,6 +151,13 @@ const config: Config = {
           docsPluginId: 'assignments',
           position: 'left',
           label: 'Assignments',
+        },
+        {
+          type: 'docSidebar',
+          sidebarId: 'lectureSlidesSidebar',
+          docsPluginId: 'lecture-slides',
+          position: 'left',
+          label: 'Lecture Slides',
         }
       ],
     },

@@ -1,0 +1,396 @@
+.revealContainer {
+  position: relative;
+  width: 100%;
+  height: 80vh;
+  min-height: 600px;
+  margin: 2rem 0;
+}
+
+.revealContainer.fullscreen {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 99999 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: inherit;
+  display: block !important;
+  visibility: visible !important;
+}
+
+.fullscreenButton {
+  position: fixed;
+  top: calc(var(--ifm-navbar-height, 60px) + 1rem);
+  right: 1rem;
+  z-index: 10000;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+  backdrop-filter: blur(4px);
+  width: 40px;
+  height: 40px;
+}
+
+/* When in fullscreen mode, keep at top-right but adjust position */
+.fullscreenButton.fullscreenButtonActive {
+  top: 1rem;
+}
+
+.fullscreenButton:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.fullscreenButton:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+/* ===================================
+   Mermaid Diagram CSS Isolation Fix
+   ===================================
+   
+   This fixes CSS conflicts between Reveal.JS and MermaidJS diagrams.
+   
+   Problem: Reveal.JS applies aggressive CSS overrides (especially 
+   display: flex !important on styled divs) that conflict with Mermaid's
+   rendering of diagrams using foreignObject elements.
+   
+   Solution: Surgically override the specific Reveal.JS rules that conflict
+   with Mermaid's rendering, without breaking SVG transforms.
+   
+   See MERMAID_CSS_ANALYSIS.md for full details.
+*/
+
+/* Override Reveal.JS's forced flex display on divs with inline styles */
+:global(.reveal .slides section .docusaurus-mermaid-container div[style]) {
+  display: inline !important;
+}
+
+/* Fix paragraph styles inside Mermaid diagrams */
+:global(.reveal .slides section .docusaurus-mermaid-container p) {
+  margin: 0 !important;
+  font-weight: normal !important;
+  text-shadow: none !important;
+  line-height: normal !important;
+}
+
+/* Ensure divs inside Mermaid render correctly */
+:global(.reveal .slides section .docusaurus-mermaid-container div) {
+  display: inline !important;
+  visibility: visible !important;
+}
+
+/* Keep SVG elements rendering properly */
+:global(.reveal .slides section .docusaurus-mermaid-container svg) {
+  display: inline-block !important;
+  max-width: 100%;
+}
+
+/* ===================================
+   Mermaid Color Scheme for RevealJS
+   ===================================
+   
+   Custom colors that adapt to light/dark themes.
+   These override Mermaid's default theme colors.
+*/
+
+/* Light theme (white RevealJS theme) - dark fills and strokes */
+:global(.reveal[data-theme="white"] .slides section .docusaurus-mermaid-container .node rect),
+:global(.reveal[data-theme="white"] .slides section .docusaurus-mermaid-container .node circle),
+:global(.reveal[data-theme="white"] .slides section .docusaurus-mermaid-container .node ellipse),
+:global(.reveal[data-theme="white"] .slides section .docusaurus-mermaid-container .node polygon),
+:global(.reveal[data-theme="white"] .slides section .docusaurus-mermaid-container .node path),
+:global(.reveal.has-white .slides section .docusaurus-mermaid-container .node rect),
+:global(.reveal.has-white .slides section .docusaurus-mermaid-container .node circle),
+:global(.reveal.has-white .slides section .docusaurus-mermaid-container .node ellipse),
+:global(.reveal.has-white .slides section .docusaurus-mermaid-container .node polygon),
+:global(.reveal.has-white .slides section .docusaurus-mermaid-container .node path) {
+  fill: #e8e8ff !important;
+  stroke: #9370DB !important;
+  stroke-width: 2px !important;
+}
+
+:global(.reveal[data-theme="white"] .slides section .docusaurus-mermaid-container .edgePath .path),
+:global(.reveal[data-theme="white"] .slides section .docusaurus-mermaid-container .flowchart-link),
+:global(.reveal.has-white .slides section .docusaurus-mermaid-container .edgePath .path),
+:global(.reveal.has-white .slides section .docusaurus-mermaid-container .flowchart-link) {
+  stroke: #333 !important;
+  stroke-width: 2.5px !important;
+}
+
+:global(.reveal[data-theme="white"] .slides section .docusaurus-mermaid-container .arrowheadPath),
+:global(.reveal[data-theme="white"] .slides section .docusaurus-mermaid-container .marker),
+:global(.reveal.has-white .slides section .docusaurus-mermaid-container .arrowheadPath),
+:global(.reveal.has-white .slides section .docusaurus-mermaid-container .marker) {
+  fill: #333 !important;
+  stroke: #333 !important;
+}
+
+:global(.reveal[data-theme="white"] .slides section .docusaurus-mermaid-container .label),
+:global(.reveal[data-theme="white"] .slides section .docusaurus-mermaid-container .nodeLabel),
+:global(.reveal[data-theme="white"] .slides section .docusaurus-mermaid-container .edgeLabel),
+:global(.reveal.has-white .slides section .docusaurus-mermaid-container .label),
+:global(.reveal.has-white .slides section .docusaurus-mermaid-container .nodeLabel),
+:global(.reveal.has-white .slides section .docusaurus-mermaid-container .edgeLabel) {
+  color: #1a1a1a !important;
+}
+
+:global(.reveal[data-theme="white"] .slides section .docusaurus-mermaid-container .label text),
+:global(.reveal[data-theme="white"] .slides section .docusaurus-mermaid-container .nodeLabel text),
+:global(.reveal[data-theme="white"] .slides section .docusaurus-mermaid-container .edgeLabel text),
+:global(.reveal.has-white .slides section .docusaurus-mermaid-container .label text),
+:global(.reveal.has-white .slides section .docusaurus-mermaid-container .nodeLabel text),
+:global(.reveal.has-white .slides section .docusaurus-mermaid-container .edgeLabel text) {
+  fill: #1a1a1a !important;
+}
+
+/* Dark theme (black RevealJS theme) - light fills and strokes */
+:global(.reveal[data-theme="black"] .slides section .docusaurus-mermaid-container .node rect),
+:global(.reveal[data-theme="black"] .slides section .docusaurus-mermaid-container .node circle),
+:global(.reveal[data-theme="black"] .slides section .docusaurus-mermaid-container .node ellipse),
+:global(.reveal[data-theme="black"] .slides section .docusaurus-mermaid-container .node polygon),
+:global(.reveal[data-theme="black"] .slides section .docusaurus-mermaid-container .node path),
+:global(.reveal.has-black .slides section .docusaurus-mermaid-container .node rect),
+:global(.reveal.has-black .slides section .docusaurus-mermaid-container .node circle),
+:global(.reveal.has-black .slides section .docusaurus-mermaid-container .node ellipse),
+:global(.reveal.has-black .slides section .docusaurus-mermaid-container .node polygon),
+:global(.reveal.has-black .slides section .docusaurus-mermaid-container .node path) {
+  fill: #4a5568 !important;
+  stroke: #718096 !important;
+  stroke-width: 2px !important;
+}
+
+:global(.reveal[data-theme="black"] .slides section .docusaurus-mermaid-container .edgePath .path),
+:global(.reveal[data-theme="black"] .slides section .docusaurus-mermaid-container .flowchart-link),
+:global(.reveal.has-black .slides section .docusaurus-mermaid-container .edgePath .path),
+:global(.reveal.has-black .slides section .docusaurus-mermaid-container .flowchart-link) {
+  stroke: #cbd5e0 !important;
+  stroke-width: 2.5px !important;
+}
+
+:global(.reveal[data-theme="black"] .slides section .docusaurus-mermaid-container .arrowheadPath),
+:global(.reveal[data-theme="black"] .slides section .docusaurus-mermaid-container .marker),
+:global(.reveal.has-black .slides section .docusaurus-mermaid-container .arrowheadPath),
+:global(.reveal.has-black .slides section .docusaurus-mermaid-container .marker) {
+  fill: #cbd5e0 !important;
+  stroke: #cbd5e0 !important;
+}
+
+:global(.reveal[data-theme="black"] .slides section .docusaurus-mermaid-container .label),
+:global(.reveal[data-theme="black"] .slides section .docusaurus-mermaid-container .nodeLabel),
+:global(.reveal[data-theme="black"] .slides section .docusaurus-mermaid-container .edgeLabel),
+:global(.reveal.has-black .slides section .docusaurus-mermaid-container .label),
+:global(.reveal.has-black .slides section .docusaurus-mermaid-container .nodeLabel),
+:global(.reveal.has-black .slides section .docusaurus-mermaid-container .edgeLabel) {
+  color: #e2e8f0 !important;
+}
+
+:global(.reveal[data-theme="black"] .slides section .docusaurus-mermaid-container .label text),
+:global(.reveal[data-theme="black"] .slides section .docusaurus-mermaid-container .nodeLabel text),
+:global(.reveal[data-theme="black"] .slides section .docusaurus-mermaid-container .edgeLabel text),
+:global(.reveal.has-black .slides section .docusaurus-mermaid-container .label text),
+:global(.reveal.has-black .slides section .docusaurus-mermaid-container .nodeLabel text),
+:global(.reveal.has-black .slides section .docusaurus-mermaid-container .edgeLabel text) {
+  fill: #e2e8f0 !important;
+}
+
+/* ===================================
+   React-Chrono Timeline CSS Isolation Fix
+   ===================================
+   
+   This fixes CSS conflicts between Reveal.JS and react-chrono timelines.
+   
+   Problem: Reveal.JS applies aggressive CSS overrides (especially 
+   display: flex !important on styled divs) that conflict with react-chrono's
+   horizontal timeline layout and card rendering.
+   
+   Solution: Override Reveal.JS rules that conflict with react-chrono's
+   layout system, ensuring proper display of timeline elements.
+   
+   Note: react-chrono v3 uses "timeline-*" class names, not "react-chrono-*"
+*/
+
+/* Ensure timeline container maintains proper layout */
+:global(.reveal .slides section [class*="timelineContainer"]) {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: visible !important;
+}
+
+/* Fix react-chrono timeline wrapper */
+:global(.reveal .slides section [class*="timelineContainer"] .timeline-wrapper) {
+  display: block !important;
+  width: 100% !important;
+  position: relative !important;
+}
+
+/* Fix horizontal timeline main wrapper */
+:global(.reveal .slides section [class*="timelineContainer"] .timeline-main-wrapper) {
+  display: block !important;
+  width: 100% !important;
+}
+
+/* Fix vertical timeline container */
+:global(.reveal .slides section [class*="timelineContainer"] .timeline-vertical-container) {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  width: 100% !important;
+  padding: 0.25rem 0 !important;
+}
+
+/* Fix vertical item container */
+:global(.reveal .slides section [class*="timelineContainer"] .timeline-vertical-item) {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: flex-start !important;
+  width: 100% !important;
+  margin-bottom: 0.5rem !important;
+}
+
+/* Ensure year/title section is on the left */
+:global(.reveal .slides section [class*="timelineContainer"] .timeline-title-section) {
+  min-width: 80px !important;
+  text-align: right !important;
+  padding-right: 0.75rem !important;
+  flex-shrink: 0 !important;
+  font-size: 0.9rem !important;
+}
+
+/* Card content next to the year */
+:global(.reveal .slides section [class*="timelineContainer"] .timeline-content-render) {
+  flex: 1 !important;
+  margin-left: 0.5rem !important;
+  width: 100% !important;
+  max-width: none !important;
+  padding: 0.5rem !important;
+}
+
+/* Compact vertical container */
+:global(.reveal .slides section [class*="timelineContainer"] .timeline-vertical-container) {
+  padding: 0.25rem 0 !important;
+}
+
+/* Compact card text */
+:global(.reveal .slides section [class*="timelineContainer"] .timeline-card p) {
+  margin: 0.25rem 0 !important;
+  line-height: 1.3 !important;
+}
+
+:global(.reveal .slides section [class*="timelineContainer"] .timeline-card h3),
+:global(.reveal .slides section [class*="timelineContainer"] .timeline-card h4) {
+  margin: 0.25rem 0 !important;
+  line-height: 1.2 !important;
+}
+
+/* Fix timeline controls toolbar */
+:global(.reveal .slides section [class*="timelineContainer"] .timeline-controls) {
+  display: flex !important;
+  flex-wrap: wrap !important;
+}
+
+/* Ensure search and navigation controls work */
+:global(.reveal .slides section [class*="timelineContainer"] [role="search"]) {
+  display: flex !important;
+}
+
+/* Fix toolbar and controls */
+:global(.reveal .slides section [class*="timelineContainer"] [role="toolbar"]) {
+  display: flex !important;
+  flex-wrap: wrap !important;
+}
+
+/* Ensure timeline buttons are clickable */
+:global(.reveal .slides section [class*="timelineContainer"] button) {
+  display: inline-flex !important;
+  cursor: pointer !important;
+}
+
+/* Fix paragraph and text elements inside timeline */
+:global(.reveal .slides section [class*="timelineContainer"] p) {
+  margin: 0.5em 0 !important;
+  text-shadow: none !important;
+}
+
+/* Ensure proper text rendering */
+:global(.reveal .slides section [class*="timelineContainer"] h1),
+:global(.reveal .slides section [class*="timelineContainer"] h2),
+:global(.reveal .slides section [class*="timelineContainer"] h3),
+:global(.reveal .slides section [class*="timelineContainer"] h4) {
+  text-shadow: none !important;
+  margin: 0.5em 0 !important;
+}
+
+/* Fix timeline content render (cards) */
+:global(.reveal .slides section [class*="timelineContainer"] .timeline-content-render) {
+  display: block !important;
+  position: relative !important;
+  width: auto !important;
+  max-width: 300px !important;
+}
+
+/* ===================================
+   Hide react-chrono overlays on non-active slides
+   ===================================
+   
+   React-chrono creates overlays (menus, dialogs) via React portals
+   that escape the shadow DOM. This CSS ensures they're hidden when
+   the timeline is not on the current slide.
+*/
+
+/* Hide react-chrono controls */
+:global(.reveal .slides section [class*="timelineContainer"] .timeline-controls) {
+  display: none !important;
+}
+
+/* Ensure slides with timeline fill the height */
+:global(.reveal .slides section:has([class*="timelineContainer"])) {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  justify-content: flex-start !important;
+}
+
+/* Hide react-chrono overlays when not in present slide */
+:global(.reveal .slides section:not(.present) [class*="timelineContainer"] ~ *),
+:global(.reveal .slides section:not(.present) [role="menu"][aria-label*="Jump to"]),
+:global(.reveal .slides section:not(.present) [role="menu"][aria-label*="Change layout"]),
+:global(.reveal .slides section:not(.present) [role="menu"][aria-label*="Change density"]) {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Hide overlays that are outside the reveal container when slide changes */
+:global(body:not(.reveal-fullscreen) [role="menu"]:not(.reveal .slides section.present [role="menu"])),
+:global(body:not(.reveal-fullscreen) [role="dialog"]:not(.reveal .slides section.present [role="dialog"])) {
+  /* Only hide if it looks like a react-chrono overlay */
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* More specific: Hide react-chrono menus when timeline slide is not present */
+:global(.reveal .slides section:not(.present) [class*="timelineContainer"]) ~ * [role="menu"],
+:global(.reveal .slides section:not(.present) [class*="timelineContainer"]) ~ * [role="dialog"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+
