@@ -380,8 +380,18 @@ sidebar: false
                 );
                 console.log(`📦 Exported schedule to ${scheduleJsonPath}`);
                 
-                // overview.md is already generated in src/pages during contentLoaded
-                // and will be included in the build automatically
+                // Generate overview.md in build output for CI/artifacts
+                const courseMarkdown = await generateCourseMarkdownContent(content, context.siteDir, context.baseUrl);
+                const buildOverviewPath = path.join(outDir, 'overview.md');
+                fs.writeFileSync(buildOverviewPath, courseMarkdown, 'utf-8');
+                
+                // Verify file was written
+                if (fs.existsSync(buildOverviewPath)) {
+                    const stats = fs.statSync(buildOverviewPath);
+                    console.log(`✅ Generated overview.md in build output at ${buildOverviewPath} (${stats.size} bytes)`);
+                } else {
+                    console.error(`❌ Failed to generate overview.md in build output at ${buildOverviewPath}`);
+                }
             }
         },
     };
