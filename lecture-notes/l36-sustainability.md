@@ -11,15 +11,88 @@ title: "Sustainability"
 Quick poll: "How many of you have used software that no longer exists?"
 
 ## Define software sustainability and its importance in software development (10 minutes)
+- Build on existing knowledge: "You've learned about performance, scalability, security..."
+- The problem: These traditional QAs assume a stable context
+- Sustainability: The meta-quality attribute about system endurance
 
 "Software sustainability is the preservation of the long-term and beneficial use of software, and its appropriate evolution, in a context that continuously changes" (Lago 2023 Digital society is already here)
 - Discuss: Why "beneficial"? (long-term...)
 
 ## Identify the four dimensions of software sustainability and explain how they interconnect (15 minutes)
-- Economic, Technical, Social, and Environmental
+- Technical: Maintainability, evolvability (connects to modular design lecture)
+    - Discuss how technical decisions affect different stakeholder roles (developers, end users, indirect stakeholders)
+- Economic: Total cost of ownership (connects to networks/distributed systems and software architecture lectures)
+    - Hidden costs, hidden benefits
+    - Vendor lock-in vs operational costs
+- Environmental: Resource consumption (new consideration)
+- Social: Accessibility, usability (connects to user experience lectures, plus new considerations for society at large)
+    - Critical addition on indirect stakeholders
+
 - First, second, third-order effects
 - Examples
 
 ## Evaluate trade-offs between competing sustainability concerns in software design decisions (10 minutes)
 
+[Translating values into requirements is HARD and an open research challenge](https://research.vu.nl/ws/portalfiles/portal/426353263/Exploring_ethical_values_in_software_systems.pdf#page25).
+
+### Example: Pawtograder
+
+Identifying Direct vs. Indirect Stakeholders
+- Direct: Students submitting code, TAs grading, instructors managing course
+- Indirect: Future employers, educational equity, broader academic community
+
+Mapping Stakeholder Concerns to Values (using Schwartz framework):
+- Security: Privacy (student code), safety (reliable grading)
+- Benevolence: Trust (fair assessment), transparency (clear feedback)
+- Universalism: Fairness (equal access), welfare (student learning outcomes)
+- Self-direction: Autonomy (students control submissions)
+
+Value Conflicts in Pawtograder:
+- Privacy vs. Transparency: Should we log all submissions for debugging?
+- Autonomy vs. Safety: Should we limit submission attempts to prevent system abuse?
+- Efficiency vs. Fairness: Should we prioritize faster grading for some assignments?
+
+Technical Dimension:
+- Maintainability: Open-source, modular design
+- Evolution: Serverless allows scaling without infrastructure changes
+- GitHub Actions: Standard tooling reduces custom code
+
+Economic Dimension:
+- Serverless: Pay only for actual grading runs (vs. always-on servers)
+- Universities maintaining self-hosted graders = hidden costs
+- Open-source: No licensing costs for universities
+- Trade-off: Potential vendor lock-in to GitHub
+
+Environmental Dimension:
+- 3-12k daily submissions × average 2-minute runtime = significant compute
+- Self-hosted runners: Universities can use renewable energy?
+- On-demand resources: No idle servers
+
+Social Dimension:
+- WCAG compliance planned but not validated
+- GPL ensures any institution can use it
+- But: Requires GitHub access
+- Knowledge barrier: Need expertise to self-host
+- Community: Open-source enables contributions
+
+#### Real Decision: Response to the Azure Outage from October 2025
+
+Option A: Add Fallback to Self-Hosted Infrastructure
+
+- Technical: Complex failover logic, maintenance burden
+- Economic: Duplicate infrastructure costs
+- Environmental: Idle resources most of the time
+- Social: Requires expertise not all schools have
+
+Option B: Stay GitHub-Dependent
+
+- Technical: Simpler architecture
+- Economic: Leverage free tier
+- Environmental: Efficient resource sharing
+- Social: Equal access for all institutions
+
+
 ## Evaluate the long-term architectural impacts of design decisions beyond immediate technical requirements (15 minutes)
+[Relate ethical values to quality attributes](https://research.vu.nl/ws/portalfiles/portal/426353263/Exploring_ethical_values_in_software_systems.pdf#page25)
+
+### Speculate on the long-term impacts of Pawtograder's design decisions

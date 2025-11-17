@@ -380,17 +380,27 @@ sidebar: false
                 );
                 console.log(`📦 Exported schedule to ${scheduleJsonPath}`);
                 
-                // Generate overview.md in build output for CI/artifacts
-                const courseMarkdown = await generateCourseMarkdownContent(content, context.siteDir, context.baseUrl);
-                const buildOverviewPath = path.join(outDir, 'overview.md');
-                fs.writeFileSync(buildOverviewPath, courseMarkdown, 'utf-8');
+                // Verify that Docusaurus rendered the overview page
+                // Docusaurus automatically renders src/pages/overview.md to overview/index.html
+                // Try multiple possible paths
+                const possiblePaths = [
+                    path.join(outDir, 'overview', 'index.html'), // Standard path
+                    path.join(outDir, 'cs3100-public-resources', 'overview', 'index.html'), // With baseUrl
+                    path.join(outDir, 'overview.html'), // Alternative format
+                ];
                 
-                // Verify file was written
-                if (fs.existsSync(buildOverviewPath)) {
-                    const stats = fs.statSync(buildOverviewPath);
-                    console.log(`✅ Generated overview.md in build output at ${buildOverviewPath} (${stats.size} bytes)`);
-                } else {
-                    console.error(`❌ Failed to generate overview.md in build output at ${buildOverviewPath}`);
+                let foundPath: string | null = null;
+                for (const htmlPath of possiblePaths) {
+                    if (fs.existsSync(htmlPath)) {
+                        foundPath = htmlPath;
+                        const stats = fs.statSync(htmlPath);
+                        console.log(`✅ Overview page rendered at ${htmlPath} (${stats.size} bytes)`);
+                        break;
+                    }
+                }
+                
+                if (!foundPath) {
+                    console.warn(`⚠️  Overview page not found. Checked paths: ${possiblePaths.join(', ')}`);
                 }
             }
         },
