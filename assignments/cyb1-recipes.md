@@ -9,7 +9,7 @@ Welcome to the **CookYourBooks** project! Over the course of the semester, you'l
 
 In this first assignment, you'll lay the foundation by implementing the core domain model for **ingredients and quantities**. You'll create two class hierarchies that work together: one for representing different types of quantities (exact, fractional, and range), and another for representing ingredients (measured and vague). These classes will be the building blocks for everything else you create this semester, so it's important to get them right!
 
-**Due:** Week 2, Thursday at 11:59 PM
+**Due:** Thursday, January 15, 2026 at 11:59 PM Boston Time
 
 ## Learning Outcomes
 By completing this assignment, you will demonstrate proficiency in the following skills:
@@ -17,22 +17,30 @@ By completing this assignment, you will demonstrate proficiency in the following
 - Designing and implementing well-structured Java classes with appropriate fields and methods
 - Applying **inheritance** and **polymorphism** to model related concepts with two distinct class hierarchies
 - Understanding when to use **composition vs inheritance** (e.g., `MeasuredIngredient` has-a `Quantity`)
-- Creating and using **enums** with fields and methods for type-safe constants
+- Reading official language documentation and creating and using **enums** with fields and methods for type-safe constants
 - Implementing `toString()` methods for clear object representation
 - Writing specifications with **preconditions and postconditions** using Javadoc
 - Validating constructor inputs and throwing appropriate exceptions
 - Writing comprehensive unit tests with JUnit 5
-- Working with Java's type system and object-oriented principles
 
 ## AI policy for this assignment
 
-**AI coding assistants (such as GitHub Copilot, ChatGPT, Claude, etc.) are NOT permitted for this assignment.**
+**AI coding assistants (such as GitHub Copilot, ChatGPT, Claude, etc.) should NOT be used for this assignment.** 
 
-This is your opportunity to demonstrate your understanding of fundamental Java concepts. You should write all code yourself without AI assistance. You may:
+This is your opportunity to demonstrate your understanding of fundamental Java concepts. You should write all code yourself without *any* AI assistance. You may:
 - Use official Java documentation
 - Consult your textbook and course materials
 - Ask questions in office hours or on the course discussion board
 - Discuss high-level approaches with classmates (but write your own code)
+
+As we are unable to enforce this policy, we stress that this policy is a strong guideline, and will not adjust your grade if you use AI to help you with this assignment. We ask that you report any AI usage in the [Reflection](#reflection) section of your submission to help us improve the course and this policy.
+
+## Grading Overview
+This assignment is worth 100 points. A fully automated grading script will be used to add points to your submission, and a manual grading process will be used to deduct points for subjective issues that can not be automatically graded.
+
+A grade of "zero" will be awarded for submissions that do not compile or have code formatting issues. If this is a challenge for you, please reach out to the staff for assistance - we are happy to help make sure that your IDE is configured correctly to automatically flag (and potentially fix) these issues.
+
+You should carefully read the [Grading Rubric](#grading-rubric) section below to understand how your submission will be graded.
 
 ## Technical Specifications
 
@@ -67,7 +75,7 @@ All quantities are tied to a specific unit and can represent the same amount in 
 
 ### Class Design
 
-You must implement the following classes in a package named `app.cookyourbooks`:
+You must implement the following classes in a package named `app.cookyourbooks.domain`:
 
 ```mermaid
 classDiagram
@@ -76,6 +84,14 @@ classDiagram
         IMPERIAL
         METRIC
         HOUSE
+    }
+    
+    class UnitDimension {
+        <<enumeration>>
+        WEIGHT
+        VOLUME
+        COUNT
+        OTHER
     }
     
     class Unit {
@@ -96,7 +112,9 @@ classDiagram
         HANDFUL
         TO_TASTE
         +getSystem() UnitSystem
+        +getDimension() UnitDimension
         +getAbbreviation() String
+        +getPluralAbbreviation() String
     }
     
     class Quantity {
@@ -109,6 +127,7 @@ classDiagram
     }
     
     class ExactQuantity {
+        +DECIMAL_PRECISION: int$ 
         -double amount
         +ExactQuantity(double amount, Unit unit)
         +double getAmount()
@@ -129,6 +148,7 @@ classDiagram
     }
     
     class RangeQuantity {
+        +DECIMAL_PRECISION: int$
         -double min
         -double max
         +RangeQuantity(double min, double max, Unit unit)
@@ -165,6 +185,7 @@ classDiagram
     }
     
     Unit --> UnitSystem
+    Unit --> UnitDimension
     Quantity --> Unit
     Quantity <|-- ExactQuantity
     Quantity <|-- FractionalQuantity
@@ -175,38 +196,51 @@ classDiagram
 ```
 
 ### Invariants and Contracts
+Utilize JSpecify's `@NonNull` annotations to express the non-nullness of parameters and return values.
+
+Java Enums are a special type of class that represents a fixed set of constants. They are declared using the `enum` keyword and are instantiated using the `new` keyword. To learn more about Enums, you should refer directly to [the Java documentation](https://docs.oracle.com/javase/tutorial/java/javaOO/enum.html).
 
 #### `UnitSystem` (enum)
 
-An enumeration representing the measurement system for units.
+An enumeration representing the measurement system for units. This is a simple enum (no fields or methods).
 
 **Values:**
 - `IMPERIAL` - US/British measurements (cups, tablespoons, ounces, pounds)
 - `METRIC` - International System (milliliters, liters, grams, kilograms)
 - `HOUSE` - Informal or chef-specific measurements (pinch, dash, handful, to taste)
 
-#### `Unit` (enum)
+#### `UnitDimension` (enum)
 
-An enumeration representing units of measurement for ingredients.
+An enumeration representing the physical dimension of a unit. This is a simple enum (no fields or methods).
 
 **Values:**
-- Imperial: `CUP` ("cup", "cups"), `TABLESPOON` ("tbsp", "tbsp"), `TEASPOON` ("tsp", "tsp"), `FLUID_OUNCE` ("fl oz", "fl oz"), `OUNCE` ("oz", "oz"), `POUND` ("lb", "lb")
-- Metric: `MILLILITER` ("ml", "ml"), `LITER` ("L", "L"), `GRAM` ("g", "g"), `KILOGRAM` ("kg", "kg")
-- Imperial (count): `WHOLE` ("whole", "whole") - used for counting items like eggs
-- House: `PINCH` ("pinch", "pinches"), `DASH` ("dash", "dashes"), `HANDFUL` ("handful", "handfuls"), `TO_TASTE` ("to taste", "to taste")
+- `WEIGHT` - Units for measuring mass (grams, kilograms, ounces, pounds)
+- `VOLUME` - Units for measuring volume (milliliters, liters, cups, tablespoons, teaspoons, fluid ounces)
+- `COUNT` - Units for counting discrete items (whole)
+- `OTHER` - Units that don't fit standard categories (house units like pinch, dash, handful, to taste)
+
+#### `Unit` (enum)
+
+An enumeration representing units of measurement for ingredients. Each enum constant must be defined with its system, dimension, singular abbreviation, and plural abbreviation.
+
+You should use your judgement to determine how to implement the enum, relying primarily on [the Java documentation](https://docs.oracle.com/javase/tutorial/java/javaOO/enum.html). 
+
+**Values:**
+- Imperial (volume): `CUP` (IMPERIAL, VOLUME, "cup", "cups"), `TABLESPOON` (IMPERIAL, VOLUME, "tbsp", "tbsp"), `TEASPOON` (IMPERIAL, VOLUME, "tsp", "tsp"), `FLUID_OUNCE` (IMPERIAL, VOLUME, "fl oz", "fl oz")
+- Imperial (weight): `OUNCE` (IMPERIAL, WEIGHT, "oz", "oz"), `POUND` (IMPERIAL, WEIGHT, "lb", "lb")
+- Metric (volume): `MILLILITER` (METRIC, VOLUME, "ml", "ml"), `LITER` (METRIC, VOLUME, "L", "L")
+- Metric (weight): `GRAM` (METRIC, WEIGHT, "g", "g"), `KILOGRAM` (METRIC, WEIGHT, "kg", "kg")
+- House: `PINCH` (HOUSE, OTHER, "pinch", "pinches"), `DASH` (HOUSE, OTHER, "dash", "dashes"), `HANDFUL` (HOUSE, OTHER, "handful", "handfuls"), `TO_TASTE` (HOUSE, OTHER, "to taste", "to taste")
+- House (count): `WHOLE` (IMPERIAL, COUNT, "whole", "whole") - used for counting items like eggs
 
 **Methods:**
 - `public UnitSystem getSystem()` - Returns the unit system this unit belongs to
+- `public UnitDimension getDimension()` - Returns the physical dimension of this unit
 - `public String getAbbreviation()` - Returns the singular form for display
 - `public String getPluralAbbreviation()` - Returns the plural form for display
 
-**Implementation Notes:**
-- Each enum constant must be defined with its system, singular abbreviation, and plural abbreviation
-- Use a private constructor: `Unit(UnitSystem system, String abbreviation, String pluralAbbreviation)`
-- Store system, abbreviation, and pluralAbbreviation as private final fields in the enum
-- Example constant definition: `CUP(UnitSystem.IMPERIAL, "cup", "cups")`
-- The getters simply return these stored values
-- Note: Some units use the same form for both singular and plural (e.g., "tbsp", "ml")
+**Testing (`UnitTest.java`):**
+Write tests to verify the `Unit` enum methods work correctly for a representative sample of units. We do not suggest that you spend time testing `UnitSystem` or `UnitDimension` directly.
 
 #### `Quantity` (abstract class)
 
@@ -235,13 +269,20 @@ Represents a precise decimal quantity.
   - **Throws:** `IllegalArgumentException` if amount is not positive or unit is null
   - **Postconditions:** Creates an exact quantity with the given amount and unit
 
+**Constants:**
+- `public static final int DECIMAL_PRECISION` - The maximum number of decimal places to display when formatting quantities (you should choose a reasonable value, such as 2 or 3)
+
 **Methods:**
 - `public double getAmount()` - Returns the amount (always > 0.0)
 - `public double toDecimal()` - Returns the amount
 - `public String toString()` - Returns a formatted string using appropriate singular/plural form:
+  - Format the amount with at most `DECIMAL_PRECISION` decimal places, simplifying where possible (e.g., "2" instead of "2.0", "2.5" instead of "2.50")
   - If amount equals 1.0: `"{amount} {unit.getAbbreviation()}"` (e.g., "1 cup", "1 g")
   - Otherwise: `"{amount} {unit.getPluralAbbreviation()}"` (e.g., "2.5 cups", "100 g")
-  - Note: Use exact comparison `amount == 1.0` for determining singular/plural
+  - Note: Use exact comparison `amount == 1.0` for determining singular/plural (before formatting for display)
+
+**Testing (`ExactQuantityTest.java`):**
+Write tests to verify constructor validation (consider what values should be valid vs. invalid based on the preconditions), the `toDecimal()` calculation, and the `toString()` formatting rules including singular/plural logic. 
 
 #### `FractionalQuantity` (extends `Quantity`)
 
@@ -273,6 +314,9 @@ Represents a quantity as a mixed number (whole + fraction).
     - If numerator equals 1 and denominator equals 1: `"{numerator} {unit.getAbbreviation()}"` (e.g., "1 cup")
     - Otherwise: `"{numerator}/{denominator} {unit.getAbbreviation()}"` (e.g., "1/2 cup")
 
+**Testing (`FractionalQuantityTest.java`):**
+Write tests to verify constructor validation for all three components (whole, numerator, denominator) based on the preconditions. Test the `toDecimal()` calculation and `toString()`. Remember to use a delta when comparing floating-point results.
+
 #### `RangeQuantity` (extends `Quantity`)
 
 Represents a range of quantities (e.g., "2-3 cups").
@@ -286,12 +330,19 @@ Represents a range of quantities (e.g., "2-3 cups").
   - **Throws:** `IllegalArgumentException` if any precondition is violated
   - **Postconditions:** Creates a range quantity with the given min, max, and unit
 
+**Constants:**
+- `public static final int DECIMAL_PRECISION` - The maximum number of decimal places to display when formatting quantities (you should choose a reasonable value, such as 2 or 3)
+
 **Methods:**
 - `public double getMin()` - Returns the minimum amount (always > 0.0)
 - `public double getMax()` - Returns the maximum amount (always > min)
 - `public double toDecimal()` - Returns the midpoint: `(min + max) / 2.0`
 - `public String toString()` - Returns formatted string using plural form (ranges are always plural):
+  - Format both min and max with at most `DECIMAL_PRECISION` decimal places, simplifying where possible (e.g., "2-3 cups" instead of "2.0-3.0 cups")
   - Format: `"{min}-{max} {unit.getPluralAbbreviation()}"` (e.g., "2-3 cups", "100-150 g")
+
+**Testing (`RangeQuantityTest.java`):**
+Write tests to verify constructor validation for the relationship between min and max values based on the preconditions. Test the midpoint calculation in `toDecimal()` and `toString()`.
 
 #### `Ingredient` (abstract class)
 
@@ -332,6 +383,11 @@ Represents a range of quantities (e.g., "2-3 cups").
     - "1/2 cup sugar"
     - "100 g butter"
     - "3 whole eggs, room temperature"
+- `public boolean equals(Object o)` - Compares ingredients for equality based on name (case-insensitive), quantity, preparation, and notes
+- `public int hashCode()` - Returns hash code based on name (lowercase), quantity, preparation, and notes
+
+**Testing (`MeasuredIngredientTest.java`):**
+Write tests to verify constructor validation for required vs. optional parameters, including string trimming behavior. Test `toString()` formatting with and without preparation.
 
 #### `VagueIngredient` (extends `Ingredient`)
 
@@ -357,156 +413,52 @@ Represents a range of quantities (e.g., "2-3 cups").
     - Name + preparation: `"{name}, {preparation}"` (e.g., "tomatoes, diced")
     - Name + description + preparation: `"{name} ({description}), {preparation}"` (e.g., "pepper (freshly ground), coarsely chopped")
 
+**Testing (`VagueIngredientTest.java`):**
+Write tests to verify constructor validation and string trimming behavior. Test `toString()`.
+
 ### Design Requirements
 
 - Use proper access modifiers: fields should be `private`, constructors `public` (except `Ingredient` and `Quantity` constructors which should be `protected`)
-- Make all fields `final` to ensure immutability
-- Follow Java naming conventions (classes are PascalCase, methods are camelCase)
+- Make all fields `final` to ensure immutability (except for the `DECIMAL_PRECISION` constants which should be `public static final`)
+- Follow Java naming conventions (classes are PascalCase, methods are camelCase, constants are UPPER_SNAKE_CASE)
 - Add comprehensive Javadoc comments for all public classes, constructors, and methods
 - Document all parameters, return values, exceptions, preconditions, and postconditions
 - Trim all string inputs in constructors to remove leading/trailing whitespace
 - Use proper encapsulation: no mutable objects should be exposed through getters
+- When formatting decimal quantities as strings, use the `DECIMAL_PRECISION` constant to limit decimal places and simplify output (e.g., "2" not "2.0")
 
-### Example Usage
+### Testing Overview
 
-```java
-package app.cookyourbooks;
+Your test suite should demonstrate correctness and robustness of your implementation. **An important learning goal of this assignment is developing your ability to determine what constitutes appropriate testing.** Use the class specifications (especially the preconditions, postconditions, and method contracts) to guide your test design.
 
-public class RecipeExample {
-    public static void main(String[] args) {
-        // Creating quantities
-        Quantity flourQty = new ExactQuantity(2.5, Unit.CUP);
-        Quantity sugarQty = new FractionalQuantity(0, 1, 2, Unit.CUP);
-        Quantity butterQty = new FractionalQuantity(2, 1, 3, Unit.TABLESPOON);
-        Quantity milkQty = new RangeQuantity(2, 3, Unit.CUP);
-        Quantity eggsQty = new ExactQuantity(3, Unit.WHOLE);
-        Quantity tomatoesQty = new ExactQuantity(800, Unit.GRAM);
-        
-        // Creating measured ingredients
-        Ingredient flour = new MeasuredIngredient("flour", flourQty, "sifted", null);
-        Ingredient sugar = new MeasuredIngredient("sugar", sugarQty, null, null);
-        Ingredient butter = new MeasuredIngredient("butter", butterQty, null, null);
-        Ingredient milk = new MeasuredIngredient("milk", milkQty, null, null);
-        Ingredient eggs = new MeasuredIngredient("eggs", eggsQty, "room temperature", null);
-        Ingredient tomatoes = new MeasuredIngredient("tomatoes", tomatoesQty, "diced", 
-            "We prefer Bianco DiNapoli tomatoes");
-        
-        // Creating vague ingredients
-        Ingredient salt = new VagueIngredient("salt", "to taste", null, null);
-        Ingredient water = new VagueIngredient("water", null, null, null);
-        Ingredient pepper = new VagueIngredient("black pepper", "freshly ground", null, 
-            "Order from Kalustyan's if unavailable locally");
-        
-        // String representation
-        System.out.println(flour);     // Output: 2.5 cups flour, sifted
-        System.out.println(sugar);     // Output: 1/2 cup sugar
-        System.out.println(butter);    // Output: 2 1/3 tbsp butter
-        System.out.println(milk);      // Output: 2-3 cups milk
-        System.out.println(eggs);      // Output: 3 whole eggs, room temperature
-        System.out.println(tomatoes);  // Output: 800 g tomatoes, diced
-        System.out.println(salt);      // Output: salt (to taste)
-        System.out.println(water);     // Output: water
-        
-        // Quantity conversions
-        System.out.println(sugarQty.toDecimal());  // Output: 0.5
-        System.out.println(butterQty.toDecimal()); // Output: 2.333...
-        System.out.println(milkQty.toDecimal());   // Output: 2.5 (midpoint)
-        
-        // Unit systems
-        System.out.println(Unit.CUP.getSystem());          // Output: IMPERIAL
-        System.out.println(Unit.GRAM.getSystem());         // Output: METRIC
-        System.out.println(Unit.PINCH.getSystem());        // Output: HOUSE
-        System.out.println(Unit.TABLESPOON.getAbbreviation()); // Output: tbsp
-        
-        // Exception handling
-        try {
-            Quantity invalid = new ExactQuantity(0, Unit.CUP);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Error: " + e.getMessage());
-            // Output: Error: amount must be positive
-        }
-    }
-}
-```
+Brief testing guidance is provided after each class specification above. Each class has its own test file in the `app.cookyourbooks.domain` package:
+- `UnitTest.java` - Tests for the Unit enum (and indirectly UnitSystem and UnitDimension)
+- `ExactQuantityTest.java` - Tests for ExactQuantity
+- `FractionalQuantityTest.java` - Tests for FractionalQuantity
+- `RangeQuantityTest.java` - Tests for RangeQuantity
+- `MeasuredIngredientTest.java` - Tests for MeasuredIngredient
+- `VagueIngredientTest.java` - Tests for VagueIngredient
 
-### Testing Requirements
+#### General Testing Guidelines
 
-You must write comprehensive unit tests for all classes. Your test suite should demonstrate correctness and robustness of your implementation. **Note:** Example tests will be provided in the starter code repository.
+When designing tests, ask yourself:
+- What are the **valid inputs** based on the preconditions? Test representative examples.
+- What are the **invalid inputs** that should throw exceptions? Test boundary cases and violations.
+- What are the **edge cases** (e.g., exactly 1.0, zero values, empty strings)? These often reveal bugs.
+- What are the **different code paths** in complex methods like `toString()`? Each branch needs testing.
+- For calculations, are the **mathematical results correct**? Use appropriate precision for floating-point comparisons. 
 
-#### Required Test Categories
+**Note on exception testing:** The specification does not prescribe specific error messages for `IllegalArgumentException`. Your tests should verify that the correct exception type is thrown (using `assertThrows`), but should not assert on the exception message content.
 
-**1. Constructor Tests (All Classes)**
-- Valid construction with typical inputs
-- Valid construction with null optional fields (preparation, notes, description)
-- Boundary cases:
-  - Very small positive amounts (e.g., 0.001)
-  - Large amounts
-  - Edge cases for fractions (whole=0, numerator=0, etc.)
-- Exception cases:
-  - Null parameters where required should throw `IllegalArgumentException`
-  - Blank name (empty or whitespace) should throw `IllegalArgumentException`
-  - Zero or negative amounts should throw `IllegalArgumentException`
-  - Invalid fraction components (negative numerator, zero/negative denominator)
-  - Invalid range (min >= max, zero/negative min)
+**Do not write tests for simple getters.** If a constructor test passes, the getters work. Focus on:
+- Constructor validation (preconditions and exceptions)
+- Calculations and logic (`toDecimal()`, midpoint)
+- String formatting with all branches (`toString()`)
 
-**2. `toDecimal()` Tests (Quantity Classes)**
-- Correct conversion for `ExactQuantity`
-- Correct conversion for `FractionalQuantity` (including mixed numbers and proper fractions)
-- Correct midpoint calculation for `RangeQuantity`
-- Precision handling for division in `FractionalQuantity`
-
-**3. `toString()` Tests (All Classes)**
-- Correct format for each quantity type with proper singular/plural forms:
-  - `ExactQuantity`: "1 cup" (singular), "2.5 cups" (plural), "100 g"
-  - `FractionalQuantity`: "1/2 cup", "1 cup" (singular), "2 cups" (plural), "2 1/3 cups"
-  - `RangeQuantity`: "2-3 cups" (always plural)
-- Correct format for ingredients:
-  - With and without preparation
-  - With and without description (for vague ingredients)
-  - Proper integration of quantity's toString
-  - All combinations of name, description, and preparation for VagueIngredient
-- Proper use of singular and plural unit abbreviations
-
-**4. Enum Tests (Unit and UnitSystem)**
-- Verify `Unit.getSystem()` returns correct `UnitSystem` for each unit
-- Verify `Unit.getAbbreviation()` returns correct singular abbreviation
-- Verify `Unit.getPluralAbbreviation()` returns correct plural abbreviation
-- Test a sample of units from each system (Imperial, Metric, House)
-- Ensure all 14 units are properly defined
-
-**5. Inheritance and Polymorphism Tests**
-- Verify quantity subclasses can be assigned to `Quantity` references
-- Verify ingredient subclasses can be assigned to `Ingredient` references
-- Verify abstract methods work polymorphically
-
-**6. Integration Tests**
-- Test creating `MeasuredIngredient` with different quantity types
-- Test that toString properly composes information from quantity and ingredient
-
-#### Testing Best Practices
-
-- Use JUnit 5 for all tests
-- Use descriptive test method names (e.g., `testConstructorThrowsExceptionForNegativeAmount`)
-- Use `@Test` annotation for each test method
-- Use assertions: `assertEquals`, `assertThrows`, `assertNotNull`, `assertTrue`, `assertFalse`, `assertNull`
-- Use `assertEquals` with delta for floating-point comparisons: `assertEquals(expected, actual, 0.0001)`
-- Organize tests into test classes:
-  - `UnitTest` - for Unit enum
-  - `ExactQuantityTest`, `FractionalQuantityTest`, `RangeQuantityTest`
-  - `MeasuredIngredientTest`, `VagueIngredientTest`
-- Aim for at least 90% code coverage
-
-#### What NOT to Test
-
-**Do not write tests for simple getters.** Testing getters is redundant and wastes time—if a constructor test passes, the getters work. Focus your testing effort on:
-- Constructor validation and edge cases
-- Mathematical calculations (toDecimal)
-- String formatting (toString)
-- Enum behavior
-- Exception handling
+Use JUnit 5 with descriptive test method names, appropriate assertions (`assertEquals`, `assertThrows`, etc.), and aim for at least 90% code coverage.
 
 ## Reflection
-Add a file `REFLECTION.md` to your repository that includes a 1-5 sentence reflection on each of the following questions:
+Add a file `REFLECTION.md` to the root of your repository that includes a 1-5 sentence reflection on each of the following questions:
 
 1. **Inheritance Design:** Why is it useful to have `MeasuredIngredient` and `VagueIngredient` both extend a common `Ingredient` class, rather than an interface? What advantages does this provide for future development? Similarly, why is the `Quantity` hierarchy beneficial?
 
@@ -518,116 +470,110 @@ Add a file `REFLECTION.md` to your repository that includes a 1-5 sentence refle
 
 5. **Challenges:** What was the most challenging aspect of this assignment? What strategy did you use to overcome it?
 
+6. **AI Usage:** Did you use AI to help you with this assignment? If so, how did you use it? (Note that this information will be used to help improve the course, and **not** used to penalize you for using AI, as-per our [AI policy](#ai-policy-for-this-assignment).) 
+
+### Reflection grading
+Your reflection should include 1-5 sentences for each of the questions above. Answers should be answered to the best of your ability, and reference your code submission. Up to 2 points will be deducted for each question that is omitted or answered incompletely.
+
 ## Quality Requirements
 
-Your submission will be evaluated on:
+Your submission should demonstrate:
 
-- **Correctness (40%)**: Your code must compile, follow all specifications, and pass comprehensive tests
-- **Testing (25%)**: Comprehensive test suite covering all required test categories with high coverage
-- **Design (20%)**: Classes should be well-designed with appropriate use of inheritance, access modifiers, and validation
-- **Documentation (10%)**: All public classes and methods should have clear Javadoc comments
-- **Code Quality (5%)**: Code should be clean, readable, and follow Java conventions
-
-Additional expectations:
-- No compiler warnings
-- No checkstyle violations (if provided)
-- Consistent indentation and formatting
-- Meaningful variable and method names
-- Appropriate use of exceptions with descriptive error messages
+- **Correctness**: Your code must compile, follow all specifications, and pass comprehensive tests (this is assessed by the automated grading script)
+- **Testing**: Test suite that effectively detects bugs through meaningful test cases (the automated grading script assesses fault detection, but not overall test suite quality)
+- **Design**: Classes should be well-designed with appropriate use of inheritance, encapsulation, and validation
+- **Documentation**: All public classes and methods should have clear Javadoc comments
+- **Code Quality**: Code should be clean, readable, and follow course style conventions
 
 ## Grading Rubric
 
-Your submission will be evaluated on correctness, design quality, testing, and code quality. This rubric is organized by the design principles covered in lectures 1-3.
+### Automated Grading
+Within the automated grading script, you will be awarded points for:
+- 50 points for implementation correctness
+- 50 points for test suite effectiveness
 
-### Correctness and Functionality (52 points)
+Your implementation's correctness is evaluated by running your code against the instructor's test suite. Your test suite's effectiveness is evaluated by running your test suite against the instructor's reference implementation and a suite of buggy implementations of the same unit that have been intentionally modified to contain bugs.
 
-| Component | Points | Criteria |
-|-----------|--------|----------|
-| **UnitSystem Enum** | 2 | All three values (IMPERIAL, METRIC, HOUSE) correctly defined |
-| **Unit Enum** | 4 | All 14 units correctly defined with system, singular and plural abbreviations; getters work correctly |
-| **Quantity Hierarchy** | 6 | Abstract base class with protected constructor, unit field, abstract toDecimal() and toString() |
-| **ExactQuantity** | 6 | Correct toDecimal(), toString() with singular/plural logic, validation (amount > 0) |
-| **FractionalQuantity** | 10 | Correct toDecimal() calculation, toString() with all formatting cases, validation (denominator > 0, whole >= 0, numerator >= 0, at least one positive) |
-| **RangeQuantity** | 6 | Correct toDecimal() (midpoint), toString() always plural, validation (min > 0, max > min) |
-| **Ingredient Hierarchy** | 4 | Abstract base class with protected constructor, fields (name, preparation, notes), string trimming |
-| **MeasuredIngredient** | 8 | Composition with Quantity, toString() integrates quantity, validation (non-null quantity, non-blank name) |
-| **VagueIngredient** | 6 | toString() handles all combinations of description/preparation, validation (non-blank name) |
+For each of the units that you are tasked with implementing, you will only receive marks for the implementation of that unit if you **also** have included at least one test for that unit that detects a plausible bug in the implementation of that unit **and** all of your tests pass on the reference implementation of that unit.
 
-### Inheritance and Polymorphism (12 points)
-*Based on Lecture 2: Type hierarchies, interfaces, abstract classes, dynamic dispatch*
+Marks for tests are awarded per-fault (detect 2/5 faults and get 2/5 of the points for that unit), while marks for implementation are awarded "all or nothing" (get 100% of the points for that unit if your implementation is correct, 0% if any test fails). The grading script is configured to provide you with up to one hint on each submission for a bug that your test suite did not detect. It is also configured to provide you with up to one hint on each submission for a bug in your implementation that was detected by the instructor's test suite. With a maximum of 5 submissions per 24 hours, you should plan your efforts carefully.
 
-| Criteria | Points | Details |
-|----------|--------|---------|
-| **Appropriate use of inheritance** | 4 | Both hierarchies (Quantity and Ingredient) use abstract base classes appropriately; code is reused not duplicated |
-| **Composition over inheritance** | 3 | MeasuredIngredient uses composition (has-a Quantity) rather than multiple inheritance; demonstrates understanding of when composition is preferred |
-| **Access modifiers** | 3 | Proper use of `private` fields, `public` methods, `protected` constructors; no package-private declarations |
-| **Method overriding** | 2 | toString() properly overridden in all subclasses; no @Override used on abstract base methods |
+### Automated Grading (100 points)
 
-### Type Safety and Exceptions (10 points)
-*Based on Lecture 2: Exception handling and parameter validation*
+#### Implementation Correctness (50 points)
 
-| Criteria | Points | Details |
-|----------|--------|---------|
-| **Parameter validation** | 5 | All constructor parameters validated with appropriate checks (null, blank, positive values, ranges) |
-| **Appropriate exceptions** | 3 | IllegalArgumentException used consistently for invalid parameters with descriptive messages |
-| **Null safety** | 2 | Proper handling of nullable parameters (preparation, notes, description); null checks where required |
+Your code is tested against a comprehensive instructor test suite that verifies all specifications are met.
 
-### Documentation and Specification (8 points)
-*Based on Lecture 1: Comments and Javadoc; Lecture 2: Method specifications*
+- `UnitSystem`: 2 points
+- `UnitDimension`: 2 points
+- `Unit`: 6 points
+- `Quantity`: 4 points
+- `ExactQuantity`: 6 points
+- `FractionalQuantity`: 10 points
+- `RangeQuantity`: 6 points
+- `Ingredient`: 4 points
+- `MeasuredIngredient`: 6 points
+- `VagueIngredient`: 4 points
 
-| Criteria | Points | Details |
-|----------|--------|---------|
-| **Javadoc completeness** | 4 | All public classes, constructors, and methods have Javadoc; includes @param, @return, @throws as appropriate |
-| **Specification clarity** | 2 | Javadoc clearly describes preconditions, postconditions, and exceptional behavior |
-| **Code comments** | 2 | Complex logic has clear comments; no redundant comments on obvious code |
+#### Test Suite Quality (50 points)
 
-### Testing (18 points)
-*Based on testing principles and comprehensive validation*
+Your tests are evaluated using mutation testing—we introduce small bugs into correct implementations and check whether your tests catch them.
 
-| Criteria | Points | Details |
-|----------|--------|---------|
-| **Constructor validation tests** | 5 | Tests for all valid cases, boundary cases, and exception cases; proper use of assertThrows |
-| **Calculation tests** | 4 | toDecimal() tests with proper floating-point comparison (delta); edge cases covered |
-| **String formatting tests** | 4 | toString() tests cover all formatting branches including singular/plural logic |
-| **Enum tests** | 2 | Unit enum methods tested; sample from each UnitSystem verified |
-| **Integration tests** | 3 | MeasuredIngredient properly composes with all Quantity types; polymorphism demonstrated |
+- `ExactQuantityTest.java`: 8 points
+- `FractionalQuantityTest.java`: 12 points
+- `RangeQuantityTest.java`: 10 points
+- `MeasuredIngredientTest.java`: 10 points
+- `VagueIngredientTest.java`: 10 points
 
-### Total: 100 points
+**Note:** Your code must compile for any automated points to be awarded. Non-compiling submissions receive 0 points from automated grading.
 
-### Automatic Deductions
+### Manual Grading (Subtractive)
+Manual grading will be *subtractive*. A maximum of 30 points can be deducted from your score by manual grading on your code and test suite. A maximum of 10 points may be deducted from your score by manual grading on your reflection.
 
-- **Code doesn't compile**: -50 points (must compile without errors)
-- **Missing test suite**: -15 points
-- **Compiler warnings**: -5 points per warning type (generics, unchecked operations, raw types)
-- **Incorrect calculations**: -10 points (toDecimal, midpoint)
-- **toString format violations**: -5 points per class with incorrect format
-- **Missing validation**: -3 points per constructor missing required validation
-- **Package structure violation**: -5 points (must use app.cookyourbooks)
+Manual grading reviews code quality attributes. Points will be deducted for deficiencies in the following areas:
+
+| Category | Max Deduction | Criteria |
+|----------|---------------|----------|
+| **Inheritance & Polymorphism** | -10 | Inappropriate use of inheritance; code duplication instead of reuse; incorrect use of abstract classes; missing or improper @Override annotations |
+| **Encapsulation** | -6 | Non-private fields; mutable objects exposed through getters; missing `final` modifiers on fields; improper access modifiers on constructors |
+| **Documentation** | -4 | Missing or incomplete Javadoc; missing @param, @return, @throws tags |
+| **Test Quality** | -6 | Excessive trivial tests (e.g., testing simple getters); redundant tests; tests that don't verify meaningful behavior |
+| **Code Style** | -4 | Poor naming; overly complex logic; missing string trimming; improper exception messages |
+
+### Grade Calculation
+
+Your final grade is calculated as:
+
+```
+Final Score = Automated Score − Manual Deductions
+```
+
+When you submit your assignment, the automated score will be shown. The manual deductions will only be applied after the assignment is graded by the staff.
 
 ## Submission
 
 1. **Clone the repository from Pawtograder:** Clone it to your local machine
-2. **Implement the enums:** Create the following files in `src/main/java/app/cookyourbooks/`:
+2. **Implement the enums:** Create the following files in `src/main/java/app/cookyourbooks/domain/`:
    - `UnitSystem.java` - enumeration of measurement systems
+   - `UnitDimension.java` - enumeration of physical dimensions
    - `Unit.java` - enumeration of units with methods
-3. **Implement the quantity classes:** Create these files in `src/main/java/app/cookyourbooks/`:
+3. **Implement the quantity classes:** Create these files in `src/main/java/app/cookyourbooks/domain/`:
    - `Quantity.java` - abstract base class for quantities
    - `ExactQuantity.java` - concrete class for decimal quantities
    - `FractionalQuantity.java` - concrete class for fractional quantities
    - `RangeQuantity.java` - concrete class for range quantities
-4. **Implement the ingredient classes:** Create these files in `src/main/java/app/cookyourbooks/`:
+4. **Implement the ingredient classes:** Create these files in `src/main/java/app/cookyourbooks/domain/`:
    - `Ingredient.java` - abstract base class for ingredients
    - `MeasuredIngredient.java` - concrete class for measured ingredients
    - `VagueIngredient.java` - concrete class for vague ingredients
-5. **Write comprehensive tests:** Create test files in `src/test/java/app/cookyourbooks/`:
-   - `UnitTest.java` - tests for the Unit enum
+5. **Write comprehensive tests:** Create test files in `src/test/java/app/cookyourbooks/domain/`:
    - `ExactQuantityTest.java` - tests for ExactQuantity
    - `FractionalQuantityTest.java` - tests for FractionalQuantity
    - `RangeQuantityTest.java` - tests for RangeQuantity
    - `MeasuredIngredientTest.java` - tests for MeasuredIngredient
    - `VagueIngredientTest.java` - tests for VagueIngredient
 6. **Add reflection:** Create `REFLECTION.md` in the root of the repository
-7. **Verify your work:**
+7. **Check your work:**
    - Run `./gradlew build` to ensure your code compiles
    - Run `./gradlew test` to verify all tests pass
    - Run `./gradlew javadoc` to ensure documentation is correct
@@ -644,34 +590,31 @@ assignment1-recipe-model/
 │   │   └── java/
 │   │       └── app/
 │   │           └── cookyourbooks/
-│   │               ├── UnitSystem.java
-│   │               ├── Unit.java
-│   │               ├── Quantity.java
-│   │               ├── ExactQuantity.java
-│   │               ├── FractionalQuantity.java
-│   │               ├── RangeQuantity.java
-│   │               ├── Ingredient.java
-│   │               ├── MeasuredIngredient.java
-│   │               └── VagueIngredient.java
+│   │               └── domain/
+│   │                   ├── UnitSystem.java
+│   │                   ├── UnitDimension.java
+│   │                   ├── Unit.java
+│   │                   ├── Quantity.java
+│   │                   ├── ExactQuantity.java
+│   │                   ├── FractionalQuantity.java
+│   │                   ├── RangeQuantity.java
+│   │                   ├── Ingredient.java
+│   │                   ├── MeasuredIngredient.java
+│   │                   └── VagueIngredient.java
 │   └── test/
 │       └── java/
 │           └── app/
 │               └── cookyourbooks/
-│                   ├── UnitTest.java
-│                   ├── ExactQuantityTest.java
-│                   ├── FractionalQuantityTest.java
-│                   ├── RangeQuantityTest.java
-│                   ├── MeasuredIngredientTest.java
-│                   └── VagueIngredientTest.java
+│                   └── domain/
+│                       ├── UnitTest.java
+│                       ├── ExactQuantityTest.java
+│                       ├── FractionalQuantityTest.java
+│                       ├── RangeQuantityTest.java
+│                       ├── MeasuredIngredientTest.java
+│                       └── VagueIngredientTest.java
 ├── REFLECTION.md
 ├── build.gradle (provided)
 └── README.md (provided)
 ```
-
-**Important Notes:**
-- The timestamp of your last push to GitHub determines if your submission is on time
-- Make sure all tests pass before submitting
-- Verify your code compiles without warnings or errors
-- Double-check that all Javadoc is complete and properly formatted
 
 Good luck, and happy coding!
