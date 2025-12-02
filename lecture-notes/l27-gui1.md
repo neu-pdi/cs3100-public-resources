@@ -1,6 +1,6 @@
 ---
-sidebar_position: 21
-lecture_number: 21
+sidebar_position: 27
+lecture_number: 27
 title: GUIs in Java
 ---
 

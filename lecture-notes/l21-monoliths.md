@@ -1,6 +1,6 @@
 ---
-sidebar_position: 28
-lecture_number: 28
+sidebar_position: 21
+lecture_number: 21
 title: Monolithic Architectures
 ---
 

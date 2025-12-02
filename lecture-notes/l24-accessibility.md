@@ -1,6 +1,6 @@
 ---
-sidebar_position: 20
-lecture_number: 20
+sidebar_position: 24
+lecture_number: 24
 title: Accessibility and Inclusivity
 ---
 

@@ -217,7 +217,7 @@
       ]
     },
     {
-      "lectureId": "l23-teams",
+      "lectureId": "l18-teams",
       "dates": [
         "2026-02-19"
       ],
@@ -226,7 +226,7 @@
       ]
     },
     {
-      "lectureId": "l26-creation-patterns",
+      "lectureId": "l19-creation-patterns",
       "dates": [
         "2026-02-23"
       ],
@@ -235,7 +235,7 @@
       ]
     },
     {
-      "lectureId": "l27-architecture-design",
+      "lectureId": "l20-architecture-design",
       "dates": [
         "2026-02-25"
       ],
@@ -244,7 +244,7 @@
       ]
     },
     {
-      "lectureId": "l28-monoliths",
+      "lectureId": "l21-monoliths",
       "dates": [
         "2026-02-26"
       ],
@@ -253,7 +253,7 @@
       ]
     },
     {
-      "lectureId": "l18-usability",
+      "lectureId": "l22-usability",
       "dates": [
         "2026-03-09"
       ],
@@ -262,7 +262,7 @@
       ]
     },
     {
-      "lectureId": "l19-ucd",
+      "lectureId": "l23-ucd",
       "dates": [
         "2026-03-11"
       ],
@@ -271,7 +271,7 @@
       ]
     },
     {
-      "lectureId": "l20-accessibility",
+      "lectureId": "l24-accessibility",
       "dates": [
         "2026-03-12"
       ],
@@ -280,7 +280,7 @@
       ]
     },
     {
-      "lectureId": "l24-review2",
+      "lectureId": "l25-review2",
       "dates": [
         "2026-03-16"
       ],
@@ -289,7 +289,7 @@
       ]
     },
     {
-      "lectureId": "l25-exam2",
+      "lectureId": "l26-exam2",
       "dates": [
         "2026-03-18"
       ],
@@ -298,7 +298,7 @@
       ]
     },
     {
-      "lectureId": "l21-gui1",
+      "lectureId": "l27-gui1",
       "dates": [
         "2026-03-19"
       ],
@@ -307,7 +307,7 @@
       ]
     },
     {
-      "lectureId": "l22-gui2",
+      "lectureId": "l28-gui2",
       "dates": [
         "2026-03-23"
       ],

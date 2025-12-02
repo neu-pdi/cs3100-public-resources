@@ -1,6 +1,6 @@
 ---
-sidebar_position: 25
-lecture_number: 25
+sidebar_position: 26
+lecture_number: 26
 title: Exam 2
 ---
 

@@ -1,6 +1,6 @@
 ---
-sidebar_position: 23
-lecture_number: 23
+sidebar_position: 18
+lecture_number: 18
 title: Teams and Collaboration
 ---
 

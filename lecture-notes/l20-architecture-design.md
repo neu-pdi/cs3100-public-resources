@@ -1,6 +1,6 @@
 ---
-sidebar_position: 27
-lecture_number: 27
+sidebar_position: 20
+lecture_number: 20
 title: Architecture-Scale Design
 ---
 ## Compare architectural design to code-level design (10 minutes)
