@@ -23,21 +23,25 @@ Assignments are structured to provide a steady, manageable pace throughout the s
 
 ### **Week 1: Java Fundamentals & Domain Modeling**
 - [**Assignment 1: Recipe Domain Model**](/assignments/cyb1-recipes) (Due 2026-01-15)
-  - Implement basic domain classes: `Ingredient`, `MeasuredIngredient`, `VagueIngredient`
+  - Implement `Unit`, `UnitSystem`, `UnitDimension` enums with fields and methods
   - Implement `Quantity` hierarchy: `ExactQuantity`, `FractionalQuantity`, `RangeQuantity`
-  - Practice inheritance and polymorphism
+  - Implement `Ingredient` hierarchy: `MeasuredIngredient`, `VagueIngredient`
+  - Practice inheritance, polymorphism, and composition
+  - Write Javadoc specifications with preconditions and postconditions
+  - Write comprehensive unit tests with JUnit 5
 - [**Lab 1: Java Tooling and Setup**](/labs/lab1-java-setup)
   - Set up development environment, practice with Gradle, Git
 
 ### **Week 2-3: Specifications, Contracts, and Information Hiding**
 - [**Assignment 2: Unit Conversion, Recipe and Instruction Classes**](/assignments/cyb2-unit-conversion) (Due 2026-01-29)
   - Build on A1 solution (provided)
-  - Implement `equals()`, `hashCode()`, `toString()`
-  - Write specifications (Javadoc), handle edge cases
-  - Implement unit conversions
-  - Implement `Recipe`, `Instruction`, `RecipeNote` classes
-  - Focus on encapsulation, information hiding
-  - Design immutable objects where appropriate
+  - Implement `ConversionRule` record and `ConversionRegistry` interface with `LayeredConversionRegistry`
+  - Implement priority-based unit conversion (house > recipe-specific > global)
+  - Implement `Recipe` (with scaling and conversion), `Instruction`, and `RecipeBuilder`
+  - Design recipe note representation (internal design decision left to students)
+  - Implement `equals()` and `hashCode()` for value objects
+  - Focus on immutable transformations, encapsulation, and information hiding
+  - Practice making principled design decisions with documented tradeoffs
 - [**Lab 2: Java Abstraction and Data Types**](/labs/lab2-java-abstraction)
   - Practice with abstract classes vs interfaces
 - [**Lab 3: Readability and Modularity**](/labs/lab3-readability)

@@ -458,7 +458,7 @@ When designing tests, ask yourself:
 Use JUnit 5 with descriptive test method names, appropriate assertions (`assertEquals`, `assertThrows`, etc.), and aim for at least 90% code coverage.
 
 ## Reflection
-Add a file `REFLECTION.md` to the root of your repository that includes a 1-5 sentence reflection on each of the following questions:
+Update the file `REFLECTION.md` in the root of your repository to include a 1-5 sentence reflection on each of the following questions:
 
 1. **Inheritance Design:** Why is it useful to have `MeasuredIngredient` and `VagueIngredient` both extend a common `Ingredient` class, rather than an interface? What advantages does this provide for future development? Similarly, why is the `Quantity` hierarchy beneficial?
 
