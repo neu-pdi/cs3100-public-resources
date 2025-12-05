@@ -147,10 +147,14 @@ The principles you learned at the object level scale up:
 
 The question shifts from "how do I create this object?" to "how do I wire up this whole system?"—but the answer is still: **depend on abstractions, inject implementations, keep coupling loose**.
 
-### Preview: Architecture-Scale Design
+### Preview: Thinking Architecturally
 
-Next lecture, we step back further:
-- What are the major components of a system?
-- How do they communicate? (Synchronous calls? Events? Shared data?)
-- What tradeoffs emerge at scale that don't matter in small programs?
+Next lecture, we step back to ask: **where do service boundaries come from?** We mentioned `ImportService`, `ExportService`, and `LibraryService`—but how did we decide those were the right boundaries? 
+
+We'll explore:
+- What distinguishes "architecture" from "design"
+- How to identify the natural seams in a problem domain
+- How to communicate and document architectural decisions
+
+The patterns you've learned—Builder, Factory, DI—don't disappear at larger scales. They're the building blocks. Architecture is about deciding *which* buildings to construct and *how* they relate.
 

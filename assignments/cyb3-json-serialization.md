@@ -1,5 +1,5 @@
 ---
-title: "Assignment 3: JSON Serialization Layer"
+title: "Assignment 3: Domain Extensions and Hexagonal Persistence"
 sidebar_position: 4
 ---
 

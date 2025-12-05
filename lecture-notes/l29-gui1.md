@@ -1,6 +1,6 @@
 ---
-sidebar_position: 27
-lecture_number: 27
+sidebar_position: 29
+lecture_number: 29
 title: GUIs in Java
 ---
 
@@ -48,10 +48,6 @@ button.setOnAction(e -> System.out.println("Clicked!"));
 ```
 
 JavaFX was initially bundled with the JDK, then unbundled in Java 11 (2018) into a separate project called [OpenJFX](https://openjfx.io/). While Oracle has reduced its investment in JavaFX, the community continues active development. For learning GUI concepts, JavaFX remains an acceptable choice because its architecture reflects patterns used across modern platforms (React, SwiftUI, Flutter all use similar concepts).
-
-Understanding this evolution helps you:
-1. Read legacy code: You'll encounter Swing in many existing applications
-2. Recognize patterns: Scene graphs and declarative UI appear everywhere in modern development
 
 ## Review event-driven programming and the callback model (10 minutes)
 
@@ -147,19 +143,19 @@ The **Model-View-Controller (MVC)** pattern, originating at Xerox PARC in the 19
 
 ### The Three Components
 
-**Model**: The application's data and business logic. The Model knows nothing about how it will be displayed—it could be shown in a GUI, a command-line interface, or a web API. For SceneItAll, the Model includes:
-- The list of smart home devices and their states
-- Scene definitions (which devices, what settings)
-- Business rules (e.g., "Away Mode" turns off all lights and locks all doors)
+**Model**: The application's data and business logic. The Model knows nothing about how it will be displayed—it could be shown in a GUI, a command-line interface, or a web API. For CookYourBooks, the Model includes:
+- The list of recipes and cookbooks
+- Recipe content (ingredients, instructions, notes)
+- Business rules (e.g., scaling logic, unit conversion)
 
-**View**: The visual representation of the Model. The View displays data and provides widgets for user interaction, but contains no business logic. For SceneItAll, the View includes:
-- Device cards showing on/off status and brightness sliders
-- Scene buttons with icons and labels
+**View**: The visual representation of the Model. The View displays data and provides widgets for user interaction, but contains no business logic. For CookYourBooks, the View includes:
+- Recipe cards showing title and preview
+- Ingredient lists with checkboxes
 - The layout and styling of all visual elements
 
-**Controller**: The intermediary that handles user input and coordinates between Model and View. When the user clicks a button, the Controller decides what to do—typically updating the Model, which then notifies the View to refresh. For SceneItAll, the Controller:
-- Responds to "Activate Scene" button clicks
-- Validates user input (e.g., brightness must be 0-100)
+**Controller**: The intermediary that handles user input and coordinates between Model and View. When the user clicks a button, the Controller decides what to do—typically updating the Model, which then notifies the View to refresh. For CookYourBooks, the Controller:
+- Responds to "Import Recipe" button clicks
+- Validates user input (e.g., servings must be positive)
 - Coordinates multi-step operations
 
 ### Why MVC Matters
@@ -170,7 +166,7 @@ This separation provides the same benefits we discussed in [Lecture 6](./l6-immu
 
 **High cohesion**: Each component has a single responsibility. The Model exhibits *functional cohesion* (all code related to business logic), the View exhibits *communication cohesion* (all code operating on the same visual representation), and the Controller exhibits *sequential cohesion* (coordinating the flow from user input to model update to view refresh).
 
-**Testability**: As we discussed in [Lecture 16](./l16-testing2.md), separating infrastructure from domain code is the key to testability. The Model *is* your domain code—pure business logic with no UI dependencies. You can test it with simple unit tests: create a Model, call `activateAwayMode()`, and verify device states. No GUI required. The View and Controller are infrastructure that we'll test with E2E tests in the next lecture.
+**Testability**: As we discussed in [Lecture 16](./l16-testing2.md), separating infrastructure from domain code is the key to testability. The Model *is* your domain code—pure business logic with no UI dependencies. You can test it with simple unit tests: create a Recipe, call `scale(8)`, and verify ingredient quantities. No GUI required.
 
 ### MVC in JavaFX
 
@@ -181,37 +177,40 @@ JavaFX naturally supports MVC through its architecture:
 - **Controller**: Java classes referenced in FXML via `fx:controller`
 
 ```xml
-<!-- View: scene-panel.fxml -->
-<VBox fx:controller="sceneitall.ScenePanelController">
-    <Button fx:id="activateButton" text="Activate Scene" 
-            onAction="#handleActivate"/>
+<!-- View: recipe-panel.fxml -->
+<VBox fx:controller="cookyourbooks.RecipePanelController">
+    <Button fx:id="scaleButton" text="Scale Recipe" 
+            onAction="#handleScale"/>
 </VBox>
 ```
 
 ```java
-// Controller: ScenePanelController.java
-public class ScenePanelController {
-    @FXML private Button activateButton;
+// Controller: RecipePanelController.java
+public class RecipePanelController {
+    @FXML private Button scaleButton;
     
-    private SceneModel model;  // Reference to Model
+    private Recipe model;  // Reference to Model
     
     @FXML
-    private void handleActivate(ActionEvent event) {
-        model.activateCurrentScene();  // Delegate to Model
+    private void handleScale(ActionEvent event) {
+        model.scale(targetServings);  // Delegate to Model
     }
 }
 ```
 
 ```java
-// Model: SceneModel.java
-public class SceneModel {
-    private List<SmartDevice> devices;
-    private Scene currentScene;
+// Model: Recipe.java
+public class Recipe {
+    private List<Ingredient> ingredients;
+    private int servings;
     
-    public void activateCurrentScene() {
-        for (DeviceSetting setting : currentScene.getSettings()) {
-            setting.apply();  // Pure business logic, no UI
+    public void scale(int targetServings) {
+        double factor = (double) targetServings / this.servings;
+        // Pure business logic, no UI
+        for (Ingredient ing : ingredients) {
+            ing.scale(factor);
         }
+        this.servings = targetServings;
     }
 }
 ```
@@ -220,22 +219,22 @@ In the next lecture, we'll examine the Model-View-ViewModel (MVVM) pattern, whic
 
 ## Create a simple GUI application using JavaFX and Scene Builder (20 minutes)
 
-Let's build a simplified SceneItAll device control panel. We'll create the View using Scene Builder, implement a Controller, and connect it to a Model.
+Let's build a simplified CookYourBooks recipe viewer. We'll create the View using Scene Builder, implement a Controller, and connect it to a Model.
 
 ### Setting Up Scene Builder
 
-[Scene Builder](https://gluonhq.com/products/scene-builder/) is a visual design tool for creating FXML files. You drag and drop components, set properties, and Scene Builder generates the XML. This is similar to Interface Builder (iOS), Android Studio's Layout Editor, or web-based UI builders.
+[Scene Builder](https://gluonhq.com/products/scene-builder/) is a visual design tool for creating FXML files. You drag and drop components, set properties, and Scene Builder generates the XML.
 
 Download Scene Builder from Gluon and configure your IDE to open `.fxml` files with it.
 
 ### Building the View
 
-Create a new FXML file `device-panel.fxml`. In Scene Builder:
+Create a new FXML file `recipe-panel.fxml`. In Scene Builder:
 
 1. **Add a container**: Drag a `VBox` as the root element
-2. **Add a label**: Drag a `Label` to show the device name
-3. **Add controls**: Drag a `ToggleButton` for on/off and a `Slider` for brightness
-4. **Set fx:id values**: Select each control and set its `fx:id` in the Code section (right panel)
+2. **Add a label**: Drag a `Label` to show the recipe name
+3. **Add controls**: Drag a `Spinner` for servings and a `Button` to scale
+4. **Set fx:id values**: Select each control and set its `fx:id` in the Code section
 
 The generated FXML might look like:
 
@@ -245,170 +244,71 @@ The generated FXML might look like:
 <?import javafx.scene.layout.*?>
 
 <VBox spacing="10" xmlns:fx="http://javafx.com/fxml" 
-      fx:controller="sceneitall.DevicePanelController">
+      fx:controller="cookyourbooks.RecipePanelController">
     
-    <Label fx:id="deviceNameLabel" text="Living Room Light"/>
+    <Label fx:id="recipeNameLabel" text="Recipe Name"/>
     
-    <ToggleButton fx:id="powerToggle" text="Off"
-                  onAction="#handlePowerToggle"/>
+    <HBox spacing="5">
+        <Label text="Servings:"/>
+        <Spinner fx:id="servingsSpinner" min="1" max="100"/>
+        <Button fx:id="scaleButton" text="Scale"
+                onAction="#handleScale"/>
+    </HBox>
     
-    <Slider fx:id="brightnessSlider" min="0" max="100" value="50"/>
-    
-    <Label fx:id="brightnessLabel" text="50%"/>
+    <ListView fx:id="ingredientsList"/>
 </VBox>
 ```
 
 ### Adding Accessibility Labels
 
-This is critical: every interactive widget needs an **accessible label** that assistive technologies can announce. In L20, we discussed how screen readers need semantic information. Here's how to provide it:
+Every interactive widget needs an **accessible label** that assistive technologies can announce:
 
 ```xml
-<ToggleButton fx:id="powerToggle" text="Off"
-              accessibleText="Power toggle for Living Room Light"
-              accessibleHelp="Press to turn the light on or off"
-              onAction="#handlePowerToggle"/>
+<Spinner fx:id="servingsSpinner" min="1" max="100"
+         accessibleText="Number of servings"
+         accessibleHelp="Adjust the number of servings to scale the recipe"/>
 
-<Slider fx:id="brightnessSlider" min="0" max="100" value="50"
-        accessibleText="Brightness for Living Room Light"
-        accessibleHelp="Adjust brightness from 0 to 100 percent"/>
+<Button fx:id="scaleButton" text="Scale"
+        accessibleText="Scale recipe to selected servings"
+        onAction="#handleScale"/>
 ```
-
-The `accessibleText` property provides the label announced by screen readers. The `accessibleHelp` property provides additional context. These accessibility labels serve double duty:
-
-1. **Accessibility**: Screen reader users hear "Power toggle for Living Room Light, button, off" instead of just "Off, button"
-2. **Testing**: As we'll see in L22, accessibility locators make tests more robust than CSS selectors or position-based queries
 
 ### Implementing the Controller
 
 ```java
-package sceneitall;
+package cookyourbooks;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-public class DevicePanelController {
+public class RecipePanelController {
     
-    @FXML private Label deviceNameLabel;
-    @FXML private ToggleButton powerToggle;
-    @FXML private Slider brightnessSlider;
-    @FXML private Label brightnessLabel;
+    @FXML private Label recipeNameLabel;
+    @FXML private Spinner<Integer> servingsSpinner;
+    @FXML private Button scaleButton;
+    @FXML private ListView<String> ingredientsList;
     
-    private SmartLight model;  // Our Model
+    private Recipe model;
     
-    public void setModel(SmartLight model) {
+    public void setModel(Recipe model) {
         this.model = model;
-        
-        // Initialize View from Model
-        deviceNameLabel.setText(model.getName());
-        powerToggle.setSelected(model.isOn());
-        updatePowerToggleText();
-        brightnessSlider.setValue(model.getBrightness());
-        updateBrightnessLabel();
-        
-        // Update accessible text with device name
-        powerToggle.setAccessibleText("Power toggle for " + model.getName());
-        brightnessSlider.setAccessibleText("Brightness for " + model.getName());
+        recipeNameLabel.setText(model.getTitle());
+        servingsSpinner.getValueFactory().setValue(model.getServings());
+        updateIngredientsList();
     }
     
     @FXML
-    private void handlePowerToggle() {
-        // Controller updates Model
-        model.setOn(powerToggle.isSelected());
-        updatePowerToggleText();
+    private void handleScale() {
+        int targetServings = servingsSpinner.getValue();
+        model.scale(targetServings);
+        updateIngredientsList();
     }
     
-    @FXML
-    private void initialize() {
-        // Called automatically after FXML loads
-        // Set up listener for slider changes
-        brightnessSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
-            if (model != null) {
-                model.setBrightness(newVal.intValue());
-            }
-            updateBrightnessLabel();
-        });
-    }
-    
-    private void updatePowerToggleText() {
-        powerToggle.setText(powerToggle.isSelected() ? "On" : "Off");
-    }
-    
-    private void updateBrightnessLabel() {
-        brightnessLabel.setText((int) brightnessSlider.getValue() + "%");
-    }
-}
-```
-
-### The Model
-
-```java
-package sceneitall;
-
-public class SmartLight {
-    private String name;
-    private boolean on;
-    private int brightness;
-    
-    public SmartLight(String name) {
-        this.name = name;
-        this.on = false;
-        this.brightness = 100;
-    }
-    
-    // Pure business logic - no UI dependencies
-    public void turnOn() {
-        this.on = true;
-    }
-    
-    public void turnOff() {
-        this.on = false;
-    }
-    
-    public void setBrightness(int brightness) {
-        if (brightness < 0 || brightness > 100) {
-            throw new IllegalArgumentException("Brightness must be 0-100");
+    private void updateIngredientsList() {
+        ingredientsList.getItems().clear();
+        for (Ingredient ing : model.getIngredients()) {
+            ingredientsList.getItems().add(ing.format());
         }
-        this.brightness = brightness;
-    }
-    
-    // Getters
-    public String getName() { return name; }
-    public boolean isOn() { return on; }
-    public int getBrightness() { return brightness; }
-    public void setOn(boolean on) { this.on = on; }
-}
-```
-
-### Launching the Application
-
-```java
-package sceneitall;
-
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-
-public class SceneItAllApp extends Application {
-    
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(
-            getClass().getResource("/device-panel.fxml"));
-        
-        Scene scene = new Scene(loader.load(), 300, 200);
-        
-        // Get controller and inject model
-        DevicePanelController controller = loader.getController();
-        controller.setModel(new SmartLight("Living Room Light"));
-        
-        primaryStage.setTitle("SceneItAll");
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
-    
-    public static void main(String[] args) {
-        launch(args);
     }
 }
 ```
@@ -417,5 +317,6 @@ public class SceneItAllApp extends Application {
 
 1. **Separation of concerns**: FXML defines structure, Controller handles events, Model contains logic
 2. **Accessibility from the start**: Every widget gets meaningful `accessibleText`
-3. **MVC in action**: The Controller mediates between View (FXML/widgets) and Model (SmartLight)
-4. **Testability preview**: Because our Model is a plain Java class with no UI dependencies, we can unit test it easily. In the next lecture, we'll see how to E2E test the full UI using TestFX—and those accessibility labels we added will make our tests more robust.
+3. **MVC in action**: The Controller mediates between View (FXML/widgets) and Model (Recipe)
+4. **Testability preview**: Because our Model is a plain Java class with no UI dependencies, we can unit test it easily. In the next lecture, we'll see how to E2E test the full UI using TestFX.
+

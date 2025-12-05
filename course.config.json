@@ -231,7 +231,7 @@
         "2026-02-23"
       ],
       "topics": [
-        "Object Creation Patterns in Java"
+        "From Code Patterns to Architecture Patterns"
       ]
     },
     {
@@ -240,7 +240,7 @@
         "2026-02-25"
       ],
       "topics": [
-        "Architecture-Scale Design"
+        "Thinking Architecturally"
       ]
     },
     {
@@ -249,34 +249,34 @@
         "2026-02-26"
       ],
       "topics": [
-        "MVC and Monolithic Architectures"
+        "Architectural Qualities"
       ]
     },
     {
-      "lectureId": "l22-usability",
+      "lectureId": "l22-networks",
       "dates": [
         "2026-03-09"
       ],
       "topics": [
-        "Usability"
+        "Distributed Architecture, Networks, and Security"
       ]
     },
     {
-      "lectureId": "l23-ucd",
+      "lectureId": "l23-serverless",
       "dates": [
         "2026-03-11"
       ],
       "topics": [
-        "User-Centered Design"
+        "Serverless Architecture"
       ]
     },
     {
-      "lectureId": "l24-accessibility",
+      "lectureId": "l24-usability",
       "dates": [
         "2026-03-12"
       ],
       "topics": [
-        "Accessibility and Inclusivity"
+        "Usability"
       ]
     },
     {
@@ -298,25 +298,25 @@
       ]
     },
     {
-      "lectureId": "l27-gui1",
+      "lectureId": "l27-ucd",
       "dates": [
         "2026-03-19"
       ],
       "topics": [
-        "GUIs in Java"
+        "User-Centered Design"
       ]
     },
     {
-      "lectureId": "l28-gui2",
+      "lectureId": "l28-accessibility",
       "dates": [
         "2026-03-23"
       ],
       "topics": [
-        "Patterns for GUI design and implementation"
+        "Accessibility and Inclusivity"
       ]
     },
     {
-      "lectureId": "l29-concurrency1",
+      "lectureId": "l29-gui1",
       "dates": [
         "2026-03-25"
       ],
@@ -325,57 +325,57 @@
       ]
     },
     {
-      "lectureId": "l30-concurrency2",
+      "lectureId": "l30-gui2",
       "dates": [
         "2026-03-26"
+      ],
+      "topics": [
+        "GUI Patterns and Testing"
+      ]
+    },
+    {
+      "lectureId": "l31-concurrency1",
+      "dates": [
+        "2026-03-30"
+      ],
+      "topics": [
+        "Concurrency I"
+      ]
+    },
+    {
+      "lectureId": "l32-concurrency2",
+      "dates": [
+        "2026-04-01"
       ],
       "topics": [
         "Concurrency II: Asynchronous Programming"
       ]
     },
     {
-      "lectureId": "l31-networks",
+      "lectureId": "l33-event-architecture",
       "dates": [
-        "2026-03-30"
-      ],
-      "topics": [
-        "Networks and Security"
-      ]
-    },
-    {
-      "lectureId": "l32-event-architecture",
-      "dates": [
-        "2026-04-01"
+        "2026-04-02"
       ],
       "topics": [
         "Event-Driven Architecture"
       ]
     },
     {
-      "lectureId": "l33-performance",
+      "lectureId": "l34-performance",
       "dates": [
-        "2026-04-02"
+        "2026-04-06"
       ],
       "topics": [
         "Performance"
       ]
     },
     {
-      "lectureId": "l34-safety-reliability",
-      "dates": [
-        "2026-04-06"
-      ],
-      "topics": [
-        "Safety and Reliability"
-      ]
-    },
-    {
-      "lectureId": "l35-serverless-architecture",
+      "lectureId": "l35-safety-reliability",
       "dates": [
         "2026-04-08"
       ],
       "topics": [
-        "Serverless Architecture"
+        "Safety and Reliability"
       ]
     },
     {

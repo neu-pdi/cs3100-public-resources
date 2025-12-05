@@ -1,5 +1,5 @@
 ---
-title: "Assignment 5: Service Layer Architecture, CLI Interface"
+title: "Assignment 5: Interactive CLI"
 sidebar_position: 6
 ---
 

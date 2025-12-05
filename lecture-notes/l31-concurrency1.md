@@ -1,6 +1,6 @@
 ---
-sidebar_position: 29
-lecture_number: 29
+sidebar_position: 31
+lecture_number: 31
 title: Concurrency I
 ---
 

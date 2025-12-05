@@ -52,15 +52,25 @@ Assignments are structured to provide a steady, manageable pace throughout the s
 - [**Lab 4: Changeability**](/labs/lab4-changeability)
   - Analyze coupling/cohesion in provided code samples
 
-### **Weeks 5-6: Object Creation Patterns & JSON Serialization**
-- [**Assignment 3: JSON Serialization Layer**](/assignments/cyb3-json-serialization) (Due 2026-02-12)
+### **Weeks 5-6: Domain Extensions, Hexagonal Persistence & AI Workflow**
+- [**Assignment 3: Domain Extensions and Hexagonal Persistence**](/assignments/cyb3-json-serialization) (Due 2026-02-12)
   - Build on A2 solution (provided)
-  - Create factory methods for parsing ingredient strings
-  - Implement builders for `Recipe` and complex ingredients
-  - Implement custom Jackson serializers/deserializers
-  - Handle polymorphic serialization
-  - Export annotated and scaled recipes to markdown
-  - First assignment where AI assistants are allowed/encouraged
+  - **Domain Modeling:**
+    - Implement `Cookbook`, `UserLibrary`, `TableOfContents`
+    - Design relationships between recipes, cookbooks, and the user library
+  - **Hexagonal Architecture - Driven Ports (Persistence):**
+    - Define `RecipeRepository` and `CookbookRepository` ports (interfaces)
+    - Implement `JsonRecipeRepository` and `JsonCookbookRepository` adapters
+    - Implement custom Jackson serializers/deserializers for domain hierarchy
+    - Handle polymorphic serialization (Quantity types, Ingredient types)
+  - **Factory Methods and Parsing:**
+    - Create factory methods for parsing ingredient strings from text
+    - Implement builders for complex ingredient construction
+  - **Export Adapter:**
+    - Implement `MarkdownExporter` adapter for recipe export
+  - **First assignment where AI assistants are allowed/encouraged**
+    - Practice using AI for boilerplate generation and serialization code
+    - Reflect on AI strengths/weaknesses for different task types
 - [**Lab 5: Domain Modeling**](/labs/lab5-domain-modeling)
   - Create a domain model for Pawtograder course operations platform
 - [**Lab 6: AI Coding Agents**](/labs/lab6-copilot)
@@ -69,17 +79,35 @@ Assignments are structured to provide a steady, manageable pace throughout the s
 
 ## **Module 2: Development Practices and User-Centered Design**
 
-### **Week 7-8: Testing and Domain Modeling**
-- [**Assignment 4: Cookbook and Library Model, Comprehensive Test Suite**](/assignments/cyb4-testing) (Due 2026-02-26)
+### **Week 7-8: Services, OCR Integration, and Testing**
+- [**Assignment 4: Services, OCR, and Testing**](/assignments/cyb4-testing) (Due 2026-02-26)
   - Build on A3 solution (provided)
-  - Implement `Cookbook`, `UserLibrary`, `TableOfContents`
-  - Create a comprehensive logging system for the application
-  - Write unit tests with JUnit
-  - Mock external dependencies (file system, OCR services)
-  - Achieve branch code coverage and fault coverage
-  - Parse and interpret requirements documents
-  - Design for extensibility
-  - AI assistants encouraged 
+  - **Application Services (Hexagonal Core):**
+    - Implement `ImportService`, `ExportService`, `LibraryService`
+    - Design service contracts with clear preconditions and postconditions
+    - Wire services using dependency injection (constructor injection)
+    - Services depend only on ports, never on concrete adapters
+  - **OCR Integration (Tesseract):**
+    - Define `OcrService` port (interface) for text extraction
+    - Implement `TesseractOcrAdapter` using Tess4J library
+    - Create `RecipeParser` to extract structured recipes from OCR text
+    - Handle OCR errors gracefully (blurry images, partial text)
+  - **Exception Handling Strategy:**
+    - Design application-wide exception hierarchy
+    - Implement error recovery patterns
+    - Create a comprehensive logging system
+  - **Comprehensive Testing:**
+    - Write unit tests with JUnit 5 parameterized tests
+    - Test `ImportService` with mock `OcrService` (no real Tesseract needed)
+    - Test `RecipeParser` with sample OCR output texts
+    - Demonstrate how Hexagonal Architecture enables testability
+  - **Architecture Documentation:**
+    - Write 2-3 Architecture Decision Records (ADRs)
+    - Create C4 component diagram showing ports and adapters
+  - **Requirements Interpretation:**
+    - Parse and interpret requirements documents with ambiguities
+    - Document design decisions and rationale
+  - AI assistants encouraged
 - [**Lab 7: Requirements Interpretation**](/labs/lab7-requirements)
   - Practice translating user stories to technical specs
 - [**Lab 8: Dependencies**](/labs/lab8-dependencies)
@@ -90,15 +118,28 @@ Assignments are structured to provide a steady, manageable pace throughout the s
 ### **Week 9: Spring Break**
 - No assignments, prepare for group project to begin next week
 
-### **Week 10-11: Architecture, MVC, and CLI**
-- [**Assignment 5: Service Layer Architecture, CLI Interface**](/assignments/cyb5-service-architecture) (Due 2026-03-19)
+### **Week 10-11: Rich Command-Line Interface**
+- [**Assignment 5: Interactive CLI**](/assignments/cyb5-service-architecture) (Due 2026-03-19)
   - Build on A4 solution (provided)
-  - Implement service interfaces: `ImportService`, `ExportService`, `LibraryService`
-  - Apply MVC pattern
-  - Design service contracts
-  - Implement interactive CLI with autocomplete
-  - Focus on usability and user feedback
-  - Error handling and recovery
+  - **CLI as a Driving Adapter:**
+    - Implement the CLI as a Hexagonal "driving adapter"
+    - CLI controller depends on application services, not domain directly
+    - Apply MVC pattern: CLI views, controllers, and service-backed model
+  - **Rich Interactive Features:**
+    - Multi-level command hierarchy (library → cookbook → recipe navigation)
+    - Tab completion for commands, cookbook names, recipe titles
+    - Command history and editing (JLine or similar library)
+    - Contextual help system (`help`, `help <command>`)
+    - Progress indicators for long-running operations
+  - **Usability and Polish:**
+    - Apply Nielsen's usability heuristics to CLI design
+    - Consistent command grammar and feedback patterns
+    - Graceful error handling with actionable error messages
+    - Support for both interactive and scripted (non-interactive) modes
+  - **Import/Export Workflows:**
+    - Import recipes from JSON files and images (via OCR) through CLI
+    - Export recipes and cookbooks to markdown
+    - Batch operations (import directory of images, export entire cookbook)
 - [**Lab 10: Architecture**](/labs/lab10-architecture)
   - Design architecture diagrams for recipe system
 

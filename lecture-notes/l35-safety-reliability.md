@@ -1,6 +1,6 @@
 ---
-sidebar_position: 34
-lecture_number: 34
+sidebar_position: 35
+lecture_number: 35
 title: "Safety and Reliability"
 ---
 
@@ -15,4 +15,5 @@ title: "Safety and Reliability"
 ## Describe architectural tactics for achieving safety (10 minutes)
 
 ## Describe patterns for achieving safety (10 minutes)
+
 

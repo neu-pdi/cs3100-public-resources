@@ -1,5 +1,5 @@
 ---
-title: "Assignment 4: Cookbook and Library Model, Comprehensive Test Suite"
+title: "Assignment 4: Services, OCR, and Testing"
 sidebar_position: 5
 ---
 

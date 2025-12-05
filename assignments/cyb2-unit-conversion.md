@@ -57,7 +57,7 @@ Your conversion system must support all three, with this **priority order** (hig
 
 Conversions may span different dimensions when appropriate ingredient context is provided:
 - Volume ↔ Volume (cups to mL): Always possible within same dimension
-- Weight ↔ Weight (oz to grams): Always possible within same dimension  
+- Weight ↔ Weight (oz to grams): Always possible within same dimension
 - Volume ↔ Weight (cups to grams): Requires ingredient-specific density information (e.g., "1 liter of water = 1 kilogram of water")
 - Count ↔ Weight (whole eggs to grams): Requires ingredient-specific information
 
@@ -76,7 +76,7 @@ Recipes can be scaled in two ways:
 
 vs.
 
-- Convert to grams first → "250 grams flour"  
+- Convert to grams first → "250 grams flour"
 - Scale by 2x → "500 grams flour"
 
 With exact arithmetic, these are equivalent. But with rounding or fractional quantities, results may differ. **The caller chooses** whether to scale-then-convert or convert-then-scale.
@@ -97,7 +97,7 @@ You must implement the following classes. Classes from A1 are shown in gray for 
 ```mermaid
 classDiagram
     direction TB
-    
+
     %% A1 classes (context)
     class Unit {
         <<enumeration>>
@@ -105,20 +105,20 @@ classDiagram
         +getDimension() UnitDimension
         +getAbbreviation() String
     }
-    
+
     class Quantity {
         <<abstract>>
         +getUnit() Unit
         +toDecimal() double
     }
-    
+
     class Ingredient {
         <<abstract>>
         +getName() String
         +getPreparation() String
         +getNotes() String
     }
-    
+
     %% New A2 classes - Conversion
     class ConversionRule {
         <<record>>
@@ -129,12 +129,12 @@ classDiagram
         +canConvert(Unit from, Unit to, String ingredient) boolean
         +convert(Quantity quantity) Quantity
     }
-    
+
     class StandardConversions {
         +getRule(Unit from, Unit to)$ ConversionRule
         +getAllRules()$ List~ConversionRule~
     }
-    
+
     class ConversionRegistry {
         <<interface>>
         +convert(Quantity quantity, Unit targetUnit) Quantity
@@ -142,7 +142,7 @@ classDiagram
         +withRule(ConversionRule rule) ConversionRegistry
         +withRules(Collection~ConversionRule~ rules) ConversionRegistry
     }
-    
+
     %% Recipe structure
     class Instruction {
         -int stepNumber
@@ -154,7 +154,7 @@ classDiagram
         +withIngredientReference(Ingredient ingredient) Instruction
         +toString() String
     }
-    
+
     class Recipe {
         +getTitle() String
         +getServings() Optional~Quantity~
@@ -168,7 +168,7 @@ classDiagram
         +convert(Unit targetUnit, ConversionRegistry registry) Recipe
         +withNotesApplied() Recipe
     }
-    
+
     class RecipeBuilder {
         +title(String title) RecipeBuilder
         +servings(Quantity servings) RecipeBuilder
@@ -182,9 +182,9 @@ classDiagram
         +withTextNote(String) RecipeBuilder
         +build() Recipe
     }
-    
+
     note for Recipe "Note storage is a design decision:\nHow you represent notes internally\nis entirely up to you."
-    
+
     ConversionRule ..> Quantity
     ConversionRule ..> Unit
     ConversionRegistry ..> ConversionRule
@@ -197,7 +197,7 @@ classDiagram
     Recipe ..> ConversionRegistry
     RecipeBuilder ..> Recipe
     Instruction --> Ingredient : references
-    
+
     style Unit fill:#e0e0e0,stroke:#999
     style Quantity fill:#e0e0e0,stroke:#999
     style Ingredient fill:#e0e0e0,stroke:#999
@@ -220,7 +220,7 @@ public record ConversionRule(
 
 **Record Components:**
 - `fromUnit` - The source unit for this conversion (never null)
-- `toUnit` - The target unit for this conversion (never null)  
+- `toUnit` - The target unit for this conversion (never null)
 - `factor` - The multiplication factor (e.g., 236.588 for cups→mL)
 - `ingredientName` - If non-null, this rule only applies to this ingredient (case-insensitive)
 
@@ -234,7 +234,7 @@ public record ConversionRule(
   - Returns `true` if this rule can convert from `from` to `to`
   - If `ingredientName` is non-null, also checks that `ingredient` matches (case-insensitive)
   - If `ingredientName` is null (generic rule), matches any ingredient
-  
+
 - `public @NonNull Quantity convert(@NonNull Quantity quantity)`
   - **Preconditions:** `quantity.getUnit()` equals `fromUnit`
   - **Postconditions:** Returns a new `Quantity` of the **same type** as the input with converted amount and `toUnit`. For example:
@@ -287,7 +287,7 @@ A collection of conversion rules with defined precedence. Registries are **immut
   - Searches rules in priority order to find an applicable rule
   - **Quantity types are preserved:** converting a `RangeQuantity` produces a `RangeQuantity`, etc.
   - **Throws:** `IllegalArgumentException` if no applicable rule exists
-  
+
 - `@NonNull Quantity convert(@NonNull Quantity quantity, @NonNull Unit targetUnit, @Nullable String ingredientName)`
   - Converts with ingredient context (enables density-based conversions)
   - First searches for ingredient-specific rules, then falls back to generic rules
@@ -297,7 +297,7 @@ A collection of conversion rules with defined precedence. Registries are **immut
 - `@NonNull ConversionRegistry withRule(@NonNull ConversionRule rule)`
   - Returns a new registry with the given rule added at **highest priority**
   - The new rule takes precedence over all existing rules
-  
+
 - `@NonNull ConversionRegistry withRules(@NonNull Collection<ConversionRule> rules)`
   - Returns a new registry with the given rules added at **highest priority**
   - Rules in the collection maintain their relative order (first = highest priority among new rules)
@@ -322,7 +322,7 @@ Represents a single step in a recipe.
 
 **Constructor:**
 - `public Instruction(int stepNumber, @NonNull String text)`
-  - **Preconditions:** 
+  - **Preconditions:**
     - `stepNumber` must be positive (> 0)
     - `text` must not be null or blank
   - **Throws:** `IllegalArgumentException` if preconditions violated
@@ -367,7 +367,7 @@ Represents a complete recipe. Recipes are **immutable**—all transformation met
 - `@NonNull String getTitle()`
 - `@NonNull Optional<Quantity> getServings()` - Servings are optional; some recipes don't specify
 - `@NonNull List<Ingredient> getIngredients()` - Unmodifiable list
-- `@NonNull List<Instruction> getInstructions()` - Unmodifiable list  
+- `@NonNull List<Instruction> getInstructions()` - Unmodifiable list
 - `@NonNull List<ConversionRule> getConversionRules()` - Unmodifiable list of recipe-specific conversion rules
 - `boolean hasNotes()` - Returns true if there are unapplied notes
 - `@NonNull List<String> getNoteDescriptions()` - Returns human-readable descriptions of all unapplied notes (for display/debugging)
@@ -379,7 +379,7 @@ Represents a complete recipe. Recipes are **immutable**—all transformation met
   - **Throws:** `IllegalArgumentException` if factor is not positive
 
 - `@NonNull Recipe scaleToIngredient(@NonNull Ingredient ingredient, @NonNull Quantity targetAmount, @NonNull ConversionRegistry registry)`
-  - **Preconditions:** 
+  - **Preconditions:**
     - `ingredient` must be a `MeasuredIngredient` present in this recipe (matched using `equals()`)
     - `targetAmount` must be convertible to the ingredient's unit using `registry` (same unit, same dimension, or cross-dimension if a conversion rule exists)
   - **Postconditions:** Converts `targetAmount` to the ingredient's unit (if needed), calculates the scale factor, then scales the entire recipe by that factor
@@ -389,7 +389,7 @@ Represents a complete recipe. Recipes are **immutable**—all transformation met
 - `@NonNull Recipe convert(@NonNull Unit targetUnit, @NonNull ConversionRegistry registry)`
   - **Postconditions:** Returns new recipe with all `MeasuredIngredient` quantities converted to `targetUnit` where possible. **Quantity types are preserved:** converting a `RangeQuantity` produces a `RangeQuantity`, converting a `FractionalQuantity` produces a `FractionalQuantity`, etc. The conversion uses rules in this priority order:
     1. Rules passed in `registry` (typically house overrides)
-    2. Recipe's own `conversionRules` 
+    2. Recipe's own `conversionRules`
     3. Standard conversions (from `StandardConversions`)
   - **On conversion failure:** If a `MeasuredIngredient` cannot be converted (no applicable rule), the ingredient is left unchanged AND a note is added to the returned recipe documenting the failure (ingredient name, original unit, target unit, and reason).
   - **VagueIngredients** are never converted (left unchanged, no failure note).
@@ -538,7 +538,7 @@ metricCookies.getNoteDescriptions().forEach(System.out::println);
 // Order matters: scale then convert
 Recipe bigMetric = cookies.scale(2.0).convert(Unit.GRAM, houseRules);  // 500g flour
 
-// vs convert then scale  
+// vs convert then scale
 Recipe metricBig = cookies.convert(Unit.GRAM, houseRules).scale(2.0);  // also 500g flour
 
 // StandardConversions provides all within-dimension conversions directly
@@ -553,7 +553,7 @@ Recipe modifiedCookies = new RecipeBuilder()
     .addIngredient(flour)
     .addIngredient(sugar)
     .addIngredient(butter)
-    .withIngredientSubstitution("butter", 
+    .withIngredientSubstitution("butter",
         new MeasuredIngredient("olive oil", new ExactQuantity(0.75, Unit.CUP), null, null))
     .withIngredientAddition(
         new MeasuredIngredient("vanilla extract", new ExactQuantity(1, Unit.TEASPOON), null, null),
@@ -564,8 +564,8 @@ Recipe modifiedCookies = new RecipeBuilder()
 
 // Check what notes are pending
 modifiedCookies.hasNotes();  // true
-modifiedCookies.getNoteDescriptions();  
-// e.g., ["Substitute butter with olive oil", "Add 1 tsp vanilla extract after sugar", 
+modifiedCookies.getNoteDescriptions();
+// e.g., ["Substitute butter with olive oil", "Add 1 tsp vanilla extract after sugar",
 //        "Scale sugar by 0.5x", "Adapted for dairy-free diet"]
 
 // Apply all notes
@@ -634,7 +634,7 @@ Your submission should demonstrate:
 
 #### Implementation Correctness
 - `Instruction`: TBD points
-- `Recipe` and `RecipeBuilder`: TBD points  
+- `Recipe` and `RecipeBuilder`: TBD points
 - `ConversionRegistry` implementation: TBD points
 - `RecipeNote` implementations: TBD points
 

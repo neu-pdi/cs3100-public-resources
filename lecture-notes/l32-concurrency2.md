@@ -1,6 +1,6 @@
 ---
-sidebar_position: 30
-lecture_number: 30
+sidebar_position: 32
+lecture_number: 32
 title: "Concurrency II: Asynchronous Programming"
 ---
 
@@ -12,4 +12,5 @@ title: "Concurrency II: Asynchronous Programming"
 ## Utilize futures to implement asynchronous programming in Java (15 minutes)
 
 ## Evaluate the safety of asynchronous functions (15 minutes)
+
 
