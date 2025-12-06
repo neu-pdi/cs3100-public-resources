@@ -1,10 +1,10 @@
 ---
-sidebar_position: 23
-lecture_number: 23
+sidebar_position: 22
+lecture_number: 22
 title: Serverless Architecture
 ---
 
-In [L22](./l22-networks.md), we explored distributed architecture—what changes when components communicate over networks. We saw the Fallacies of Distributed Computing and strategies for building reliable systems despite unreliable networks.
+In [L21](./l21-networks.md), we explored distributed architecture—what changes when components communicate over networks. We saw the Fallacies of Distributed Computing and strategies for building reliable systems despite unreliable networks.
 
 This lecture introduces **serverless architecture**—an architectural style where you write functions that a cloud provider executes on demand, composing managed infrastructure services rather than managing servers yourself. But first, we need vocabulary for those infrastructure services.
 
@@ -114,7 +114,7 @@ With this vocabulary established, let's see how serverless architecture works.
 
 "Serverless" is a bit of a misnomer—there are still servers, you just don't manage them. The key insight is organizational: serverless is **technical partitioning with a vendor**.
 
-In [L21](./l21-monoliths.md), we discussed technical vs. domain partitioning—whether you organize code (and teams) by technical role (controllers, services, repositories) or by business capability (import, library, export). Serverless takes technical partitioning to the organizational level: a cloud vendor operates the infrastructure layer *as a service*, allowing your team to focus entirely on domain logic.
+In [L20](./l20-monoliths.md), we discussed technical vs. domain partitioning—whether you organize code (and teams) by technical role (controllers, services, repositories) or by business capability (import, library, export). Serverless takes technical partitioning to the organizational level: a cloud vendor operates the infrastructure layer *as a service*, allowing your team to focus entirely on domain logic.
 
 This is Conway's Law in action. The vendor's organization is structured to specialize in infrastructure—they have teams for container orchestration, auto-scaling, monitoring, security patching. Your organization specializes in your domain—recipes, cookbooks, user workflows. The system boundary (your functions ↔ their infrastructure) mirrors the organizational boundary. The vendor serves thousands of clients, achieving economies of scale that no single team could justify for their own infrastructure.
 
@@ -361,7 +361,7 @@ Serverless isn't a departure from what we've learned—it's an application of th
 | Course Concept | Serverless Application |
 |----------------|----------------------|
 | **Hexagonal Architecture** (L16, L21) | Domain logic behind ports; cloud services are adapters |
-| **Dependency Injection** (L19) | Functions receive dependencies through configuration |
+| **Dependency Injection** (L18) | Functions receive dependencies through configuration |
 | **Information Hiding** (L6) | Each function hides its implementation behind an event interface |
 | **Fallacies of Distributed Computing** (L22) | Serverless makes network calls explicit—can't hide them |
 | **Quality Attributes** (L21) | Serverless optimizes for scalability and cost; trades off latency |

@@ -1,10 +1,10 @@
 ---
-sidebar_position: 20
-lecture_number: 20
+sidebar_position: 19
+lecture_number: 19
 title: Thinking Architecturally
 ---
 
-In [L19](./l19-creation-patterns.md), we saw how patterns like Builder, Factory Methods, and Dependency Injection help us create and wire up individual objects. We ended with a glimpse of how these same principles apply at larger scales—services like `ImportService`, `ExportService`, and `LibraryService` that collaborate to form a complete application.
+In [L18](./l18-creation-patterns.md), we saw how patterns like Builder, Factory Methods, and Dependency Injection help us create and wire up individual objects. We ended with a glimpse of how these same principles apply at larger scales—services like `ImportService`, `ExportService`, and `LibraryService` that collaborate to form a complete application.
 
 But where do those service boundaries come from? How do we decide that "import" and "library management" should be separate concerns? This lecture is about **thinking architecturally**—stepping back from individual classes to see the shape of the whole system.
 
@@ -215,11 +215,11 @@ But in a different system with different constraints, extracting a `ScalingServi
 
 ### Interface Design at the Service Level
 
-Once we've identified services, we need to design their interfaces. The same principles from class design apply—and so do the same patterns from L19.
+Once we've identified services, we need to design their interfaces. The same principles from class design apply—and so do the same patterns from L18.
 
 **Dependency Injection at service scale:**
 
-In L19, we passed a `ConversionRegistry` to `Recipe.convert()`. At the service level, the same principle applies—but now we're injecting entire collaborating services:
+In L18, we passed a `ConversionRegistry` to `Recipe.convert()`. At the service level, the same principle applies—but now we're injecting entire collaborating services:
 
 ```java
 // Good: LibraryService depends on an abstraction

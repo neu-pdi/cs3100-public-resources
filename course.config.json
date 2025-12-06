@@ -195,7 +195,7 @@
         "2026-02-11"
       ],
       "topics": [
-        "Testing with mocks"
+        "Test Doubles and Isolation"
       ]
     },
     {
@@ -204,70 +204,70 @@
         "2026-02-12"
       ],
       "topics": [
-        "Testing II: Testability and flakiness, CI"
+        "Designing for Testability"
       ]
     },
     {
-      "lectureId": "l17-oss",
+      "lectureId": "l17-teams",
       "dates": [
         "2026-02-18"
-      ],
-      "topics": [
-        "Open Source, Libraries, and Frameworks"
-      ]
-    },
-    {
-      "lectureId": "l18-teams",
-      "dates": [
-        "2026-02-19"
       ],
       "topics": [
         "Teams and Collaboration"
       ]
     },
     {
-      "lectureId": "l19-creation-patterns",
+      "lectureId": "l18-creation-patterns",
       "dates": [
-        "2026-02-23"
+        "2026-02-19"
       ],
       "topics": [
         "From Code Patterns to Architecture Patterns"
       ]
     },
     {
-      "lectureId": "l20-architecture-design",
+      "lectureId": "l19-architecture-design",
       "dates": [
-        "2026-02-25"
+        "2026-02-23"
       ],
       "topics": [
         "Thinking Architecturally"
       ]
     },
     {
-      "lectureId": "l21-monoliths",
+      "lectureId": "l20-monoliths",
       "dates": [
-        "2026-02-26"
+        "2026-02-25"
       ],
       "topics": [
         "Architectural Qualities"
       ]
     },
     {
-      "lectureId": "l22-networks",
+      "lectureId": "l21-networks",
       "dates": [
-        "2026-03-09"
+        "2026-02-26"
       ],
       "topics": [
         "Distributed Architecture, Networks, and Security"
       ]
     },
     {
-      "lectureId": "l23-serverless",
+      "lectureId": "l22-serverless",
+      "dates": [
+        "2026-03-09"
+      ],
+      "topics": [
+        "Serverless Architecture"
+      ]
+    },
+    {
+      "lectureId": "l23-oss",
       "dates": [
         "2026-03-11"
       ],
       "topics": [
-        "Serverless Architecture"
+        "Open Source, Libraries, and Frameworks"
       ]
     },
     {
@@ -321,7 +321,7 @@
         "2026-03-25"
       ],
       "topics": [
-        "Concurrency I"
+        "GUIs in Java"
       ]
     },
     {
@@ -466,41 +466,49 @@
     },
     {
       "id": "lab7",
-      "title": "Lab 7: Requirements ",
+      "title": "Lab 7: Debugging",
       "dates": [
         "2026-02-17"
       ],
-      "url": "/labs/lab7-requirements"
+      "url": "/labs/lab7-debugging"
     },
     {
       "id": "lab8",
-      "title": "Lab 8: Dependencies",
+      "title": "Lab 8: Architecture",
       "dates": [
         "2026-02-24"
       ],
-      "url": "/labs/lab8-dependencies"
+      "url": "/labs/lab8-architecture"
     },
     {
-      "id": "lab10",
-      "title": "Lab 10: Architecture",
+      "id": "lab9",
+      "title": "Lab 9: Serverless",
       "dates": [
         "2026-03-10"
       ],
-      "url": "/labs/lab10-architecture"
+      "url": "/labs/lab9-serverless"
     },
     {
-      "id": "lab11",
-      "title": "Lab 11: Usability",
+      "id": "lab10",
+      "title": "Lab 10: Usability",
       "dates": [
         "2026-03-17"
       ],
-      "url": "/labs/lab11-heuristic-eval"
+      "url": "/labs/lab10-usability"
+    },
+    {
+      "id": "lab11",
+      "title": "Lab 11: User-Centered Design",
+      "dates": [
+        "2026-03-24"
+      ],
+      "url": "/labs/lab11-ucd"
     },
     {
       "id": "lab12",
       "title": "Lab 12: GUI",
       "dates": [
-        "2026-03-24"
+        "2026-03-31"
       ],
       "url": "/labs/lab12-gui"
     },
@@ -508,25 +516,17 @@
       "id": "lab13",
       "title": "Lab 13: Asynchronous Programming",
       "dates": [
-        "2026-03-31"
+        "2026-04-07"
       ],
       "url": "/labs/lab13-async"
     },
     {
       "id": "lab14",
-      "title": "Lab 14: Networks and Distributed Systems",
-      "dates": [
-        "2026-04-07"
-      ],
-      "url": "/labs/lab14-networks"
-    },
-    {
-      "id": "lab15",
-      "title": "Lab 15: Serverless Architecture",
+      "title": "Lab 14: Prep for Future of Programming",
       "dates": [
         "2026-04-14"
       ],
-      "url": "/labs/lab15-serverless"
+      "url": "/labs/lab14-future-prep"
     }
   ],
   "assignments": [

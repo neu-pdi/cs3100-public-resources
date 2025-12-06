@@ -453,11 +453,11 @@ export default function SchedulePage({ scheduleData }: Props) {
                 <Box>
                   Loosely, the course is organized as follows:
                   <ul>
-                    <li>Module 1 (weeks 1 - 5): Design principles and patterns, Java fundamentals</li>
-                    <li>Module 2 (weeks 6 - 11): Development practices and user-centered design</li>
-                    <li>Module 3 (weeks 12 - 15): Design in the large: architecture and distributed systems</li>
+                    <li>Module 1 (weeks 1 - 4): Design in the small — Java fundamentals, design principles, changeability</li>
+                    <li>Module 2 (weeks 5 - 10): Design in the large — testing, teams, architecture, distributed systems</li>
+                    <li>Module 3 (weeks 11 - 15): Design for users — UCD, accessibility, GUIs, concurrency</li>
                   </ul>
-                  Module 1 and 2 are followed by exams, and Module 3 is followed by a cumulative final exam.
+                  Modules 1 and 2 are each followed by an exam, and Module 3 is followed by a cumulative final exam.
 
                 </Box>
                 {/* <div style={{ marginBottom: '1rem' }}> */}

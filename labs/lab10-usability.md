@@ -2,7 +2,7 @@
 sidebar_position: 10
 ---
 
-# Lab 10: Heuristic Usability Evaluation
+# Lab 10: Usability
 
 ## Learning Objectives
 

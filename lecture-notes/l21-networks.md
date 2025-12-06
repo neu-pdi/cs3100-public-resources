@@ -1,10 +1,10 @@
 ---
-sidebar_position: 22
-lecture_number: 22
+sidebar_position: 21
+lecture_number: 21
 title: Distributed Architecture, Networks, and Security
 ---
 
-In [L21](./l21-monoliths.md), we explored architectural patterns for applications that run as a single process—Hexagonal Architecture, Layered Architecture, Pipelined Architecture. These patterns help organize code within a single deployment unit.
+In [L20](./l20-monoliths.md), we explored architectural patterns for applications that run as a single process—Hexagonal Architecture, Layered Architecture, Pipelined Architecture. These patterns help organize code within a single deployment unit.
 
 But CookYourBooks doesn't live in isolation. When users can share the Table of Contents for their cookbooks, and potentially even share recipes, notes and reviews, we're suddenly dealing with a fundamentally different kind of system: one where components communicate over networks. This lecture explores what changes—and what stays the same—when we move from monolithic to distributed architecture.
 

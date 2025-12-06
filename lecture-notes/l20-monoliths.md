@@ -1,10 +1,10 @@
 ---
-sidebar_position: 21
-lecture_number: 21
+sidebar_position: 20
+lecture_number: 20
 title: Architectural Qualities
 ---
 
-In [L16 (Design for Testability)](./l16-testing2.md), we introduced **Hexagonal Architecture** (Ports and Adapters) as a way to separate domain logic from infrastructure, making code testable. That was architecture in service of a specific quality attribute: testability. In [L20](./l20-architecture-design.md), we identified service boundaries for CookYourBooks—`ImportService`, `LibraryService`, and `ExportService`—by applying heuristics about cohesion, coupling, and change.
+In [L16 (Design for Testability)](./l16-testing2.md), we introduced **Hexagonal Architecture** (Ports and Adapters) as a way to separate domain logic from infrastructure, making code testable. That was architecture in service of a specific quality attribute: testability. In [L19](./l19-architecture-design.md), we identified service boundaries for CookYourBooks—`ImportService`, `LibraryService`, and `ExportService`—by applying heuristics about cohesion, coupling, and change.
 
 Now we zoom out to look at architectural styles more broadly—recurring structures that help organize entire applications. We'll see how these styles apply to CookYourBooks and how they affect quality attributes beyond just testability. 
 
@@ -27,12 +27,12 @@ There's no official committee that decides what architectural styles exist. Styl
 
 **Microservices** is a perfect example: the name emerged as a reaction to the "big service" architectures that preceded it, not as a prescription to build the smallest services possible. The style became possible because of improvements in deployment automation, container orchestration, and API design practices.
 
-This is the software engineering version of [piecemeal growth](./l20-architecture-design.md)—Christopher Alexander's observation that good architecture emerges through gradual adaptation rather than top-down master plans. Architectural styles aren't invented in ivory towers; they evolve from the ecosystem.
+This is the software engineering version of [piecemeal growth](./l19-architecture-design.md)—Christopher Alexander's observation that good architecture emerges through gradual adaptation rather than top-down master plans. Architectural styles aren't invented in ivory towers; they evolve from the ecosystem.
 :::
 
 ## CookYourBooks: Applying Architecture to a Familiar Domain (5 minutes)
 
-We've been building CookYourBooks throughout the course. In [L19](./l19-creation-patterns.md), we saw how object-level patterns (Builder, Factory Methods, Dependency Injection) help construct and wire individual objects. In [L20](./l20-architecture-design.md), we identified service boundaries based on cohesion, coupling, and change vectors.
+We've been building CookYourBooks throughout the course. In [L18](./l18-creation-patterns.md), we saw how object-level patterns (Builder, Factory Methods, Dependency Injection) help construct and wire individual objects. In [L19](./l19-architecture-design.md), we identified service boundaries based on cohesion, coupling, and change vectors.
 
 Now let's see how architectural patterns help us structure the application as a whole.
 
@@ -444,7 +444,7 @@ When moving away from a "monolithic" architecture, where services are separated 
 
 ### Architecture and Team Topologies
 
-In [L18 (Teams and Collaboration)](./l18-teams.md), we discussed Brooks' Law and how communication overhead grows quadratically with team size. Architecture decisions directly affect how teams can be organized—and vice versa.
+In [L17 (Teams and Collaboration)](./l17-teams.md), we discussed Brooks' Law and how communication overhead grows quadratically with team size. Architecture decisions directly affect how teams can be organized—and vice versa.
 
 For CookYourBooks with a four-person team, domain partitioning works well:
 - One person owns import (all formats, CLI and GUI integration)

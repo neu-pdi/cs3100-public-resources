@@ -1,10 +1,10 @@
 ---
 sidebar_position: 15
 lecture_number: 15
-title: Testing I
+title: Test Doubles and Isolation
 ---
 
-## The Spectrum of Test Scope (10 minutes)
+## Distinguish between unit, integration, and end-to-end tests (10 minutes)
 
 When we talk about automated testing, we're really talking about a whole family of different test types that vary in *scope* — how much of the system is exercised by a single test. Understanding this spectrum helps us make good decisions about what kinds of tests to write and when.
 
@@ -57,7 +57,7 @@ The practical approach is to use a mix:
 
 The rest of this lecture focuses on unit testing — specifically, how to test code in isolation when it depends on other components.
 
-## The Problem: Testing Code That Depends on Other Code (5 minutes)
+## Explain the challenge of testing code with external dependencies (5 minutes)
 
 Consider a `ThermostatController` class in an IoT home automation system. This controller reads temperatures from sensors, activates HVAC systems, and sends notifications. Here's a simplified version:
 
@@ -95,7 +95,7 @@ This is a fundamental problem in unit testing: **how do we test a unit of code i
 
 We could just skip the unit tests and write integration tests that use real components. But integration tests are slow, flaky, and require complex (and sometimes expensive) setup. We want fast, reliable tests that run in milliseconds and can verify specific behaviors. We need a way to test `ThermostatController`'s logic without involving the real dependencies.
 
-## Test Doubles: Standing In for Real Dependencies (10 minutes)
+## Differentiate between stubs, fakes, and spies as types of test doubles (10 minutes)
 
 The solution is to use **test doubles** — objects that stand in for real dependencies during testing. The term comes from the film industry, where stunt doubles stand in for actors. Just as a stunt double doesn't need to be a great actor (they just need to fall off buildings convincingly), a test double doesn't need to implement all the complexity of the real object — it just needs to behave appropriately for the test at hand.
 
@@ -234,7 +234,7 @@ For each new test scenario, we might need different stub values or different spy
 
 This is where mocking frameworks come in.
 
-## Mocking Frameworks: Generating Test Doubles for You (10 minutes)
+## Apply mocking frameworks to generate test doubles (10 minutes)
 
 A **mocking framework** is a library that generates test doubles at runtime. Instead of writing stub and spy classes by hand, you describe the behavior you want and the framework creates an object that behaves that way.
 
@@ -302,7 +302,7 @@ verify(mockNotifier).send(
 
 The `argThat()` matcher takes a lambda that returns true if the argument matches. This is useful when you want to verify partial behavior — "the message should contain these words" rather than "the message should be exactly this string."
 
-## Tradeoffs of Using Test Doubles (10 minutes)
+## Evaluate the tradeoffs of using test doubles (10 minutes)
 
 Test doubles are useful, but they come with tradeoffs (compared to larger scope tests) that you should understand.
 
@@ -363,7 +363,7 @@ The right mix of unit and integration tests depends on your system. Code with co
 
 A useful heuristic: if you find yourself writing increasingly elaborate test doubles just to test some behavior, that might be a sign you should write an integration test instead.
 
-## Utilizing AI Agents to Generate Test Plans and Test Doubles (10 minutes)
+## Apply AI coding assistants to generate test plans and test doubles (10 minutes)
 
 AI coding assistants can significantly speed up test writing. They're particularly good at:
 

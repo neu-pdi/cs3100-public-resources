@@ -1,8 +1,8 @@
 ---
-sidebar_position: 10
+sidebar_position: 8
 ---
 
-# Lab 10: Architecture
+# Lab 8: Architecture
 
 ## Learning Objectives
 

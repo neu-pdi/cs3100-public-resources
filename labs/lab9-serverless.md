@@ -1,8 +1,8 @@
 ---
-sidebar_position: 14
+sidebar_position: 9
 ---
 
-# Lab 15: Serverless Architecture
+# Lab 9: Serverless
 
 ## Learning Objectives
 
