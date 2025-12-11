@@ -176,7 +176,7 @@ Assignments are structured to provide a steady, manageable pace throughout the s
 ### **Week 14: Final Integration and Polish**
 - [**Group Assignment 3: Final Integration and Polish**](/assignments/cyb13-final-integration) (Due 2026-04-16)
   - Basic social features: recipe rating, commenting, and sharing if licensed for redistribution
-  - Reflect on the sustainability of the application
+  - Report on the sustainability of the application, considering the four dimensions of sustainability
   - Report on the safety and reliability requirements for the next iteration of CookYourBooks
 - [**Lab 14: Prep for Future of Programming**](/labs/lab14-future-prep)
   - Explore emerging trends in software development

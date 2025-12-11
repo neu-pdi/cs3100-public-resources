@@ -8,6 +8,7 @@ import type {
   TimeString,
   LectureMapping,
   CourseSection,
+  LabSection,
   Holiday,
   Lab,
 } from './types';
@@ -143,6 +144,13 @@ export function validateSection(section: CourseSection, courseStartDate: DateStr
 }
 
 /**
+ * Validate a lab section (shares structure with CourseSection)
+ */
+export function validateLabSection(section: LabSection, courseStartDate: DateString, courseEndDate: DateString): void {
+  validateSection(section as unknown as CourseSection, courseStartDate, courseEndDate);
+}
+
+/**
  * Validate holidays
  */
 export function validateHoliday(holiday: Holiday): void {
@@ -235,6 +243,18 @@ export function validateCourseConfig(config: CourseConfig): void {
     sectionIds.add(section.id);
     validateSection(section, config.startDate, config.endDate);
   });
+
+  // Validate lab sections (if any) and collect ids
+  const labSectionIds = new Set<string>();
+  if (config.labSections) {
+    config.labSections.forEach((labSection) => {
+      if (labSectionIds.has(labSection.id)) {
+        throw new ValidationError(`Duplicate lab section id: ${labSection.id}`);
+      }
+      labSectionIds.add(labSection.id);
+      validateLabSection(labSection, config.startDate, config.endDate);
+    });
+  }
   
   // Validate holidays
   config.holidays.forEach((holiday) => {
@@ -275,7 +295,8 @@ export function validateCourseConfig(config: CourseConfig): void {
       // Validate section references
       if (lab.sections) {
         lab.sections.forEach((sectionId) => {
-          if (!sectionIds.has(sectionId)) {
+          const known = sectionIds.has(sectionId) || labSectionIds.has(sectionId);
+          if (!known) {
             throw new ValidationError(
               `Lab ${lab.id} references unknown section: ${sectionId}`
             );

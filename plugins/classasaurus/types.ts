@@ -78,6 +78,36 @@ export interface CourseSection {
 }
 
 /**
+ * A lab section with its own schedule (distinct from lecture sections)
+ */
+export interface LabSection {
+  /** Unique identifier for the lab section (e.g., "L01") */
+  id: string;
+
+  /** Human-readable lab section name */
+  name: string;
+
+  /** CRN or other registration identifier */
+  crn?: string;
+
+  /** Meeting pattern(s) for this lab section */
+  meetings: MeetingPattern[];
+
+  /** Timezone for this lab section */
+  timeZone: string;
+
+  /** Instructor(s) for this lab section */
+  instructors?: string[];
+
+  /** Override dates for this specific section if different from course defaults */
+  startDate?: DateString;
+  endDate?: DateString;
+
+  /** Section-specific holidays/cancellations (in addition to course-wide ones) */
+  additionalHolidays?: Holiday[];
+}
+
+/**
  * Type of special date/holiday
  */
 export type HolidayType = 
@@ -255,6 +285,9 @@ export interface CourseConfig {
   
   /** Course sections */
   sections: CourseSection[];
+
+  /** Lab sections */
+  labSections?: LabSection[];
   
   /** Holidays and special dates */
   holidays: Holiday[];
@@ -362,6 +395,11 @@ export interface CourseSchedule {
   /** Generated schedule entries, organized by section */
   scheduleBySection: {
     [sectionId: string]: ScheduleEntry[];
+  };
+
+  /** Generated schedule entries for lab sections (if provided) */
+  labScheduleBySection?: {
+    [labSectionId: string]: ScheduleEntry[];
   };
   
   /** All schedule entries in chronological order */

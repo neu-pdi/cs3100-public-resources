@@ -10,7 +10,51 @@
     {
       "id": "01",
       "name": "Section 01",
-      "crn": "12345",
+      "crn": "36059",
+      "timeZone": "America/Los_Angeles",
+      "meetings": [
+        {
+          "type": "lecture",
+          "days": [
+            "Monday",
+            "Wednesday",
+            "Thursday"
+          ],
+          "startTime": "10:35",
+          "endTime": "11:40",
+          "location": "Oakland, CA (TBD)"
+        }
+      ],
+      "instructors": [
+        "Spertus, E."
+      ]
+    },
+    {
+      "id": "02",
+      "name": "Section 02",
+      "crn": "36060",
+      "timeZone": "America/Los_Angeles",
+      "meetings": [
+        {
+          "type": "lecture",
+          "days": [
+            "Monday",
+            "Wednesday",
+            "Thursday"
+          ],
+          "startTime": "13:35",
+          "endTime": "14:40",
+          "location": "Oakland, CA (TBD)"
+        }
+      ],
+      "instructors": [
+        "Spertus, E."
+      ]
+    },
+    {
+      "id": "03",
+      "name": "Section 03",
+      "crn": "36061",
       "timeZone": "America/New_York",
       "meetings": [
         {
@@ -22,20 +66,411 @@
           ],
           "startTime": "10:30",
           "endTime": "11:35",
-          "location": "TBD"
-        },
+          "location": "CG 097"
+        }
+      ],
+      "instructors": [
+        "Bell, J."
+      ]
+    },
+    {
+      "id": "04",
+      "name": "Section 04",
+      "crn": "36062",
+      "timeZone": "America/New_York",
+      "meetings": [
+        {
+          "type": "lecture",
+          "days": [
+            "Monday",
+            "Wednesday",
+            "Thursday"
+          ],
+          "startTime": "13:35",
+          "endTime": "14:40",
+          "location": "SH 335"
+        }
+      ],
+      "instructors": [
+        "Vesely, F."
+      ]
+    },
+    {
+      "id": "05",
+      "name": "Section 05",
+      "crn": "36063",
+      "timeZone": "America/New_York",
+      "meetings": [
+        {
+          "type": "lecture",
+          "days": [
+            "Monday",
+            "Wednesday",
+            "Thursday"
+          ],
+          "startTime": "13:35",
+          "endTime": "14:40",
+          "location": "HA 322"
+        }
+      ],
+      "instructors": [
+        "Shesh, A."
+      ]
+    },
+    {
+      "id": "06",
+      "name": "Section 06",
+      "crn": "36064",
+      "timeZone": "America/New_York",
+      "meetings": [
+        {
+          "type": "lecture",
+          "days": [
+            "Monday",
+            "Wednesday",
+            "Thursday"
+          ],
+          "startTime": "16:35",
+          "endTime": "17:40",
+          "location": "SH 135"
+        }
+      ],
+      "instructors": [
+        "Vesely, F."
+      ]
+    }
+  ],
+  "labSections": [
+    {
+      "id": "L01",
+      "name": "Lab Section 01",
+      "crn": "36065",
+      "timeZone": "America/Los_Angeles",
+      "meetings": [
         {
           "type": "lab",
           "days": [
             "Tuesday"
           ],
-          "startTime": "14:00",
-          "endTime": "15:40",
-          "location": "Ryder Hall 431"
+          "startTime": "12:25",
+          "endTime": "14:05",
+          "location": "M48 102"
         }
       ],
       "instructors": [
-        "Jonathan Bell"
+        "Spertus, E."
+      ]
+    },
+    {
+      "id": "L02",
+      "name": "Lab Section 02",
+      "crn": "36066",
+      "timeZone": "America/Los_Angeles",
+      "meetings": [
+        {
+          "type": "lab",
+          "days": [
+            "Tuesday"
+          ],
+          "startTime": "15:00",
+          "endTime": "16:40",
+          "location": "TBD"
+        }
+      ],
+      "instructors": [
+        "Spertus, E."
+      ]
+    },
+    {
+      "id": "L03",
+      "name": "Lab Section 03",
+      "crn": "36067",
+      "timeZone": "America/New_York",
+      "meetings": [
+        {
+          "type": "lab",
+          "days": [
+            "Friday"
+          ],
+          "startTime": "12:25",
+          "endTime": "14:05",
+          "location": "TBD"
+        }
+      ],
+      "instructors": [
+        "Spertus, E."
+      ]
+    },
+    {
+      "id": "L04",
+      "name": "Lab Section 04",
+      "crn": "36068",
+      "timeZone": "America/Los_Angeles",
+      "meetings": [
+        {
+          "type": "lab",
+          "days": [
+            "Tuesday"
+          ],
+          "startTime": "10:35",
+          "endTime": "12:15",
+          "location": "M48 102"
+        }
+      ],
+      "instructors": [
+        "Spertus, E."
+      ]
+    },
+    {
+      "id": "L05",
+      "name": "Lab Section 05",
+      "crn": "36069",
+      "timeZone": "America/New_York",
+      "startDate": "2026-01-05",
+      "meetings": [
+        {
+          "type": "lab",
+          "days": [
+            "Monday"
+          ],
+          "startTime": "08:00",
+          "endTime": "09:40",
+          "location": "WVH 210A"
+        }
+      ],
+      "instructors": [
+        "Bell, J."
+      ]
+    },
+    {
+      "id": "L06",
+      "name": "Lab Section 06",
+      "crn": "36070",
+      "timeZone": "America/New_York",
+      "startDate": "2026-01-05",
+      "meetings": [
+        {
+          "type": "lab",
+          "days": [
+            "Monday"
+          ],
+          "startTime": "09:50",
+          "endTime": "11:30",
+          "location": "WVH 210A"
+        }
+      ],
+      "instructors": [
+        "Bell, J."
+      ]
+    },
+    {
+      "id": "L07",
+      "name": "Lab Section 07",
+      "crn": "36071",
+      "timeZone": "America/New_York",
+      "startDate": "2026-01-05",
+      "meetings": [
+        {
+          "type": "lab",
+          "days": [
+            "Monday"
+          ],
+          "startTime": "09:50",
+          "endTime": "11:30",
+          "location": "WVH 210B"
+        }
+      ],
+      "instructors": [
+        "Bell, J."
+      ]
+    },
+    {
+      "id": "L08",
+      "name": "Lab Section 08",
+      "crn": "36072",
+      "timeZone": "America/New_York",
+      "startDate": "2026-01-05",
+      "meetings": [
+        {
+          "type": "lab",
+          "days": [
+            "Monday"
+          ],
+          "startTime": "11:45",
+          "endTime": "13:25",
+          "location": "WVH 210A"
+        }
+      ],
+      "instructors": [
+        "Bell, J."
+      ]
+    },
+    {
+      "id": "L09",
+      "name": "Lab Section 09",
+      "crn": "36073",
+      "timeZone": "America/New_York",
+      "startDate": "2026-01-05",
+      "meetings": [
+        {
+          "type": "lab",
+          "days": [
+            "Monday"
+          ],
+          "startTime": "11:45",
+          "endTime": "13:25",
+          "location": "WVH 210B"
+        }
+      ],
+      "instructors": [
+        "Bell, J."
+      ]
+    },
+    {
+      "id": "L10",
+      "name": "Lab Section 10",
+      "crn": "36074",
+      "timeZone": "America/New_York",
+      "startDate": "2026-01-05",
+      "meetings": [
+        {
+          "type": "lab",
+          "days": [
+            "Monday"
+          ],
+          "startTime": "11:45",
+          "endTime": "13:25",
+          "location": "WVH 212"
+        }
+      ],
+      "instructors": [
+        "Bell, J."
+      ]
+    },
+    {
+      "id": "L11",
+      "name": "Lab Section 11",
+      "crn": "36075",
+      "timeZone": "America/New_York",
+      "startDate": "2026-01-05",
+      "meetings": [
+        {
+          "type": "lab",
+          "days": [
+            "Monday"
+          ],
+          "startTime": "15:25",
+          "endTime": "17:05",
+          "location": "WVH 210A"
+        }
+      ],
+      "instructors": [
+        "Bell, J."
+      ]
+    },
+    {
+      "id": "L12",
+      "name": "Lab Section 12",
+      "crn": "36076",
+      "timeZone": "America/New_York",
+      "startDate": "2026-01-05",
+      "meetings": [
+        {
+          "type": "lab",
+          "days": [
+            "Monday"
+          ],
+          "startTime": "15:25",
+          "endTime": "17:05",
+          "location": "WVH 210B"
+        }
+      ],
+      "instructors": [
+        "Bell, J."
+      ]
+    },
+    {
+      "id": "L13",
+      "name": "Lab Section 13",
+      "crn": "36077",
+      "timeZone": "America/New_York",
+      "startDate": "2026-01-05",
+      "meetings": [
+        {
+          "type": "lab",
+          "days": [
+            "Monday"
+          ],
+          "startTime": "15:25",
+          "endTime": "17:05",
+          "location": "WVH 212"
+        }
+      ],
+      "instructors": [
+        "Bell, J."
+      ]
+    },
+    {
+      "id": "L14",
+      "name": "Lab Section 14",
+      "crn": "36078",
+      "timeZone": "America/New_York",
+      "startDate": "2026-01-05",
+      "meetings": [
+        {
+          "type": "lab",
+          "days": [
+            "Monday"
+          ],
+          "startTime": "17:15",
+          "endTime": "18:55",
+          "location": "WVH 210A"
+        }
+      ],
+      "instructors": [
+        "Bell, J."
+      ]
+    },
+    {
+      "id": "L15",
+      "name": "Lab Section 15",
+      "crn": "36079",
+      "timeZone": "America/New_York",
+      "startDate": "2026-01-05",
+      "meetings": [
+        {
+          "type": "lab",
+          "days": [
+            "Monday"
+          ],
+          "startTime": "17:15",
+          "endTime": "18:55",
+          "location": "WVH 210B"
+        }
+      ],
+      "instructors": [
+        "Bell, J."
+      ]
+    },
+    {
+      "id": "L16",
+      "name": "Lab Section 16",
+      "crn": "36080",
+      "timeZone": "America/New_York",
+      "startDate": "2026-01-05",
+      "meetings": [
+        {
+          "type": "lab",
+          "days": [
+            "Monday"
+          ],
+          "startTime": "17:15",
+          "endTime": "18:55",
+          "location": "WVH 212"
+        }
+      ],
+      "instructors": [
+        "Bell, J."
       ]
     }
   ],
@@ -417,115 +852,310 @@
   ],
   "labs": [
     {
-      "id": "lab1",
+      "id": "lab1-mon",
       "title": "Lab 1: Java Tooling and Setup",
-      "dates": [
-        "2026-01-06"
-      ],
+      "dates": ["2026-01-05"],
+      "sections": ["L05","L06","L07","L08","L09","L10","L11","L12","L13","L14","L15","L16"],
       "url": "/labs/lab1-java-setup"
     },
     {
-      "id": "lab2",
+      "id": "lab1-tue",
+      "title": "Lab 1: Java Tooling and Setup",
+      "dates": ["2026-01-06"],
+      "sections": ["L01","L02","L04"],
+      "url": "/labs/lab1-java-setup"
+    },
+    {
+      "id": "lab1-fri",
+      "title": "Lab 1: Java Tooling and Setup",
+      "dates": ["2026-01-09"],
+      "sections": ["L03"],
+      "url": "/labs/lab1-java-setup"
+    },
+
+    {
+      "id": "lab2-mon",
       "title": "Lab 2: Java Abstraction and Data Types",
-      "dates": [
-        "2026-01-13"
-      ],
+      "dates": ["2026-01-12"],
+      "sections": ["L05","L06","L07","L08","L09","L10","L11","L12","L13","L14","L15","L16"],
       "url": "/labs/lab2-java-abstraction"
     },
     {
-      "id": "lab3",
+      "id": "lab2-tue",
+      "title": "Lab 2: Java Abstraction and Data Types",
+      "dates": ["2026-01-13"],
+      "sections": ["L01","L02","L04"],
+      "url": "/labs/lab2-java-abstraction"
+    },
+    {
+      "id": "lab2-fri",
+      "title": "Lab 2: Java Abstraction and Data Types",
+      "dates": ["2026-01-16"],
+      "sections": ["L03"],
+      "url": "/labs/lab2-java-abstraction"
+    },
+
+    {
+      "id": "lab3-mon",
       "title": "Lab 3: Readabiltiy and Modularity",
-      "dates": [
-        "2026-01-20"
-      ],
+      "dates": ["2026-01-19"],
+      "sections": ["L05","L06","L07","L08","L09","L10","L11","L12","L13","L14","L15","L16"],
       "url": "/labs/lab3-readability"
     },
     {
-      "id": "lab4",
+      "id": "lab3-tue",
+      "title": "Lab 3: Readabiltiy and Modularity",
+      "dates": ["2026-01-20"],
+      "sections": ["L01","L02","L04"],
+      "url": "/labs/lab3-readability"
+    },
+    {
+      "id": "lab3-fri",
+      "title": "Lab 3: Readabiltiy and Modularity",
+      "dates": ["2026-01-23"],
+      "sections": ["L03"],
+      "url": "/labs/lab3-readability"
+    },
+
+    {
+      "id": "lab4-mon",
       "title": "Lab 4: Changeability",
-      "dates": [
-        "2026-01-27"
-      ],
+      "dates": ["2026-01-26"],
+      "sections": ["L05","L06","L07","L08","L09","L10","L11","L12","L13","L14","L15","L16"],
       "url": "/labs/lab4-changeability"
     },
     {
-      "id": "lab5",
+      "id": "lab4-tue",
+      "title": "Lab 4: Changeability",
+      "dates": ["2026-01-27"],
+      "sections": ["L01","L02","L04"],
+      "url": "/labs/lab4-changeability"
+    },
+    {
+      "id": "lab4-fri",
+      "title": "Lab 4: Changeability",
+      "dates": ["2026-01-30"],
+      "sections": ["L03"],
+      "url": "/labs/lab4-changeability"
+    },
+
+    {
+      "id": "lab5-mon",
       "title": "Lab 5: Domain Modeling",
-      "dates": [
-        "2026-02-03"
-      ],
+      "dates": ["2026-02-02"],
+      "sections": ["L05","L06","L07","L08","L09","L10","L11","L12","L13","L14","L15","L16"],
       "url": "/labs/lab5-domain-modeling"
     },
     {
-      "id": "lab6",
+      "id": "lab5-tue",
+      "title": "Lab 5: Domain Modeling",
+      "dates": ["2026-02-03"],
+      "sections": ["L01","L02","L04"],
+      "url": "/labs/lab5-domain-modeling"
+    },
+    {
+      "id": "lab5-fri",
+      "title": "Lab 5: Domain Modeling",
+      "dates": ["2026-02-06"],
+      "sections": ["L03"],
+      "url": "/labs/lab5-domain-modeling"
+    },
+
+    {
+      "id": "lab6-mon",
       "title": "Lab 6: AI Coding Agents",
-      "dates": [
-        "2026-02-10"
-      ],
+      "dates": ["2026-02-09"],
+      "sections": ["L05","L06","L07","L08","L09","L10","L11","L12","L13","L14","L15","L16"],
       "url": "/labs/lab6-copilot"
     },
     {
-      "id": "lab7",
+      "id": "lab6-tue",
+      "title": "Lab 6: AI Coding Agents",
+      "dates": ["2026-02-10"],
+      "sections": ["L01","L02","L04"],
+      "url": "/labs/lab6-copilot"
+    },
+    {
+      "id": "lab6-fri",
+      "title": "Lab 6: AI Coding Agents",
+      "dates": ["2026-02-13"],
+      "sections": ["L03"],
+      "url": "/labs/lab6-copilot"
+    },
+
+    {
+      "id": "lab7-mon",
       "title": "Lab 7: Debugging",
-      "dates": [
-        "2026-02-17"
-      ],
+      "dates": ["2026-02-16"],
+      "sections": ["L05","L06","L07","L08","L09","L10","L11","L12","L13","L14","L15","L16"],
       "url": "/labs/lab7-debugging"
     },
     {
-      "id": "lab8",
+      "id": "lab7-tue",
+      "title": "Lab 7: Debugging",
+      "dates": ["2026-02-17"],
+      "sections": ["L01","L02","L04"],
+      "url": "/labs/lab7-debugging"
+    },
+    {
+      "id": "lab7-fri",
+      "title": "Lab 7: Debugging",
+      "dates": ["2026-02-20"],
+      "sections": ["L03"],
+      "url": "/labs/lab7-debugging"
+    },
+
+    {
+      "id": "lab8-mon",
       "title": "Lab 8: Architecture",
-      "dates": [
-        "2026-02-24"
-      ],
+      "dates": ["2026-02-23"],
+      "sections": ["L05","L06","L07","L08","L09","L10","L11","L12","L13","L14","L15","L16"],
       "url": "/labs/lab8-architecture"
     },
     {
-      "id": "lab9",
+      "id": "lab8-tue",
+      "title": "Lab 8: Architecture",
+      "dates": ["2026-02-24"],
+      "sections": ["L01","L02","L04"],
+      "url": "/labs/lab8-architecture"
+    },
+    {
+      "id": "lab8-fri",
+      "title": "Lab 8: Architecture",
+      "dates": ["2026-02-27"],
+      "sections": ["L03"],
+      "url": "/labs/lab8-architecture"
+    },
+
+    {
+      "id": "lab9-mon",
       "title": "Lab 9: Serverless",
-      "dates": [
-        "2026-03-10"
-      ],
+      "dates": ["2026-03-09"],
+      "sections": ["L05","L06","L07","L08","L09","L10","L11","L12","L13","L14","L15","L16"],
       "url": "/labs/lab9-serverless"
     },
     {
-      "id": "lab10",
+      "id": "lab9-tue",
+      "title": "Lab 9: Serverless",
+      "dates": ["2026-03-10"],
+      "sections": ["L01","L02","L04"],
+      "url": "/labs/lab9-serverless"
+    },
+    {
+      "id": "lab9-fri",
+      "title": "Lab 9: Serverless",
+      "dates": ["2026-03-13"],
+      "sections": ["L03"],
+      "url": "/labs/lab9-serverless"
+    },
+
+    {
+      "id": "lab10-mon",
       "title": "Lab 10: Usability",
-      "dates": [
-        "2026-03-17"
-      ],
+      "dates": ["2026-03-16"],
+      "sections": ["L05","L06","L07","L08","L09","L10","L11","L12","L13","L14","L15","L16"],
       "url": "/labs/lab10-usability"
     },
     {
-      "id": "lab11",
+      "id": "lab10-tue",
+      "title": "Lab 10: Usability",
+      "dates": ["2026-03-17"],
+      "sections": ["L01","L02","L04"],
+      "url": "/labs/lab10-usability"
+    },
+    {
+      "id": "lab10-fri",
+      "title": "Lab 10: Usability",
+      "dates": ["2026-03-20"],
+      "sections": ["L03"],
+      "url": "/labs/lab10-usability"
+    },
+
+    {
+      "id": "lab11-mon",
       "title": "Lab 11: User-Centered Design",
-      "dates": [
-        "2026-03-24"
-      ],
+      "dates": ["2026-03-23"],
+      "sections": ["L05","L06","L07","L08","L09","L10","L11","L12","L13","L14","L15","L16"],
       "url": "/labs/lab11-ucd"
     },
     {
-      "id": "lab12",
+      "id": "lab11-tue",
+      "title": "Lab 11: User-Centered Design",
+      "dates": ["2026-03-24"],
+      "sections": ["L01","L02","L04"],
+      "url": "/labs/lab11-ucd"
+    },
+    {
+      "id": "lab11-fri",
+      "title": "Lab 11: User-Centered Design",
+      "dates": ["2026-03-27"],
+      "sections": ["L03"],
+      "url": "/labs/lab11-ucd"
+    },
+
+    {
+      "id": "lab12-mon",
       "title": "Lab 12: GUI",
-      "dates": [
-        "2026-03-31"
-      ],
+      "dates": ["2026-03-30"],
+      "sections": ["L05","L06","L07","L08","L09","L10","L11","L12","L13","L14","L15","L16"],
       "url": "/labs/lab12-gui"
     },
     {
-      "id": "lab13",
+      "id": "lab12-tue",
+      "title": "Lab 12: GUI",
+      "dates": ["2026-03-31"],
+      "sections": ["L01","L02","L04"],
+      "url": "/labs/lab12-gui"
+    },
+    {
+      "id": "lab12-fri",
+      "title": "Lab 12: GUI",
+      "dates": ["2026-04-03"],
+      "sections": ["L03"],
+      "url": "/labs/lab12-gui"
+    },
+
+    {
+      "id": "lab13-mon",
       "title": "Lab 13: Asynchronous Programming",
-      "dates": [
-        "2026-04-07"
-      ],
+      "dates": ["2026-04-06"],
+      "sections": ["L05","L06","L07","L08","L09","L10","L11","L12","L13","L14","L15","L16"],
       "url": "/labs/lab13-async"
     },
     {
-      "id": "lab14",
+      "id": "lab13-tue",
+      "title": "Lab 13: Asynchronous Programming",
+      "dates": ["2026-04-07"],
+      "sections": ["L01","L02","L04"],
+      "url": "/labs/lab13-async"
+    },
+    {
+      "id": "lab13-fri",
+      "title": "Lab 13: Asynchronous Programming",
+      "dates": ["2026-04-10"],
+      "sections": ["L03"],
+      "url": "/labs/lab13-async"
+    },
+
+    {
+      "id": "lab14-mon",
       "title": "Lab 14: Prep for Future of Programming",
-      "dates": [
-        "2026-04-14"
-      ],
+      "dates": ["2026-04-13"],
+      "sections": ["L05","L06","L07","L08","L09","L10","L11","L12","L13","L14","L15","L16"],
+      "url": "/labs/lab14-future-prep"
+    },
+    {
+      "id": "lab14-tue",
+      "title": "Lab 14: Prep for Future of Programming",
+      "dates": ["2026-04-14"],
+      "sections": ["L01","L02","L04"],
+      "url": "/labs/lab14-future-prep"
+    },
+    {
+      "id": "lab14-fri",
+      "title": "Lab 14: Prep for Future of Programming",
+      "dates": ["2026-04-17"],
+      "sections": ["L03"],
       "url": "/labs/lab14-future-prep"
     }
   ],

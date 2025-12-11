@@ -7,6 +7,7 @@ import type {
   CourseConfig,
   CourseSchedule,
   CourseSection,
+  LabSection,
   DateString,
   DayOfWeek,
   Holiday,
@@ -60,14 +61,14 @@ function isHoliday(date: DateString, holidays: Holiday[]): Holiday | undefined {
  * Generate all class meeting dates for a section (including holidays)
  */
 function generateMeetingDates(
-  section: CourseSection,
+  section: CourseSection | LabSection,
   courseStartDate: DateString,
   courseEndDate: DateString,
   holidays: Holiday[]
-): Map<DateString, MeetingPattern> {
+): Map<DateString, MeetingPattern[]> {
   const startDate = parseISO(section.startDate || courseStartDate);
   const endDate = parseISO(section.endDate || courseEndDate);
-  const meetingDates = new Map<DateString, MeetingPattern>();
+  const meetingDates = new Map<DateString, MeetingPattern[]>();
   
   // Iterate through each day in the date range
   let currentDate = startDate;
@@ -80,7 +81,8 @@ function generateMeetingDates(
       if (meeting.days.includes(dayOfWeek)) {
         // Include all meeting days, even if they fall on holidays
         // (holidays will be marked as cancelled in the schedule entries)
-        meetingDates.set(dateStr, meeting);
+        const existing = meetingDates.get(dateStr) || [];
+        meetingDates.set(dateStr, [...existing, meeting]);
       }
     }
     
@@ -167,28 +169,85 @@ function generateSectionSchedule(
   const sortedDates = Array.from(meetingDates.keys()).sort();
   
   for (const date of sortedDates) {
-    const meeting = meetingDates.get(date)!;
+    const meetings = meetingDates.get(date)!;
     const dateObj = parseISO(date);
     const holiday = isHoliday(date, allHolidays);
     const lecture = findLectureForDate(date, section.id, config.lectures);
     const lab = findLabForDate(date, section.id, config.labs || []);
     
-    const entry: ScheduleEntry = {
-      date,
-      dayOfWeek: getDayOfWeek(dateObj),
-      meetingNumber: meetingNumber++,
-      sectionId: section.id,
-      sectionName: section.name,
-      meeting,
-      lecture,
-      lab,
-      holiday,
-      isCancelled: !!holiday,
-    };
-    
-    schedule.push(entry);
+    for (const meeting of meetings) {
+      const entry: ScheduleEntry = {
+        date,
+        dayOfWeek: getDayOfWeek(dateObj),
+        meetingNumber: meetingNumber++,
+        sectionId: section.id,
+        sectionName: section.name,
+        meeting,
+        lecture,
+        lab,
+        holiday,
+        isCancelled: !!holiday,
+      };
+      
+      schedule.push(entry);
+    }
   }
   
+  return schedule;
+}
+
+/**
+ * Generate schedule for a single lab section
+ */
+function generateLabSectionSchedule(
+  labSection: LabSection,
+  config: CourseConfig
+): ScheduleEntry[] {
+  const allHolidays = [
+    ...config.holidays,
+    ...(labSection.additionalHolidays || []),
+  ];
+
+  const meetingDates = generateMeetingDates(
+    {
+      ...labSection,
+      // Lab sections already only carry lab meetings, so the shape matches MeetingPattern expectations
+      meetings: labSection.meetings,
+    },
+    config.startDate,
+    config.endDate,
+    allHolidays
+  );
+
+  const schedule: ScheduleEntry[] = [];
+  let meetingNumber = 1;
+
+  const sortedDates = Array.from(meetingDates.keys()).sort();
+
+  for (const date of sortedDates) {
+    const meetings = meetingDates.get(date)!;
+    const dateObj = parseISO(date);
+    const holiday = isHoliday(date, allHolidays);
+    const lab = findLabForDate(date, labSection.id, config.labs || []);
+    
+    for (const meeting of meetings) {
+      const entry: ScheduleEntry = {
+        date,
+        dayOfWeek: getDayOfWeek(dateObj),
+        meetingNumber: meetingNumber++,
+        sectionId: labSection.id,
+        sectionName: labSection.name,
+        meeting,
+        lecture: undefined,
+        lab,
+        holiday,
+        isCancelled: !!holiday,
+      };
+      
+      schedule.push(entry);
+    }
+  }
+
   return schedule;
 }
 
@@ -198,12 +257,31 @@ function generateSectionSchedule(
 export function generateSchedule(config: CourseConfig): CourseSchedule {
   const scheduleBySection: { [sectionId: string]: ScheduleEntry[] } = {};
   const allEntries: ScheduleEntry[] = [];
+  const labScheduleBySection: { [labSectionId: string]: ScheduleEntry[] } = {};
   
   // Generate schedule for each section
   for (const section of config.sections) {
     const sectionSchedule = generateSectionSchedule(section, config);
     scheduleBySection[section.id] = sectionSchedule;
     allEntries.push(...sectionSchedule);
+  }
+
+  // Generate schedule for each lab section (if provided)
+  if (config.labSections && config.labSections.length > 0) {
+    for (const labSection of config.labSections) {
+      const labSectionSchedule = generateLabSectionSchedule(labSection, config);
+      labScheduleBySection[labSection.id] = labSectionSchedule;
+      allEntries.push(...labSectionSchedule);
+      if (labSectionSchedule.length === 0) {
+        console.warn(`[schedule-generator] Lab section ${labSection.id} produced 0 meetings`);
+      }
+    }
+  } else {
+    if (!config.labSections) {
+      console.warn('[schedule-generator] No labSections configured');
+    } else if (config.labSections.length === 0) {
+      console.warn('[schedule-generator] labSections is empty');
+    }
   }
   
   // Sort all entries by date
@@ -219,6 +297,7 @@ export function generateSchedule(config: CourseConfig): CourseSchedule {
   return {
     config,
     scheduleBySection,
+    labScheduleBySection: Object.keys(labScheduleBySection).length > 0 ? labScheduleBySection : undefined,
     allEntries,
     importantDates: {
       startDate: config.startDate,
