@@ -36,6 +36,13 @@ const config: Config = {
       scheduleRoute: '/schedule',
       validateLectureFiles: false, // Enable after all lectures are mapped
     }],
+    [path.resolve(__dirname, './plugins/staff-images/index.ts'), {
+      sourceDir: 'static/img/staff',
+      outputDir: 'img/staff',
+      size: 300,
+      quality: 85,
+      generateWebP: true,
+    }],
     [
       '@docusaurus/plugin-content-docs',
       {
@@ -158,6 +165,11 @@ const config: Config = {
           docsPluginId: 'lecture-slides',
           position: 'left',
           label: 'Lecture Slides',
+        },
+        {
+          to: '/staff',
+          position: 'left',
+          label: 'Staff',
         }
       ],
     },

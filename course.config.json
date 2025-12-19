@@ -3,7 +3,7 @@
   "courseTitle": "Program Design and Implementation II",
   "semester": "Spring 2026",
   "academicYear": "2025-2026",
-  "startDate": "2026-01-06",
+  "startDate": "2026-01-07",
   "endDate": "2026-04-20",
   "timezone": "America/New_York",
   "sections": [
@@ -226,7 +226,6 @@
       "name": "Lab Section 05",
       "crn": "36069",
       "timeZone": "America/New_York",
-      "startDate": "2026-01-05",
       "meetings": [
         {
           "type": "lab",
@@ -247,7 +246,6 @@
       "name": "Lab Section 06",
       "crn": "36070",
       "timeZone": "America/New_York",
-      "startDate": "2026-01-05",
       "meetings": [
         {
           "type": "lab",
@@ -268,7 +266,6 @@
       "name": "Lab Section 07",
       "crn": "36071",
       "timeZone": "America/New_York",
-      "startDate": "2026-01-05",
       "meetings": [
         {
           "type": "lab",
@@ -289,7 +286,6 @@
       "name": "Lab Section 08",
       "crn": "36072",
       "timeZone": "America/New_York",
-      "startDate": "2026-01-05",
       "meetings": [
         {
           "type": "lab",
@@ -310,7 +306,6 @@
       "name": "Lab Section 09",
       "crn": "36073",
       "timeZone": "America/New_York",
-      "startDate": "2026-01-05",
       "meetings": [
         {
           "type": "lab",
@@ -331,7 +326,6 @@
       "name": "Lab Section 10",
       "crn": "36074",
       "timeZone": "America/New_York",
-      "startDate": "2026-01-05",
       "meetings": [
         {
           "type": "lab",
@@ -352,7 +346,6 @@
       "name": "Lab Section 11",
       "crn": "36075",
       "timeZone": "America/New_York",
-      "startDate": "2026-01-05",
       "meetings": [
         {
           "type": "lab",
@@ -373,7 +366,6 @@
       "name": "Lab Section 12",
       "crn": "36076",
       "timeZone": "America/New_York",
-      "startDate": "2026-01-05",
       "meetings": [
         {
           "type": "lab",
@@ -394,7 +386,6 @@
       "name": "Lab Section 13",
       "crn": "36077",
       "timeZone": "America/New_York",
-      "startDate": "2026-01-05",
       "meetings": [
         {
           "type": "lab",
@@ -415,7 +406,6 @@
       "name": "Lab Section 14",
       "crn": "36078",
       "timeZone": "America/New_York",
-      "startDate": "2026-01-05",
       "meetings": [
         {
           "type": "lab",
@@ -436,7 +426,6 @@
       "name": "Lab Section 15",
       "crn": "36079",
       "timeZone": "America/New_York",
-      "startDate": "2026-01-05",
       "meetings": [
         {
           "type": "lab",
@@ -457,7 +446,6 @@
       "name": "Lab Section 16",
       "crn": "36080",
       "timeZone": "America/New_York",
-      "startDate": "2026-01-05",
       "meetings": [
         {
           "type": "lab",
@@ -854,17 +842,18 @@
     {
       "id": "lab1-mon",
       "title": "Lab 1: Java Tooling and Setup",
-      "dates": ["2026-01-05"],
+      "dates": ["2026-01-07"],
       "sections": ["L05","L06","L07","L08","L09","L10","L11","L12","L13","L14","L15","L16"],
-      "url": "/labs/lab1-java-setup"
+      "url": "/labs/lab1-java-setup",
+      "notes": "Due to registrar scheduling that gives different numbers of class meetings to different sections, Lab 1 for Monday lab sections will be completed asynchronously (on students' own time). TAs will organize workshops for troubleshooting and co-working as needed."
     },
     {
       "id": "lab1-tue",
       "title": "Lab 1: Java Tooling and Setup",
-      "dates": ["2026-01-06"],
+      "dates": ["2026-01-07"],
       "sections": ["L01","L02","L04"],
-      "url": "/labs/lab1-java-setup"
-    },
+      "url": "/labs/lab1-java-setup",
+      "notes": "Due to registrar scheduling that gives different numbers of class meetings to different sections, Lab 1 for Monday lab sections will be completed asynchronously (on students' own time). TAs will organize workshops for troubleshooting and co-working as needed."    },
     {
       "id": "lab1-fri",
       "title": "Lab 1: Java Tooling and Setup",
@@ -1250,7 +1239,16 @@
       "points": 100,
       "url": "/assignments/team-forming"
     }
-],
+  ],
+  "scheduleNotes": [
+    {
+      "message": "Due to registrar scheduling that gives different numbers of class meetings to different sections, Lab 1 for Monday lab sections will be completed asynchronously (on students' own time). TAs will organize workshops for troubleshooting and co-working as needed.",
+      "weeks": [1],
+      "labSections": ["L05", "L06", "L07", "L08", "L09", "L10", "L11", "L12", "L13", "L14", "L15", "L16"],
+      "status": "info",
+      "date": "2026-01-07"
+    }
+  ],
 "metadata": {
   "department": "Khoury College of Computer Sciences",
   "credits": 4,

@@ -122,7 +122,7 @@ Your letter grade is determined by both your total points AND meeting minimum th
 
 **Final Exam Replacement:** If your final exam score is greater than the average of your two midterm exam scores, your final exam score will replace that average. This allows you to recover from poor early exam performance by demonstrating mastery on the comprehensive final.
 
-**Late Work:** Detailed late policies will be published with each assignment. In general, late submissions receive reduced credit unless an extension has been granted in advance.
+**Late Work:** You start the semester with four "Late Tokens" that grant a 24-hour extension on any assignment. You can apply one late token per assignment, but you must apply it before the original due date. No assignments will be accepted after the due date (or after the extended due date if a late token was applied). For exceptional circumstances, contact your instructor. See [Pawtograder Documentation](https://docs.pawtograder.com/students/assignments/late-tokens) for details.
 
 ### Labs and Participation
 
@@ -145,6 +145,7 @@ TA office hours are available throughout the week to provide one-on-one support 
 To make the most of your time:
 - Come prepared with a specific question or issue. When you submit a help request, describe your concern so the TA can prepare.
 - Have your code accessible (via GitHub or locally) so you can share your screen or walk through it together.
+- If you need help *debugging* please follow our debugging workflow, as outlined in [Lecture 14](/lecture-notes/l14-program-understanding), and summarized in the syllabus [below](#debugging-workflow).
 - Typical sessions last 10-15 minutes, so focus on one issue at a time.
 
 What we can help with: Clarifying assignment requirements, debugging guidance (we'll help you find the bug, not fix it for you), design and architecture questions, testing strategies, tool usage (Git, IDE, autograder), and conceptual questions about course material.
@@ -152,6 +153,23 @@ What we can help with: Clarifying assignment requirements, debugging guidance (w
 What we can't do: Provide direct code solutions, pre-grade your work, or process extension requests (those go through a separate channel).
 
 Coverage increases 48 hours before each assignment deadline, so expect more availability on Tuesdays through Thursdays of deadline weeks. If you encounter a common issue, we may direct you to a FAQ post that addresses it.
+
+#### Debugging Workflow
+One of the objectives of this class is to provide students with experiences writing new code for large, existing codebases. We anticipate that you may run into difficulties debugging the project code: it is often difficult to build debugging skills until you have a problem in front of you that requires them. The course staff is happy to help you with debugging, with the specific goal of helping you learn to successfully apply scientific debugging.
+
+Andreas Zeller’s [Debugging Book](https://www.debuggingbook.org/html/Intro_Debugging.html) provides an excellent guide to scientific debugging. The short version is roughly: if you can’t debug an issue in the first few minutes "just by looking at it", it will be hard to keep all of the relevant information in your head at once, and a formal process to help you generate and refine guesses for why something is wrong can be immensely useful.
+
+The key idea is to create a debugging note file, where you track information like:
+
+1. What was the input/application state that caused the bug?
+2. What was the behavior that I expected?
+3. What was the behavior that I observed?
+4. What are possible hypotheses for that behavior?
+5. How have I tested those hypotheses, and what was the result?
+
+The overall goal with hypothesis formulation is to come up with possible causes for why the bug exists. Then, as long as those hypotheses are testable, we can prove or disprove them. Most hypotheses will be along the lines of "did I make an incorrect assumption about how a library or API works?" The devil is in enumerating all of the possible incorrect assumptions that you might have made, and testing them. The best way to attack these kinds of problems is to start with testing some high-level, general assumptions, and then refine them.
+
+If you come to us for debugging help, we will ask you to answer these 5 questions, as our goal is to help you get better at debugging and not to simply point out bugs that we might have seen before. We are happy to discuss the problematic behavior that you are observing, possible hypotheses for why that behavior is occurring, and strategies to test those hypotheses. In the past, students have found that using a variety of strategies to test their hypotheses (e.g. using a debugger, creating a minimized test case, measured application of console.log statements, internet research) are useful, and we would be happy to demonstrate these. We may not be able to stay with you while you work on refining your hypotheses and fixing the bug, but would be happy to continue following up if you get stuck again. While it might be more satisfying to simply have us fix the bug for you, learning and practicing debugging strategies is essential as you move on to dealing with more complex and larger codebases.
 
 ### Discussion Forum
 The Pawtograder discussion forum is your go-to resource for questions outside of office hours. Before posting, check the pinned FAQ post for your assignment or lab—many common questions are already answered there.

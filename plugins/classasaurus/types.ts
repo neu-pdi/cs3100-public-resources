@@ -238,6 +238,29 @@ export interface Lab {
 }
 
 /**
+ * Schedule note for displaying announcements/banners on the schedule
+ */
+export interface ScheduleNote {
+  /** Note text/content */
+  message: string;
+  
+  /** Week number(s) when this note should appear (1-indexed) */
+  weeks: number[];
+  
+  /** Section IDs this note applies to (empty array means all sections) */
+  sections?: string[];
+  
+  /** Lab section IDs this note applies to (empty array means all lab sections) */
+  labSections?: string[];
+  
+  /** Alert status/type (defaults to 'info') */
+  status?: 'info' | 'warning' | 'error' | 'success';
+  
+  /** Optional date to align the speech bubble triangle with (YYYY-MM-DD format) */
+  date?: DateString;
+}
+
+/**
  * Canvas integration configuration
  */
 export interface CanvasConfig {
@@ -300,6 +323,9 @@ export interface CourseConfig {
   
   /** Assignments */
   assignments?: Assignment[];
+  
+  /** Schedule notes for displaying banners/announcements */
+  scheduleNotes?: ScheduleNote[];
   
   /** Canvas integration (optional) */
   canvas?: CanvasConfig;

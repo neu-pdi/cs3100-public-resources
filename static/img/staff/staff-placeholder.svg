@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="100" fill="currentColor" opacity="0.1"/>
+  <!-- Head -->
+  <circle cx="100" cy="70" r="25" fill="currentColor" opacity="0.4"/>
+  <!-- Body (shoulders down) -->
+  <path d="M 100 95 Q 60 95 50 140 L 50 180 L 150 180 L 150 140 Q 140 95 100 95 Z" fill="currentColor" opacity="0.4"/>
+</svg>
+
+
+

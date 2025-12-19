@@ -161,6 +161,68 @@ function generateSectionSchedule(
     config.endDate,
     allHolidays
   );
+
+  // Find all lectures scheduled for this section that might not match normal meeting pattern
+  const scheduledLectureDates = new Set<DateString>();
+  if (config.lectures && config.lectures.length > 0) {
+    for (const lecture of config.lectures) {
+      // Check if this lecture applies to this section
+      const appliesToSection = !lecture.sections || lecture.sections.length === 0 || lecture.sections.includes(section.id);
+      if (appliesToSection) {
+        // Add all dates for this lecture
+        for (const lectureDate of lecture.dates) {
+          // Check if date is within course date range
+          const dateObj = parseISO(lectureDate);
+          const startDate = parseISO(section.startDate || config.startDate);
+          const endDate = parseISO(section.endDate || config.endDate);
+          if (dateObj >= startDate && dateObj <= endDate) {
+            scheduledLectureDates.add(lectureDate);
+          }
+        }
+      }
+    }
+  }
+
+  // Find all labs scheduled for this section that might not match normal meeting pattern
+  const scheduledLabDates = new Set<DateString>();
+  if (config.labs && config.labs.length > 0) {
+    for (const lab of config.labs) {
+      // Check if this lab applies to this section (labs can be associated with lecture sections too)
+      const appliesToSection = !lab.sections || lab.sections.length === 0;
+      if (appliesToSection) {
+        // Add all dates for this lab
+        for (const labDate of lab.dates) {
+          // Check if date is within course date range
+          const dateObj = parseISO(labDate);
+          const startDate = parseISO(section.startDate || config.startDate);
+          const endDate = parseISO(section.endDate || config.endDate);
+          if (dateObj >= startDate && dateObj <= endDate) {
+            scheduledLabDates.add(labDate);
+          }
+        }
+      }
+    }
+  }
+
+  // Add scheduled lecture/lab dates that don't match normal meeting pattern
+  const allScheduledDates = new Set([...scheduledLectureDates, ...scheduledLabDates]);
+  for (const scheduledDate of allScheduledDates) {
+    if (!meetingDates.has(scheduledDate)) {
+      // Create a synthetic meeting pattern for this date
+      // Use the first meeting pattern from the section, or create a default one
+      const defaultMeeting: MeetingPattern = section.meetings.length > 0
+        ? section.meetings[0]
+        : {
+            type: 'lecture',
+            days: [getDayOfWeek(parseISO(scheduledDate))],
+            startTime: '00:00',
+            endTime: '00:00',
+            location: section.meetings[0]?.location,
+          };
+      const existing = meetingDates.get(scheduledDate) || [];
+      meetingDates.set(scheduledDate, [...existing, defaultMeeting]);
+    }
+  }
   
   const schedule: ScheduleEntry[] = [];
   let meetingNumber = 1;
@@ -218,6 +280,46 @@ function generateLabSectionSchedule(
     config.endDate,
     allHolidays
   );
+
+  // Find all labs scheduled for this lab section that might not match normal meeting pattern
+  const scheduledLabDates = new Set<DateString>();
+  if (config.labs && config.labs.length > 0) {
+    for (const lab of config.labs) {
+      // Check if this lab applies to this lab section
+      const appliesToSection = !lab.sections || lab.sections.length === 0 || lab.sections.includes(labSection.id);
+      if (appliesToSection) {
+        // Add all dates for this lab
+        for (const labDate of lab.dates) {
+          // Check if date is within course date range
+          const dateObj = parseISO(labDate);
+          const startDate = parseISO(labSection.startDate || config.startDate);
+          const endDate = parseISO(labSection.endDate || config.endDate);
+          if (dateObj >= startDate && dateObj <= endDate) {
+            scheduledLabDates.add(labDate);
+          }
+        }
+      }
+    }
+  }
+
+  // Add scheduled lab dates that don't match normal meeting pattern
+  for (const labDate of scheduledLabDates) {
+    if (!meetingDates.has(labDate)) {
+      // Create a synthetic meeting pattern for this date
+      // Use the first meeting pattern from the lab section, or create a default one
+      const defaultMeeting: MeetingPattern = labSection.meetings.length > 0
+        ? labSection.meetings[0]
+        : {
+            type: 'lab',
+            days: [getDayOfWeek(parseISO(labDate))],
+            startTime: '00:00',
+            endTime: '00:00',
+            location: labSection.meetings[0]?.location,
+          };
+      const existing = meetingDates.get(labDate) || [];
+      meetingDates.set(labDate, [...existing, defaultMeeting]);
+    }
+  }
 
   const schedule: ScheduleEntry[] = [];
   let meetingNumber = 1;

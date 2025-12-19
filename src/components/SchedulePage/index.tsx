@@ -8,7 +8,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
 import { parseISO, format, startOfWeek, endOfWeek, getDay, addDays, isWithinInterval, isSameWeek } from 'date-fns';
-import type { CourseSchedule, ScheduleEntry, Lab, Assignment, CourseSection, LabSection } from '@site/plugins/classasaurus/types';
+import type { CourseSchedule, ScheduleEntry, Lab, Assignment, CourseSection, LabSection, ScheduleNote } from '@site/plugins/classasaurus/types';
 import { Alert, Box } from '@chakra-ui/react';
 import { LuConstruction } from 'react-icons/lu';
 
@@ -30,6 +30,24 @@ const DAY_NAME_TO_NUMBER: { [key: string]: number } = {
   'Friday': 5,
   'Saturday': 6
 };
+
+// Helper to get day of week name from a date
+function getDayOfWeekName(date: Date): string {
+  const dayNumber = getDay(date);
+  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  return dayNames[dayNumber];
+}
+
+// Helper to get alert colors based on status
+function getAlertColors(status: 'info' | 'warning' | 'error' | 'success'): { bg: string; border: string } {
+  const colors = {
+    info: { bg: '#dbeafe', border: '#3b82f6' }, // blue-100 bg, blue-500 border
+    warning: { bg: '#fef3c7', border: '#f59e0b' }, // amber-100 bg, amber-500 border
+    error: { bg: '#fee2e2', border: '#ef4444' }, // red-100 bg, red-500 border
+    success: { bg: '#d1fae5', border: '#10b981' }, // emerald-100 bg, emerald-500 border
+  };
+  return colors[status] || colors.info;
+}
 
 // Helper to get the date for a specific day of week in a given week
 function getDateForDayInWeek(weekStartDate: Date, dayName: string): DateString {
@@ -94,9 +112,12 @@ interface ScheduleTableProps {
   lectureDays: string[]; // Days this section has lectures
   labDays: string[]; // Days this section has labs
   assignments: Assignment[]; // Course assignments
+  scheduleNotes?: ScheduleNote[]; // Schedule notes for banners
+  lectureSectionId?: string; // Selected lecture section ID
+  labSectionId?: string; // Selected lab section ID
 }
 
-function ScheduleTable({ entries, sectionName, lectureDays, labDays, assignments }: ScheduleTableProps) {
+function ScheduleTable({ entries, sectionName, lectureDays, labDays, assignments, scheduleNotes = [], lectureSectionId, labSectionId }: ScheduleTableProps) {
   // Combine all meeting days (lectures and labs)
   const allMeetingDays = Array.from(new Set([...lectureDays, ...labDays]));
 
@@ -146,6 +167,25 @@ function ScheduleTable({ entries, sectionName, lectureDays, labDays, assignments
   const allDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const daysOfWeek = allDays.filter(day => allMeetingDays.includes(day));
 
+  // Helper function to get schedule notes for a specific week
+  const getNotesForWeek = (weekNum: number): ScheduleNote[] => {
+    if (!scheduleNotes || scheduleNotes.length === 0) return [];
+    
+    return scheduleNotes.filter(note => {
+      // Check if note applies to this week
+      if (!note.weeks.includes(weekNum)) return false;
+      
+      // Check if note applies to selected sections
+      const appliesToLecture = !note.sections || note.sections.length === 0 || 
+        (lectureSectionId && note.sections.includes(lectureSectionId));
+      const appliesToLab = !note.labSections || note.labSections.length === 0 || 
+        (labSectionId && note.labSections.includes(labSectionId));
+      
+      // Note applies if it matches lecture section OR lab section (or both/all)
+      return appliesToLecture || appliesToLab;
+    });
+  };
+
   return (
     <div>
       {sectionName && <h2>{sectionName}</h2>}
@@ -188,9 +228,80 @@ function ScheduleTable({ entries, sectionName, lectureDays, labDays, assignments
           <tbody>
             {weekNumbers.map((weekNum) => {
               const datesByDay = weekStructure.get(weekNum)!;
+              const weekNotes = getNotesForWeek(weekNum);
 
               return (
-                <tr key={weekNum} style={{ borderBottom: '1px solid var(--ifm-color-emphasis-200)' }}>
+                <React.Fragment key={weekNum}>
+                  {/* Schedule note banner row */}
+                  {weekNotes.length > 0 && weekNotes.map((note, noteIdx) => {
+                    // Find which column the date falls into (if specified)
+                    let dateColumnIndex = -1;
+                    if (note.date) {
+                      const noteDate = parseISO(note.date);
+                      const noteDayOfWeek = getDayOfWeekName(noteDate);
+                      dateColumnIndex = daysOfWeek.findIndex(day => day === noteDayOfWeek);
+                    }
+                    
+                    // Calculate triangle position: account for Week column (index 0) + date column
+                    // Total columns = 1 (Week) + daysOfWeek.length
+                    const totalColumns = daysOfWeek.length + 1;
+                    const triangleLeftPercent = dateColumnIndex >= 0 
+                      ? ((dateColumnIndex + 1) / totalColumns) * 100 
+                      : 50; // Center if no date specified
+                    
+                    const alertColors = getAlertColors(note.status || 'info');
+                    const hasTriangle = dateColumnIndex >= 0;
+                    
+                    return (
+                      <React.Fragment key={`note-${weekNum}-${noteIdx}`}>
+                        <tr style={{ borderBottom: '1px solid var(--ifm-color-emphasis-200)' }}>
+                          <td 
+                            colSpan={daysOfWeek.length + 1} 
+                            style={{ 
+                              padding: 0,
+                              position: 'relative'
+                            }}
+                          >
+                            <div style={{ position: 'relative' }}>
+                              <Alert.Root status={note.status || 'info'}>
+                                <Alert.Indicator />
+                                <Alert.Title>{note.message}</Alert.Title>
+                              </Alert.Root>
+                              {/* Speech bubble triangle - attached to alert, positioned relative to table cell */}
+                              {hasTriangle && (
+                                <div style={{
+                                  position: 'absolute',
+                                  bottom: '-12px',
+                                  left: `${triangleLeftPercent}%`,
+                                  transform: 'translateX(-50%)',
+                                  width: 0,
+                                  height: 0,
+                                  // Outer triangle (border) - matches alert border
+                                  borderLeft: '10px solid transparent',
+                                  borderRight: '10px solid transparent',
+                                  borderTop: `12px solid ${alertColors.border}`,
+                                }}>
+                                  {/* Inner triangle (background) to create border effect */}
+                                  <div style={{
+                                    position: 'absolute',
+                                    top: '-12px',
+                                    left: '-9px',
+                                    width: 0,
+                                    height: 0,
+                                    borderLeft: '9px solid transparent',
+                                    borderRight: '9px solid transparent',
+                                    borderTop: `11px solid ${alertColors.bg}`,
+                                  }} />
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      </React.Fragment>
+                    );
+                  })}
+                  {/* Week data row */}
+                  <tr style={{ borderBottom: '1px solid var(--ifm-color-emphasis-200)' }}>
                   <td style={{
                     padding: '0.75rem',
                     fontWeight: 'bold',
@@ -417,6 +528,7 @@ function ScheduleTable({ entries, sectionName, lectureDays, labDays, assignments
                     );
                   })}
                 </tr>
+                </React.Fragment>
               );
             })}
           </tbody>
@@ -613,6 +725,9 @@ export default function SchedulePage({ scheduleData }: Props) {
             lectureDays={lectureDays}
             labDays={labDays}
             assignments={config.assignments || []}
+            scheduleNotes={config.scheduleNotes}
+            lectureSectionId={selectedLectureId}
+            labSectionId={selectedLabId}
           />
         </div>
 
