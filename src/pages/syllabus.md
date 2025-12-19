@@ -213,28 +213,53 @@ If you feel that cheating is your only option, please ask for help.
 
 
 ## Artificial Intelligence
-AI coding assistants like Cursor, Windsurf, and Copilot should not be used in this course. We believe that using an AI assistant is an important skill that should be covered _after_ the basics (which is why there is a different policy in this class compared to CS 2000 and CS 2100). Until you have the ability to design, understand, and review code, using an AI assistant amounts to wandering around in the dark, with no ability to determine if you are getting closer to what you want. (Using these tools to get decent grades while learning nothing is pretty clearly shooting yourself in the foot: you are in college to learn; if you end up unable to do anything but prompt engineer, you will have essentially no skills, given these models are intentionally rendering whatever "skill" underlying prompt engineering obselete in every generation).
 
-The same is true of asking questions of chat models like ChatGPT, Claude, or Gemini. Putting in assignment instructions into such a model and getting out code or test cases amounts to getting the model to do the thinking for you -- and as a result, you will not learn. "Only look"ing at AI-generated solutions "before writing your own" undermines the learning just the same, as you will not be learning to actually solve problems, you will just be copying (and, importantly, never developing the ability to recognize when the AI generated solution isn't what you want).
+### Software Engineering in an Age of AI
 
-Emerging research is beginning to show that substituting practice on fundamental skills by delegating that practice to [LLMs significantly decreases learning](https://doi.org/10.48550/arXiv.2506.08872). Whilst using an LLM might reduce the immediate strain of learning something new, it can also [diminish the development of critical thinking skills](https://doi.org/10.1016/j.chb.2024.108386) by decreasing engagement and [impeding independent problem-solving](https://doi.org/10.1186/s41239-024-00467-0). Moreover, even the [benefits of using LLMs for experienced developers](https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/) have been questioned. LLMs can be useful useful once you have gained competence in program design and are able to break down a problem and specify it precisely—which is what you should have learned in CS 2100, and will be practicing further in this class.
+The hardest parts of building software have never been typing code. They are figuring out what a system should actually accomplish, negotiating conflicting stakeholder needs, making architectural tradeoffs that balance competing concerns like performance and maintainability, keeping a codebase healthy as requirements evolve, and coordinating effectively with other people. AI tools can produce syntactically correct code at impressive speed, but none of that addresses the engineering challenges that determine whether software succeeds or fails in the real world.
 
-Each assignment will have a clear indicator at the top indicating the suggested usage of AI assistance, ranging from "Not allowed" to "Required." These suggestions are based on the learning objectives of the assignment.
+When AI generates a snippet of code, someone still has to decide whether it solves the right problem, whether it will integrate cleanly with the existing system, whether it handles edge cases appropriately, whether it introduces security vulnerabilities or performance bottlenecks, and whether future developers will be able to understand and modify it. These are all skills that have **always** been important in software engineering, but with the diffusion of AI, these skills have become even more important. This is precisely why our curriculum focuses so heavily on foundational engineering skills:
 
-Part of the reason for these being guidelines, rather than academic integrity policies, is that some interaction with LLMs is now unavoidable -- using a search engine now will give you an AI generated overview, and similar interactions with models (trying to understand concepts) is not necessarily discouraged, though we would always encourage you to bring larger questions to our course staff, who will likely be able to give you better answers, more suited to your background, to our curriculum, etc. Finally, if you do use LLMs for search, you are responsible for validating any information you find.
+- **Design for change** ([Lecture 7](/lecture-notes/l7-design-for-change)): Understanding coupling, cohesion, and information hiding—the principles that determine whether code can evolve gracefully or becomes brittle
+- **Requirements and stakeholder analysis** ([Lecture 9](/lecture-notes/l9-requirements)): Learning to discover what people actually need, navigate conflicting interests, and recognize hidden assumptions
+- **Testing and validation** ([Lecture 15](/lecture-notes/l15-testing)): Developing the judgment to know what to test and why, not just how to write test syntax
+- **Teamwork and collaboration** ([Lecture 17](/lecture-notes/l17-teams)): Practicing code review, documentation, and communication—skills that become more important, not less, as code generation accelerates
+- **Architecture and quality attributes** ([Lecture 19](/lecture-notes/l19-architecture-design)): Reasoning about tradeoffs among testability, performance, scalability, security, and maintainability
+- **Sustainability** ([Lecture 36](/lecture-notes/l36-sustainability)): Understanding the long-term impacts of design decisions on the environment, economy, and society
 
-Make sure to refer to sources of ground truth for reliable information such as the official language documentation, our course textbook, course staff, and the course website. Reading documentation can be challenging at first, but it is an important skill to develop in any technical field. Learning to navigate technical documents helps you develop a precise understanding of how something works—which is a valuable transferable skill that you can use to gain competence with new tools and help you solve problems independently.
+When code can be produced faster, the bottleneck shifts to integration, validation, and maintenance. Evaluating whether generated code is correct, secure, performant, and aligned with your design goals requires deep understanding of what good code looks like—understanding that only comes from practice. Leveraging these insights, we introduce AI coding assistants mid-way through the course, providing you with the ability to quickly generate larger codebases, forcing you to face the challenges of integration, validation, and maintenance over the course of a single semester.
 
-### Use of Artificial Intelligence by the Course Staff
-Some course materials have been developed with the assistance of AI tools. All
-such content has been reviewed and edited by the instructor for accuracy. The following is a non-exhaustive list of methods used to assist in the development of course materials:
-- To expand the learning objectives and summary of some lectures into draft lecture notes
-- To draft the project requirements, instructions, reference solutions, buggy solutions, and initial rubrics
-- To summarize course content into flashcards
-- To develop Pawtograder, the course operations platform
-- To create OctoPaws, the PDI/Pawtograder logo
+### Why We Restrict AI Early in the Course
 
-Using AI tools to assist in these tasks has helped us to produce more accurate and engaging course materials, and to focus on the most important aspects of the course that can not be synthesized by an LLM. 
+AI coding assistants like Cursor, Windsurf, and Copilot are not permitted for the early assignments in this course. This restriction exists because **we have not yet taught you to effectively review the code you could not have written yourself**. Using AI assistance before developing foundational competence means accepting whatever the model produces without the ability to recognize errors, inefficiencies, or subtle misalignments with your actual requirements. The result is not learning with assistance—it is outsourcing the learning entirely.
+
+Feeding assignment instructions to a model and receiving code or test cases in return bypasses the thinking that produces learning. "Only looking" at AI-generated solutions before writing your own undermines the process just as thoroughly—you end up pattern-matching against the AI's approach rather than developing your own problem-solving ability, and you never build the instincts needed to recognize when an AI solution is subtly wrong. LLMs become genuinely useful once you have the competence to break down a problem precisely, specify what you need, and critically evaluate the output. That competence is what you should have begun developing in CS 2100, and it is what we continue building in this course.
+
+### Our Approach: Competency Development, Not Just Restriction
+
+We do not treat AI as simply "forbidden." Each assignment indicates the expected level of AI usage, ranging from "Not allowed" through "Permitted" to "Required." These designations reflect the learning objectives for that assignment. Some assignments are designed to build foundational skills that require unassisted practice; others introduce AI as a tool to be used thoughtfully.
+
+In [Lecture 13](/lecture-notes/l13-intro-ai-agents), we cover how AI programming agents work and present a structured workflow for human-AI collaboration: identifying what context the AI needs, crafting effective prompts, evaluating outputs critically against your actual goals, calibrating toward desired outcomes, and documenting decisions. [Lab 6](/labs/lab6-copilot) provides hands-on practice with these techniques.
+
+Some interaction with AI is unavoidable—search engines now surface AI-generated summaries, and using models to clarify concepts is not necessarily problematic. But when you do use AI for information, you remain responsible for verifying accuracy against authoritative sources: official documentation, course materials, and course staff. Learning to read technical documentation is itself a valuable skill that pays dividends throughout a technical career.
+
+### The Economic Reality
+
+Software has historically exhibited [Jevons' paradox](https://en.wikipedia.org/wiki/Jevons_paradox): when a resource becomes cheaper to produce, total consumption increases rather than decreasing. Every major productivity improvement in software development—high-level languages, structured programming, automated testing, continuous integration—has resulted in more software being built, not fewer people employed to build it. There is no evidence that AI-assisted development will break this pattern. As certain tasks become faster, organizations pursue projects that were previously too expensive, creating new demand.
+
+The skills that remain valuable are the ones AI does not provide: understanding what to build, designing systems that can evolve, validating that implementations meet requirements, and working effectively with other humans. These are skills that we emphasize in this course.
+
+### How Course Staff Use AI
+
+We maintain firsthand experience with these tools so we can guide you effectively. Some course materials were developed with AI assistance, and all such content has been reviewed and edited for accuracy. Examples include:
+
+- Expanding learning objectives into draft lecture notes
+- Drafting project requirements, instructions, solutions, test cases, and initial rubrics
+- Developing Pawtograder, the course operations platform
+- Creating visual assets like the OctoPaws logo and the eerie "Quality Without A Name" social badge
+- Drafting this very policy document, synthesizing prior writings, emails, and notes that we have exchanged with each other
+
+Using AI for these tasks allows us to focus on work that cannot be delegated: deciding what concepts to teach and in what sequence, designing assignments that build skills progressively, and providing feedback tailored to individual students. Every piece of AI-assisted content goes through the same critical review process we ask you to develop. 
 
 ## Inclusive Environment
 
