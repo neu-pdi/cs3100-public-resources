@@ -40,20 +40,139 @@ Students complete individual programming assignments that build into a larger pr
 
 ## Grading
 
-The table below shows the grading breakdown for the course.
-(TBD)
+The course uses a total points system. Your final grade is based on the percentage of points earned out of 1000 total points.
 
-If your final exam score is greater than the average of your two first exam scores, it will replace the average of your two first exam scores.
+| Category | Points | % of Grade |
+|----------|--------|------------|
+| Individual Assignments (A1-A5) | 300 | 30% |
+| Group Assignments (GA1-GA3) | 200 | 20% |
+| Labs | 50 | 5% |
+| Class Participation | 50 | 5% |
+| Midterm Exams (2 × 100) | 200 | 20% |
+| Final Exam | 200 | 20% |
+| **Total** | **1000** | **100%** |
+
+### Assignment Point Distribution
+
+**Individual Assignments:**
+
+| Assignment | Points |
+|------------|--------|
+| A1: Recipe Domain Model | 40 |
+| A2: Unit Conversion | 60 |
+| A3: JSON Serialization | 60 |
+| A4: Testing & Services | 70 |
+| A5: CLI Interface | 70 |
+
+**Group Assignments:**
+
+| Assignment | Points |
+|------------|--------|
+| GA1: GUI | 60 |
+| GA2: OCR Integration | 70 |
+| GA3: Final Integration | 70 |
+
+**Group Assignment Grading:** Group assignments are graded as a team, but each team member must demonstrate minimum weekly contributions to receive the team's full score. Each week during a group assignment, you are expected to:
+
+- Make meaningful code contributions (commits, pull requests) to the team repository
+- Participate in team meetings and communication
+- Complete your assigned tasks as agreed upon by the team
+
+Your individual score on a group assignment is calculated as:
+
+> **Your Score = Team Score × Contribution Multiplier**
+
+The contribution multiplier is informed by three sources:
+
+1. **Team collaboration surveys:** Each week, every team member completes a brief survey reflecting on their own and their teammates' contributions.
+2. **Team mentor reports:** Each team is assigned a mentor (a course staff member) who helps resolve interpersonal conflicts and provides observations on team dynamics.
+3. **Version control artifacts:** Commit history, pull requests, code reviews, and issue activity in your team's repository provide objective evidence of contributions.
+
+The contribution multiplier is 100% if you meet the minimum weekly contribution requirements, and may be reduced if you fall short. In cases of significant under-contribution, students may receive a substantially lower score than their teammates—or zero credit—regardless of the team's overall performance.
+
+This policy ensures that every team member actively participates and that no student can earn credit by relying on their teammates' work. If you are struggling to contribute due to circumstances beyond your control, communicate with your team and the course staff as early as possible.
+
+### Letter Grade Requirements
+
+Your letter grade is determined by both your total points AND meeting minimum thresholds in key categories. You must satisfy **all** requirements for a grade level to earn that grade.
+
+| Grade | Total Points | Individual Assignments | Group Assignments | Exams | Labs | Participation |
+|-------|--------------|------------------------|-------------------|-------|------|---------------|
+| A | &ge;900 | &ge;240 (80%) | &ge;160 (80%) | &ge;280 (70%) | &ge;11 completed | &ge;40 (80%) |
+| B | &ge;800 | &ge;210 (70%) | &ge;140 (70%) | &ge;220 (55%) | &ge;9 completed | &ge;35 (70%) |
+| C | &ge;700 | &ge;180 (60%) | &ge;120 (60%) | &ge;200 (50%) | &ge;7 completed | &ge;30 (60%) |
+| D | &ge;600 | — | — | — | — | — |
+| F | &lt;600 or fails to meet above minimums | | | | |
+
+**Plus/Minus Grades:** Once you meet the thresholds for a letter grade, your +/- modifier is determined by where your total points fall within that range:
+
+| Points | Grade | | Points | Grade | | Points | Grade |
+|--------|-------|-|--------|-------|-|--------|-------|
+| 930–1000 | A | | 830–869 | B | | 730–769 | C |
+| 900–929 | A- | | 800–829 | B- | | 700–729 | C- |
+| 870–899 | B+ | | 770–799 | C+ | | 670–699 | D+ |
+| | | | | | | 630–669 | D |
+| | | | | | | 600–629 | D- |
+
+*There is no A+ grade. If you fail to meet the thresholds for a letter grade, your grade is capped at the highest level whose thresholds you satisfy.*
+
+**Why thresholds?** These requirements ensure that you demonstrate competence across different aspects of the course. You cannot compensate for missing fundamental skills (tested in assignments) by only performing well on exams, or vice versa. The exam threshold for a B (55%) is intentionally lower to accommodate students who struggle with timed assessments but demonstrate mastery through their project work.
+
+### Grade Recovery Policies
+
+**Final Exam Replacement:** If your final exam score is greater than the average of your two midterm exam scores, your final exam score will replace that average. This allows you to recover from poor early exam performance by demonstrating mastery on the comprehensive final.
+
+**Late Work:** Detailed late policies will be published with each assignment. In general, late submissions receive reduced credit unless an extension has been granted in advance.
+
+### Labs and Participation
+
+**Labs (50 points):** Labs are graded on the "good faith effort" standard: if you attend your lab section and make a submission that demonstrates your effort to complete the lab, you will receive full marks for it. There are 14 labs; each is worth approximately 3.5 points, with the total capped at 50 points (allowing you to miss a few without penalty).
+
+**Class Participation (50 points):** Participation is assessed through in-class activities, including polls, discussions, and short exercises. Regular attendance and engagement is expected. Each instructor will provide details on how participation points are earned in the first week of class.
 
 Detailed rubrics will be published with each assignment.
 
-Labs are graded on the "good faith effort" standard: if you attend your lab section and make a submission that demonstrates your effort to complete the lab, you will receive full marks for it.
+**Grading grievances:** If you have concerns regarding the grading of your work, please let us know right away by opening a regrade request in Pawtograder. **All regrade requests must be submitted within 7 days from your receipt of the graded work**. If your regrade request is closed and you feel that the response was not satisfactory, you may appeal to the instructor via Pawtograder within 3 days of the resolution of your regrade request by the grader.
 
-**Grading grievances:** If you have concerns regarding the grading of your work, please let us know right away by opening a regrade request in Pawtograder. All regrade requests must be submitted within 7 days from your receipt of the graded work. If your regrade request is closed and you feel that the response was not satisfactory, you may appeal to the instructor via email within 48 hours.
+## Communication with the Course Staff and Peer Support
 
+### Contacting your instructor
+Each instructor maintains their own office hours. You can also directly email your instructor, but please note that instructor responses may take up to 24 hours to receive a response.
+
+### TA Office Hours
+TA office hours are available throughout the week to provide one-on-one support with your coursework. To get help, join the queue through the Pawtograder office hours system—we operate on a first-come, first-served basis.
+
+To make the most of your time:
+- Come prepared with a specific question or issue. When you submit a help request, describe your concern so the TA can prepare.
+- Have your code accessible (via GitHub or locally) so you can share your screen or walk through it together.
+- Typical sessions last 10-15 minutes, so focus on one issue at a time.
+
+What we can help with: Clarifying assignment requirements, debugging guidance (we'll help you find the bug, not fix it for you), design and architecture questions, testing strategies, tool usage (Git, IDE, autograder), and conceptual questions about course material.
+
+What we can't do: Provide direct code solutions, pre-grade your work, or process extension requests (those go through a separate channel).
+
+Coverage increases 48 hours before each assignment deadline, so expect more availability on Tuesdays through Thursdays of deadline weeks. If you encounter a common issue, we may direct you to a FAQ post that addresses it.
+
+### Discussion Forum
+The Pawtograder discussion forum is your go-to resource for questions outside of office hours. Before posting, check the pinned FAQ post for your assignment or lab—many common questions are already answered there.
+
+**What to expect:**
+You should receive a response from the course staff within 12 hours (often faster during peak times). However, other students may be able to quickly help answer your question.
+During the 48 hours before deadlines, the course staff will be monitoring the forums more frequently.
+Responses will guide you toward understanding, not provide direct answers. If your question is already in the FAQ, we'll point you there—and if it should be clearer, let us know.
+
+**Forum categories include:**
+- Assignments and Labs – specific Q&A (each has a pinned FAQ)
+- AI Tools – questions about AI coding assistants, workshop recordings, and best practices
+- Study Groups – find study partners
+- #history-of-programming and #future-of-programming – explore broader topics in software engineering
+- #memes – programming humor to brighten your day
+
+The same boundaries apply as in office hours: we won't provide direct code solutions or pre-grade work. If your question is already in the FAQ, we'll point you there—and if it should be clearer, let us know.
+
+**In short:** Office hours give you real-time, personalized help; the forums give you asynchronous support with a reliable turnaround. Use both! Check the FAQ first, come to office hours prepared, and you'll get the most out of your interactions with course staff.
 
 ## Textbooks and Resources
-
 We do not recommend that you purchase any specific books for this class upfront. The course will refer to several texts, all of which are freely available online via Northeastern's library system.
 
 ## Academic Integrity
@@ -94,16 +213,15 @@ such content has been reviewed and edited by the instructor for accuracy. The fo
 - To expand the learning objectives and summary of some lectures into draft lecture notes
 - To draft the project requirements, instructions, reference solutions, buggy solutions, and initial rubrics
 - To summarize course content into flashcards
+- To develop Pawtograder, the course operations platform
 - To create OctoPaws, the PDI/Pawtograder logo
 
 Using AI tools to assist in these tasks has helped us to produce more accurate and engaging course materials, and to focus on the most important aspects of the course that can not be synthesized by an LLM. 
 
-## Contact
-We will be using [Pawtograder](https://app.pawtograder.com) for discussion and Q&A. We strongly encourage you to post your questions with the "full-course" visibility, so that other students can benefit from the discussion. If you have a private matter, you can post this on Pawtograder with the "staff only" visibility. If all else fails, you can directly email your instructor.
-
 ## Inclusive Environment
 
 To create and preserve a classroom atmosphere that optimizes teaching and learning, all participants share a responsibility in creating a civil and non-disruptive forum for the discussion of ideas. Students are expected to conduct themselves at all times in a manner that does not disrupt teaching or learning. Your comments to others should be constructive and free from harassing statements. You are encouraged to disagree with other students and the instructor, but such disagreements need to respectful and be based upon facts and documentation (rather than prejudices and personalities). The instructor reserves the right to interrupt conversations that deviate from these expectations. Repeated unprofessional or disrespectful conduct may result in a lower grade or more severe consequences. Part of the learning process in this course is respectful engagement of ideas with others.
+
 We believe that diversity and inclusiveness are essential to excellence in academic discourse and innovation. In this class, the perspective of people of all races, ethnicities, gender expressions and gender identities, religions, sexual orientations, disabilities, socioeconomic backgrounds, and nationalities will be respected and viewed as a resource and benefit throughout the semester. Suggestions to further diversify class materials and assignments are encouraged. If any course meetings conflict with your religious events, please do not hesitate to reach out to make alternative arrangements.
 
 ## Name and Pronoun Usage
