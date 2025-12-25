@@ -56,6 +56,10 @@ So why would each company employ engineers to independently build the same utili
 
 This is why so much foundational software is open source—not out of altruism, but because **infrastructure is a shared problem with a shared solution**. IBM committed over $1 billion to Linux development. Microsoft—[once calling Linux "communism"](https://www.theregister.com/2000/07/31/ms_ballmer_linux_is_communism/)—now runs it across Azure and acquired GitHub, putting open-source at the front of its corporate strategy. Companies contribute to open source because it's cheaper than going it alone.
 
+:::tip History of Programming
+One telling of the history of open-source [goes back to a 1956 Consent Decree between AT&T and the Department of Justice](https://arstechnica.com/tech-policy/2011/07/should-we-thank-for-feds-for-the-success-of-unix/). AT&T controlled all aspects of the telephone system in the United States, and in an effort to avoid being broken up, AT&T agreed to, among other things not engage in "any business other than the furnishing of common carrier communications services." So, when Bell Labs created Unix, it was simply not possible for AT&T to try to sell it - without facing antitrust litigation - and instead, the operating system was shared freely with government and academic researchers.
+:::
+
 ### The Cathedral and the Bazaar
 
 In 1997, Eric S. Raymond wrote an influential essay comparing two models of software development:

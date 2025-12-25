@@ -79,6 +79,21 @@ const config: Config = {
         rehypePlugins: [rehypeKatex],
       },
     ],
+    function(context, options) {
+      return {
+        name: 'webpack-alias-plugin',
+        configureWebpack(config, isServer) {
+          return {
+            resolve: {
+              alias: {
+                '@': require('path').resolve(__dirname, 'src'),
+                'next/navigation': require('path').resolve(__dirname, 'src/hooks/next-navigation'),
+              },
+            },
+          };
+        },
+      };
+    },
   ],
 
 

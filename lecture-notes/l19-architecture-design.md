@@ -28,7 +28,7 @@ The boundary between them is fuzzy.
 A useful heuristic: **architectural decisions are the ones that are expensive to change**. Choosing to split your system into microservices vs. keeping it as a monolith is architectural—reversing that decision later costs months of work. Choosing between ArrayList and LinkedList is design—you can change it in an afternoon. Most cases, however, are not as clear-cut, and in fact, the goal of a good architect may be to reduce the total number of decisions that will be expensive to change.
 
 
-:::tip OOD Trivia
+:::tip History of Programming
 Ralph Johnson is one of the "Gang of Four" (GoF)—the four authors of the seminal 1994 book *Design Patterns: Elements of Reusable Object-Oriented Software*. The others are Erich Gamma, Richard Helm, and John Vlissides. When you hear "GoF patterns," this is the book people mean. The book didn't talk much about software architecture (the field barely existed at the time) - the quote is from nine years later.
 :::
 

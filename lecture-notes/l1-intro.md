@@ -220,8 +220,6 @@ Let's break down the syntax of this program, starting with HelloWorld.java.
     increment(arr);
     System.out.println("arr[0] after increment: " + arr[0]); // Prints out 6
     ```
-  - In Programming Languages lingo, we would say that primitive types are "pass by value" and reference types are "pass by reference" - a primitive value is literally copied, but a reference is a pointer to the same object in memory.
-    - Discuss: What performance reason might exist make us want to avoid passing arrays by value?
   - You should understand the relevance of the size of your data:
     - A `long` is 8 bytes and a `byte` is 1 byte. The long can store many more values than the byte, but it also takes up more space.
     - Imagine we are building an application that needs to store the age (in years) of every person in the world. We could use a `byte` to store the age, but then we would only be able to store 256 different ages. We could use a `long` to store the age, but then we would be wasting 7 bytes for every person.

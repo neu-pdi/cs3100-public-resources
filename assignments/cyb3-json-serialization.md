@@ -13,7 +13,7 @@ This assignment introduces **hexagonal architecture** (also called ports and ada
 
 **Due:** Thursday, February 12, 2026 at 11:59 PM Boston Time
 
-**Prerequisites:** This assignment builds on the A2 solution (provided). You should be familiar with `Recipe`, `RecipeBuilder`, `Quantity`, `Ingredient`, and the conversion system from Assignments 1 and 2.
+**Prerequisites:** This assignment builds on the A2 sample implementation (provided). You should be familiar with `Recipe`, `RecipeBuilder`, `Quantity`, `Ingredient`, and the conversion system from Assignments 1 and 2.
 
 ## Learning Outcomes
 
@@ -34,7 +34,7 @@ By completing this assignment, you will demonstrate proficiency in:
 
 We specifically recommend **IDE-integrated assistants** (Copilot, Cursor) over other options:
 
-- **Not Claude Code or similar "agentic" tools:** These tools are designed to work autonomously with minimal human oversight. Our course values keeping the human at the center of the development process—you should be reviewing, understanding, and directing every change. Agentic tools that make many changes without a well-designed review process automatically work against developing these skills.
+- **Not Claude Code or similar "agentic" tools:** These tools are designed to work autonomously with minimal human oversight. Our course values keeping the human at the center of the development process—you should be reviewing, understanding, and directing every change. Agentic tools that make many changes without a well-designed review process automatically work against developing these skills. Yes, Claude Code has a VSCode extension, but it is our editorial opinion that it is poorly designed to support human review and iteration.
 
 - **Not ChatGPT, Claude.ai, or other web interfaces:** Manually copying code between a browser and your IDE is a waste of your time. You lose the context of your codebase, can't easily iterate on suggestions, and spend cognitive effort on mechanics rather than thinking about design. IDE-integrated tools see your code directly and let you accept, reject, or modify suggestions in place.
 
@@ -44,6 +44,7 @@ The goal is **AI as a collaborative partner**, not AI as a replacement for think
 
 However, effective AI usage requires skill. Simply copy-pasting the assignment into an AI and submitting its output will likely result in:
 - Code that doesn't match the required interfaces
+- Random features that appear to be implemented, and upon closer inspection have a comment along the lines `// In production, you would actually implement serialization, for now we'll just use a placeholder`
 - Serialization that doesn't round-trip correctly
 - Tests that don't detect actual bugs
 
@@ -69,9 +70,9 @@ Different tasks benefit from AI assistance in different ways:
 | Task Type | AI Value | Strategy |
 |-----------|----------|----------|
 | **Boilerplate code** (Jackson annotations, getters) | High | Let AI generate, review for correctness |
-| **Design decisions** (data structures, relationships) | Low | Think first, then ask AI for alternatives |
+| **Design decisions** (data structures, relationships) | Moderate | Think first, then ask AI for alternatives or to expand your design into diagrams |
 | **Test generation** | Moderate | AI for ideas, you verify they're meaningful |
-| **Debugging** | High | Describe the problem, review suggestions critically |
+| **Debugging** | High | Use scientific debugging, supported by AI |
 
 ### Suggested Prompts by Task
 
@@ -82,45 +83,64 @@ Your IDE (Copilot, Cursor) automatically provides context from your open files a
 **Think first, then validate with AI:**
 
 ```
-I need to design a Cookbook class. See @Recipe for the pattern I've been using 
-for immutable domain objects with builders.
+I need to design a Cookbook class. See Recipe for the pattern I've been using for immutable domain objects with builders.
 
-Cookbook needs: title, optional author, optional ISBN, list of recipes, 
+Cookbook needs: title, optional author, optional ISBN, list of recipes,
 and a TableOfContents.
 
-I'm thinking of [your design approach]. What are the tradeoffs?
+I'm thinking of [your design approach]. What are the tradeoffs? Please draw a diagram of the class and its relationships to other classes in this codebase.
 ```
 
 **Why think first?** Design decisions affect your entire codebase. AI can suggest patterns, but you need to understand why you're choosing one approach over another.
 
 #### JSON Serialization Setup
 
-**High AI value for boilerplate:**
+**Learn by implementing, then use AI for the pattern:**
+
+**Step 1: Implement one hierarchy yourself (Quantity OR Ingredient)**
+
+First, implement polymorphic serialization for ONE hierarchy (we recommend Quantity) without AI assistance:
+
+1. Read Jackson's documentation on `@JsonTypeInfo` and `@JsonSubTypes`
+2. Add the annotations to the base class (Quantity or Ingredient)
+3. Register all subclasses (ExactQuantity, FractionalQuantity, RangeQuantity)
+4. Write a test to verify round-trip serialization works
+5. Debug any issues until it works correctly
+
+**Why do this manually first?** You need to understand how polymorphic serialization works. AI can generate boilerplate, but you need to know what it's generating and why, especially when debugging.
+
+**Step 2: Use AI for the second hierarchy**
+
+Once you understand the pattern from Step 1, use AI to apply it to the other hierarchy:
 
 ```
-I need to serialize @Quantity and @Ingredient hierarchies to JSON using Jackson.
-See the subclasses in the domain package—ExactQuantity, FractionalQuantity, 
-RangeQuantity, MeasuredIngredient, VagueIngredient.
+I just implemented polymorphic JSON serialization for the Quantity hierarchy using
+@JsonTypeInfo and @JsonSubTypes annotations.
 
-Set up Jackson annotations for polymorphic serialization so I can deserialize 
-back to the correct subclass.
+Now I need to apply the same pattern to the Ingredient hierarchy. See MeasuredIngredient
+and VagueIngredient in the domain package.
+
+Set up the annotations following the same approach I used for Quantity.
 ```
+
+**Why this order?** You learn the concept hands-on, then use AI as a productivity multiplier for the repetitive work. This builds understanding AND efficiency.
 
 **Follow-up prompts:**
 - "The deserialization is failing with [error]. What's wrong?"
-- "How do I handle the Optional fields in @Recipe?"
-- "Write a custom serializer for FractionalQuantity that outputs '1/2' instead of an object"
+- "How do I handle the Optional fields in Recipe?"
+- "Why do we need the 'property' parameter in @JsonTypeInfo?"
+
 
 #### Test Generation
 
 **AI for ideas, you for verification:**
 
 ```
-I'm testing @JsonRecipeCollectionRepository. I need to verify that 
-different collection types (Cookbook, PersonalCollection, WebCollection) 
+I'm testing JsonRecipeCollectionRepository. I need to verify that
+different collection types (Cookbook, PersonalCollection, WebCollection)
 all serialize and deserialize correctly.
 
-What test cases should I write? What edge cases might I miss?
+Outline a comprehensive testing strategy for the JsonRecipeCollectionRepository.
 ```
 
 **Critical:** AI-suggested tests may not be meaningful. For each suggestion, ask:
@@ -136,14 +156,14 @@ Before accepting AI-generated code, verify:
 - [ ] **Edge cases:** What happens with empty strings, empty collections, special characters?
 - [ ] **Meets quality requirements:** Does the code meet the quality requirements specified in the assignment?
 - [ ] **Tested:** Have you written tests that pass on this code?
-- [ ] **Understood:** Can you explain what this code does and why?
+- [ ] **Understood:** Can you explain what this code does and why? Does it have meaningful comments?
 
 ### Iteration Strategies
 
 When AI output isn't quite right:
 
-1. **Be specific about the problem:** "This code fails when the input is [X] because [Y]"
-2. **Provide context:** Share your existing code, class definitions, error messages
+1. **Be specific about the problem:** "This code fails when the input is [X], I think because [Y] - trace through the code and identify any likely bugs that would cause this to happen"
+2. **Provide context:** Explicitly refer to existing parts of your codebase that are relevant to the problem, or additional aspects of the specification that are relevant.
 3. **Ask for explanation:** "Why did you use [approach]? What are the alternatives?"
 4. **Request modifications:** "Modify this to also handle [case]"
 5. **Try a different approach:** "That approach is getting complicated. Is there a simpler way?"
@@ -190,7 +210,7 @@ This separation enables:
 
 ### Class Design
 
-The diagram below shows **required interfaces** (white), **provided classes** (gray), and **your implementation choices** (yellow).
+The diagram below shows **required interfaces** (blue), **provided classes** (gray), and **your implementation choices** (yellow).
 
 ```mermaid
 classDiagram
@@ -276,10 +296,10 @@ classDiagram
     RecipeCollection --> SourceType
     YourCollectionImpl ..|> RecipeCollection : implements
     UserLibrary --> RecipeCollection
-    
+
     RecipeRepository <|.. JsonRecipeRepository
     RecipeCollectionRepository <|.. JsonRecipeCollectionRepository
-    
+
     JsonRecipeRepository ..> Recipe
     JsonRecipeCollectionRepository ..> RecipeCollection
     MarkdownExporter ..> Recipe
@@ -294,8 +314,58 @@ classDiagram
 
 **Legend:**
 - **Gray classes**: From A1/A2 (provided)
-- **White classes**: Required interfaces you must implement
+- **Blue classes**: Required interfaces you must implement
 - **Yellow classes**: Your design choices (how you implement the interfaces)
+
+### Recipe ID Requirement
+
+The `RecipeRepository` interface requires recipes to have unique identifiers for `findById()` and `delete()` operations. **You must add an `id` field to the `Recipe` class** from A2. The `id` field must be guaranteed to be globally unique and have a near-zero chance of collision. We suggest using a [UUID](https://docs.oracle.com/javase/8/docs/api/java/util/UUID.html), e.g. `java.util.UUID.randomUUID().toString()`.
+
+**Required changes to `Recipe`:**
+
+```java
+public final class Recipe {
+    private final @NonNull String id;  // NEW: unique identifier
+    // ... existing fields ...
+
+    /**
+     * Returns the unique identifier for this recipe.
+     * @return the recipe ID (never null)
+     */
+    public @NonNull String getId() {
+        return id;
+    }
+}
+```
+
+**Required changes to `RecipeBuilder`:**
+
+```java
+public final class RecipeBuilder {
+    private @Nullable String id;  // NEW
+
+    /**
+     * Sets the recipe ID. If not set, a UUID will be generated automatically.
+     * @param id the recipe ID (may be null to auto-generate)
+     * @return this builder for method chaining
+     */
+    public @NonNull RecipeBuilder id(@Nullable String id) {
+        this.id = id;
+        return this;
+    }
+
+    public @NonNull Recipe build() {
+        if (title == null) {
+            throw new IllegalStateException("title must be set");
+        }
+        // Auto-generate ID if not set
+        String recipeId = (id != null) ? id : java.util.UUID.randomUUID().toString();
+        return new Recipe(recipeId, title, servings, ingredients, instructions, conversionRules, notes);
+    }
+}
+```
+
+**Note:** You'll need to update `Recipe`'s constructor, `equals()`, and `hashCode()` to include the `id` field.
 
 ### Invariants and Contracts
 
@@ -305,39 +375,39 @@ You must implement the `RecipeCollection` interface. **How you implement it is y
 
 ```java
 /**
- * A collection of recipes from any source: published cookbook, personal collection, 
+ * A collection of recipes from any source: published cookbook, personal collection,
  * or website. Implementations must be immutable.
  */
 public interface RecipeCollection {
-    
+
     /**
      * Returns the unique identifier for this collection.
      * Used by repositories for storage and retrieval.
      */
     @NonNull String getId();
-    
+
     /**
      * Returns the title of this collection.
      */
     @NonNull String getTitle();
-    
+
     /**
      * Returns the type of source for this collection.
      * Used for display and to determine which metadata fields are relevant.
      */
     @NonNull SourceType getSourceType();
-    
+
     /**
      * Returns all recipes in this collection.
      * @return unmodifiable list of recipes (never null, may be empty)
      */
     @NonNull List<Recipe> getRecipes();
-    
+
     /**
      * Returns a new collection with the recipe added.
      */
     @NonNull RecipeCollection addRecipe(@NonNull Recipe recipe);
-    
+
     /**
      * Returns a new collection with the recipe removed (by title, case-insensitive).
      */
@@ -351,10 +421,10 @@ public interface RecipeCollection {
 public enum SourceType {
     /** A published cookbook with ISBN, author, publisher */
     PUBLISHED_BOOK,
-    
+
     /** A personal recipe collection (family recipes, handwritten cards, etc.) */
     PERSONAL,
-    
+
     /** Recipes imported from a website */
     WEBSITE
 }
@@ -366,9 +436,54 @@ Beyond the required interface, **how you structure your implementation is up to 
 
 | Source Type | Required Metadata | Optional Metadata |
 |-------------|-------------------|-------------------|
-| `PUBLISHED_BOOK` | title | author, ISBN, publisher, publication year, page numbers |
-| `PERSONAL` | title | description, notes, categories |
+| `PUBLISHED_BOOK` | title | author, ISBN, publisher, publication year |
+| `PERSONAL` | title | description, notes |
 | `WEBSITE` | title, source URL | date accessed, site name |
+
+#### Required Type-Specific Getters
+
+Regardless of your implementation approach, your collection types must provide the following getter methods for testability. These methods allow the instructor test suite to verify metadata preservation after round-trip serialization.
+
+**For `PUBLISHED_BOOK` collections (e.g., `Cookbook`):**
+
+```java
+/** Returns the author, if specified. */
+@NonNull Optional<String> getAuthor();
+
+/** Returns the ISBN, if specified. */
+@NonNull Optional<String> getIsbn();
+
+/** Returns the publisher, if specified. */
+@NonNull Optional<String> getPublisher();
+
+/** Returns the publication year, if specified. */
+@NonNull Optional<Integer> getPublicationYear();
+```
+
+**For `PERSONAL` collections (e.g., `PersonalCollection`):**
+
+```java
+/** Returns the description of this collection, if specified. */
+@NonNull Optional<String> getDescription();
+
+/** Returns notes about this collection, if specified. */
+@NonNull Optional<String> getNotes();
+```
+
+**For `WEBSITE` collections (e.g., `WebCollection`):**
+
+```java
+/** Returns the source URL for this web collection. Required, not optional. */
+@NonNull java.net.URI getSourceUrl();
+
+/** Returns the date this collection was accessed, if recorded. */
+@NonNull Optional<java.time.LocalDate> getDateAccessed();
+
+/** Returns the name of the website, if specified. */
+@NonNull Optional<String> getSiteName();
+```
+
+**Note:** If you use inheritance, these methods belong on your concrete classes (`Cookbook`, `PersonalCollection`, `WebCollection`). If you use a single class, you may need conditional getters or runtime type checking.
 
 **Design Questions to Consider:**
 
@@ -381,7 +496,7 @@ Beyond the required interface, **how you structure your implementation is up to 
 
 ```java
 // Approach 1: Inheritance hierarchy
-class Cookbook implements RecipeCollection { 
+class Cookbook implements RecipeCollection {
     // getId(), getTitle(), getSourceType() returns PUBLISHED_BOOK
     // Additional: getAuthor(), getIsbn(), getChapters()
 }
@@ -394,7 +509,7 @@ class RecipeCollectionImpl implements RecipeCollection {
     private final List<Recipe> recipes;
 }
 
-// Approach 3: Single class with optional fields  
+// Approach 3: Single class with optional fields
 class RecipeCollectionImpl implements RecipeCollection {
     private final SourceType sourceType;
     private final Optional<String> author;    // for PUBLISHED_BOOK
@@ -431,40 +546,40 @@ public interface RecipeRepository {
     /**
      * Saves a recipe to the repository. If a recipe with the same ID already exists,
      * it is replaced.
-     * 
+     *
      * @param recipe the recipe to save (must not be null)
      * @throws RepositoryException if the save operation fails
      */
     void save(@NonNull Recipe recipe);
-    
+
     /**
      * Finds a recipe by its unique identifier.
-     * 
+     *
      * @param id the recipe ID
      * @return the recipe if found, empty otherwise
      * @throws RepositoryException if the read operation fails
      */
     @NonNull Optional<Recipe> findById(@NonNull String id);
-    
+
     /**
      * Finds a recipe by its title (case-insensitive exact match).
-     * 
+     *
      * @param title the recipe title
      * @return the recipe if found, empty otherwise
      */
     @NonNull Optional<Recipe> findByTitle(@NonNull String title);
-    
+
     /**
      * Returns all recipes in the repository.
-     * 
+     *
      * @return unmodifiable list of all recipes
      * @throws RepositoryException if the read operation fails
      */
     @NonNull List<Recipe> findAll();
-    
+
     /**
      * Deletes a recipe by its ID. No-op if the recipe doesn't exist.
-     * 
+     *
      * @param id the recipe ID
      * @throws RepositoryException if the delete operation fails
      */
@@ -556,7 +671,7 @@ The `exportRecipe` method must produce output in this exact format:
 2. {instruction2.getText()}
 
 ---
-*Exported from CookYourBooks*
+*Exported from CookYourBooks, learn more at https://www.cookyourbooks.app*
 ```
 
 **Format Details:**
@@ -564,7 +679,7 @@ The `exportRecipe` method must produce output in this exact format:
 - Use `Ingredient.toString()` for ingredient formatting (from A1)
 - Use `Instruction.getText()` for instruction text
 - Instruction numbers should be sequential starting from 1
-- The footer `---` and `*Exported from CookYourBooks*` are required
+- The footer `---` and `*Exported from CookYourBooks, learn more at https://www.cookyourbooks.app*` are required
 - Use Unix line endings (`\n`)
 
 **Collection Format:**
@@ -581,24 +696,79 @@ How you format collection-specific metadata is a design decision. Document your 
 
 The `Quantity` and `Ingredient` class hierarchies require special handling during JSON serialization because Jackson needs to know which subclass to instantiate during deserialization.
 
-**Common approaches:**
+#### Recommended Approach: @JsonCreator with Mixins
 
-1. **Type property:** Include a `"type"` field in the JSON
-   ```json
-   { "type": "ExactQuantity", "amount": 2.5, "unit": "CUP" }
-   ```
+**For immutable domain classes (which all your domain objects should be), use the `@JsonCreator` annotation:**
 
-2. **Jackson annotations:** Use `@JsonTypeInfo` and `@JsonSubTypes` on the base class
+```java
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-3. **Custom serializers:** Write `JsonSerializer` and `JsonDeserializer` implementations
+public final class ExactQuantity extends Quantity {
+  private final double amount;
 
-**This is a design decision.** Choose an approach, implement it consistently, and document your choice in the reflection.
+  @JsonCreator
+  public ExactQuantity(
+      @JsonProperty("amount") double amount,
+      @JsonProperty("unit") @NonNull Unit unit) {
+    super(unit);
+    // validation and initialization
+  }
+}
+```
+
+**Key benefits:**
+- ✅ Fields remain `final` (true immutability)
+- ✅ No dummy no-arg constructors needed
+- ✅ Validation logic runs during deserialization
+- ✅ Works with existing constructors (just add annotations)
+
+**Note on architecture:** Using `@JsonCreator` and `@JsonProperty` technically introduces Jackson dependencies into your domain classes. However, these are **metadata annotations only**—they don't change your domain logic or behavior. This is a pragmatic tradeoff:
+- **Pro:** Simpler code, maintains immutability, validation runs correctly
+- **Con:** Domain classes depend on Jackson annotations (but not Jackson logic)
+
+For this course, we consider this an acceptable compromise for immutable domain objects.
+
+#### Handling Polymorphism
+
+For polymorphic hierarchies (`Quantity`, `Ingredient`, `RecipeCollection`), you still need to tell Jackson which subclass to instantiate. Use **mixin classes** in your adapter layer to keep polymorphism metadata separate:
+
+```java
+// In your adapter (e.g., JsonRecipeRepository):
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes({
+  @JsonSubTypes.Type(value = ExactQuantity.class, name = "exact"),
+  @JsonSubTypes.Type(value = FractionalQuantity.class, name = "fractional"),
+  @JsonSubTypes.Type(value = RangeQuantity.class, name = "range")
+})
+abstract static class QuantityMixin {}
+
+// Register the mixin:
+objectMapper.addMixIn(Quantity.class, QuantityMixin.class);
+```
+
+This approach:
+- Keeps domain classes clean of polymorphism metadata
+- Centralizes type discrimination logic in the adapter
+- Produces readable JSON with explicit type tags
+
+**Example JSON output:**
+```json
+{
+  "type": "exact",
+  "amount": 2.5,
+  "unit": "CUP"
+}
+```
+
+#### Alternative: Custom Serializers
+
+If you want to keep domain classes completely annotation-free, you can write custom `JsonSerializer` and `JsonDeserializer` implementations. However, this requires significantly more code and is generally not worth the added complexity for this assignment.
 
 ### `equals()` and `hashCode()` Requirements
 
 Implement `equals()` and `hashCode()` for all your domain classes. The specific equality semantics depend on your design, but must satisfy:
 
-- **Round-trip correctness:** `save(collection)` followed by `findById(id)` must return an object where `original.equals(loaded)` is true
 - **Recipe equality:** Two collections with the same recipes (in the same order) and same metadata should be equal
 - **Consistent with serialization:** If two objects serialize to the same JSON, they should be equal
 - **Performance:** It is trivial to satisfy these requirements by serializing and deserializing the objects. This is a huge performance penalty and should be avoided.
@@ -614,118 +784,12 @@ For example, if you have a `Cookbook` class with author and ISBN fields, two coo
 - **Documentation:** Javadoc for all public classes and methods
 - **Exception handling:** Use `RepositoryException` (unchecked) for persistence failures, `ParseException` (checked) for parsing failures
 
-### Example Usage
-
-The examples below show **one possible design**. Your implementation may look different depending on your domain model choices.
-
-```java
-// Create recipes (same as A2)
-Recipe pancakes = new RecipeBuilder()
-    .title("Fluffy Pancakes")
-    .servings(new ExactQuantity(8, Unit.WHOLE))
-    .addIngredient(new MeasuredIngredient("flour", new ExactQuantity(2, Unit.CUP), null, null))
-    .addIngredient(new MeasuredIngredient("milk", new ExactQuantity(1.5, Unit.CUP), null, null))
-    .addIngredient(new MeasuredIngredient("eggs", new ExactQuantity(2, Unit.WHOLE), "beaten", null))
-    .addInstruction(new Instruction(1, "Mix dry ingredients"))
-    .addInstruction(new Instruction(2, "Add wet ingredients and stir"))
-    .addInstruction(new Instruction(3, "Cook on griddle until golden"))
-    .build();
-
-Recipe waffles = new RecipeBuilder()
-    .title("Crispy Waffles")
-    // ... similar setup
-    .build();
-
-Recipe gramsCookies = new RecipeBuilder()
-    .title("Gram's Chocolate Chip Cookies")
-    // ... family recipe
-    .build();
-
-// Example: Creating different types of collections (your design may vary!)
-
-// A published cookbook
-RecipeCollection joyOfCooking = new Cookbook.Builder()
-    .title("Joy of Cooking")
-    .author("Irma S. Rombauer")
-    .isbn("978-1501169717")
-    .publicationYear(2019)
-    .addRecipe(pancakes)
-    .addRecipe(waffles)
-    .build();
-
-// A personal recipe collection
-RecipeCollection familyRecipes = new PersonalCollection.Builder()
-    .title("Gram's Recipe Box")
-    .notes("Recipes from grandmother's index card collection")
-    .addRecipe(gramsCookies)
-    .build();
-
-// Recipes from a website
-RecipeCollection seriousEats = new WebCollection.Builder()
-    .title("Serious Eats Favorites")
-    .sourceUrl(URI.create("https://www.seriouseats.com"))
-    .dateAccessed(LocalDate.now())
-    .addRecipe(pancakes)  // imported from web
-    .build();
-
-// Persist using repositories
-RecipeRepository recipeRepo = new JsonRecipeRepository(Path.of("./data/recipes"));
-RecipeCollectionRepository collectionRepo = 
-    new JsonRecipeCollectionRepository(Path.of("./data/collections"));
-
-collectionRepo.save(joyOfCooking);
-collectionRepo.save(familyRecipes);
-collectionRepo.save(seriousEats);
-
-// Load and verify round-trip
-Optional<RecipeCollection> loaded = collectionRepo.findByTitle("Joy of Cooking");
-assert loaded.isPresent();
-assert loaded.get().equals(joyOfCooking);  // Round-trip correctness
-
-// The loaded object should be the right type if you used inheritance
-if (loaded.get() instanceof Cookbook cookbook) {
-    assert cookbook.getIsbn().equals(Optional.of("978-1501169717"));
-}
-
-// Export to markdown
-MarkdownExporter exporter = new MarkdownExporter();
-String markdown = exporter.exportRecipe(pancakes);
-System.out.println(markdown);
-// Output:
-// # Fluffy Pancakes
-//
-// *Serves: 8 whole*
-//
-// ## Ingredients
-//
-// - 2 cups flour
-// - 1.5 cups milk
-// - 2 whole eggs, beaten
-//
-// ## Instructions
-//
-// 1. Mix dry ingredients
-// 2. Add wet ingredients and stir
-// 3. Cook on griddle until golden
-//
-// ---
-// *Exported from CookYourBooks*
-
-// User library
-UserLibrary library = new UserLibrary()
-    .addCollection(joyOfCooking)
-    .addCollection(familyRecipes)
-    .addCollection(seriousEats);
-
-List<Recipe> found = library.findRecipeByTitle("pancakes");
-// Returns pancakes from multiple collections (partial, case-insensitive match)
-```
 
 ### Testing Requirements
 
 Testing follows the same model as Assignments 1 and 2:
 
-- **You must write tests** for all components you implement
+- **You must write tests** for all components you implement. **Your tests must be written to the interface provided, not to your implementation.**
 - **Implementation points require tests:** You only receive points for implementation if you have tests that detect plausible bugs
 - **Mutation testing:** Your tests are run against intentionally buggy implementations
 - **Reference implementation:** All your tests must pass on the instructor's reference implementation
@@ -782,13 +846,13 @@ Up to 2 points deducted per question for incomplete or superficial responses (5 
 Your submission should demonstrate:
 
 - **Correctness:** Code compiles, follows specifications, passes tests
-- **Architecture:** Clear separation between domain, ports, and adapters
-- **Serialization:** Correct round-trip for all domain objects including polymorphic types
-- **Testing:** Meaningful tests that verify behavior and detect faults
+- **Design Quality**: Appropriate use of interfaces, immutability, information hiding
 - **Documentation:** Clear Javadoc with design decisions explained
-- **AI Usage:** Thoughtful, effective use of AI assistants with proper attribution
+- **Code Quality**: Clean, readable code following course style conventions
 
 ## Grading Rubric
+
+*[To be finalized after API review]*
 
 ### Automated Grading (100 points)
 
@@ -833,43 +897,6 @@ Your tests are evaluated using mutation testing:
 ### Reflection (-10 points max)
 
 Up to 2 points deducted per question for incomplete or superficial responses.
-
-## Submission
-
-1. **Start from provided A2 solution:** Clone the assignment repository which includes the instructor's A2 solution
-
-2. **Implement required interfaces** in `src/main/java/app/cookyourbooks/domain/`:
-   - `RecipeCollection.java` (the interface as specified)
-   - `SourceType.java` (the enum as specified)
-
-3. **Implement your domain model** in `src/main/java/app/cookyourbooks/domain/`:
-   - Your class(es) that implement `RecipeCollection` (design is up to you—could be one class, could be a hierarchy)
-   - `UserLibrary.java`
-
-4. **Implement ports** in `src/main/java/app/cookyourbooks/ports/`:
-   - `RecipeRepository.java`
-   - `RecipeCollectionRepository.java`
-   - `RepositoryException.java`
-
-5. **Implement adapters** in `src/main/java/app/cookyourbooks/adapters/`:
-   - `JsonRecipeRepository.java`
-   - `JsonRecipeCollectionRepository.java`
-   - `MarkdownExporter.java`
-
-6. **Write tests** in `src/test/java/app/cookyourbooks/`:
-   - `domain/RecipeCollectionTest.java`
-   - `domain/UserLibraryTest.java`
-   - `adapters/JsonRecipeRepositoryTest.java`
-   - `adapters/JsonRecipeCollectionRepositoryTest.java`
-   - `adapters/MarkdownExporterTest.java`
-
-7. **Update `REFLECTION.md`**
-
-8. **Verify:** Run `./gradlew build` and `./gradlew test`
-
-9. **Commit and push**
-
-10. **Complete the self-review in Pawtograder** (see below)
 
 ### Self-Review (New for This Assignment)
 

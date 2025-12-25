@@ -65,14 +65,14 @@ export default function UpcomingWidget({
                     <div style={{ flex: 1 }}>
                       {meeting.lecture?.lectureId ? (
                         <Link to={`/lecture-notes/${meeting.lecture.lectureId}`}>
-                          {topic}
+                          {meeting.lecture.topics && meeting.lecture.topics.length > 0
+                            ? `${meeting.sectionName}: ${meeting.lecture.topics.join(', ')}`
+                            : `${meeting.sectionName}: ${topic}`
+                          }
                         </Link>
                       ) : (
                         <span>{topic}</span>
                       )}
-                      <div style={{ fontSize: '0.85rem', color: 'var(--ifm-color-emphasis-600)' }}>
-                        {meeting.sectionName}
-                      </div>
                     </div>
                     <div style={{
                       fontSize: '0.85rem',

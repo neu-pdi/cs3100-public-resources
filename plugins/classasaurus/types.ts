@@ -261,6 +261,36 @@ export interface ScheduleNote {
 }
 
 /**
+ * Calendar type for events
+ */
+export type CalendarType = 'office_hours' | 'events';
+
+/**
+ * ICS calendar configuration
+ */
+export interface ICSCalendarConfig {
+  /** URL to the ICS calendar file */
+  url: string;
+  
+  /** Display name for this calendar */
+  name: string;
+  
+  /** Type of calendar events */
+  type: CalendarType;
+  
+  /** Optional queue name for office hours calendars */
+  queueName?: string;
+}
+
+/**
+ * Calendar configuration
+ */
+export interface CalendarConfig {
+  /** ICS calendar sources */
+  ics?: ICSCalendarConfig[];
+}
+
+/**
  * Canvas integration configuration
  */
 export interface CanvasConfig {
@@ -326,6 +356,9 @@ export interface CourseConfig {
   
   /** Schedule notes for displaying banners/announcements */
   scheduleNotes?: ScheduleNote[];
+  
+  /** Calendar configuration (ICS sources) */
+  calendars?: CalendarConfig;
   
   /** Canvas integration (optional) */
   canvas?: CanvasConfig;
@@ -412,6 +445,21 @@ export interface ScheduleEntry {
 }
 
 /**
+ * Calendar event from ICS files
+ */
+export interface CalendarEvent {
+  id: number;
+  uid: string;
+  title: string;
+  start_time: string; // ISO format
+  end_time: string;   // ISO format
+  location?: string;
+  organizer_name?: string;
+  queue_name?: string;
+  calendar_type: CalendarType;
+}
+
+/**
  * Complete schedule for a course
  */
 export interface CourseSchedule {
@@ -439,5 +487,8 @@ export interface CourseSchedule {
     examDates: DateString[];
     assignmentDueDates: DateString[];
   };
+  
+  /** Calendar events fetched from ICS files at build time */
+  calendarEvents?: CalendarEvent[];
 }
 

@@ -7,6 +7,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import { parseISO, format, startOfWeek, endOfWeek, getDay, addDays, isWithinInterval, isSameWeek } from 'date-fns';
 import type { CourseSchedule, ScheduleEntry, Lab, Assignment, CourseSection, LabSection, ScheduleNote } from '@site/plugins/classasaurus/types';
 import { Alert, Box } from '@chakra-ui/react';
@@ -115,9 +116,10 @@ interface ScheduleTableProps {
   scheduleNotes?: ScheduleNote[]; // Schedule notes for banners
   lectureSectionId?: string; // Selected lecture section ID
   labSectionId?: string; // Selected lab section ID
+  getAssignmentUrl?: (url: string | undefined) => string | undefined; // Function to format assignment URLs with base URL
 }
 
-function ScheduleTable({ entries, sectionName, lectureDays, labDays, assignments, scheduleNotes = [], lectureSectionId, labSectionId }: ScheduleTableProps) {
+function ScheduleTable({ entries, sectionName, lectureDays, labDays, assignments, scheduleNotes = [], lectureSectionId, labSectionId, getAssignmentUrl }: ScheduleTableProps) {
   // Combine all meeting days (lectures and labs)
   const allMeetingDays = Array.from(new Set([...lectureDays, ...labDays]));
 
@@ -189,17 +191,6 @@ function ScheduleTable({ entries, sectionName, lectureDays, labDays, assignments
   return (
     <div>
       {sectionName && <h2>{sectionName}</h2>}
-      <Alert.Root status='warning'>
-        <Alert.Indicator>
-          <LuConstruction />
-        </Alert.Indicator>
-        <Alert.Title>Draft Content</Alert.Title>
-        <Alert.Content>
-          <Alert.Description>
-            This content is a work in progress. Note that not all labs are on Tuesday, this page will be updated to show the complete distribution of lab dates.
-          </Alert.Description>
-        </Alert.Content>
-      </Alert.Root>
       <div style={{ overflowX: 'auto', overflowY: 'visible' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '2rem' }}>
           <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
@@ -496,7 +487,7 @@ function ScheduleTable({ entries, sectionName, lectureDays, labDays, assignments
                                         <div style={{ marginBottom: isDue ? '0.25rem' : '0' }}>
                                           <strong>RELEASED:</strong>{' '}
                                           {assignment.url ? (
-                                            <Link to={assignment.url}>{assignment.title}</Link>
+                                            <Link to={getAssignmentUrl ? getAssignmentUrl(assignment.url) || assignment.url : assignment.url}>{assignment.title}</Link>
                                           ) : (
                                             assignment.title
                                           )}
@@ -506,7 +497,7 @@ function ScheduleTable({ entries, sectionName, lectureDays, labDays, assignments
                                         <div>
                                           <strong>DUE:</strong>{' '}
                                           {assignment.url ? (
-                                            <Link to={assignment.url}>{assignment.title}</Link>
+                                            <Link to={getAssignmentUrl ? getAssignmentUrl(assignment.url) || assignment.url : assignment.url}>{assignment.title}</Link>
                                           ) : (
                                             assignment.title
                                           )}
@@ -540,6 +531,21 @@ function ScheduleTable({ entries, sectionName, lectureDays, labDays, assignments
 
 export default function SchedulePage({ scheduleData }: Props) {
   const { config, scheduleBySection } = scheduleData;
+  const baseUrl = useBaseUrl('/');
+
+  // Helper function to get assignment URL with base URL
+  const getAssignmentUrl = (url: string | undefined): string | undefined => {
+    if (!url) return undefined;
+    // If URL already starts with baseUrl, return as is
+    if (url.startsWith(baseUrl)) return url;
+    // If URL starts with '/', prepend baseUrl (removing trailing slash from baseUrl)
+    if (url.startsWith('/')) {
+      const base = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+      return `${base}${url}`;
+    }
+    // Otherwise, prepend baseUrl
+    return `${baseUrl}${url}`;
+  };
 
   const [selectedLectureId, setSelectedLectureId] = useState<string>(() => config.sections[0]?.id || '');
   const [selectedLabId, setSelectedLabId] = useState<string>(() => config.labSections?.[0]?.id || '');
@@ -728,6 +734,7 @@ export default function SchedulePage({ scheduleData }: Props) {
             scheduleNotes={config.scheduleNotes}
             lectureSectionId={selectedLectureId}
             labSectionId={selectedLabId}
+            getAssignmentUrl={getAssignmentUrl}
           />
         </div>
 
@@ -750,7 +757,7 @@ export default function SchedulePage({ scheduleData }: Props) {
                   <tr key={assignment.id} style={{ borderBottom: '1px solid var(--ifm-color-emphasis-200)' }}>
                     <td style={{ padding: '0.75rem' }}>
                       {assignment.url ? (
-                        <a href={assignment.url}>{assignment.title}</a>
+                        <Link to={getAssignmentUrl(assignment.url) || assignment.url}>{assignment.title}</Link>
                       ) : (
                         assignment.title
                       )}

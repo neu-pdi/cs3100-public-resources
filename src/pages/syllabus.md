@@ -35,7 +35,7 @@ The course consists of lectures, labs, assignments, and a semester-long project.
 
 Module 1 and 2 are followed by exams, and Module 3 is followed by a cumulative final exam. 
 
-Students complete individual programming assignments that build into a larger project, [Cook Your Books](/assignments/cyb-overview). Students will practice design skills by both writing new code and reviewing existing code. Assignments are structured such that, each week, students implement the week's requirements using the solution from the previous week as a starting point. Students complete a self-reflection on each assignment, examining the design decisions they made and the tradeoffs they considered. Early assignments will have students work individually to implement a small feature in the codebase. Later, students will form teams to work on a signficiantly larger feature in the same codebase.
+Students complete individual programming assignments that build into a larger project, [Cook Your Books](/assignments). Students will practice design skills by both writing new code and reviewing existing code. Assignments are structured such that, each week, students implement the week's requirements using the solution from the previous week as a starting point. Students complete a self-reflection on each assignment, examining the design decisions they made and the tradeoffs they considered. Early assignments will have students work individually to implement a small feature in the codebase. Later, students will form teams to work on a signficiantly larger feature in the same codebase.
 
 
 ## Grading

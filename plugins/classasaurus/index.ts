@@ -1,10 +1,11 @@
 import { LoadContext, Plugin } from "@docusaurus/types";
 import path from 'path';
 import fs from 'fs';
-import type { ClassasaurusPluginOptions, CourseConfig, CourseSchedule } from './types';
+import type { ClassasaurusPluginOptions, CourseConfig, CourseSchedule, CalendarEvent, CalendarType } from './types';
 import { validateCourseConfig } from './config-validator';
 import { generateSchedule } from './schedule-generator';
 import { extractHeadings, formatDateDisplay } from './utils';
+import ICAL from 'ical.js';
 
 export default async function pluginClassasaurus(
     context: LoadContext,
@@ -231,6 +232,112 @@ sidebar: false
     }
     
     /**
+     * Fetch ICS calendar from URL (at build time)
+     */
+    async function fetchICSCalendar(url: string): Promise<string> {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch ICS calendar: ${response.statusText}`);
+            }
+            return await response.text();
+        } catch (error) {
+            console.error(`Error fetching ICS calendar from ${url}:`, error);
+            throw error;
+        }
+    }
+
+    /**
+     * Parse ICS calendar data and convert to CalendarEvent[]
+     */
+    function parseICS(icsData: string, calendarType: CalendarType, queueName?: string): CalendarEvent[] {
+        const events: CalendarEvent[] = [];
+        let eventIdCounter = 1;
+        
+        try {
+            const jcalData = ICAL.parse(icsData);
+            const comp = new ICAL.Component(jcalData);
+            const vevents = comp.getAllSubcomponents('vevent');
+            
+            for (const vevent of vevents) {
+                const event = new ICAL.Event(vevent);
+                
+                // Skip if event doesn't have start/end times
+                if (!event.startDate || !event.endDate) {
+                    continue;
+                }
+                
+                const startDate = event.startDate.toJSDate();
+                const endDate = event.endDate.toJSDate();
+                
+                // Extract organizer name from ICAL event
+                let organizerName: string | undefined;
+                try {
+                    const organizerProp = vevent.getFirstProperty('organizer');
+                    if (organizerProp) {
+                        const organizerValue = organizerProp.getFirstValue();
+                        if (typeof organizerValue === 'string') {
+                            // Extract CN from format like "CN=Name:mailto:email" or just "mailto:email"
+                            const cnMatch = organizerValue.match(/CN=([^:]+)/);
+                            organizerName = cnMatch ? cnMatch[1] : undefined;
+                        } else if (organizerValue && typeof organizerValue === 'object') {
+                            // Try to get CN property
+                            const cn = (organizerValue as any).cn;
+                            if (typeof cn === 'string') {
+                                organizerName = cn;
+                            }
+                        }
+                    }
+                } catch (err) {
+                    // Ignore errors extracting organizer
+                }
+                
+                events.push({
+                    id: eventIdCounter++,
+                    uid: event.uid || `ics-${eventIdCounter}`,
+                    title: event.summary || 'Untitled Event',
+                    start_time: startDate.toISOString(),
+                    end_time: endDate.toISOString(),
+                    location: event.location || undefined,
+                    organizer_name: organizerName,
+                    queue_name: queueName,
+                    calendar_type: calendarType,
+                });
+            }
+        } catch (error) {
+            console.error('Error parsing ICS data:', error);
+        }
+        
+        return events;
+    }
+
+    /**
+     * Fetch and parse all ICS calendars configured in the course config
+     */
+    async function fetchCalendarEvents(config: CourseConfig): Promise<CalendarEvent[]> {
+        if (!config.calendars?.ics || config.calendars.ics.length === 0) {
+            return [];
+        }
+        
+        const allEvents: CalendarEvent[] = [];
+        
+        for (const icsConfig of config.calendars.ics) {
+            try {
+                console.log(`📅 Fetching ICS calendar: ${icsConfig.name} from ${icsConfig.url}`);
+                const icsData = await fetchICSCalendar(icsConfig.url);
+                const events = parseICS(icsData, icsConfig.type, icsConfig.queueName);
+                allEvents.push(...events);
+                console.log(`   ✓ Loaded ${events.length} events from ${icsConfig.name}`);
+            } catch (err) {
+                console.error(`   ✗ Failed to fetch calendar ${icsConfig.name}:`, err);
+                // Continue with other calendars even if one fails
+            }
+        }
+        
+        return allEvents;
+    }
+
+    /**
      * Generate COURSE.md file with course summary, lecture TOC, and assignments
      * Writes the file to the specified output directory
      */
@@ -273,6 +380,13 @@ sidebar: false
                     console.log(`   Section ${section.id} (${section.name}): ${sectionEntries.length} meetings`);
                 }
                 
+                // Fetch ICS calendars at build time
+                const calendarEvents = await fetchCalendarEvents(courseConfig);
+                if (calendarEvents.length > 0) {
+                    console.log(`📅 Fetched ${calendarEvents.length} calendar events from ICS files`);
+                    courseSchedule.calendarEvents = calendarEvents;
+                }
+                
                 return courseSchedule;
             } catch (error) {
                 console.error('❌ Error validating or generating schedule:', error);
@@ -285,9 +399,12 @@ sidebar: false
                 return;
             }
             
-            const { createData, addRoute } = actions;
+            const { createData, addRoute, setGlobalData } = actions;
             
-            // Make schedule data available globally
+            // Expose content as global data so usePluginData can access it
+            setGlobalData(content);
+            
+            // Make schedule data available globally for routes that need it
             const scheduleDataPath = await createData(
                 'schedule.json',
                 JSON.stringify(content, null, 2)
