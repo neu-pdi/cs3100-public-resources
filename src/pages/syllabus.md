@@ -106,13 +106,11 @@ Your letter grade is determined by both your total points AND meeting minimum th
 
 **Plus/Minus Grades:** Once you meet the thresholds for a letter grade, your +/- modifier is determined by where your total points fall within that range:
 
-| Points | Grade | | Points | Grade | | Points | Grade |
-|--------|-------|-|--------|-------|-|--------|-------|
-| 930–1000 | A | | 830–869 | B | | 730–769 | C |
-| 900–929 | A- | | 800–829 | B- | | 700–729 | C- |
-| 870–899 | B+ | | 770–799 | C+ | | 670–699 | D+ |
-| | | | | | | 630–669 | D |
-| | | | | | | 600–629 | D- |
+| Points | Grade | | Points | Grade | | Points | Grade | | Points | Grade |
+|--------|-------|-|--------|-------|-|--------|-------|-|--------|-------|
+|        |       | | 870–899 | B+ | | 770–799 | C+ | | 670–699 | D+ |
+| 930–1000 | A | | 830–869 | B | | 730–769 | C |  | 630–669 | D |
+| 900–929 | A- | | 800–829 | B- | | 700–729 | C- | | 600–629 | D- |
 
 *There is no A+ grade. If you fail to meet the thresholds for a letter grade, your grade is capped at the highest level whose thresholds you satisfy.*
 
