@@ -128,7 +128,7 @@ Your letter grade is determined by both your total points AND meeting minimum th
 
 **Labs (50 points):** Labs are graded on the "good faith effort" standard: if you attend your lab section and make a submission that demonstrates your effort to complete the lab, you will receive full marks for it. There are 14 labs; each is worth approximately 3.5 points, with the total capped at 50 points (allowing you to miss a few without penalty).
 
-**Class Participation (50 points):** Participation is assessed through in-class activities, including polls, discussions, and short exercises. Regular attendance and engagement is expected. Each instructor will provide details on how participation points are earned in the first week of class.
+**Class Participation (50 points):** Participation is assessed through in-class activities, including polls, discussions, and short exercises. Regular attendance and engagement is expected. Each instructor will provide details on how participation points are earned in the first week of class. Completing online participation activities in violation of instructors' rules (such as completing polls remotely without prior written permission) constitutes an academc integrity violation and will result in losing all participation points for the semester.
 
 Detailed rubrics will be published with each assignment.
 
@@ -137,7 +137,7 @@ Detailed rubrics will be published with each assignment.
 ## Communication with the Course Staff and Peer Support
 
 ### Contacting your instructor
-Each instructor maintains their own office hours. You can also directly email your instructor, but please note that instructor responses may take up to 24 hours to receive a response.
+Each instructor maintains their own office hours. You can also directly email your instructor, but please note that instructor responses may take up to 48 hours to receive a response.
 
 ### TA Office Hours
 TA office hours are available throughout the week to provide one-on-one support with your coursework. To get help, join the queue through the Pawtograder office hours system—we operate on a first-come, first-served basis.
@@ -199,7 +199,7 @@ Computer science, both academically and professionally, is a collaborative disci
 Specifically:
 
 - You are responsible for any material you turn in. The professor reserves the right to ask you to verbally explain the reasoning behind any answer or code that you turn in and to modify your grade based on your answers. It is vitally important that you turn in work that you understand.
-- Copying material from another person without their knowledge is not allowed.
+- Copying material from another person is not allowed.
 - Additionally, sharing solutions in forums (e.g., posting to public questions, posting code online, etc) constitutes an academic integrity violation, as it may make it harder for other students to do work on their own, harming their own learning. The course staff expend a tremendous amount of effort to provide you with high-quality assignments, and in turn expect that you respect this effort and do not share solutions. 
 - Collaboration is not allowed on exams. Any sharing or receiving information about the content of exams is an academic integrity violation, and may result in failing the class.
 
