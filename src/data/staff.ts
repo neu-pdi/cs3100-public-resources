@@ -37,10 +37,10 @@ export const staffMembers: StaffMember[] = [
   },
   {
     name: "Ellen Spertus",
-    pronouns: "",
+    pronouns: "she/her",
     role: "instructor",
     campus: "Oakland",
-    bio: "",
+    bio: "Teaching Professor",
     headshot: "staff-placeholder.svg",
     email: "e.spertus@northeastern.edu"
   },
