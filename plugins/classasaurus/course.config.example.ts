@@ -31,6 +31,8 @@ const config: CourseConfig = {
         },
       ],
       instructors: ['Jonathan Bell'],
+      // Canvas course ID for this section - enables Canvas sync
+      canvasCourseId: '123456',
     },
     {
       id: '02',
@@ -46,6 +48,8 @@ const config: CourseConfig = {
         },
       ],
       instructors: ['Jonathan Bell'],
+      // Canvas course ID for this section - enables Canvas sync
+      canvasCourseId: '123457',
     },
   ],
   
@@ -181,6 +185,19 @@ const config: CourseConfig = {
       notes: 'In-class quiz',
     },
   ],
+  
+  // Canvas LMS integration configuration
+  // Set CANVAS_API_TOKEN environment variable to enable sync during build
+  canvas: {
+    // Your Canvas instance URL
+    canvasUrl: 'https://canvas.northeastern.edu',
+    // Environment variable name for API token (default: CANVAS_API_TOKEN)
+    apiTokenEnvVar: 'CANVAS_API_TOKEN',
+    // Sync assignments as stubs with links to course website (default: true)
+    syncAssignments: true,
+    // Sync lectures and labs as modules with external URL items (default: true)
+    syncModules: true,
+  },
   
   metadata: {
     department: 'Khoury College of Computer Sciences',

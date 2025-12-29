@@ -308,9 +308,9 @@ export function validateCourseConfig(config: CourseConfig): void {
   
   // Validate Canvas config if present
   if (config.canvas) {
-    if (!config.canvas.canvasUrl || !config.canvas.courseId) {
+    if (!config.canvas.canvasUrl || !config.canvas.apiTokenEnvVar) {
       throw new ValidationError(
-        'Canvas configuration must include canvasUrl and courseId'
+        'Canvas configuration must include canvasUrl and apiTokenEnvVar'
       );
     }
   }

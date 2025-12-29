@@ -75,6 +75,9 @@ export interface CourseSection {
   
   /** Section-specific holidays/cancellations (in addition to course-wide ones) */
   additionalHolidays?: Holiday[];
+  
+  /** Canvas course ID for this section (for Canvas sync) */
+  canvasCourseId?: string;
 }
 
 /**
@@ -105,6 +108,9 @@ export interface LabSection {
 
   /** Section-specific holidays/cancellations (in addition to course-wide ones) */
   additionalHolidays?: Holiday[];
+  
+  /** Canvas course ID for this lab section (for Canvas sync) */
+  canvasCourseId?: string;
 }
 
 /**
@@ -294,24 +300,20 @@ export interface CalendarConfig {
  * Canvas integration configuration
  */
 export interface CanvasConfig {
-  /** Canvas instance URL */
+  /** Canvas instance URL (e.g., "https://canvas.northeastern.edu") */
   canvasUrl: string;
   
-  /** Canvas course ID */
-  courseId: string;
-  
-  /** Whether to enable Canvas sync */
-  enableSync: boolean;
-  
-  /** API token (should be stored securely, not in config) */
+  /** Environment variable name for API token (default: CANVAS_API_TOKEN) */
   apiTokenEnvVar?: string;
   
-  /** Sync settings */
-  syncSettings?: {
-    syncAssignments?: boolean;
-    syncGrades?: boolean;
-    syncAnnouncements?: boolean;
-  };
+  /** Whether to sync assignments (default: true) */
+  syncAssignments?: boolean;
+  
+  /** Whether to sync modules/lectures/labs (default: true) */
+  syncModules?: boolean;
+  
+  /** Whether to sync homepage to Canvas course front page (default: true) */
+  syncHomepage?: boolean;
 }
 
 /**

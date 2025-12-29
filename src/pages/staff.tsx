@@ -3,6 +3,7 @@ import { Box, Heading, SimpleGrid, VStack, Text, Image, Container, Badge, Link }
 import { staffMembers, StaffRole } from '../data/staff';
 import { useMemo, useState } from 'react';
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import OfficeHoursSchedule from '../components/calendar/office-hours-schedule';
 
 const roleLabels: Record<StaffRole, string> = {
   'instructor': 'Instructor',
@@ -180,6 +181,12 @@ export default function StaffPage() {
               })}
             </VStack>
           )}
+          
+          {/* Office Hours Schedule */}
+          <Box>
+            <Heading size="md" mb={4}>Office Hours Schedule</Heading>
+            <OfficeHoursSchedule showTitle={false} />
+          </Box>
         </VStack>
       </Container>
     </Layout>

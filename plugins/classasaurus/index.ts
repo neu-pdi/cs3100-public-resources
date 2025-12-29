@@ -5,6 +5,7 @@ import type { ClassasaurusPluginOptions, CourseConfig, CourseSchedule, CalendarE
 import { validateCourseConfig } from './config-validator';
 import { generateSchedule } from './schedule-generator';
 import { extractHeadings, formatDateDisplay } from './utils';
+import { syncToCanvas } from './canvas-sync';
 import ICAL from 'ical.js';
 
 export default async function pluginClassasaurus(
@@ -99,8 +100,8 @@ sidebar: false
             for (const file of files) {
                 if (file.endsWith('.md') || file.endsWith('.mdx')) {
                     const lectureId = file.replace(/\.(md|mdx)$/, '');
-                    // Skip l0-summary
-                    if (lectureId.startsWith('l0')) continue;
+                    // Skip l0-summary and index.md
+                    if (lectureId.startsWith('l0') || lectureId === 'index') continue;
                     
                     const filePath = path.join(lectureNotesDir, file);
                     const content = fs.readFileSync(filePath, 'utf-8');
@@ -518,6 +519,34 @@ sidebar: false
                 
                 if (!foundPath) {
                     console.warn(`⚠️  Overview page not found. Checked paths: ${possiblePaths.join(', ')}`);
+                }
+                
+                // Canvas sync (if configured and token present)
+                // Do this in postBuild so we have access to built HTML files
+                const canvasConfig = content.config.canvas;
+                if (canvasConfig?.canvasUrl) {
+                    const tokenEnvVar = canvasConfig.apiTokenEnvVar || 'CANVAS_API_TOKEN';
+                    const apiToken = process.env[tokenEnvVar];
+                    
+                    if (apiToken) {
+                        // Build public site URL from Docusaurus config
+                        const siteUrl = context.siteConfig.url + context.siteConfig.baseUrl.replace(/\/$/, '');
+                        
+                    try {
+                        await syncToCanvas(
+                            content.config,
+                            content,
+                            siteUrl,
+                            canvasConfig.canvasUrl,
+                            apiToken
+                        );
+                    } catch (error) {
+                        console.error('❌ Canvas sync failed:', error);
+                        // Don't throw - allow build to continue even if Canvas sync fails
+                    }
+                    } else {
+                        console.log(`ℹ️  Canvas sync configured but ${tokenEnvVar} not set. Skipping sync.`);
+                    }
                 }
             }
         },

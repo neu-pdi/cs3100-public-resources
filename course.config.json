@@ -1,4 +1,10 @@
 {
+  "canvas": {
+    "canvasUrl": "https://northeastern.instructure.com/api/v1",
+    "apiTokenEnvVar": "CANVAS_API_TOKEN",
+    "syncAssignments": true,
+    "syncModules": true
+  },
   "courseCode": "CS 3100",
   "courseTitle": "Program Design and Implementation II",
   "semester": "Spring 2026",
@@ -55,6 +61,7 @@
       "id": "03",
       "name": "Section 03",
       "crn": "36061",
+      "canvasCourseId": "239385",
       "timeZone": "America/New_York",
       "meetings": [
         {
