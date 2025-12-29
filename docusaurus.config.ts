@@ -6,7 +6,7 @@ import rehypeKatex from 'rehype-katex';
 import path from 'path';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
-
+const baseUrl = process.env.BASE_URL || '/cs3100-public-resources/';
 const config: Config = {
   title: 'NEU CS 3100 Public Resources',
   tagline: 'Resources for CS 3100 (Public)',
@@ -16,7 +16,7 @@ const config: Config = {
   url: 'https://neu-pdi.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/cs3100-public-resources/',
+  baseUrl: baseUrl,
 
   // GitHub pages deployment config.
   organizationName: 'neu-pdi', // Usually your GitHub org/user name.
