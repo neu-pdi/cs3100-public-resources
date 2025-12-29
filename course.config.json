@@ -427,8 +427,13 @@
       "type": "break"
     },
     {
+      "date": "2026-03-31",
+      "name": "Cesar Chavez Day (Oakland)",
+      "type": "holiday"
+    },
+    {
       "date": "2026-04-20",
-      "name": "Patriots' Day",
+      "name": "Patriots' Day (Boston)",
       "type": "holiday"
     }
   ],
