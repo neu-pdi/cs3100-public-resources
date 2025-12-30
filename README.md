@@ -4,6 +4,8 @@ This website is built using [Docusaurus](https://docusaurus.io/), a modern stati
 
 ### Installation
 
+If necessary, [install yarn](https://yarnpkg.com/getting-started/install) (but do not run `yarn init`).
+
 ```
 $ yarn
 ```
@@ -72,7 +74,7 @@ Each staff member is an object with the following required fields:
   1. Instructors
   2. Academic Coordinators
   3. Teaching Assistants
-  
+
   The order within each group follows the order in the `staffMembers` array.
 
 - **Image Filenames**: The `headshot` field should reference only the filename (not the full path). Images must be placed in `static/img/staff/` directory. See [Image Requirements](#image-requirements) below.
@@ -94,7 +96,7 @@ export const staffMembers: StaffMember[] = [
     bio: "Associate Professor of Computer Science with research interests in software engineering and program design.",
     headshot: "jane-smith.jpg"
   },
-  
+
   // Academic Coordinator
   {
     name: "Alex Martinez",
@@ -104,7 +106,7 @@ export const staffMembers: StaffMember[] = [
     bio: "Academic coordinator supporting course logistics and student services.",
     headshot: "alex-martinez.jpg"
   },
-  
+
   // Teaching Assistants
   {
     name: "Alice Johnson",
