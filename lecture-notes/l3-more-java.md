@@ -88,7 +88,7 @@ Today's lecture will continue to explore the role of inheritance and dynamic dis
 - The Collections API, which provides a set of core data structures that are useful for programming.
 - The I/O API, which provides a set of classes for reading input and writing output to streams.
 
-## Understand the role of generics in the Collections API (10 minutes)
+## Describe the role of generics in the Collections API (10 minutes)
 The Collections API provides core data structures like Lists, Maps, and Sets. Before we go too far into discussion Collections, we should discuss a type system feature of Java called *generics*.
 
 Generics allow us to write code that is reusable *and* type-safe, without knowing in advance what type of data we will be working with. For example, here is a basic list interface in Java that does not use generics:
@@ -151,6 +151,8 @@ List<Light> lights = new ArrayList<Light>();
 lights.add(new TunableWhiteLight(2700));
 lights.add(new Fan()); // This will throw a compile-time error
 ```
+
+**Detecting errors when you write them is invaluable.** The role of static typing is to help you catch errors as you type them, when it is very easy to fix them. Even if it just takes you 3 minutes to find and fix this error at runtime, that's 3 minutes of overhead on a piece of code that you could have written correctly in just a few seconds.
 
 When a type has a parameter (like `List<ElementType>`), we refer to the type as a *parameterized type*.
 
@@ -302,7 +304,7 @@ The [`Map` interface](https://docs.oracle.com/en/java/javase/21/docs/api/java.ba
 
 The most common implementation of `Map` is [`HashMap`](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/HashMap.html).
 
-## Understand the purpose of primitive wrapper types (5 minutes)
+## Describe the purpose of primitive wrapper types (5 minutes)
 
 Recall from lecture 1 that Java has "primitive types" like `int`, `double`, `boolean`, etc. that are not objects. We started this lecture talking about how great it is to use generic types like `List<T>` to write code that works with any type. We must clarify that by "any type" we really mean "any reference type". Primitive types are not objects, and cannot be used as the type parameter for a generic type.
 

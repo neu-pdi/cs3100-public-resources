@@ -4,7 +4,7 @@ lecture_number: 5
 title: Functional Programming and Readability
 ---
 
-## Understand the historical context of functional programming in the JVM (10 minutes)
+## Describe the historical context of functional programming in the JVM (10 minutes)
 "Functional programming" is a style of programming where functions are first-class values. That is, you can have primitives (e.g. ints, booleans, etc.) and objects that you store as variables, pass as arguments, and return from functions... *and* functions are also objects. This feature was introduced in Java 8 (2014), meaning that it's widely used in modern Java code, but you will also likely see a lot of older code that doesn't use it.
 
 Before we get to an example of what this programming style looks like, let's start with a code example that you are already familiar with. This code example sorts a list of DimmableLights by their brightness, using the `Comparator` interface. This differs from the `Comparable` interface that we saw last lecture, as the `Comparator` allows us to specify a comparison logic when we call the `sort` method. `Comparable` is an interface that is defined on the class itself, so we can only define ONE way to compare objects of that class. In contrast, we can make a new `Comparator` is useful when we might want to sort the objects in a different way depending on the situation (e.g. a user can choose to sort by brightness, or by location, or by how long the lights have been on for, etc.).
@@ -34,7 +34,7 @@ lights.sort((l1, l2) -> Integer.compare(l1.getBrightness(), l2.getBrightness()))
 
 This is called a "lambda expression", and it is a way to create an anonymous function that can be passed as an argument to a method. It is equivalent to the anonymous class version, but it is more concise. Here is how to read this code:
 - `(l1, l2) -> Integer.compare(l1.getBrightness(), l2.getBrightness())` is the lambda expression.
-- `l1` and `l2` are the parameters of the lambda expression. Notice that we do not need to specify the type of the parameters, as the type is inferred from the context. We could choose any names for the parameters (nore on good names later). We also could have added the types if we felt it made the code more readable, e.g. `(DimmableLight l1, DimmableLight l2) -> Integer.compare(l1.getBrightness(), l2.getBrightness())`.
+- `l1` and `l2` are the parameters of the lambda expression. Notice that we do not need to specify the type of the parameters, as the type is inferred from the context. We could choose any names for the parameters (more on good names later). We also could have added the types if we felt it made the code more readable, e.g. `(DimmableLight l1, DimmableLight l2) -> Integer.compare(l1.getBrightness(), l2.getBrightness())`.
 - The arrow `->` separates the parameters from the body of the lambda expression. The part on the right of the arrow is the return value of the lambda expression.
 - `Integer.compare(l1.getBrightness(), l2.getBrightness())` is the body of the lambda expression. The method `Integer.compare` is a helper method that implements the logic of comparing two integers following the contract of the `Comparator` interface. (returns a value that is negative if l1 is less than l2, positive if l1 is greater than l2, and 0 if they are equal).
 
@@ -46,7 +46,7 @@ As we'll see in this lecture, there are circumstances where the functional style
 
 ### Recognizing a functional interface
 
-As we saw in the previous example, the `Comparator` interface is a functional interface. We can recognize a functional interface by the fact that it declares a single abstract method. It is worth noting that the word "abstract" is doing a lot of work here: a functional interface can have other methods (e.g. a `static` method, or a method that is declard with a `default` implementation), but the single abstract method is what makes it a functional interface.
+As we saw in the previous example, the `Comparator` interface is a functional interface. We can recognize a functional interface by the fact that it declares a single abstract method. It is worth noting that the word "abstract" is doing a lot of work here: a functional interface can have other methods (e.g. a `static` method, or a method that is declared with a `default` implementation), but the single abstract method is what makes it a functional interface.
 
 Java provides a number of standard functional interfaces in the `java.util.function` package that can be used to quickly write lambda expressions.
 
@@ -180,7 +180,7 @@ if(userWantsBrightness) {
 Collections.sort(lights, selectedComparator);
 ```
 
-Again, notice how `Collections.sort` doesn't need to know *anything* about how to compare two `DimmableLight` objects. It just needs a `Comparator` that can compare two objects.
+Again, notice how `Collections.sort` doesn't need to know *anything* about how to compare two `DimmableLight` objects. It just needs a `Comparator` that can compare two objects (abstraction).
 
 
 Here is a UML class diagram of the generic strategy pattern:
@@ -223,11 +223,11 @@ lights.sort(new Comparator<DimmableLight>() {
 ```
 
 ```java
-// After Java 8, Lambda with method reference
-lights.sort(Comparator.comparingInt(DimmableLight::getBrightness));
+// After Java 8, Lambda expression
+lights.sort((l1, l2) -> Integer.compare(l1.getBrightness(), l2.getBrightness()));
 ```
 
-The lambda expression is more readable because it is more concise. If you are new to Java syntax, you might initially find the lambda expression confusing, as it requires you to understand how the `::` operator works. But: notice how much other Java boilerplate there is in the anonymous class version! The lambda version removes the boilerplate and makes the *behavior* much more clear.
+The lambda expression is more readable because it is more concise. Notice how much Java boilerplate there is in the anonymous class version! The lambda version removes the boilerplate and makes the *behavior* much more clear.
 
 There is an even more concise version of the lambda expression that we can use after introducing another piece of syntax: method references.
 
@@ -255,7 +255,12 @@ There are few cases where a lambda is preferred over a method reference: If the 
 
 ### [Favor the use of standard functional interfaces](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch7.xhtml#lev44)
 
+- TODO
 
-## Understand common misconceptions about what makes code "readable" and draw on evidence-based research to evaluate the readability of code (10 minutes)
+## Describe common misconceptions about what makes code "readable" and draw on evidence-based research to evaluate the readability of code (10 minutes)
 
-### [On Naming](https://livebook.manning.com/book/the-programmers-brain/chapter-8/1)
+### Style guides
+
+### [On Naming](https://learning.oreilly.com/library/view/the-programmers-brain/9781617298677/Text/ch08.htm)
+
+- TODO

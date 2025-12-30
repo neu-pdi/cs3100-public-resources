@@ -30,28 +30,14 @@ title: Course Overview and Introduction to Java
   - Bi-weekly assignments expected to take 20 hours, do not wait until the last minute
 
 ## Review the Systematic Program Design and Implementation Process (10 minutes)
+The goal of this class is to help you better understand how to design and implement programs. We provide an explicit, systematic process for doing so, inspired by classical software engineering practices. You should be familiar with this process from CS 2100, which focused on the requirements, design, and implementation steps for medium-scale programs.
+In this class, we will quickly expand the scale of our practice to large-scale programs. We will also begin to explore the validation and operations steps, which are covered in greater detail in CS 4530.
 
-```mermaid
-flowchart TD
-    A[Identify Stakeholders and Their Values] --> B[Gather Requirements]
-    B --> C[Design]
-    C --> C1[Define Data Types and Relationships]
-    C --> C2[Define Specifications for Behaviors]
-    C --> C3[Example Inputs and Outputs]
-    C1 --> C2
-    C2 --> C3
-    C3 --> C1
-    C --> D[Implement the Designed Software]
-    D --> E[Test the Implementation]
-    E --> F[Deploy, Operate, and Collect Feedback]
-    F --> C
-    D --> C
-    C1 --> C
-    C2 --> C
-    C3 --> C
-```
+![Systematic Program Design and Implementation Process, including the steps of requirements gathering, design, implementation, validation, and operations](/img/software_design_process_fall_2025.png)
 
-## Understand the context of Java in the historical development of OO languages and "run anywhere" technology/JIT runtimes (10 minutes)
+Note that the course structure does *not* follow this process order: we begin first with code-level design and implementation (considering requirements that are provided), and then step back to consider requirements more closely. 
+
+## Describe the context of Java in the historical development of OO languages and "run anywhere" technology/JIT runtimes (10 minutes)
 
 Background material:
 - [A Short History of Java (Hosrtmann)](https://learning.oreilly.com/library/view/core-java-volume/9780135328385/v1/ch1/index.xhtml#ch01lev1sec4)
@@ -93,7 +79,7 @@ Background material:
 - Truly understanding the performance implications of static vs dynamic typing probably requires taking a course in programming languages (we have some great ones!). But, as we learn about types in Java, we might start to get some intuition for this.
   - Sidebar: Measuring the productivity impact of a type system is a very hard problem. While some have tried to design research studies, they tend to have significant methodological issues - because it is so hard to study. The most poignant reason why this is hard is that you can't really compare abstractly "a static type system" vs "a dynamic type system" - you need to compare specific type systems. There are some unique case studies for this (e.g. JavaScript -> Dart, Elm, Typescript, PHP -> Hack), but each is really a unique case study. Did anyone in the class have prior Python experience before CS 2100 (without mypi)?
 
-## Be introduced to Java syntax (10 minutes)
+## Recognize Java syntax (10 minutes)
 Again, we will not explicitly teach you Java syntax in the lectures for this course. We will provide you with flashcards to help you learn the syntax, tutorials for self-practice, and guided labs to help you practice. However, for this very first lecture, we will provide a very brief introduction to Java syntax.
 
 Here is a complete example of a Java program:
@@ -166,7 +152,7 @@ Let's break down the syntax of this program, starting with HelloWorld.java.
 ### Method Declaration
 - All code in Java must be contained within a method, which must be declared within a class.
 - This method is `public` which means it can be used by other classes. It also could be `private` which means it can only be used by the class itself.
-- This method is `static` which means it can be called on the class itself without creating an instance of the class.
+- This method is `static` which means it can be called on the class itself without creating an instance of the class (a Python "class method").
 - This method is `void` which means it does not return a value.
 - This method is named `main` and takes as an argument an array of strings. This is the entry point of the program, as defined by the Java Virtual Machine (JVM). This means that when we run the command `java io.github.neu-pdp.cs3100.lecture2.HelloWorld`, the JVM will look for a `public static void main(String[] args)` method in the `HelloWorld` class and execute it.
 
@@ -184,7 +170,7 @@ Let's break down the syntax of this program, starting with HelloWorld.java.
     - Lastly, the line ends with a semicolon, which is required in Java to denote the end of a statement. This is different than Python, where the end of a statement is denoted by a newline.
 
 ### OtherClass.java
-- This class defines a private field `x` and a constructor that initializes it. Because it's `private`, it cannot be accessed directly from outside the class (it *can* be accessed from within the class, and because the class exposes the method `public int getX()`, we can access it from outside the class indirectly).
+- This class defines a private field `x` and a constructor that initializes it. Because it's `private`, it cannot be accessed directly from outside the class (it *can* be accessed from within the class, and because the class exposes the method `public int getX()`, we can access it from outside the class indirectly). Note that unlike in Python, we can have multiple constructors in a class.
 - It also defines a `public` method `doSomething` that prints a message to the console.
 
 ## Understand the difference between core datatypes in Java: primitives, objects and array (15 minutes)
@@ -204,9 +190,12 @@ Let's break down the syntax of this program, starting with HelloWorld.java.
   - A "boolean" is one that can only take on two values: `true` or `false`.
 - There are also "reference types" which are references to objects in memory.
   - `java.lang.Object` is the superclass of all objects in Java.
+  - All reference types can also be the special value, `null`, which means that the reference is not pointing to any object in memory.
   - *Arrays* are also reference types.
     - `int[]` is an array of integers, etc.
+    - An array is a *contiguous* block of memory that stores a fixed number of elements of a given type, differing from Python's list which is a dynamic array that can grow and shrink as needed.
   - Variables of a "reference type" are a *pointer* to an object in memory.
+  - When comparing two reference values (e.g. `a == b`), the JVM compares the *reference* equality (do `a` and `b` point to the same object in memory?), not *value* equality (as in Python)
 - `byte`, `short`, `char`, `int`, etc. are called "primitive types" because they are not objects. They are not references to an object in memory. They are values that are stored directly in memory. Here is what we mean by that:
 
   ```java
@@ -231,8 +220,6 @@ Let's break down the syntax of this program, starting with HelloWorld.java.
     increment(arr);
     System.out.println("arr[0] after increment: " + arr[0]); // Prints out 6
     ```
-  - In Programming Languages lingo, we would say that primitive types are "pass by value" and reference types are "pass by reference" - a primitive value is literally copied, but a reference is a pointer to the same object in memory.
-    - Discuss: What performance reason might exist make us want to avoid passing arrays by value?
   - You should understand the relevance of the size of your data:
     - A `long` is 8 bytes and a `byte` is 1 byte. The long can store many more values than the byte, but it also takes up more space.
     - Imagine we are building an application that needs to store the age (in years) of every person in the world. We could use a `byte` to store the age, but then we would only be able to store 256 different ages. We could use a `long` to store the age, but then we would be wasting 7 bytes for every person.

@@ -11,7 +11,7 @@ optional_preparation:
 Background material:
 
 
-## Understand why inheritance is a core concept of object-oriented programming (10 minutes)
+## Describe why inheritance is a core concept of object-oriented programming (10 minutes)
 
 - A core principle of program design is: make your data mean something.
 - We write software that manipulates data in some way, and oftentimes this data is related to some real-world concept.
@@ -177,7 +177,7 @@ public class DimmableLight extends Light {
 Some rules for overriding methods:
 - We use the `@Override` annotation to indicate that we are overriding a method from the superclass. This is not strictly required by the JVM, but is helpful for readability. It also allows the compiler to catch some errors: if you put `@Override` on a method that doesn't actually override a superclass method, the compiler will generate an error.
 
-Each type in the hierarchy must satisfy the [Liskov Substitution Principle](https://learning.oreilly.com/library/view/program-development-in/9780768685299/ch7.html#:~:text=Subtypes%20must%20satisfy%20the%20substitution%20principle%20):
+Each type in the hierarchy must (by our rule, not by the Java language spec) satisfy the [Liskov Substitution Principle](https://learning.oreilly.com/library/view/program-development-in/9780768685299/ch7.html#:~:text=Subtypes%20must%20satisfy%20the%20substitution%20principle%20):
 - The method signatures (parameters, return type) must be the same as the method it overrides. This is enforced by the compiler.
 - The behavior of the method must be the same as the method it overrides. This is not enforced by the compiler, but is a good design principle. 
     - There is an implicit specification that the method `turnOn` must turn on the light. If a subclass overrides this method and does not turn on the light, it is violating the Liskov Substitution Principle.
@@ -293,7 +293,7 @@ public abstract class BaseIoTDevice implements IoTDevice {
 - Not all methods from the interface need to be implemented by abstract classes since they are not directly instantiated, but those methods will still be required in concrete classes that `extend` them
 - We can use `abstract methods` such as `identify()` in abstract classes to enforce that subclasses implement behaviors that depend on their specific characteristics (in this case, hardware)
 
-## Understand the JVM's implementation of dynamic dispatch (10 minutes)
+## Describe the JVM's implementation of dynamic dispatch (10 minutes)
 
 Recall that we can assign a subclass to a superclass reference:
 ```java
@@ -317,7 +317,7 @@ Notice how even at the same call-site, the JVM will call the `turnOn` method of 
 Here is how the JVM implements dynamic dispatch to call method $m$ on object $o$ of type $T$:
 1. If $T$ contains a declaration of $m$, use that.
 2. If $T$ has a superclass $S$ that contains a declaration of $m$, use that. If not, continue recursively with $S$'s superclass.
-3. If no other declaration is found, and $m$ is provided as a default interface method, use that.
+3. If no other declaration is found, and $m$ is provided as a default interface method, use that (default interface methods are a confusing feature that we will not go into).
 
 This is called "dynamic dispatch" because the method to call is determined at runtime, rather than at compile time. Consider the following example:
 
@@ -329,7 +329,7 @@ l.turnOn(); // This will call the turnOn method of the actual type of l, which i
 
 Regardless of the type of the variable in our code, the actual type at runtime is used to determine which method to call.
 
-## Understand the difference between static methods and instance methods (5 minutes)
+## Describe the difference between static methods and instance methods (5 minutes)
 
 Some methods are declared as `static`, which means they are associated with the class itself, rather than an instance of the class.
 
@@ -404,7 +404,7 @@ try {
         new TunableWhiteLight("light-2", 2200, 100)
     };
     int i = 0;
-    while(true){
+    while(true){ // Infinite loop breaks when i is out of bounds of the array
         lights[i].turnOn();
         i++;
     }

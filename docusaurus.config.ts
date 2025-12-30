@@ -1,11 +1,12 @@
-import {themes as prismThemes} from 'prism-react-renderer';
-import type {Config} from '@docusaurus/types';
+import { themes as prismThemes } from 'prism-react-renderer';
+import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import path from 'path';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
-
+const baseUrl = process.env.BASE_URL || '/cs3100-public-resources/';
 const config: Config = {
   title: 'NEU CS 3100 Public Resources',
   tagline: 'Resources for CS 3100 (Public)',
@@ -15,7 +16,7 @@ const config: Config = {
   url: 'https://neu-pdi.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/cs3100-public-resources/',
+  baseUrl: baseUrl,
 
   // GitHub pages deployment config.
   organizationName: 'neu-pdi', // Usually your GitHub org/user name.
@@ -27,6 +28,73 @@ const config: Config = {
     mermaid: true,
   },
   themes: ['@docusaurus/theme-mermaid'],
+
+  plugins: [
+    [path.resolve(__dirname, './plugins/classasaurus/index.ts'), {
+      configPath: './course.config.json',
+      generateSchedule: true,
+      scheduleRoute: '/schedule',
+      validateLectureFiles: false, // Enable after all lectures are mapped
+    }],
+    [path.resolve(__dirname, './plugins/staff-images/index.ts'), {
+      sourceDir: 'static/img/staff',
+      outputDir: 'img/staff',
+      size: 300,
+      quality: 85,
+      generateWebP: true,
+    }],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'labs',
+        path: 'labs',
+        routeBasePath: 'labs',
+        editUrl: 'https://github.com/neu-pdi/cs3100-public-resources/edit/main/',
+        sidebarPath: './sidebars.ts',
+        remarkPlugins: [remarkMath],
+        rehypePlugins: [rehypeKatex],
+      },
+    ],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'assignments',
+        path: 'assignments',
+        routeBasePath: 'assignments',
+        editUrl: 'https://github.com/neu-pdi/cs3100-public-resources/edit/main/',
+        sidebarPath: './sidebars.ts',
+        remarkPlugins: [remarkMath],
+        rehypePlugins: [rehypeKatex],
+      },
+    ],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'lecture-slides',
+        path: 'lecture-slides',
+        routeBasePath: 'lecture-slides',
+        editUrl: 'https://github.com/neu-pdi/cs3100-public-resources/edit/main/',
+        sidebarPath: './sidebars.ts',
+        remarkPlugins: [remarkMath],
+        rehypePlugins: [rehypeKatex],
+      },
+    ],
+    function(context, options) {
+      return {
+        name: 'webpack-alias-plugin',
+        configureWebpack(config, isServer) {
+          return {
+            resolve: {
+              alias: {
+                '@': require('path').resolve(__dirname, 'src'),
+                'next/navigation': require('path').resolve(__dirname, 'src/hooks/next-navigation'),
+              },
+            },
+          };
+        },
+      };
+    },
+  ],
 
 
   // Even if you don't use internationalization, you can use this field to set
@@ -45,7 +113,7 @@ const config: Config = {
           path: 'lecture-notes',
           routeBasePath: 'lecture-notes',
           sidebarPath: './sidebars.ts',
-          editUrl: 'https://github.com/neu-pdi/cs3100-public-resources/edit/main/lecture-notes/',
+          editUrl: 'https://github.com/neu-pdi/cs3100-public-resources/edit/main/',
           remarkPlugins: [remarkMath],
           rehypePlugins: [rehypeKatex],
         },
@@ -77,12 +145,47 @@ const config: Config = {
       },
       items: [
         {
+          to: '/syllabus',
+          position: 'left',
+          label: 'Syllabus',
+        },
+        {
+          to: '/schedule',
+          position: 'left',
+          label: 'Schedule',
+        },
+        {
           type: 'docSidebar',
           sidebarId: 'lectureNotesSidebar',
           position: 'left',
           label: 'Lecture Notes',
         },
-      
+        {
+          type: 'docSidebar',
+          sidebarId: 'labsSidebar',
+          docsPluginId: 'labs',
+          position: 'left',
+          label: 'Labs',
+        },
+        {
+          type: 'docSidebar',
+          sidebarId: 'assignmentsSidebar',
+          docsPluginId: 'assignments',
+          position: 'left',
+          label: 'Assignments',
+        },
+        {
+          type: 'docSidebar',
+          sidebarId: 'lectureSlidesSidebar',
+          docsPluginId: 'lecture-slides',
+          position: 'left',
+          label: 'Lecture Slides',
+        },
+        {
+          to: '/staff',
+          position: 'left',
+          label: 'Staff',
+        }
       ],
     },
     footer: {
@@ -139,6 +242,12 @@ const config: Config = {
       darkTheme: prismThemes.dracula,
     },
   } satisfies Preset.ThemeConfig,
+  future: {
+    experimental_storage: {
+      type: 'localStorage',
+      namespace: true,
+    },
+  },
 };
 
 export default config;
