@@ -10,3 +10,4 @@ sidebar_position: 5
 - Create a domain model using UML class diagrams
 - Translate a domain model into an object-oriented design
 - Apply responsibility assignment heuristics (controller, information expert, creator)
+- Identify assumptions in a domain model that may become costly to change over time

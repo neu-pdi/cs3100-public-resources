@@ -464,13 +464,14 @@ Update the file `REFLECTION.md` in the root of your repository to include a 1-5 
 
 2. **Composition vs Inheritance:** `MeasuredIngredient` uses composition (has-a relationship) with `Quantity`, while `ExactQuantity` uses inheritance (is-a relationship) with `Quantity`. Explain when composition is preferred over inheritance and vice versa, using examples from this assignment.
 
-3. **Immutability:** Did you make your classes immutable (i.e., their state cannot change after construction)? Why or why not? What are the tradeoffs of immutable objects in a domain model like recipes?
+3. **Domain Assumptions and Long-Term Costs:** Domain models are expensive to change once code depends on them. If CookYourBooks becomes successful and we later want to support users from different culinary traditions, what would we have to rewrite? Identifying assumptions early is cheaper than discovering them after deployment. What assumptions about cooking, food, and users are embedded in this domain model? Consider: What cuisines does our Unit system privilege (e.g., imperial vs. metric, measurement vs. approximation)? What cooking styles might not fit neatly into "measured" vs "vague" ingredients? 
 
 4. **Type Safety:** How do the `Unit` and `UnitSystem` enums provide better type safety compared to using strings for units? Give a specific example of an error that enums prevent.
 
 5. **Challenges:** What was the most challenging aspect of this assignment? What strategy did you use to overcome it?
 
 6. **AI Usage:** Did you use AI to help you with this assignment? If so, how did you use it? (Note that this information will be used to help improve the course, and **not** used to penalize you for using AI, as-per our [AI policy](#ai-policy-for-this-assignment).) 
+
 
 ### Reflection grading
 Your reflection should include 1-5 sentences for each of the questions above. Answers should be answered to the best of your ability, and reference your code submission. Up to 2 points will be deducted for each question that is omitted or answered incompletely.

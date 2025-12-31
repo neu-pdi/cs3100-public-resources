@@ -280,7 +280,9 @@ By "doubly-linked list", we mean that each element in the list contains a refere
 
 When choosing between `ArrayList` and `LinkedList`, consider the following tradeoffs:
 
-We will talk more about the tradeoffs between `ArrayList` and `LinkedList` later in the course when we talk about Performance and Runtime Complexity. For now, a rule of thumb: use `ArrayList` by default.
+:::note Looking Ahead
+We will talk more about the tradeoffs between `ArrayList` and `LinkedList` in [Lecture 34 (Performance)](/lecture-notes/l34-performance), when we discuss runtime complexity and memory access patterns. For now, a rule of thumb: **use `ArrayList` by default**. The reasons why will become clearer once we understand how modern CPUs interact with memory.
+:::
 
 ### Sets
 A `Set` is an unordered collection of unique elements.

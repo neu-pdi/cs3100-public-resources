@@ -445,9 +445,22 @@ public void adjustLight(IoTDevice device) {
 }
 ```
 
-This feature is particularly useful when working with type hierarchies where you need to handle different subtypes differently. Combined with sealed classes (which we won't cover in this course), pattern matching enables even more powerful and type-safe code.
+This feature is particularly useful when working with type hierarchies where you need to handle different subtypes differently. Combined with sealed classes (which we'll see in [Lecture 6](/lecture-notes/l6-immutability-abstraction#sealed-classes-10-minutes)), pattern matching enables even more powerful and type-safe code—the compiler can verify that you've handled all possible subtypes.
 
 ## Describe common misconceptions about what makes code "readable" and draw on evidence-based research to evaluate the readability of code
+
+Throughout this lecture, we've discussed what makes code "readable." But readability is not a fixed property - it depends on *who* will read the code *over time*.
+
+**The maintenance cost perspective:** Most software cost is maintenance, not initial development. Code that's readable to the original author may be opaque to the developer who inherits it three years later - who might have a different background, different native language, or different assumptions about "obvious" patterns.
+
+Consider open-source projects, which (in order to be successful) really must survive beyond any individual contributor:
+- Code readable only to core maintainers creates a bus factor problem (if the original project moves on and "takes a bus to another city", the project may die)
+- Naming conventions "obvious" to one cultural context may confuse international contributors
+
+**This isn't just about being "nice" - it's about reducing long-term costs:**
+- Diverse contributor pools catch more bugs and provide more perspectives
+- Onboarding new developers is expensive; readable code reduces onboarding time
+- Systems that can only be maintained by their original authors are liabilities. If your goal as a software engineer is to advance your career, you **must** write code that others can maintain, so that *you* can move on to bigger and more impactful projects.
 
 ### Style guides (2 minutes)
 
@@ -528,3 +541,4 @@ private final int startupColorTemperature;
 ```
 
 Developers spend far more time reading code than writing it. Investment in good, consistent names pays dividends every time someone (including your future self) reads the code.
+

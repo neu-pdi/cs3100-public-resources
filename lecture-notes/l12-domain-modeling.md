@@ -6,6 +6,10 @@ title: Domain Modeling
 
 ## Introduction: Object-oriented design and the challenge of understandability (5 minutes)
 
+:::note Information Hiding In Action
+In [Lecture 6](/lecture-notes/l6-immutability-abstraction), we learned that **information hiding** means modules should expose *what* they do, not *how* they do it. Today we apply this at the conceptual level: a well-designed domain model hides *implementation-level thinking* (maps, counters, byte arrays) behind *domain-level abstractions* (Submissions, Students, GradingSessions). The same principle—hide the "how," expose the "what"—operates at every scale.
+:::
+
 Throughout this course, we've emphasized code qualities like changeability, readability, and maintainability. But these all serve a more fundamental goal: **understandability**. Code that humans can understand is code that humans can successfully work with, modify, and trust.
 
 But here's the challenge: understandability is an inherently subjective quality that depends heavily on context. One common approach is to attempt to model the problem domain in the code. Then, a developer that understand the problem domain can hopefully understand the code.
@@ -984,6 +988,38 @@ Ask these questions to evaluate your representational gap:
 5. **Could you explain the code structure by sketching the domain model?**
 
 Remember: Some gap is inevitable. The goal is not zero gap, but rather ensuring the gap exists only where necessary and is well-contained. Your domain logic should be recognizable even with technical necessities around it.
+
+### The Cost of Representational Choices Over Time
+
+We've discussed the representational gap as a technical concern. But there's a lifecycle cost dimension too: **domain models are expensive to change once code depends on them.**
+
+Every domain model embeds assumptions that may need revision:
+- **Whose vocabulary?** A medical system modeling "patient compliance" may need to shift to "patient autonomy" as healthcare philosophy evolves
+- **Whose categories?** A system with a boolean "isMale" field to represent a person's gender will need a significant refactoring if (when) representing a broader spectrum of gender identities is required
+- **Whose workflows?** A recipe app designed around printed cookbooks may struggle when users expect video integration
+
+**The compounding cost:** Domain concepts propagate through the codebase - into method names, class hierarchies, database schemas, API contracts. Changing a core domain concept touches everything.
+
+**For CookYourBooks:** Our model assumes recipes have discrete ingredients and steps. If we later want to support:
+- Video recipes (continuous demonstration, not discrete steps)
+- AI-generated recipe variations (dynamic rather than static ingredients)
+- Dietary restriction overlays (ingredients as composites of nutrients)
+
+...we'd face significant refactoring. The question isn't whether our model is "right" - all models are simplifications. The question is: **what future changes are we making easy or hard?**
+
+**Pragmatic cost-saving practice:** When creating domain models, explicitly identify assumptions and ask: "What would trigger a rewrite? How likely is that? Can we design to make likely changes cheaper?" Of course, there might be many assumptions that are not worth worrying about in the short term, but that may become important in the long term. For example, when choosing how to represent a timestamp, we might consider a 32-bit integer to represent the number of seconds since the Unix epoch, but if we are worried about our software still being in use as we get closer to the year 2038, we might consider a 64-bit integer instead, allowing us to continue to represent timestamps with millisecond precision for the next 292 million years.
+
+:::tip History of Programming
+The 32-bit timestamp overflow looming in 2038 is mild compared to disasters caused by smaller integer choices. In December 2004, regional air carrier Comair (operating as a Delta Connection partner) [experienced a catastrophic failure in their flight crew scheduling system—caused by a 16-bit signed integer counter that tracked crew assignments](https://web.archive.org/web/20050121090737/http://www.cincypost.com/2004/12/28/comp12-28-2004.html).
+
+The counter reset annually and had a maximum value of 32,767. In late December 2004, a perfect storm emerged: bad weather around Comair's hub in Cincinnati combined with the airline's recent expansion meant unusually high scheduling activity. Three consecutive days of complete cancellations (December 24, 25, and 26—dates that made stranded passengers particularly frustrated) caused massive rescheduling cascades that pushed the counter past its limit.
+
+The system crashed. Comair canceled all flights through the New Year while engineers scrambled to fix the overflow. The worst part? An updated version of the scheduling software that fixed the overflow was already available—but Comair had declined to migrate because the upgrade seemed too expensive and the existing system appeared to be working "good enough."
+
+The airline never fully recovered from the reputational and financial damage. Within months, Delta (then in Chapter 11 bankruptcy) began stripping Comair's assets, and the carrier eventually ceased operations entirely.
+
+**The lesson for domain modeling:** A seemingly trivial decision—"16 bits should be plenty for an annual counter"—became an existential threat when assumptions about usage patterns (stable flight volume, normal weather) proved wrong. Always ask: what happens if this value grows 10x? 100x? What if unusual circumstances cluster together? We'll revisit methods of managing these risks in Lecture 35, "Safety and Reliability."
+:::
 
 ## Summary
 

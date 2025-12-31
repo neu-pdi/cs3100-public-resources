@@ -189,6 +189,16 @@ public float presentValue(float income, float interestRate, int years)
 Adding this redundancy allows a reader to check their understanding of the concepts in the specification.
 Determining the balance between clarity and conciseness is a matter of good judgement, and is dependent on the problem domain and the method's clients.
 
+### Clarity and Long-Term Consequences: When Ambiguity Creates Maintenance Burden
+
+Ambiguous specifications create hidden costs that compound over time. When a spec is unclear, different developers make different interpretation choices. These inconsistencies become bugs, user complaints, and expensive refactoring.
+
+**Example:** A grading system spec says "submissions should be processed promptly." What does "promptly" mean? One developer implements alphabetical processing; students named "Zhang" consistently wait longer than students named "Adams." Perhaps there was also a "fairness" requirement. In lecture 9, we will discuss methods to better solicit stakeholder input and requirements.
+
+**The general principle:** Unclear specifications delegate decisions to implementers who may not realize they're making consequential choices. These hidden decisions become "specification debt" - they work fine initially but create liability over time as the system scales and reaches more diverse users.
+
+**Cost-saving practice:** When specifying systems that affect people, ask: "Could different reasonable interpretations of this spec lead to different outcomes for different groups?" Resolving this ambiguity in the spec is far cheaper than resolving it in deployed code. Even if the decision at present time is to allow for different outcomes for different groups, a central goal of software architecture (we'll visit in lecture 19) is to try to eliminate all "too expensive to change" decisions through effective design.
+
 ## Utilize type annotations to express invariants such as non-nullness (5 minutes)
 
 In an ideal world, programmers could express all invariants about a method using the language's type system.

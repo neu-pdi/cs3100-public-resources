@@ -326,6 +326,10 @@ In the next lecture, we'll explore these challenges in depth: the **Fallacies of
 
 ## Architecture and Quality Attributes (10 minutes)
 
+:::note Recall
+In [Lecture 8 (Changeability III)](/lecture-notes/l8-design-for-change-2), we introduced the SOLID principles for individual classes and noted they scale to entire systems. Now we see that scaling in action: Single Responsibility becomes service boundaries (our Import, Library, and Export services each have one reason to change), Open/Closed becomes plugin architectures (new importers/exporters without modifying existing code), and Dependency Inversion becomes the foundation of Hexagonal Architecture (domain depends on abstractions, not concrete adapters).
+:::
+
 Now that we've seen several architectural styles, let's examine how they affect three critical quality attributes: maintainability, scalability, and energy efficiency. These aren't abstract concerns—they have real consequences for teams, users, and the environment.
 
 ### Maintainability

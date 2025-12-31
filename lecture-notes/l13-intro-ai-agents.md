@@ -149,6 +149,27 @@ It's technically possible to use AI coding agents in a way where you never direc
 
 To effectively use AI coding agents, you must be able to evaluate the *code* itself, not just its execution. This means understanding what the code does, recognizing when it's wrong or inefficient, and being able to guide the AI toward better solutions. The ability to read, understand, and reason about code is what makes AI assistance productive rather than a crutch that ultimately slows you down.
 
+### Long-Term Considerations: AI-Generated Code in the Maintenance Phase
+
+AI coding agents are powerful for initial development. But software engineering is programming *over time* - what are the long-term implications?
+
+**Training data concerns as technical debt:**
+- AI suggestions are derived from training data that reflects past practices, including deprecated patterns, security vulnerabilities, and biased assumptions
+- Code that "works" today may embed patterns that become problematic as standards evolve
+- If AI tools homogenize code styles, certain types of bugs may become widespread and harder to detect
+
+**Maintainability considerations:**
+- Can future developers understand AI-generated code? Will they know *why* patterns were chosen?
+- If AI-generated code doesn't follow your team's conventions, maintenance burden increases
+- Documentation and comments may be missing if AI generates "working" code without explanation
+
+**Intellectual property over time:**
+- AI suggestions derive from others' code, often without attribution
+- Legal frameworks for AI-generated code are evolving; today's "safe" usage may face future challenges
+- Your code may train future AI models - consider whether you want that
+
+**Cost-saving practice:** Treat AI-generated code with the same scrutiny as code from an unfamiliar contributor. Review for maintainability, not just correctness. Document *why* you accepted suggestions, not just what they do.
+
 ## Example: using AI programming agents to prototype a new project (25 minutes)
 
 We will use the "SceneItAll" IoT control platform (loosely explored in Lecture 2) as a running example to demonstrate the workflow. SceneItAll is an IoT/smarthome control app with the following domain concepts:

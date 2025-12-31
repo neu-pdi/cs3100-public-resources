@@ -290,6 +290,20 @@ When you encounter high-risk requirements, you have several options:
 
 A stakeholder is anyone who is affected by the system or can affect its success. Missing a key stakeholder is like designing a building without talking to the people who will live in it—you might create something architecturally impressive that nobody can actually use.
 
+
+### Who Do We Interview? Requirements Gathering as Long-Term Risk Management
+
+Requirements gathering is often treated as a one-time activity at project start. But requirements are the foundation that all code builds on - getting them wrong is the most expensive mistake in software engineering.
+
+Consider who might be missing from your interviews:
+- Do you only talk to *current* users? What about those who *would* use the system if it worked for them?
+- Do you interview the manager, or also the workers whose jobs will change?
+- Do you consider *future* stakeholders - regulators, acquirers, international users?
+
+Each missing perspective is a risk that compounds over time. The system gets built, deployed, scaled - and then a missed stakeholder emerges. The cost to accommodate them in year 5 is orders of magnitude higher than in month 1.
+
+Identifying future stakeholders is an important exercise in long-term risk management. If you are building an app that has a "success disaster" (becomes very popular), you will likely suddenly find yourself with a large new set of users who may not have been well-considered in the initial requirements gathering, and who will expect specific features and behaviors that were not considered in the initial requirements gathering. Considering who these potential future users are (and hypothesizing about the scope of what their needs might be) helps to manage the risk of these requirements suddenly appearing through effective architectural design (we'll get to this in lecture 19).
+
 Let's identify stakeholders for our grading system and understand their often-conflicting values. Note: these are not necessarily the only stakeholders, and not necessarily the most important stakeholders, the list of stakeholders and their values is for illustration purposes only.
 
 ### Primary Stakeholders (Direct Users)

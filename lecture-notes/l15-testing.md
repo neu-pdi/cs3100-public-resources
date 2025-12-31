@@ -40,7 +40,9 @@ E2E tests are valuable because they test what actually matters — does the syst
 - **Flaky**: So many things can go wrong (network glitches, timing issues, browser quirks)
 - **Hard to debug**: When an E2E test fails, the bug could be anywhere in the system
 
-We'll cover E2E testing in more depth when we discuss GUI testing later in the course.
+:::note Looking Ahead
+We'll cover E2E testing in more depth in [Lecture 30 (GUI Patterns and Testing)](/lecture-notes/l30-gui2), where you'll learn to write automated tests that interact with graphical interfaces using tools like TestFX.
+:::
 
 ### Why Have Different Scopes?
 

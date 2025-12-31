@@ -150,68 +150,30 @@ But it also introduces risks we'll discuss later in this lecture:
 - **Abandonment**: What happens when a maintainer stops updating a critical library?
 - **License compatibility**: Can you legally use this code in your project?
 
-## Describe the role of the Java module system in defining APIs (10 minutes)
-
-When you publish a library, which classes should consumers be allowed to use? Before Java 9, the answer was simple but unsatisfying: any `public` class was fair game.
-
-### The Problem: Public Means Public
-
-Libraries often need internal utility classes that are `public` so other packages *within the library* can use them—but these classes aren't meant for external consumers. For example, Jackson might have a `com.fasterxml.jackson.databind.impl.InternalHelper` class that's `public` so other Jackson packages can access it, but you shouldn't depend on it in your application.
-
-Before modules, there was no way to express this. Developers would add Javadoc warnings like "Internal API - do not use" but nothing enforced it. Consumers would depend on internal classes, and then their code would break when the library changed those internals.
-
-### The Solution: Module-Public vs Module-Private
-
-Java 9 introduced the **module system**, which lets library authors explicitly declare their public API. A `module-info.java` file at the root of your module specifies which packages are **exported**:
-
-```java
-// module-info.java for a hypothetical grading library
-module edu.neu.grading {
-    // These packages are our public API - consumers can use them
-    exports edu.neu.grading.api;
-    exports edu.neu.grading.model;
-    
-    // edu.neu.grading.impl is NOT exported
-    // Classes there can be public (for internal use) but invisible to consumers
-}
-```
-
-With this declaration:
-- Classes in `edu.neu.grading.api` and `edu.neu.grading.model` are accessible to consumers
-- Classes in `edu.neu.grading.impl` are **module-private**—even if they're declared `public`, code outside the module cannot access them
-
-### Encapsulation at the Library Level
-
-This is **encapsulation scaled up**. Just as `private` fields hide implementation details within a class, unexported packages hide implementation details within a module.
-
-The benefits connect directly to the coupling concepts from earlier lectures:
-- **Reduced coupling**: Consumers can't depend on your internals, so you're free to change them
-- **Clearer contracts**: The exported packages *are* your API; everything else is implementation detail
-- **Safer evolution**: You can refactor internal code without breaking consumers
-
-```mermaid
-flowchart LR
-    subgraph YourApp["Your Application"]
-        A["Your Code"]
-    end
-    subgraph Library["edu.neu.grading module"]
-        B["api package<br/>(exported)"]
-        C["model package<br/>(exported)"]
-        D["impl package<br/>(not exported)"]
-    end
-    A --> B
-    A --> C
-    A -.->|"blocked"| D
-    B --> D
-    C --> D
-    style D fill:#ffcccc
-```
-
-When adopting a library, check whether it uses the module system. If it does, you know exactly which classes are part of the supported API—and you can be confident that sticking to those classes will protect you from breaking changes in future versions.
-
 ## Describe the role and impact of "copyleft" licenses on OSS (10 minutes)
 
-Open source doesn't mean "no rules." Software is protected by copyright, and open source licenses grant you specific rights to use, modify, and distribute that code—with conditions attached.
+Open source doesn't mean "no rules." To understand open source licensing, we first need to understand **copyright**—the legal foundation that makes licensing necessary in the first place.
+
+### What Is Copyright?
+
+**Copyright** is an automatic legal protection granted to creators of original works. The moment you write code, you own the copyright to that code—no registration required. Copyright gives the owner exclusive rights to:
+
+- **Copy** the work
+- **Modify** it (create "derivative works")
+- **Distribute** copies to others
+- **Display** or perform it publicly
+
+If someone does any of these things without permission, they're infringing your copyright—and you can sue them.
+
+Here's the key insight for software: **every piece of code is copyrighted by default**. When you find a useful library on GitHub with no license file, you legally cannot use it—even if the author clearly intended to share it. Without an explicit license granting you rights, the default is "all rights reserved."
+
+This is why **licenses exist**: they're legal documents where the copyright holder says "I grant you permission to copy, modify, and distribute my work—under these conditions." Open source licenses grant broad permissions; proprietary licenses grant narrow ones. But both are built on the same foundation: the copyright holder's exclusive rights. 
+
+### The Two Philosophies
+
+With that foundation, let's look at how different open source licenses approach the question of *what conditions to attach*.
+
+Software is protected by copyright, and open source licenses grant you specific rights to use, modify, and distribute that code—with conditions attached.
 
 ### The Two Philosophies
 
@@ -225,6 +187,8 @@ In 1983, Richard Stallman launched the GNU project with a radical philosophy: so
 - **Freedom 3**: Distribute copies of your modified version
 
 To protect these freedoms, Stallman created the **GNU General Public License (GPL)**—a "copyleft" license that requires anyone who distributes modified versions to also release their source code under the GPL. This is a significant departure from the BSD license, which allowed for commercial use of the software **without** sharing the source code with the advertising clause. Stallman made the departure from Unix's model quite clear in naming GNU, as GNU stands for... "GNU's Not Unix!"
+
+What's striking about the BSD vs. GPL distinction is that it represents a **values choice embedded in code**. The BSD developers valued maximum freedom for individual users—even the freedom to close the source. Stallman valued preservation of the commons—ensuring that improvements benefit everyone, forever. Neither is objectively "correct"; they reflect different beliefs about what software should be in society. When you choose a license—or adopt a dependency with a particular license—you're not just making a legal decision, you're making a statement about what kind of software ecosystem you want to exist. These choices compound over time: a project's license shapes who contributes, how it's used, and what kind of community forms around it.
 
 ### Permissive vs. Copyleft
 
@@ -247,6 +211,19 @@ For most developers using open source libraries:
 3. **GPL requires careful attention** if you are not interested in releasing your code under GPL.
 
 The philosophical debate continues: should open source force participation in the commons (copyleft), or encourage it through permissive terms? There's no single right answer—both approaches have produced wildly successful projects. Furthermore, modern software distribution (e.g. operating software as a service) has provided a GPL loophole: if Amazon operates its own version of, say, MongoDB, as a cloud product, it is not required to release the source code for that version of MongoDB.
+
+:::tip Licenses as Values: Unusual Examples
+
+Some projects use licenses that make their values explicit in creative ways:
+
+**SQLite: The Blessing.** SQLite is [dedicated to the public domain](https://www.sqlite.org/copyright.html)-meaning that copyright is explicitly waived and the SQLite team [offers a "blessing" as documentation](https://github.com/sqlite/sqlite/blob/master/LICENSE.md): *"May you do good and not evil. May you find forgiveness for yourself and forgive others. May you share freely, never taking more than you give."* For huge companies who are concerned whether this blessing will hold up in court to challenges that some parts of SQLite are actually held under copyright (e.g. by an individual contributor or their employer, who might be quite litigous ), SQLite also [offers a warranty of title](https://sqlite.org/purchase/license) providing indemnification for any claims against the use of SQLite.
+
+**JSON: "Good, not Evil."** Douglas Crockford popularized the JSON format, and the license for his tool JSLint is MIT-style permissive with one addition: *"The Software shall be used for Good, not Evil."* This clause has caused real problems—reportedly some corporate legal departments refuse to approve it because "evil" is undefined, and the clause was explicitly rejected by the Open Source Initiative as incompatible with open source principles (which require freedom to use software for any purpose). Crockford reports to have granted IBM a [specialized license enabling IBM, its customers, partners and their minions to use JSLint for evil](https://youtu.be/-C-JoyNuQJs?t=39m45s).
+
+**What counts as "Open Source"?** The [Open Source Initiative (OSI)](https://opensource.org/osd) maintains the official definition of "open source," which requires freedom to use, modify, and distribute without discrimination against persons, groups, or fields of endeavor. This is why the JSLint license isn't OSI-approved, and why MongoDB's move to the Server Side Public License (SSPL)—which requires anyone offering the software as a service to open-source their entire stack (including associated management, UI and infrastructure code - not just the database itself)—sparked debate about whether cloud-era restrictions are compatible with open source values, or represent a new category entirely.
+
+These edge cases reveal that licensing is never purely technical—it's always about what kind of world you want to build.
+:::
 
 ## Describe tradeoffs that should be considered when adopting a library or framework (15 minutes)
 

@@ -109,6 +109,10 @@ Now we can inject a mock `EnergyPriceApi` and a fixed `Clock` to test any scenar
 
 ### Separating Infrastructure from Domain Code
 
+:::note Information Hiding In Action
+This is information hiding from [Lecture 6](/lecture-notes/l6-immutability-abstraction) applied at the architectural level. Just as a class hides its fields behind methods, a well-designed system hides infrastructure (databases, APIs, file systems) behind abstractions. The domain code doesn't know or care *how* data is stored—only that it can be stored and retrieved. This separation is what makes testing possible without real infrastructure.
+:::
+
 The most important principle for testability is: **separate infrastructure code from domain code**.
 
 - **Domain code** is where the core business logic lives — the rules, calculations, and decisions that define what your system does

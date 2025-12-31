@@ -160,7 +160,9 @@ Poor usability increases the probability that humans will make errors. Users mig
 - **Lapse**: Forget to complete an action due to interruption (start importing a recipe, get distracted, leave it incomplete)
 - **Mistake**: Intentionally take an action that's wrong for their goal due to a mismatched mental model
 
-We'll return to safety in more depth in [L35 (Safety and Reliability)](./l35-safety-reliability.md), when we examine larger-scale systems where the safety implications of software design decisions become even more apparent.
+:::note Looking Ahead
+We'll return to safety in more depth in [Lecture 35 (Safety and Reliability)](/lecture-notes/l35-safety-reliability), when we examine larger-scale systems where the safety implications of software design decisions become even more apparent. You'll see how the same human error categories (slips, lapses, mistakes) inform architectural tactics for building safety-critical systems.
+:::
 
 ## Introduce approaches to evaluating usability (5 minutes)
 

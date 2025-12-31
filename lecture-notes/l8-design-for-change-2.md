@@ -19,7 +19,11 @@ The SOLID acronym represents five principles:
 - **I**nterface Segregation Principle
 - **D**ependency Inversion Principle
 
-Take these principles as guidelines that you should consider in your design decisions, recognizing that there are always trade-offs to be made. We'll look at them in the context of individual data types, but later in the course we'll see how they can be applied to entire systems.
+Take these principles as guidelines that you should consider in your design decisions, recognizing that there are always trade-offs to be made. We'll look at them here in the context of individual data types.
+
+:::note Looking Ahead
+These same principles scale up to entire systems. When we discuss **software architecture** in [Lecture 19](/lecture-notes/l19-architecture-design) and [Lecture 20](/lecture-notes/l20-monoliths), you'll see how Single Responsibility becomes service boundaries, how Open/Closed becomes plugin architectures, and how Dependency Inversion becomes the foundation of testable, modular systems.
+:::
 
 ### Single Responsibility Principle (SRP)
 "A class should have only one reason to change."

@@ -11,6 +11,8 @@ title: Course Overview and Introduction to Java
 - A brief overview of software engineering (5 minutes)
   - SE goes back to the 1960s: missiles, rockets, business machines (Margaret Hamilton, Grace Hopper, etc.)
   - SE is the integral of programming over time (Titus Winters essay)
+  - This principle will recur throughout the course. It explains why we care about changeability, readability, and testing. It also explains why we'll consider questions that might seem "non-technical": Who uses our software? Who maintains it? What assumptions do we bake in? These become engineering concerns because their costs compound over time.
+  - Most of the cost of software is in maintenance, not initial development. This is why sustainability—the ability of software to continue providing value over time—will be a recurring theme. We'll consider four dimensions: technical (can we maintain it?), economic (can we afford it?), social (does it serve people well?), and environmental (what resources does it consume?). These aren't separate from "real" engineering—they *are* engineering concerns when you think over time.
 - This course expands on principles of program design and implementation, looking at larger scale systems
 - This course is a principles-based course, not a syntax-based course: we will look at the big picture and why things are the way they are, rather than just the syntax of the language
   - We will provide you with flashcards and other resources to help you learn the syntax. We expect you to use them, and will move quickly past the syntax in lecture.

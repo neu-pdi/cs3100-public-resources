@@ -117,6 +117,10 @@ You've already used callbacks earlier this semester—in Java streams (`list.for
 
 ## Define the Model-View-Controller (MVC) pattern (15 minutes)
 
+:::note Information Hiding In Action
+MVC is information hiding applied to user interfaces. In [Lecture 6](/lecture-notes/l6-immutability-abstraction), we learned that modules should hide their implementation details. MVC applies this principle: the Model hides business logic from the View, the View hides presentation details from the Model, and the Controller mediates between them. Each component can change independently because it doesn't know the internal workings of the others.
+:::
+
 As GUIs grew more complex, developers discovered that mixing UI code with business logic created unmaintainable tangles. Click handlers that directly modified databases. Display code scattered with business rules. Changes to the UI broke core functionality; changes to business logic broke the display. In the language of [Lecture 7](./l7-design-for-change.md), this code had *low cohesion* (mixing unrelated responsibilities) and *high coupling* (UI and business logic depending on each other's implementation details).
 
 The **Model-View-Controller (MVC)** pattern, originating at Xerox PARC in the 1970s, provides a principled separation:

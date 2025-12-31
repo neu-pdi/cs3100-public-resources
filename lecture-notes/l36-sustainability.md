@@ -6,11 +6,24 @@ title: "Sustainability"
 
 [Background Material](https://dl.acm.org/doi/10.1145/3639060) and [this article](https://arxiv.org/abs/2305.00436)
 
-## Opening reflection (5 minutes)
-
-Quick poll: "How many of you have used software that no longer exists?"
-
 ## Define software sustainability and its importance in software development (10 minutes)
+
+At the start of this course, we introduced the idea that software engineering is "the integral of programming over time." Throughout the semester, we've seen this principle manifest in many ways:
+
+**Technical concerns that compound over time:**
+- Code readable only to authors becomes unmaintainable (L5)
+- Exposed internal state becomes API constraints that limit changeability (L6)
+- Missing stakeholders and requirements may become expensive retrofits (L9)
+- Domain assumptions become large-scale rewrite triggers affecting the entire system (L12)
+- AI training biases become system biases (L13)
+- License choices become strategic constraints (L23)
+- Performance shortcuts become environmental costs (L34)
+- Safety gaps become human harm (L35)
+
+Each of these is both an ethical concern *and* a cost concern. That's not a coincidence: ethics and engineering economics align over sufficiently long time horizons. Cutting corners affects people; eventually, affecting people affects the bottom line.
+
+Today we bring these threads together under the framework of **sustainability** - the meta-quality attribute that asks: "Will this system continue to provide beneficial value over time, and to whom?"
+
 - Build on existing knowledge: "You've learned about performance, scalability, security..."
 - The problem: These traditional QAs assume a stable context
 - Sustainability: The meta-quality attribute about system endurance

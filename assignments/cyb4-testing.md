@@ -699,7 +699,7 @@ Update `REFLECTION.md` to address:
 
 4. **Designing for Change:** Review the "Designing for Future Evolution" section. Pick one future requirement (batch operations, progress reporting, or multiple OCR backends) and describe how your current design would need to change to support it. What aspects of your design would make this change easy? What might be difficult?
 
-5. **Parsing Challenges:** What was the most challenging aspect of implementing `IngredientParser`? How did you approach the problem?
+5. **Parser Assumptions and Future Costs:** Your `IngredientParser` handles formats like "2 cups flour" and "100g chocolate." Consider: what ingredient formats might your parser *not* handle well? (Think about cuisines using different measurement systems, ingredients with non-English names, or traditional recipes without precise measurements.) If CookYourBooks expands internationally in 3 years, what would need to change? How expensive would that change be given your current design?
 
 6. **AI Collaboration:** Which tasks in this assignment benefited most from AI assistance? Were there tasks where AI was less helpful than expected?
 

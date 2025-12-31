@@ -152,6 +152,10 @@ The Model in MVC/MVVM plays the same role as the "Application Core" in Hexagonal
 
 ## Write end-to-end tests for a GUI application using TestFX (20 minutes)
 
+:::note Recall
+In [Lecture 15 (Test Doubles and Isolation)](/lecture-notes/l15-testing), we introduced the testing pyramid and discussed why E2E tests are valuable but expensive: slow, flaky, and hard to debug. We deferred deep coverage of E2E testing until now. With MVVM in hand, you'll see why: most GUI behavior can be tested at the ViewModel level (fast, reliable, no UI needed). E2E tests are reserved for critical user journeys that span the entire application.
+:::
+
 ### When E2E Tests Are Worth the Cost
 
 Despite pushing tests down the pyramid, E2E tests remain essential—but only for the right things. E2E tests are expensive: slow to run, prone to flakiness, and high-maintenance.

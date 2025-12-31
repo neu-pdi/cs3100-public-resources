@@ -5,6 +5,11 @@ title: "From Code Patterns to Architecture Patterns"
 ---
 
 ## Review the creation patterns you have already implemented (5 minutes)
+
+:::note Information Hiding In Action
+Creation patterns are information hiding applied to *object construction*. In [Lecture 6](/lecture-notes/l6-immutability-abstraction), we learned to hide implementation details behind interfaces. Now we hide *how objects are created*—the specific constructors, the validation logic, the wiring of dependencies—behind factory methods and builders. The client code says "give me a Recipe" without knowing the 15 steps required to construct one correctly.
+:::
+
 - Recap: Students implemented Builder (`RecipeBuilder`), used Factory methods (`StandardConversions`), created registries
 - Frame this lecture as "what you learned, formalized—and where it leads"
 - Connect to information hiding and DIP from L8

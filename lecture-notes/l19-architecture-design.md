@@ -85,7 +85,11 @@ Now we get to the heart of architectural thinking: **where do we draw the lines?
 
 ### Applying Information Hiding at Scale
 
-In [L6](./l6-immutability-abstraction.md) and [L7](./l7-design-for-change.md), we learned about information hiding, coupling, and cohesion at the class level. The same principles apply at the service level:
+:::note Information Hiding In Action
+In [Lecture 6](/lecture-notes/l6-immutability-abstraction) and [Lecture 7](/lecture-notes/l7-design-for-change), we learned about information hiding, coupling, and cohesion at the class level. We even previewed how the Java module system scales these ideas to libraries. Now we scale them further—to entire services and systems.
+:::
+
+The same principles apply at the service level:
 
 - **High cohesion within**: A service should have a single, well-defined responsibility
 - **Low coupling between**: Services should depend on each other through narrow, stable interfaces

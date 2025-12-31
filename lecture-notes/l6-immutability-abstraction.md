@@ -12,7 +12,7 @@ title: "Changeability I: Modularity and Information Hiding"
 
 * We haven't yet gone into significant detail on the "requirements gathering" step. 
 * When considering the total cost of software, it is important to consider how much effort it will take to truly get the software to meet the needs of the customer.
-* Put another way: the majority of the cost of software is not in the initial development, but in the maintenance and evolution of the software.
+* Put another way: the majority of the cost of software is not in the initial development, but in the maintenance and evolution of the software. This insight—that maintainability is central to software economics—is also why we'll later call it technical sustainability: the ability of a system to continue providing value as it evolves over time.
 
 * Show the tire swing meme (use scan from A Pattern Language, see also [history of the tire swing](https://www.businessballs.com/amusement-stress-relief/tree-swing-cartoon-pictures-early-versions/))
 
@@ -33,10 +33,21 @@ title: "Changeability I: Modularity and Information Hiding"
 * Note that to concretize this definition, we need to consider a specific possible change in a specific design. For the time being, we'll be specifying the kinds of changes that your designs should be able to adapt to.
     * NB: Anticipating ALL kinds of changes is impossible, and likely a waste of time.
     * In the next module (after the first exam), we will focus more on requirements analysis and user centered design: the methods that you will use to identify the kinds of changes that your designs should be able to adapt to.
+* You will note, however, that we consider four explicit kinds of changes that we might consider: technical, economic, social, and environmental:
+
+
+| Type | Examples | Course Topics |
+|------|----------|---------------|
+| **Technical** | Will we need to scale? Change databases? Add features? | Modularity, interfaces, design patterns |
+| **Economic** | Will hosting costs increase? Will the business model change? | Architecture, dependencies, vendor lock-in |
+| **Social** | Will new user groups emerge? Will user values and requirements change? | Requirements, domain modeling, stakeholder analysis |
+| **Environmental** | Will energy costs matter? Will regulations require efficiency? | Performance, resource management |
+
+For now, we'll focus primarily on **technical** unknowns—how to design systems that can evolve as technical requirements change. But keep the other dimensions in mind; they'll resurface throughout the course and come together in our final lecture on sustainability ([Lecture 36](/lecture-notes/l36-sustainability)).
 
 Today, we will focus on a low-level aspect of changeability: **information hiding**. Over the next few lectures, we will also revisit principles of object oriented design that are core to changeability.
 
-## Describe the relevance of modularity to changeability (10 minutes)
+## Describe the relevance of modularity to changeability (5 minutes)
 
 * The core idea to information hiding is that we should design our system so that it is broken into "modules" that are relatively independent. 
 * What is a module?
@@ -62,7 +73,6 @@ Today, we will focus on a low-level aspect of changeability: **information hidin
   * See [Hyrum's Law](https://www.hyrumslaw.com): "With a sufficient number of users of an API, it does not matter what you promise in the contract: all observable behaviors of a system will be depended on by somebody."
     * See also [XKCD #1172](https://xkcd.com/1172/)
   * So, insofar as a programming language can support information hiding, it is important to use it in order to ensure that our modules are used as anticipated.
-
 * When information hiding was first proposed in the 1970s ([by a software engineering researcher named David Parnas](https://dl.acm.org/doi/10.1145/361598.361623)), there was little support for it from programming languages. As a designer, you could organize your code into modules, but there was very limited support to enforce that organization, or to prevent other parts of the code from accessing the implementation details of a module. Modern languages have built-in support for information hiding.
 * We have already seen a core approach to achieve information hiding: creating *interfaces* that specify the behavior of a module without regard to its implementation.
    * The interface *hides* the implementation details of the module.
@@ -71,7 +81,7 @@ Today, we will focus on a low-level aspect of changeability: **information hidin
 
 ## Be able to apply Java language features to achieve information hiding and immutability 
 
-### Access modifiers (15 minutes)
+### Access modifiers (7 minutes)
 
 * Each class, method, and field in Java has an *access modifier* that controls its accessibility.
 * The four access modifiers are:
@@ -137,50 +147,9 @@ public class Counter {
 }
 ```
 
-Even if you do not have an invariant in mind that you want to enforce, it is still a good idea to make fields private. You might discover an invariant to enforce later, or might encounter a change in requirements that you need to support.
+Even if you do not have an invariant in mind that you want to enforce, it is still a good idea to make fields private. You might discover an invariant to enforce later, or might encounter a change in requirements that you need to support. [In public classes, use accessor methods, not public fields](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch4.xhtml#lev16).
 
-While it is the case that [in public classes, use accessor methods, not public fields](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch4.xhtml#lev16), it is worth noting that in some cases, non-public classes might benefit from having public fields.
-
-Consider the following example taken from [Josh Bloch's Effective Java Item 16](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch4.xhtml#lev16):
-
-```java
-// Note: This is a package-private class, not visible outside of the package.
-class Point {
-    public double x;
-    public double y;
-}
-```
-
-This class is a simple data structure to represent a point in 2D space. Note that the fields are `public`, allowing them to be accessed directly. This class does not benefit from the additional safety and flexibility that would be gained by using private fields and accessor methods. Here is the alternative:
-
-```java
-class Point {
-    private double x;
-    private double y;
-
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
-}
-```
-
-This variation follows the rule of thumb that we should [minimize accessibility of classes and members](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch4.xhtml#lev15). However, it is also considerably longer than the original version.
-
-Since the class is not visible outside of its package, it is a reasonable assumption that the class is not exposed by the module that contains it. In this case, any possible changes that we would want to make to the behavior of the class would be limited to changes within the module. Hence, it is not necessary to use accessor methods, and the original version is more concise.
-
-### Immutable objects and fields (20 minutes)
+### Immutable objects and fields (10 minutes)
 
 Immutable classes are those whose instances cannot be changed after they are created. Immutable classes are simpler to reason about, as their behavior can be determined by their constructor and public methods. This is particularly important for classes that are passed between modules, as it provides a strong guarantee that the behavior of an object won't be changed by another module. When you design a class, you should [Minimize Mutability](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch4.xhtml#lev17): make it immutable by default, only making it mutable if there is a good reason to.  
 
@@ -247,3 +216,123 @@ Here is the general recipe for making a class immutable:
 - Make all fields `final` to ensure that the state of the object cannot be changed after it is constructed.
 - Make all fields private to control access to the state of the object.
 - If the class has reference fields, make defensive copies of the fields when needed.
+
+### Sealed classes (10 minutes)
+
+We've seen how `final` prevents *any* subclassing, but sometimes you want something in between: you want to allow *some* classes to extend yours, but not arbitrary ones. This is where **sealed classes** come in, introduced in Java 17 (2021).
+
+A sealed class explicitly declares which classes are permitted to extend it:
+
+```java
+public sealed class IoTDevice permits DimmableLight, SwitchedLight, Thermostat {
+    // ...
+}
+```
+
+Only `DimmableLight`, `SwitchedLight`, and `Thermostat` can extend `IoTDevice`. Any other class that tries to extend it will fail to compile. This gives you precise control over your type hierarchy.
+
+Classes that extend a sealed class must explicitly declare themselves as one of:
+- `final` — cannot be extended further
+- `sealed` — must specify their own permitted subclasses
+- `non-sealed` — reopens the hierarchy (any class can extend it)
+
+```java
+public sealed class IoTDevice permits DimmableLight, SwitchedLight, Thermostat { }
+
+public final class DimmableLight extends IoTDevice { }  // Cannot be extended
+public final class SwitchedLight extends IoTDevice { }  // Cannot be extended
+public non-sealed class Thermostat extends IoTDevice { }  // Can be extended by anyone
+```
+
+**Why sealed classes matter for changeability:**
+
+Sealed classes are another form of information hiding—they hide the ability to extend a type. This has several benefits:
+
+1. **Controlled evolution**: You can add new permitted subclasses in future versions without breaking existing code, but you prevent unexpected subclasses from appearing in the wild.
+
+2. **Exhaustive pattern matching**: When you have a sealed hierarchy, the compiler knows all possible subtypes. Combined with pattern matching for `instanceof` (from Lecture 5), you can write exhaustive checks:
+
+```java
+public String describe(IoTDevice device) {
+    if (device instanceof DimmableLight d) {
+        return "Dimmable light at " + d.getBrightness() + "%";
+    } else if (device instanceof SwitchedLight s) {
+        return "Switched light: " + (s.isOn() ? "on" : "off");
+    } else if (device instanceof Thermostat t) {
+        return "Thermostat set to " + t.getTargetTemp() + "°";
+    }
+    // Note: Thermostat is non-sealed, so there could be unknown subtypes. Otherwise, the compiler would note that this branch is not reachable
+    return "Unknown device";
+}
+```
+
+3. **Domain modeling**: Sealed classes let you model domains where there's a closed set of possibilities. For example, a `PaymentMethod` might only ever be `CreditCard`, `BankTransfer`, or `DigitalWallet`—and you want the type system to enforce that.
+
+```java
+public sealed interface PaymentMethod permits CreditCard, BankTransfer, DigitalWallet { }
+```
+
+Sealed classes work with interfaces too, not just classes. This makes them particularly useful for defining domain models where you want the benefits of interfaces (multiple inheritance of type) with controlled implementations.
+
+### Scaling Up: The Java Module System (10 minutes)
+
+Everything we've discussed so far—access modifiers, private fields, immutability—operates at the **class level**. But what happens when you're not just writing a class, but publishing a *library* that other developers will use?
+
+Libraries often need internal utility classes that are `public` so other packages *within the library* can use them—but these classes aren't meant for external consumers. Before Java 9 (2017), there was no way to express this. You might add Javadoc warnings like "Internal API - do not use," but nothing enforced it. Consumers would depend on internal classes, and then their code would break when you changed those internals.
+
+This is Hyrum's Law at the library scale: if a class is observable, someone will depend on it.
+
+Java 9 introduced the **module system**, which lets library authors explicitly declare their public API. A `module-info.java` file at the root of your module specifies which packages are **exported**:
+
+```java
+// module-info.java for a hypothetical grading library
+module com.pawtograder.grading {
+    // These packages are our public API - consumers can use them
+    exports com.pawtograder.grading.api;
+    exports com.pawtograder.grading.model;
+    
+    // com.pawtograder.grading.impl is NOT exported
+    // Classes there can be public (for internal use) but invisible to consumers
+}
+```
+
+With this declaration:
+- Classes in `com.pawtograder.grading.api` and `com.pawtograder.grading.model` are accessible to consumers
+- Classes in `com.pawtograder.grading.impl` are **module-private**—even if they're declared `public`, code outside the module cannot access them
+
+This is **encapsulation scaled up**. Just as `private` fields hide implementation details within a class, unexported packages hide implementation details within a module:
+
+| Scope | Mechanism | What it hides |
+|-------|-----------|---------------|
+| Field | `private` keyword | Implementation state within a class |
+| Class | Package-private (default) | Helper classes within a package |
+| Library | Module system (`exports`) | Internal packages within a library |
+
+The benefits connect directly to the changeability concepts we've been discussing:
+- **Reduced coupling**: Consumers can't depend on your internals, so you're free to change them
+- **Clearer contracts**: The exported packages *are* your API; everything else is implementation detail
+- **Safer evolution**: You can refactor internal code without breaking consumers
+
+```mermaid
+flowchart LR
+    subgraph YourApp["Your Application"]
+        A["Your Code"]
+    end
+    subgraph Library["com.pawtograder.grading module"]
+        B["api package<br/>(exported)"]
+        C["model package<br/>(exported)"]
+        D["impl package<br/>(not exported)"]
+    end
+    A --> B
+    A --> C
+    A -.->|"blocked"| D
+    B --> D
+    C --> D
+    style D fill:#ffcccc
+```
+
+:::note Looking Ahead
+The module system is our first glimpse of how design principles scale beyond individual classes. Later in the course, we'll return to these ideas when we discuss **software architecture** ([Lecture 19](/lecture-notes/l19-architecture-design)) and **open source ecosystems** ([Lecture 23](/lecture-notes/l23-oss)). You'll see how the same tension between "what's public" and "what's implementation detail" plays out at even larger scales—between services, between teams, and between organizations.
+
+For now, the key insight is: **information hiding is fractal**. The same principle that makes a well-designed class easier to change also makes a well-designed library easier to change, and ultimately makes a well-designed system easier to change.
+:::

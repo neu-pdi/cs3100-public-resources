@@ -85,7 +85,11 @@ A **cache** stores copies of frequently-accessed data in memory for speed. Inste
 | Memcached | Distributed memory cache |
 | CDN (CloudFront, etc.) | Caches static files at edge locations globally |
 
-Caching involves tradeoffs: you gain speed but might serve stale data. When should the cache refresh? What if the underlying recipe changes? These consistency questions connect to concurrency topics we'll revisit later in the course.
+Caching involves tradeoffs: you gain speed but might serve stale data. When should the cache refresh? What if the underlying recipe changes?
+
+:::note Looking Ahead
+These consistency questions—what happens when multiple sources of truth diverge?—are fundamental to distributed systems. We'll explore them in greater depth during our concurrency unit: [Lecture 31 (Concurrency I)](/lecture-notes/l31-concurrency1), [Lecture 32 (Asynchronous Programming)](/lecture-notes/l32-concurrency2), and [Lecture 33 (Event-Driven Architecture)](/lecture-notes/l33-event-architecture).
+:::
 
 ### API Gateways: Unified Entry Point
 
@@ -355,6 +359,10 @@ Serverless would fit poorly for:
 | **Recipe search with complex ranking** | Needs in-memory indexes, stateful |
 
 ## Connection to Earlier Concepts (5 minutes)
+
+:::note Information Hiding In Action
+The principles from [Lecture 6 (Information Hiding)](/lecture-notes/l6-immutability-abstraction) scale all the way up to cloud architecture. A serverless function hides its implementation behind an event interface—callers don't know (or care) whether it's running on AWS Lambda, Google Cloud Functions, or a container. The ports-and-adapters pattern means your domain logic doesn't know it's running serverless at all. Information hiding isn't just about `private` fields; it's a fractal principle that applies at every level of system design.
+:::
 
 Serverless isn't a departure from what we've learned—it's an application of the same principles at a different scale:
 
