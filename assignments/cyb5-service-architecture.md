@@ -3,6 +3,12 @@ title: "Assignment 5: Interactive CLI"
 sidebar_position: 6
 ---
 
+:::warning Preliminary Content
+
+This assignment is preliminary content and is subject to change until the release date of the assignment.
+
+:::
+
 ## Overview
 
 ## Learning Outcomes

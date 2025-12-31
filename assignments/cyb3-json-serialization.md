@@ -3,6 +3,12 @@ title: "Assignment 3: Domain Extensions and Hexagonal Persistence"
 sidebar_position: 4
 ---
 
+:::warning Preliminary Content
+
+This assignment is preliminary content and is subject to change until the release date of the assignment.
+
+:::
+
 ## Overview
 
 In this assignment, you'll expand the CookYourBooks application in two major directions: **domain modeling** and **hexagonal architecture**. You'll create the structures needed to organize recipes into collections (published cookbooks, personal recipe boxes, web imports) and manage a user's library, then implement persistence using JSON serialization and export capabilities using Markdown.

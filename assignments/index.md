@@ -9,14 +9,15 @@ Throughout this semester, you will build CookYourBooks, a comprehensive desktop 
 
 The project follows a carefully scaffolded approach where each weekly assignment builds upon the previous one, with our solution to each assignment provided as the foundation for the next. You'll begin in Module 1 (Design in the Small) by implementing the core domain model—learning to design rich object hierarchies for ingredients, quantities, and recipes while practicing fundamental OO principles like inheritance, polymorphism, and encapsulation. As you progress into Module 2 (Design in the Large), you'll add persistence through custom JSON serialization, build comprehensive test suites with mocking, create service layers that separate business logic from infrastructure concerns, and explore architecture patterns for distributed systems. Starting in Assignment 3 (Week 5-6), you'll incorporate AI coding assistants into your workflow, learning to leverage these tools effectively while maintaining code quality and understanding.
 
-The final phase of the project (Module 3: Design for Users) emphasizes user-centered design and building complete systems. You'll implement both CLI and GUI interfaces, focusing on usability, accessibility, and user experience while managing the complexity of asynchronous operations like OCR processing. Working in teams of four during this module, you'll tackle challenges including integrating multiple external services (Tesseract and Claude API for OCR), implementing design patterns like Strategy and Builder, and handling the complexities of concurrent operations in a desktop application. Throughout this journey, you'll not only master Java and JavaFX, but also develop crucial software engineering skills: interpreting requirements, designing for change, writing maintainable code, and collaborating effectively in a team.
+The final phase of the project (Module 3: Design for Users) emphasizes user-centered design, team collaboration, and building complete systems. You'll implement both CLI and GUI interfaces, focusing on usability, accessibility, and user experience while managing the complexity of asynchronous operations like OCR processing. Working in teams of four during this module, each team member takes ownership of one core GUI feature while collaborating on shared infrastructure, integration, and optional "menu" features. Teams establish working agreements through a **team charter**, create a shared **lexicon** for consistent naming, and practice the HRT (Humility, Respect, Trust) principles from professional software development. The group assignments are structured to enable individual accountability—each core feature has a defined ViewModel interface that all implementations must satisfy—while still requiring meaningful collaboration on design, code review, and integration. Throughout this journey, you'll not only master Java and JavaFX, but also develop crucial software engineering skills: interpreting requirements, designing for change, writing maintainable code, and collaborating effectively in a team.
 
 Assignments are structured to provide a steady, manageable pace throughout the semester. Each assignment is due on a Thursday at 11:59 PM, with a minimum of 3-4 days between assignment due dates to ensure adequate time for implementation, testing, and reflection. Some weeks' tasks have been intentionally merged to combine related concepts and create more substantial programming tasks that better reflect real-world development work. 
 
 **Notes:**
 - Each assignment builds on the provided solution from the previous week. Students are trusted to not share these solutions, or to seek them out.
 - AI coding assistants are introduced in Week 5 (Assignment 3) and encouraged thereafter. Students are strongly discouraged from using them in the first two assignments.
-- Group work begins in Week 11 (teams formed by Week 8)
+- Group work begins in Week 11 (teams of 4 formed by Week 8). Each team member owns one core GUI feature while collaborating on shared infrastructure and the Feature Buffet.
+- Group assignments use a mix of individual and team grading. Core features are graded individually via automated tests against defined ViewModel interfaces. Feature Buffet items are graded primarily on **process** (design iteration, code review quality, documentation) rather than product.
 - Labs complement but don't depend on the main project assignments - they always build on a solution from a week earlier.
 
 
@@ -141,43 +142,78 @@ Assignments are structured to provide a steady, manageable pace throughout the s
 
 ## **Module 3: Design for Users (Group Work Begins)**
 
-### **Week 11-12: User-Centered Design and GUI**
-- [**Group Assignment 1: GUI**](/assignments/cyb11-gui-advanced) (Due 2026-04-02)
+Group assignments are structured around **individual accountability with team collaboration**. Each team member owns one of four core GUI features, implementing against a provided ViewModel interface that enables automated grading. Teams also collaborate on shared infrastructure, integration, and choose additional "menu" features to implement together.
+
+### **Week 11-12: Design Sprint and Team Formation**
+- [**Group Assignment 0: Design Sprint**](/assignments/cyb10-design-sprint) (Due 2026-04-02)
   - Build on A5 solution (provided)
-  - Create main window with tabs
-  - Implement recipe list view
-  - Basic navigation
-  - Implement async image loading
-  - Add recipe editing dialogs
-  - Implement drag-and-drop for images
-  - Handle long-running operations (OCR) with progress indicators
+  - **Team Foundation:**
+    - Create **Team Charter**: communication norms, availability, decision-making process, conflict resolution plan, accountability expectations
+    - Create **Team Lexicon**: canonical terminology for domain concepts, naming conventions, package structure (applying concepts from [L5: Functional Programming and Readability](/lecture-notes/l5-fp-readability-reusability))
+    - Assign feature ownership: each member claims one of the four core features
+  - **Individual Deliverables (per team member):**
+    - User persona for your feature area (who uses this feature? what are their goals?)
+    - Low-fidelity wireframes for your feature
+    - Accessibility considerations: how will your feature support keyboard navigation, screen readers, etc.?
+  - **Team Deliverables:**
+    - Architecture diagram: how do ViewModels connect to existing services from A5?
+    - Integrated wireframe document showing navigation flow and shared UI elements
+    - **Feature Buffet selection**: choose 2-3 features for GA2 with rationale
+    - **"Our Feature" concept**: design a custom feature (not on buffet) to present in final demo
+  - *Grading: 60% individual, 40% team*
 - [**Lab 11: User-Centered Design**](/labs/lab11-ucd)
   - Practice UCD techniques and user research methods
 - [**Lab 12: GUI Programming**](/labs/lab12-gui)
   - JavaFX workshop
 
-### **Week 13: OCR Integration and Concurrency**
-- [**Group Assignment 2: OCR Service Integration**](/assignments/cyb12-ocr-integration) (Due 2026-04-09)
-  - Integrate multiple OCR backends (Tesseract, Claude API)
-  - Implement strategy pattern for OCR parsing
-  - Add event-driven updates
-  - Develop shared table of contents service
-  - Add license and citation support to recipes
-  - Performance optimization for batch processing
+### **Week 13: Core Feature Implementation**
+- [**Group Assignment 1: Core Features**](/assignments/cyb11-gui-advanced) (Due 2026-04-09)
+  - **You are provided:** ViewModel interfaces (contracts) for each of the four core features, plus a shared test suite
+  - **Core Features (one owner per team member):**
+    1. **Library View**: Browse cookbooks/collections, navigation, collection management
+    2. **Recipe Details/Editor**: View and edit recipe content, ingredient list, validation
+    3. **Import Interface**: Image upload, OCR progress feedback, error handling, async operations
+    4. **Search & Filter**: Search by title/ingredient, tag filtering, keyboard navigation
+  - **Individual Deliverables:**
+    - ViewModel implementation that passes the provided automated tests
+    - View implementation (FXML + controller) that binds to your ViewModel
+    - Additional unit tests beyond the provided suite
+  - **Team Deliverables:**
+    - Integrated application with all four features working together
+    - Shared infrastructure: navigation, theming, error handling components
+    - Integration tests verifying feature interactions
+    - Evidence of code review (meaningful PR comments applying HRT principles)
+  - *Grading: 70% individual (ViewModel tests), 30% team (integration)*
 - [**Lab 13: Asynchronous Programming**](/labs/lab13-async)
   - Practice with CompletableFutures
 
-### **Week 14: Final Integration and Polish**
-- [**Group Assignment 3: Final Integration and Polish**](/assignments/cyb13-final-integration) (Due 2026-04-16)
-  - Basic social features: recipe rating, commenting, and sharing if licensed for redistribution
-  - Report on the sustainability of the application, considering the four dimensions of sustainability
-  - Report on the safety and reliability requirements for the next iteration of CookYourBooks
+### **Week 14: Feature Buffet and Polish**
+- [**Group Assignment 2: Feature Buffet**](/assignments/cyb12-ocr-integration) (Due 2026-04-16)
+  - **Choose 2-3 features from the menu** (or propose a custom feature with instructor approval):
+    - Recipe scaling calculator with serving size adjustment
+    - Shopping list generation from selected recipes
+    - Export to formatted PDF or styled Markdown
+    - Unit conversion toggle (metric ↔ imperial throughout app)
+    - Keyboard shortcuts and accessibility polish
+    - Dark mode / theme customization
+    - Cooking timer integration for recipe steps
+    - OCR backend selection (Tesseract vs. Claude API) with Strategy pattern
+    - **Custom feature** (requires design doc pre-approval)
+  - **Process Portfolio (required for each feature):**
+    - Design rationale: why this feature? what user need?
+    - Design artifacts: show iteration (at least 2 versions with rationale for changes)
+    - Implementation journal: git history, PR reviews, documented decisions
+    - Testing evidence: unit tests, accessibility check
+    - Demo video (1-2 min) + reflection
+  - **Grading is process-focused:** A well-documented partial feature scores higher than a complete feature with no process evidence
+  - *Grading: 20% individual, 80% team (with peer evaluation adjustment ±10%)*
 - [**Lab 14: Prep for Future of Programming**](/labs/lab14-future-prep)
   - Explore emerging trends in software development
 
 ### **Week 15: Final Presentations**
-- **Final Project Presentation**
-  - Demo full CookYourBooks application
-  - Present architecture decisions
-  - Discuss challenges and solutions
-  - Provide recommendations for future iterations of CookYourBooks
+- [**Final Project Presentation**](/assignments/cyb13-final-integration)
+  - Demo full CookYourBooks application (all core features + Feature Buffet selections)
+  - Present architecture decisions and how MVVM enabled testability
+  - Discuss team collaboration: what worked? what would you do differently?
+  - Brief report on sustainability considerations and recommendations for future iterations
+  - Peer evaluation survey submitted

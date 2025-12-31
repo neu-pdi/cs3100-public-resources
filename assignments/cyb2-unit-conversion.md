@@ -3,6 +3,12 @@ title: "Assignment 2: Unit Conversion, Recipe and Instruction Classes"
 sidebar_position: 3
 ---
 
+:::warning Preliminary Content
+
+This assignment is preliminary content and is subject to change until the release date of the assignment.
+
+:::
+
 ## Overview
 
 In this assignment, you'll expand the CookYourBooks domain model by implementing **unit conversion**, **recipe scaling**, and the core **recipe structure**. Building on Assignment 1's `Quantity` and `Ingredient` hierarchies, you'll create a flexible conversion system that supports standard metric/imperial conversions, ingredient-specific density conversions (like "1 cup flour = 125 grams"), and custom "house" overrides.

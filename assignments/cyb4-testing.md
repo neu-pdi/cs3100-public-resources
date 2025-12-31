@@ -3,6 +3,12 @@ title: "Assignment 4: Application Services and Testing"
 sidebar_position: 5
 ---
 
+:::warning Preliminary Content
+
+This assignment is preliminary content and is subject to change until the release date of the assignment.
+
+:::
+
 ## Overview
 
 In this assignment, you'll build the **application service layer** for CookYourBooks and experience firsthand how hexagonal architecture enables effective testing. You'll create three services that orchestrate domain operations—`ImportService`, `ExportService`, and `LibraryService`—and test them using mock implementations of the ports you defined in A3.
