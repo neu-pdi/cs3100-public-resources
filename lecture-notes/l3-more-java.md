@@ -292,8 +292,6 @@ The [`Set` interface](https://docs.oracle.com/en/java/javase/21/docs/api/java.ba
 
 The most common implementation of `Set` is [`HashSet`](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/HashSet.html).
 
-**TODO: Do we need to discuss how sets are implemented? Or is that in 2100?**
-
 ### Maps
 A `Map` is a collection of key-value pairs, comparable to a dictionary in Python.
 
@@ -315,7 +313,7 @@ Instead, Java has *primitive wrapper types* that are the objects that correspond
 - `java.lang.Character` for `char`
 (and so on for all primitive types)
 
-This is a somewhat bizzare effect of the language design and evolution, and can be a source of confusion. 
+This is a somewhat bizzare effect of the language design and evolution, and can be a source of confusion. [Prefer primitive types to wrapper types](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch9.xhtml#lev61) - they are faster and more memory-efficient.
 
 Java will do some automated conversions between primitive and wrapper types. For example, the following code will work:
 
@@ -324,6 +322,25 @@ List<Integer> list = new ArrayList<>(); //Need to explicitly specify the type pa
 list.add(1); //This will 'autobox' the int 1 to an Integer
 int x = list.get(0); //This will 'autounbox' the Integer to a primitive int
 ```
+
+Unfortuantely, this will not work:
+```java
+int x = 1;
+int y = 1;
+System.out.println(x == y); //This will print true
+Integer XWrapped = x;
+Integer YWrapped = y;
+System.out.println(XWrapped == YWrapped); //This will print false
+```
+
+Even more confusing, this **will** work:
+```java
+Integer Q = 1;
+Integer R = 1;
+System.out.println(Q == R); //This will print true
+```
+
+So, to repeat: [Prefer primitive types to wrapper types](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch9.xhtml#lev61).
 
 ## Utilize Java methods for reading input and writing output to streams (15 minutes)
 In order to do anything useful, we probably need to be able to read input from the outside world (user, file, etc.) and write output to the outside world (user, file, etc.).

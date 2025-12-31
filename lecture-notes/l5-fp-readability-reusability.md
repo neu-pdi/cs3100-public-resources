@@ -253,14 +253,278 @@ Our general rule of thumb is to prefer method references over lambdas, as they a
 
 There are few cases where a lambda is preferred over a method reference: If the *names* of the parameters to the lambda are important to understand the code, use a lambda (as the method reference does not have names for the parameters).
 
-### [Favor the use of standard functional interfaces](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch7.xhtml#lev44)
+### [Favor the use of standard functional interfaces](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch7.xhtml#lev44) (5 minutes)
 
-- TODO
+Java provides a rich set of functional interfaces in `java.util.function` that cover most common use cases. Before creating your own functional interface, check if one of these standard interfaces will work:
 
-## Describe common misconceptions about what makes code "readable" and draw on evidence-based research to evaluate the readability of code (10 minutes)
+| Interface | Method | Description |
+|-----------|--------|-------------|
+| `Predicate<T>` | `boolean test(T t)` | Takes an argument, returns boolean |
+| `Function<T, R>` | `R apply(T t)` | Takes an argument, returns a result |
+| `Consumer<T>` | `void accept(T t)` | Takes an argument, returns nothing |
+| `Supplier<T>` | `T get()` | Takes nothing, returns a result |
+| `BiFunction<T, U, R>` | `R apply(T t, U u)` | Takes two arguments, returns a result |
 
-### Style guides
+Here are examples of each:
 
-### [On Naming](https://learning.oreilly.com/library/view/the-programmers-brain/9781617298677/Text/ch08.htm)
+```java
+// Predicate: Is this light bright enough?
+Predicate<DimmableLight> isBright = light -> light.getBrightness() > 50;
+lights.stream().filter(isBright).forEach(Light::turnOff);
 
-- TODO
+// Function: Get the brightness of a light
+Function<DimmableLight, Integer> getBrightness = DimmableLight::getBrightness;
+
+// Consumer: Turn on each light
+Consumer<Light> turnOn = Light::turnOn;
+lights.forEach(turnOn);
+
+// Supplier: Create a default light
+Supplier<DimmableLight> defaultLight = () -> new DimmableLight("default", 100);
+
+// BiFunction: Combine two brightness values
+BiFunction<Integer, Integer, Integer> avgBrightness = (a, b) -> (a + b) / 2;
+```
+
+Using standard functional interfaces makes your code more readable because other developers will immediately recognize the pattern. It also enables better interoperability with Java's Stream API and other libraries.
+
+#### [Prefer primitive functional interfaces](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch9.xhtml#lev61)
+
+Recall from Lecture 3 that Java distinguishes between primitive types (`int`, `double`, `boolean`) and their boxed equivalents (`Integer`, `Double`, `Boolean`). Boxing and unboxing have performance costs and can introduce subtle bugs (e.g., `null` values where you don't expect them).
+
+The generic functional interfaces like `Function<T, R>` only work with reference types — you can't write `Function<int, int>`. So Java provides **primitive specializations** that avoid boxing entirely:
+
+| Generic Interface | Primitive Specialization | Example |
+|-------------------|-------------------------|---------|
+| `Predicate<Integer>` | `IntPredicate` | `int -> boolean` |
+| `Function<Integer, Integer>` | `IntUnaryOperator` | `int -> int` |
+| `Function<T, Integer>` | `ToIntFunction<T>` | `T -> int` |
+| `Function<Integer, R>` | `IntFunction<R>` | `int -> R` |
+| `Consumer<Integer>` | `IntConsumer` | `int -> void` |
+| `Supplier<Integer>` | `IntSupplier` | `() -> int` |
+
+Similar variants exist for `long` and `double`. Here's the brightness example rewritten to avoid boxing:
+
+```java
+// Bad: boxes every int to Integer
+Function<DimmableLight, Integer> getBrightness = DimmableLight::getBrightness;
+
+// Good: returns primitive int directly
+ToIntFunction<DimmableLight> getBrightness = DimmableLight::getBrightness;
+```
+
+In fact, we've already seen the best practice in action: `Comparator.comparingInt` accepts a `ToIntFunction` rather than a `Function<T, Integer>`. This is why the method is named `comparingInt` and not just `comparing` — it signals that you're working with primitives.
+
+**Rule of thumb**: When working with `int`, `long`, or `double` values, prefer the primitive functional interface variants. They're more efficient and signal your intent more clearly.
+
+## Utilize modern Java features for readability
+
+Java has evolved significantly since its initial release. Two features introduced in recent versions dramatically improve code readability: **records** and **pattern matching for instanceof**. These features should have always existed in Java — they eliminate significant boilerplate and make intent clearer.
+
+If you go on to learn other languages, you'll find that Java was *very* late to adopt these ideas. Scala had case classes (similar to records) in 2004. Kotlin added data classes in 2016. Haskell and ML-family languages have had algebraic data types and pattern matching since the 1970s and 80s. Even C# added records in 2020, still beating Java. For decades, Java developers wrote mountains of boilerplate that developers in other languages simply didn't have to write.
+
+### Records: Immutable data classes (5 minutes)
+
+Before Java 16 (released in 2021!), creating a simple immutable data class required substantial boilerplate. Consider this class that represents a point in 2D space:
+
+```java
+// Before records: 30+ lines of boilerplate
+public final class Point {
+    private final int x;
+    private final int y;
+
+    public Point(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public int x() { return x; }
+    public int y() { return y; }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Point other)) return false;
+        return x == other.x && y == other.y;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
+    }
+
+    @Override
+    public String toString() {
+        return "Point[x=" + x + ", y=" + y + "]";
+    }
+}
+```
+
+With records, this becomes a single line:
+
+```java
+// After records: 1 line!
+public record Point(int x, int y) {}
+```
+
+That's it. The record automatically provides:
+- A constructor that initializes all fields
+- Accessor methods for each field (e.g., `x()` and `y()`)
+- Correct `equals`, `hashCode`, and `toString` implementations
+- Immutability (all fields are `final`)
+
+Records are ideal for:
+- Data transfer objects (DTOs - passing data between systems, maybe even going to JSON...)
+- Value objects in domain modeling
+- Return types when you need to return multiple values
+- Immutable configurations
+
+You can also add validation and custom methods to records:
+
+```java
+public record ColorTemperature(int kelvin) {
+    // Compact constructor for validation
+    public ColorTemperature {
+        if (kelvin < 1000 || kelvin > 10000) {
+            throw new IllegalArgumentException("Kelvin must be between 1000 and 10000");
+        }
+    }
+
+    // Custom method
+    public int toMired() {
+        return 1000000 / kelvin;
+    }
+}
+```
+
+**Use records by default** for any class that is primarily a carrier of immutable data. They make the intent crystal clear: "this is just data."
+
+### Pattern matching for instanceof (3 minutes)
+
+You may have noticed this syntax in the `equals` example from the last lecture:
+
+```java
+if (!(obj instanceof DimmableLight other)) return false;
+```
+
+This is **pattern matching for instanceof**, introduced in Java 16. Pattern matching has been a core feature of functional languages like Haskell, OCaml, and F# since the 1980s. Scala brought it to the JVM in 2004. Rust and Swift have had it from day one. Kotlin's "smart casts" (2016) accomplish the same thing. Java finally caught up... 40 years later.
+
+Before this feature, checking a type and casting required two separate steps:
+
+```java
+// Old way: separate instanceof check and cast
+if (obj instanceof DimmableLight) {
+    DimmableLight other = (DimmableLight) obj;
+    // use other...
+}
+```
+
+The new syntax combines both operations:
+
+```java
+// New way: pattern matching combines check and cast
+if (obj instanceof DimmableLight other) {
+    // other is already cast and ready to use
+}
+```
+
+This is cleaner and safer — it's impossible to accidentally cast to the wrong type or forget to cast entirely.
+
+The pattern variable (`other` in this example) is only in scope where it's guaranteed to be valid:
+
+```java
+public void adjustLight(IoTDevice device) {
+    if (device instanceof DimmableLight dimmable) {
+        // dimmable is in scope here
+        dimmable.setBrightness(50);
+    } else if (device instanceof SwitchedLight switched) {
+        // switched is in scope here, dimmable is not
+        switched.turnOn();
+    }
+    // neither dimmable nor switched are in scope here
+}
+```
+
+This feature is particularly useful when working with type hierarchies where you need to handle different subtypes differently. Combined with sealed classes (which we won't cover in this course), pattern matching enables even more powerful and type-safe code.
+
+## Describe common misconceptions about what makes code "readable" and draw on evidence-based research to evaluate the readability of code
+
+### Style guides (2 minutes)
+
+Style guides (like [Google's Java Style Guide](https://google.github.io/styleguide/javaguide.html)) provide consistent formatting rules for a codebase. Consistency reduces cognitive load when reading code, but style guides alone do not make code readable. A perfectly formatted mess is still a mess.
+
+Historical debates about tabs versus spaces are largely irrelevant today. Modern teams use automated formatters to enforce consistency: in this class, we use [Spotless](https://github.com/diffplug/spotless) with [google-java-format](https://github.com/google/google-java-format) and [Checkstyle](https://checkstyle.org/). Configure once, apply automatically, and focus on what actually matters.
+
+More important than formatting is **structure**: how you decompose problems into methods and classes, what abstractions you create, and how you name things.
+
+### [On Naming](https://learning.oreilly.com/library/view/the-programmers-brain/9781617298677/Text/ch08.htm) (5 minutes)
+
+Research on programmer cognition reveals that **naming is one of the most important factors in code readability**. Names serve as beacons that help developers navigate and understand code.
+
+Felienne Hermans provides [an excellent overview of the research on naming](https://learning.oreilly.com/library/view/the-programmers-brain/9781617298677/Text/ch08.htm) — there is much more in that chapter than we can cover here. We focus on one evidence-based approach: Feitelson's **name molds**, a practice that puts consistency and recognizability at the forefront of the naming process. The core idea is a systematic 3-step method:
+
+**Step 1: Select the concepts to include in the name**
+
+What ideas does this variable, method, or class represent? Consider a field storing the color temperature of a light. The relevant concepts might be:
+- *What* we're tracking (color temperature)
+- *When* it applies (startup? current? target?)
+- *Unit* of measurement — color temperature is measured in Kelvins, but is that obvious to every developer on the team?
+
+```java
+// Concepts: "startup" + "color temperature"
+int startupColorTemperature;
+
+// Should we include the unit?
+int startupColorTemperatureKelvin;
+```
+
+The decision of which concepts to include depends on your team and codebase. If every temperature in the project is in Kelvins, including the unit in every name adds noise. If temperatures might be in different units (Kelvin vs. mired), including the unit prevents dangerous confusion.
+
+:::tip History of Programming
+Unit confusion has caused spectacular failures throughout history:
+- **[Mars Climate Orbiter (1999)](https://llis.nasa.gov/lesson/733)**: Lost ($327M) because one team used newton-seconds while another used pound-force-seconds for thrust data.
+- **[Gimli Glider (1983)](https://www.damninteresting.com/the-gimli-glider/)**: Air Canada Flight 143 ran out of fuel mid-flight because ground crew calculated fuel in pounds instead of kilograms. The pilots glided the 767 to an emergency landing at an abandoned airfield.
+- **[Tokyo Disneyland Space Mountain (2003)](https://www.nist.gov/pml/owm/metrication-errors-and-mishaps)**: An axle broke because replacement bearings were sourced using metric dimensions instead of the original inch-based specifications.
+
+Clear naming conventions that include units — or better yet, [type systems that enforce them](https://dl.acm.org/doi/10.1145/3439775) — can prevent such disasters.
+:::
+
+**Step 2: Choose the words to represent each concept**
+
+Select precise words from the problem domain and — critically — **use the same words for the same concepts throughout the codebase**.
+
+```java
+// If "colorTemperature" is the term, use it consistently
+int getColorTemperature();
+void setColorTemperature(int colorTemperature);
+Predicate<Light> filterByColorTemperature;
+
+// Don't mix: "colorTemperature", "colorTemp", "whitePoint", "cct"
+// Pick one and stick with it
+```
+
+This consistency is the key insight: when the same word always means the same concept, readers build a reliable mental model of the codebase. When synonyms are mixed, readers must constantly verify whether two words mean the same thing.
+
+Some projects maintain a **lexicon** — a documented mapping from concepts to the canonical words used to represent them. This is especially valuable on larger teams or long-lived projects.
+
+**Step 3: Construct the name using these words**
+
+Assemble the words into a name. This involves two decisions:
+
+*Word ordering*: Establish consistent patterns. If you use `startupColorTemperature`, don't elsewhere use `colorTemperatureTarget` — pick an ordering convention (modifier-first or modifier-last) and stick with it.
+
+*Casing convention*: Whether you use `camelCase`, `PascalCase`, or `snake_case` matters far less than consistency. Java convention is camelCase for variables/methods and PascalCase for classes, but the crucial point is: pick a convention and enforce it uniformly.
+
+Name length should match scope: loop variables can be short (`i`, `light`), but class fields and public methods deserve descriptive names.
+
+```java
+// Short scope = short name is fine
+for (TunableWhiteLight light : lights) {
+    light.setColorTemperature(2700);
+}
+
+// Long-lived field = descriptive name
+private final int startupColorTemperature;
+```
+
+Developers spend far more time reading code than writing it. Investment in good, consistent names pays dividends every time someone (including your future self) reads the code.

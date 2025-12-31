@@ -215,6 +215,33 @@ As is unfortunately typical for Java's community process, despite [a strong prop
 
 While nullness is the most common type annotation to find, this is an active topic of research, and some day you might also be able to specify other properties with type annotations, such as [the immutability of a type](https://dl.acm.org/doi/10.1109/ICSE.2017.52).
 
+### Suggested Usage of Nullness Annotations (2 minutes)
+
+In this course, we configure new projects with the following approach to nullness annotations:
+
+1. **Mark the package as `@NullMarked`**: Place a `@NullMarked` annotation at the package level (in `package-info.java`). This tells the nullness checker that all types in this package are assumed to be non-null by default.
+
+2. **Explicitly annotate nullable types with `@Nullable`**: When a parameter, return type, or field *can* be null, explicitly mark it with `@Nullable`. This makes the nullability visible in the code.
+
+Here is an example of a `package-info.java` file:
+```java
+@NullMarked
+package edu.neu.cs3100.myproject;
+
+import org.jspecify.annotations.NullMarked;
+```
+
+With this setup, you only need to add annotations where something *is* nullable, keeping your code cleaner:
+```java
+// In a @NullMarked package, arr is assumed non-null
+public int sum(int[] arr) { ... }
+
+// Explicitly mark nullable parameters
+public String format(@Nullable String prefix, String value) { ... }
+```
+
+**Alternative approach for gradual migration**: If you are migrating a legacy codebase, it may be easier to assume everything is nullable by default and explicitly mark non-null types with `@NonNull`. This allows you to incrementally add annotations as you verify each type's nullability. However, for new projects, the `@NullMarked` approach is preferred because it results in fewer annotations overall (since most types are non-null in practice).
+
 
 ## Define the role of methods common to all Objects in Java 
 We previously mentioned that every Java class extends the `java.lang.Object` class. The `Object` class contains three methods that you should (consider) to override. They serve as a great example of the principles we have been discussing.
@@ -258,6 +285,20 @@ Here is a recipe for overriding `equals`:
 2. Use `instanceof` to check if the other object is of the same type as "this". If not, return false.
 3. Cast the other object to the correct type and compare the fields that you care about.
 4. Return false if any of the fields are not equal.
+
+Here is an example implementation:
+```java
+@Override
+public boolean equals(@Nullable Object obj) {
+    if (this == obj) return true;
+    if (!(obj instanceof DimmableLight other)) return false;
+    return this.color == other.color 
+        && this.brightness == other.brightness 
+        && this.on == other.on;
+}
+```
+
+**Why `@Nullable` on the parameter?** Notice that the `equals` method's parameter must be annotated with `@Nullable`. The contract of `equals` explicitly states that `x.equals(null)` should return `false` (not throw an exception), which means null is a valid input. In a `@NullMarked` package, all types are assumed non-null by default, so we must explicitly mark this parameter as `@Nullable`. If you are using NullAway (as we do in this course), the compiler will produce an error if you omit this annotation.
 
 It might be tempting to try to define two objects as equal if they have similar fields but are different types (e.g. `TunableWhiteLight` and `DimmableLight`). However, it is generally not possible to do so without breaking the symmetry or transitivity of `equals`. So, we should not do this.
 
