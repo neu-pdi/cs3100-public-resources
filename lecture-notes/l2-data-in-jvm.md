@@ -21,16 +21,17 @@ Background material:
 
 Here is an example inheritance hierarchy, in the domain of IoT (for brevity, we don't repeat inherited methods in each subtype).
 
-The "base type" is `IoTDevice`. All other types inherit from it.
-`IoTDevice` defines two methods, `identify` and `isAvailable`, that all devices must implement.
+At the top is `IoTDevice`, an interface that defines two methods all devices must implement: `identify` and `isAvailable`.
 The `identify` method is intended to help a human identify the device by, e.g., flashing a light on it.
 The `isAvailable` method is intended to check if the device is currently available to be used (e.g. if it is reachable over the network).
-We declare this type as an `interface` because we don't need to provide a concrete implementation for these methods: different devices will have different ways of identifying themselves and checking availability.
+We declare this type as an `interface` because we want to define a contract without committing to a specific implementation.
 
-Then we have a type for `Fan` (a class), and `Light` (an interface).
-Fan and light both define the same set of methods, but are nonethless declared as different types (can students guess why? a simple answer is that anyone interacting with our program would probably want to be able to distinguish between a fan and a light).
+`BaseIoTDevice` is an abstract class that provides a *skeletal implementation* of the `IoTDevice` interface. It implements `isAvailable()` (checking if the device is connected), but leaves `identify()` abstract since each device type identifies itself differently based on its hardware.
 
-`SwitchedLight` and `DimmableLight` are concrete types that implement the `Light` interface, and we can see that `DimmableLight` extends `Light` to support dimming.
+`Light` is an abstract class that extends `BaseIoTDevice` and adds light-specific behavior: `turnOn()`, `turnOff()`, and `isOn()`.
+`Fan` is a concrete class that extends `BaseIoTDevice` directly.
+
+`SwitchedLight` and `DimmableLight` are concrete types that extend `Light`. `DimmableLight` adds brightness control.
 `TunableWhiteLight` is a concrete type that extends `DimmableLight` to support not only dimming, but also adjusting the color temperature.
 
 
@@ -41,50 +42,52 @@ class IoTDevice {
     +identify()
     +isAvailable()
 }
+class BaseIoTDevice {
+    <<abstract>>
+    #deviceId: String
+    #isConnected: boolean
+    +BaseIoTDevice(deviceId: String)
+    +isAvailable()
+    +identify()*
+}
 class Light {
     <<abstract>>
+    #isOn: boolean
+    +Light(deviceId: String)
     +turnOn()
     +turnOff()
     +isOn()
 }
 class Fan {
+    +Fan(deviceId: String)
     +identify()
-    +isAvailable()
 }
 class SwitchedLight {
+    +SwitchedLight(deviceId: String)
     +identify()
-    +isAvailable()
-    +turnOn()
-    +turnOff()
-    +isOn()
 }
 
 class DimmableLight {
+    #startupBrightness: int
+    +DimmableLight(deviceId: String, startupBrightness: int)
     +identify()
-    +isAvailable()
-    +turnOn()
-    +turnOff()
-    +isOn()
     +setBrightness(brightness: int)
     +getBrightness()
 }
 
 class TunableWhiteLight {
+    -startupColorTemperature: int
+    +TunableWhiteLight(deviceId: String, startupColorTemperature: int, startupBrightness: int)
     +identify()
-    +isAvailable()
-    +turnOn()
-    +turnOff()
-    +isOn()
-    +setBrightness(brightness: int)
-    +getBrightness()
     +setColorTemperature(colorTemperature: int)
     +getColorTemperature()
 }
-IoTDevice <|-- Light
+IoTDevice <|.. BaseIoTDevice
+BaseIoTDevice <|-- Light
+BaseIoTDevice <|-- Fan
 Light <|-- SwitchedLight
 Light <|-- DimmableLight
 DimmableLight <|-- TunableWhiteLight
-IoTDevice <|-- Fan
 ```
 
 By structuring our program in this way, we can reuse code across multiple types that have the same behavior.
@@ -110,7 +113,8 @@ package io.github.neu-pdi.cs3100.iot.lights;
 
 public class TunableWhiteLight extends DimmableLight {
     private int startupColorTemperature;
-    public TunableWhiteLight(int startupColorTemperature) {
+    public TunableWhiteLight(String deviceId, int startupColorTemperature, int startupBrightness) {
+        super(deviceId, startupBrightness);
         this.startupColorTemperature = startupColorTemperature;
     }
     /**
@@ -152,6 +156,24 @@ This code snippet declares our `TunableWhiteLight` class, which extends `Dimmabl
     - `protected` means the method can be called by other methods in the class, and by subclasses.
 - If you don't specify a visibility modifier, it defaults to `package-private`, which means the method can be called by other methods in the same package. This is generally regarded as a bad practice (and bad language feature) because it makes it hard to reason about the accessibility of methods, and we suggest you avoid it.
 
+On the keyword `super`:
+- `super` refers to the direct superclass the same way calling `this` refers to the present class. In this case calling `super` in `TunableWhiteLight` refers to `DimmableWhiteLight`
+
+- **Use case 1**: fields that are common between all instances of the superclass can be abstracted by calling the constructor of the superclass in the first line of the subclass constructor.  Based on how it is used above, the constructor of `DimmableLight` would look something like
+```java
+public class DimmableLight extends Light {
+    protected int startupBrightness;
+    public DimmableLight(String deviceId, int startupBrightness) {
+        super(deviceId);
+        this.startupBrightness = startupBrightness;
+    }
+    ...
+}
+```
+
+
+- **Use case 2**: you might wish to defer to the implementation of your superclass after some work in your subclass.  In that case, use `super.[someMethod]()` as `turnOn` does
+
 Some rules for overriding methods:
 - We use the `@Override` annotation to indicate that we are overriding a method from the superclass. This is not strictly required by the JVM, but is helpful for readability. It also allows the compiler to catch some errors: if you put `@Override` on a method that doesn't actually override a superclass method, the compiler will generate an error.
 
@@ -167,9 +189,9 @@ Each type in the hierarchy must (by our rule, not by the Java language spec) sat
 Java allows assignment of a subclass to a superclass reference:
 ```java
 Light[] lights = new Light[2];
-TunableWhiteLight light = new TunableWhiteLight(2700);
+TunableWhiteLight light = new TunableWhiteLight("light-1", 2700, 100);
 lights[0] = light;
-TunableWhiteLight light2 = new TunableWhiteLight(2200);
+TunableWhiteLight light2 = new TunableWhiteLight("light-2", 2200, 100);
 lights[1] = light2;
 for (Light l : lights) {
     l.turnOn();
@@ -181,8 +203,8 @@ This is allowed because a `TunableWhiteLight` is a `Light`, and thus a `Light` i
 We wrote this somewhat verbosely to make it clear that we are assigning a `TunableWhiteLight` to a `Light` reference, but we could have written this more concisely:
 ```java
 Light[] lights = new Light[] {
-    new TunableWhiteLight(2700),
-    new TunableWhiteLight(2200)
+    new TunableWhiteLight("light-1", 2700, 100),
+    new TunableWhiteLight("light-2", 2200, 100)
 };
 for (Light l : lights) {
     l.turnOn();
@@ -214,20 +236,16 @@ Sometimes we want to declare a set of behaviors that must be implemented by all 
 
 Here is an example of an interface:
 ```java
-public interface Light extends IoTDevice {
+public interface IoTDevice {
     /**
-     * Turn on the light.
+     * Identify the device to a human (e.g., flash a light, spin a fan, beep a speaker).
      */
-    public void turnOn();
+    public void identify();
     /**
-     * Turn off the light.
+     * Check if the device is available.
+     * @return true if the device is connected and available, false otherwise.
      */
-    public void turnOff();
-    /**
-     * Check if the light is on.
-     * @return true if the light is on, false otherwise.
-     */
-    public boolean isOn();
+    public boolean isAvailable();
 }
 ```
 
@@ -238,17 +256,50 @@ public interface Light extends IoTDevice {
     - Can provide a default implementation for some methods
     - Cannot be instantiated directly.
 
-Here is an example of an abstract class:
+A common pattern in Java is to pair an interface with a **skeletal implementation** (also called an "abstract base class"). This gives callers flexibility: they can extend the abstract class for convenience, or implement the interface directly if they need different behavior. You'll see this pattern throughout the Java standard library in upcoming lectures with classes like `AbstractList`, `AbstractMap`, and `AbstractCollection`.
 
-**TODO: Add example**
+Here is an example of an abstract class that provides a skeletal implementation of `IoTDevice`:
+
+```java
+public abstract class BaseIoTDevice implements IoTDevice {
+    protected String deviceId;
+    protected boolean isConnected;
+
+    public BaseIoTDevice(String deviceId) {
+        this.deviceId = deviceId;
+        this.isConnected = false;
+    }
+
+    /**
+     * Check if the device is available.
+     * @return true if the device is connected, false otherwise.
+     */
+    @Override
+    public boolean isAvailable() {
+        return this.isConnected;
+    }
+
+    /**
+     * Identify the device to a human (e.g., flash a light, spin a fan, beep a speaker).
+     * Each device type must implement this differently based on its hardware.
+     */
+    public abstract void identify();
+}
+```
+
+#### Key notes on abstract classes:
+- Fields in abstract classes are often `protected` so they can be accessed by subclasses
+- We implement methods common between all subclasses to reduce duplication (like `isAvailable()`)
+- Not all methods from the interface need to be implemented by abstract classes since they are not directly instantiated, but those methods will still be required in concrete classes that `extend` them
+- We can use `abstract methods` such as `identify()` in abstract classes to enforce that subclasses implement behaviors that depend on their specific characteristics (in this case, hardware)
 
 ## Describe the JVM's implementation of dynamic dispatch (10 minutes)
 
 Recall that we can assign a subclass to a superclass reference:
 ```java
 Light[] lights = new Light[] {
-    new TunableWhiteLight(2700),
-    new DimmableLight()
+    new TunableWhiteLight("light-1", 2700, 100),
+    new DimmableLight("light-2", 100)
 };
 ```
 
@@ -271,7 +322,7 @@ Here is how the JVM implements dynamic dispatch to call method $m$ on object $o$
 This is called "dynamic dispatch" because the method to call is determined at runtime, rather than at compile time. Consider the following example:
 
 ```java
-Light l = new TunableWhiteLight(2700);
+Light l = new TunableWhiteLight("living-room", 2700, 100);
 l.turnOn(); // This will call the turnOn method of the actual type of l, which is TunableWhiteLight.
 ((DimmableLight) l).turnOn(); // Still calls turnOn method of TunableWhiteLight, because when it runs, that's the type of l.
 ```
@@ -349,8 +400,8 @@ You should [only use exceptions for exceptional cases](https://learning.oreilly.
 ```java
 try {
     Light[] lights = {
-        new TunableWhiteLight(2700),
-        new TunableWhiteLight(2200)
+        new TunableWhiteLight("light-1", 2700, 100),
+        new TunableWhiteLight("light-2", 2200, 100)
     };
     int i = 0;
     while(true){ // Infinite loop breaks when i is out of bounds of the array
