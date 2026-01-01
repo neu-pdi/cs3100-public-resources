@@ -120,8 +120,24 @@ interface ScheduleTableProps {
 }
 
 function ScheduleTable({ entries, sectionName, lectureDays, labDays, assignments, scheduleNotes = [], lectureSectionId, labSectionId, getAssignmentUrl }: ScheduleTableProps) {
-  // Combine all meeting days (lectures and labs)
-  const allMeetingDays = Array.from(new Set([...lectureDays, ...labDays]));
+  // Collect days of week from assignments (release and due dates)
+  const assignmentDays = useMemo(() => {
+    const days = new Set<string>();
+    assignments.forEach(a => {
+      if (a.assignedDate) {
+        const dayName = getDayOfWeekName(parseISO(a.assignedDate));
+        days.add(dayName);
+      }
+      if (a.dueDate) {
+        const dayName = getDayOfWeekName(parseISO(a.dueDate));
+        days.add(dayName);
+      }
+    });
+    return Array.from(days);
+  }, [assignments]);
+
+  // Combine all meeting days (lectures, labs, and assignment days)
+  const allMeetingDays = Array.from(new Set([...lectureDays, ...labDays, ...assignmentDays]));
 
   // Create a map of date -> entries for quick lookup (allow multiple meetings per date)
   const entryMap = new Map<DateString, ScheduleEntry[]>();
@@ -327,22 +343,89 @@ function ScheduleTable({ entries, sectionName, lectureDays, labDays, assignments
                     }
 
                     const entriesForDate = entryMap.get(dateStr);
-                    // Date exists but no entry found - should not happen but handle gracefully
-                    if (!entriesForDate || entriesForDate.length === 0) {
+                    const hasClassEntries = entriesForDate && entriesForDate.length > 0;
+                    
+                    // Check if there are assignments for this date (release or due)
+                    const cellAssignments = assignmentsByWeek.has(weekNum) 
+                      ? assignmentsByWeek.get(weekNum)!.filter(assignment => {
+                          if (!assignment.assignedDate || !assignment.dueDate) return false;
+                          const assignedDate = parseISO(assignment.assignedDate);
+                          const dueDate = parseISO(assignment.dueDate);
+                          return format(assignedDate, 'yyyy-MM-dd') === dateStr ||
+                            format(dueDate, 'yyyy-MM-dd') === dateStr;
+                        })
+                      : [];
+                    
+                    // Date exists but no class entry - show "No class" but still render assignments
+                    if (!hasClassEntries) {
+                      const date = parseISO(dateStr);
+                      const formattedDate = format(date, 'MMM d');
+                      
                       return (
                         <td key={day} style={{
                           padding: '0.75rem',
                           backgroundColor: 'var(--ifm-color-emphasis-100)',
                           verticalAlign: 'top'
                         }}>
+                          <div style={{ fontSize: '0.85rem', color: 'var(--ifm-color-emphasis-700)', marginBottom: '0.25rem' }}>
+                            {formattedDate}
+                          </div>
                           <div style={{
                             fontSize: '0.75rem',
                             color: 'var(--ifm-color-emphasis-500)',
                             fontStyle: 'italic',
-                            textAlign: 'center'
+                            textAlign: 'center',
+                            marginBottom: cellAssignments.length > 0 ? '0.5rem' : 0
                           }}>
                             No class
                           </div>
+                          {/* Show assignments even on non-class days */}
+                          {cellAssignments.length > 0 && (
+                            <Box
+                              borderRadius="md"
+                              p="2"
+                              bg="bg.emphasized"
+                            >
+                              {cellAssignments.map((assignment, idx) => {
+                                if (!assignment.assignedDate || !assignment.dueDate) return null;
+                                const assignedDate = parseISO(assignment.assignedDate);
+                                const dueDate = parseISO(assignment.dueDate);
+                                const isReleased = format(assignedDate, 'yyyy-MM-dd') === dateStr;
+                                const isDue = format(dueDate, 'yyyy-MM-dd') === dateStr;
+                                return (
+                                  <div key={assignment.id} style={{ marginBottom: idx < cellAssignments.length - 1 ? '0.5rem' : '0' }}>
+                                    <div style={{ fontSize: '0.8rem' }}>
+                                      {isReleased && (
+                                        <div style={{ marginBottom: isDue ? '0.25rem' : '0' }}>
+                                          <strong>RELEASED:</strong>{' '}
+                                          {assignment.url ? (
+                                            <Link to={getAssignmentUrl ? getAssignmentUrl(assignment.url) || assignment.url : assignment.url}>{assignment.title}</Link>
+                                          ) : (
+                                            assignment.title
+                                          )}
+                                        </div>
+                                      )}
+                                      {isDue && (
+                                        <div>
+                                          <strong>DUE:</strong>{' '}
+                                          {assignment.url ? (
+                                            <Link to={getAssignmentUrl ? getAssignmentUrl(assignment.url) || assignment.url : assignment.url}>{assignment.title}</Link>
+                                          ) : (
+                                            assignment.title
+                                          )}
+                                          {assignment.dueTime && (
+                                            <span style={{ fontSize: '0.7rem', color: 'var(--ifm-color-emphasis-600)' }}>
+                                              {' '}at {assignment.dueTime}
+                                            </span>
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </Box>
+                          )}
                         </td>
                       );
                     }
@@ -447,74 +530,57 @@ function ScheduleTable({ entries, sectionName, lectureDays, labDays, assignments
                         )}
 
                         {/* Show assignments in relevant date cells */}
-                        {assignmentsByWeek.has(weekNum) && (() => {
-                          const cellDate = parseISO(dateStr);
-                          const cellAssignments = assignmentsByWeek.get(weekNum)!.filter(assignment => {
-                            // Skip assignments without dates (shouldn't happen due to earlier filter)
-                            if (!assignment.assignedDate || !assignment.dueDate) return false;
+                        {cellAssignments.length > 0 && (
+                          <Box
+                            borderRadius="md"
+                            p="2"
+                            mt="2"
+                            bg="bg.emphasized"
+                          >
+                            {cellAssignments.map((assignment, idx) => {
+                              // These should always exist due to filtering, but check anyway
+                              if (!assignment.assignedDate || !assignment.dueDate) return null;
 
-                            const assignedDate = parseISO(assignment.assignedDate);
-                            const dueDate = parseISO(assignment.dueDate);
+                              const assignedDate = parseISO(assignment.assignedDate);
+                              const dueDate = parseISO(assignment.dueDate);
 
-                            // Check if this cell's date matches the assigned or due date
-                            return format(assignedDate, 'yyyy-MM-dd') === dateStr ||
-                              format(dueDate, 'yyyy-MM-dd') === dateStr;
-                          });
+                              const isReleased = format(assignedDate, 'yyyy-MM-dd') === dateStr;
+                              const isDue = format(dueDate, 'yyyy-MM-dd') === dateStr;
 
-                          if (cellAssignments.length === 0) return null;
-
-                          return (
-                            <Box
-                              borderRadius="md"
-                              p="2"
-                              mt="2"
-                              bg="bg.emphasized"
-                            >
-                              {cellAssignments.map((assignment, idx) => {
-                                // These should always exist due to filtering, but check anyway
-                                if (!assignment.assignedDate || !assignment.dueDate) return null;
-
-                                const assignedDate = parseISO(assignment.assignedDate);
-                                const dueDate = parseISO(assignment.dueDate);
-
-                                const isReleased = format(assignedDate, 'yyyy-MM-dd') === dateStr;
-                                const isDue = format(dueDate, 'yyyy-MM-dd') === dateStr;
-
-                                return (
-                                  <div key={assignment.id} style={{ marginBottom: idx < cellAssignments.length - 1 ? '0.5rem' : '0' }}>
-                                    <div style={{ fontSize: '0.8rem' }}>
-                                      {isReleased && (
-                                        <div style={{ marginBottom: isDue ? '0.25rem' : '0' }}>
-                                          <strong>RELEASED:</strong>{' '}
-                                          {assignment.url ? (
-                                            <Link to={getAssignmentUrl ? getAssignmentUrl(assignment.url) || assignment.url : assignment.url}>{assignment.title}</Link>
-                                          ) : (
-                                            assignment.title
-                                          )}
-                                        </div>
-                                      )}
-                                      {isDue && (
-                                        <div>
-                                          <strong>DUE:</strong>{' '}
-                                          {assignment.url ? (
-                                            <Link to={getAssignmentUrl ? getAssignmentUrl(assignment.url) || assignment.url : assignment.url}>{assignment.title}</Link>
-                                          ) : (
-                                            assignment.title
-                                          )}
-                                          {assignment.dueTime && (
-                                            <span style={{ fontSize: '0.7rem', color: 'var(--ifm-color-emphasis-600)' }}>
-                                              {' '}at {assignment.dueTime}
-                                            </span>
-                                          )}
-                                        </div>
-                                      )}
-                                    </div>
+                              return (
+                                <div key={assignment.id} style={{ marginBottom: idx < cellAssignments.length - 1 ? '0.5rem' : '0' }}>
+                                  <div style={{ fontSize: '0.8rem' }}>
+                                    {isReleased && (
+                                      <div style={{ marginBottom: isDue ? '0.25rem' : '0' }}>
+                                        <strong>RELEASED:</strong>{' '}
+                                        {assignment.url ? (
+                                          <Link to={getAssignmentUrl ? getAssignmentUrl(assignment.url) || assignment.url : assignment.url}>{assignment.title}</Link>
+                                        ) : (
+                                          assignment.title
+                                        )}
+                                      </div>
+                                    )}
+                                    {isDue && (
+                                      <div>
+                                        <strong>DUE:</strong>{' '}
+                                        {assignment.url ? (
+                                          <Link to={getAssignmentUrl ? getAssignmentUrl(assignment.url) || assignment.url : assignment.url}>{assignment.title}</Link>
+                                        ) : (
+                                          assignment.title
+                                        )}
+                                        {assignment.dueTime && (
+                                          <span style={{ fontSize: '0.7rem', color: 'var(--ifm-color-emphasis-600)' }}>
+                                            {' '}at {assignment.dueTime}
+                                          </span>
+                                        )}
+                                      </div>
+                                    )}
                                   </div>
-                                );
-                              })}
-                            </Box>
-                          );
-                        })()}
+                                </div>
+                              );
+                            })}
+                          </Box>
+                        )}
                       </td>
                     );
                   })}

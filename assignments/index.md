@@ -210,10 +210,15 @@ Group assignments are structured around **individual accountability with team co
 - [**Lab 14: Prep for Future of Programming**](/labs/lab14-future-prep)
   - Explore emerging trends in software development
 
-### **Week 15: Final Presentations**
-- [**Final Project Presentation**](/assignments/cyb13-final-integration)
-  - Demo full CookYourBooks application (all core features + Feature Buffet selections)
-  - Present architecture decisions and how MVVM enabled testability
-  - Discuss team collaboration: what worked? what would you do differently?
-  - Brief report on sustainability considerations and recommendations for future iterations
+### **Week 15: Final Report**
+- [**Final Project Report**](/assignments/cyb13-final-integration) (Due 2026-04-20)
+  - **Application Deliverables:**
+    - Full CookYourBooks application with all core features + Feature Buffet selections
+    - E2E test suite covering critical user workflows
+    - Performance tests demonstrating application responsiveness under load
+  - **Written Report:**
+    - Architecture decisions and how MVVM enabled testability
+    - Team collaboration reflection: what worked? what would you do differently?
+    - Sustainability considerations and recommendations for future iterations
+    - **Custom Feature Infographic**: visual one-pager showcasing your team's unique feature with screenshots (optional: opt-in to have this featured on the course website)
   - Peer evaluation survey submitted

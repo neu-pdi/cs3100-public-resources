@@ -1318,31 +1318,41 @@
       "url": "/assignments/cyb5-service-architecture"
     },
     {
-      "id": "cyb6",
-      "title": "Group Assignment 1: GUI",
+      "id": "cyb10",
+      "title": "Group Assignment 0: Design Sprint",
       "type": "homework",
       "assignedDate": "2026-03-23",
       "dueDate": "2026-04-02",
       "dueTime": "23:59",
       "points": 60,
+      "url": "/assignments/cyb10-design-sprint"
+    },
+    {
+      "id": "cyb11",
+      "title": "Group Assignment 1: Core Features",
+      "type": "homework",
+      "assignedDate": "2026-04-02",
+      "dueDate": "2026-04-09",
+      "dueTime": "23:59",
+      "points": 70,
       "url": "/assignments/cyb11-gui-advanced"
     },
     {
       "id": "cyb12",
-      "title": "Group Assignment 2: OCR Service Integration",
+      "title": "Group Assignment 2: Feature Buffet",
       "type": "homework",
-      "assignedDate": "2026-04-02",
-      "dueDate": "2026-04-09",
+      "assignedDate": "2026-04-09",
+      "dueDate": "2026-04-16",
       "dueTime": "23:59",
       "points": 70,
       "url": "/assignments/cyb12-ocr-integration"
     },
     {
       "id": "cyb13",
-      "title": "Group Assignment 3: Final Integration and Polish",
+      "title": "Final Project Report",
       "type": "homework",
-      "assignedDate": "2026-04-09",
-      "dueDate": "2026-04-16",
+      "assignedDate": "2026-04-16",
+      "dueDate": "2026-04-20",
       "dueTime": "23:59",
       "points": 70,
       "url": "/assignments/cyb13-final-integration"
