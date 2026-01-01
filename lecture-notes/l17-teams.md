@@ -23,6 +23,17 @@ Modern software engineering draws on many distinct skills:
 
 A team allows individuals to contribute their strengths while compensating for each other's weaknesses. The "10x engineer" who can't communicate, document, or collaborate may actually slow down the team overall.
 
+### Cognitive Diversity: Why Different Perspectives Matter
+
+Beyond complementary technical skills, effective teams benefit from **cognitive diversity**—having members who think differently, approach problems from different angles, and bring different life experiences.
+
+Cognitive diversity improves outcomes because:
+- **Different perspectives catch different blind spots.** A security-focused engineer notices vulnerabilities that a feature-focused engineer might miss. Someone with a different cultural background may spot assumptions that don't hold globally.
+- **Debate improves decisions.** When everyone thinks alike, bad ideas go unchallenged. Constructive disagreement leads to better solutions.
+- **Creativity emerges from intersection.** New ideas often come from combining insights from different domains or backgrounds.
+
+This means that working with people who are different from you isn't just a nice thing to do—it produces better software. The discomfort of having your assumptions challenged is the feeling of blind spots being revealed.
+
 ### Brooks' Law and Communication Overhead
 
 In his classic 1975 book *The Mythical Man-Month*, Fred Brooks observed:
@@ -184,6 +195,67 @@ Even with HRT, conflicts happen. When they do:
 5. **"Fight forward, not back."** Focus on solutions and next steps, not on assigning blame for past mistakes.
 
 6. **Escalate appropriately.** If you reach an impasse, bring in a neutral third party (team lead, mentor, manager) to help mediate—but don't expect them to solve the problem for you.
+
+### Accountability: Being Someone Your Team Can Rely On
+
+Accountability isn't about blame—it's about being the kind of teammate others can depend on. In professional settings, accountability means:
+
+**Owning your commitments:**
+- If you say you'll do something, do it—or communicate early if you can't
+- Don't wait until the deadline to reveal that you're stuck
+- When you make a mistake, acknowledge it and focus on the fix, not excuses
+
+**Taking responsibility for outcomes, not just effort:**
+- "I worked hard on it" isn't the same as "it's done and working"
+- Results matter, but so does how you handle setbacks
+- Ask for help when you need it—struggling silently isn't heroic
+
+**Supporting team outcomes, not just your own work:**
+- If a teammate is struggling, offer help before being asked
+- If you finish early, ask what else needs doing
+- The team succeeds or fails together
+
+Accountability builds trust. When teammates know they can count on you, the team moves faster because they don't need to constantly check in or build redundancy around unreliable members.
+
+## Seeking and receiving feedback effectively (5 minutes)
+
+We've discussed how to *give* good feedback in code review, but *seeking* feedback is equally important—and often harder.
+
+### Why seeking feedback is a professional skill
+
+Early in your career (and throughout it), others can see things about your work that you can't. Your code might have patterns you don't notice. Your communication style might be unclear in ways you don't realize. Seeking feedback is how you accelerate your own growth.
+
+**The catch:** Many people wait for feedback to come to them, or only hear it during formal reviews. Proactively seeking feedback—especially when it's uncomfortable—is what separates professionals who grow quickly from those who plateau.
+
+### How to seek feedback effectively
+
+**Ask specific questions:**
+- ❌ "What did you think of my code?"
+- ✅ "I'm trying to improve my API design. Were the method signatures in this PR clear? What would have made them clearer?"
+
+**Ask the right people:**
+- Someone who will be honest with you (not just nice)
+- Someone with relevant expertise or perspective
+- Someone who has observed your work directly
+
+**Make it safe to be honest:**
+- "I'm genuinely trying to improve—honest feedback helps more than kind feedback."
+- Don't argue or defend when receiving feedback; just listen and ask clarifying questions
+- Thank people for critical feedback (it's harder to give than praise)
+
+### Receiving feedback without defensiveness
+
+When you receive feedback, your instinct may be to explain, defend, or minimize. Resist this urge.
+
+**Instead:**
+1. **Say "thank you"** before responding. This creates space between your reaction and your response.
+2. **Ask clarifying questions** if you don't understand: "Can you give me an example?"
+3. **Reflect before reacting.** You don't have to agree immediately, but don't dismiss feedback just because it's uncomfortable.
+4. **Follow up.** After you've had time to process, decide what to act on. Tell the person what you changed—it encourages them to give feedback again.
+
+### The discomfort is the point
+
+Useful feedback often feels uncomfortable because it reveals blind spots. If all the feedback you receive feels good, you're probably only hearing from people who tell you what you want to hear. Seek out the people who will challenge you.
 
 ## Write clear and specific GitHub issues, pull requests, and comments (10 minutes)
 

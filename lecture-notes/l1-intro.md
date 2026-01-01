@@ -16,20 +16,31 @@ title: Course Overview and Introduction to Java
 - This course expands on principles of program design and implementation, looking at larger scale systems
 - This course is a principles-based course, not a syntax-based course: we will look at the big picture and why things are the way they are, rather than just the syntax of the language
   - We will provide you with flashcards and other resources to help you learn the syntax. We expect you to use them, and will move quickly past the syntax in lecture.
-- Deliverables:
-  - Weekly/bi-weekly programming assignments that build into a final project
-  - Quizzes
-  - Exams
-  - Labs
-  - Participation
-    - Two kinds of activities that *you must do in order to receive an A in the course*. They are not graded for correctness: only on completion.
-      - Attendance in class, completion of in-class polls
-      - Completion of pre-lecture activities (e.g. flashcards)
+- Beyond technical skills
+  - This course is required for all CS majors—not just those heading into software engineering. Whether you pursue industry, research, ML, data science, or graduate school, you will collaborate with others on technical work.
+  - The CS field changes constantly. The specific languages and tools we teach will evolve, but your ability to *learn new things quickly* is a career-long asset. We'll practice this throughout the semester.
+  - This course is also an opportunity to learn how *you* work best. What's your working style? How do you collaborate effectively? What are your strengths? These insights matter regardless of where CS takes you.
+  - Growth mindset: This course will challenge you. Struggling doesn't mean you're failing—it means you're learning. The goal isn't to be perfect from day one; it's to be better at the end than at the beginning. When something is hard, that's the learning happening. We are here to support you in your learning - you should not be struggling alone! We will provide you with a *lot* of resources for self-study, plus labs, study sessions, office hours, a discussion board, and workshops.
+- Grade components (see [Syllabus](/syllabus) for full details):
+  - **Individual assignments (30%)**: Five assignments (A1-A5) that build progressively into the CookYourBooks project. You'll implement features using the previous week's solution as a starting point.
+  - **Group assignments (20%)**: Three team assignments (GA1-GA3) where you collaborate on larger features. Graded as a team, but individual contribution is tracked—you must demonstrate meaningful weekly participation.
+  - **Exams (40%)**: Two midterms (20% total) and a cumulative final (20%). If your final exam score is higher than your midterm average, it replaces that average.
+  - **Labs (5%)**: Weekly labs graded on good-faith effort. Attend, engage, submit something that shows you tried.
+  - **Participation (5%)**: Each instructor has their own procedure, but all require some degree of in-class engagement.
+  - **Grading philosophy**: Your letter grade requires meeting minimum thresholds across categories—you can't compensate for weak exam performance with perfect homework, or vice versa. This ensures you develop competence across all aspects of the course. The exam threshold for a B is intentionally lower (55%) to accommodate students who struggle with timed assessments but demonstrate mastery through project work.
 - Expectations:
-  - N-M hours per week 
-  - Do all of the mandatory readings in advance of each lecture
-  - Consider which optional readings are most relevant to your interests. 
-  - Bi-weekly assignments expected to take 20 hours, do not wait until the last minute
+  - Time commitment: 4 credit course: 200 minutes per-week of instruction plus 8-12 hours per-week of homework and self-study. Plus lab time (1 additional credit, no extra time required outside of lab time). Bi-weekly assignments expected to take 20 hours—do not wait until the last minute.
+  - Preparation: Read the lecture notes in advance of each lecture. Complete flash cards when assigned. Consider which optional readings are most relevant to your interests.
+  - Engagement: Come to class ready to participate. Ask questions when you're confused—your question probably helps others too. Contribute to discussions on the board; help classmates when you can.
+  - Ask for help early: If you're stuck for more than 30 minutes, reach out. Office hours, the discussion board, and your classmates are all resources. Don't bang your head against your desk trying to figure something out alone—*learning how to get unstuck is one of the objectives of this course*. If you spend hours struggling in isolation, you're missing the opportunity to learn the problem-solving process with guidance. Come to us with your confusion; working through it together is the learning.
+  - Professional conduct: Treat classmates, TAs, and instructors with respect. In group work, be someone your teammates can rely on. Give and receive feedback constructively.
+- What you can expect from us:
+  - We will respond to questions on the discussion board within 24 hours on weekdays (often faster).
+  - Office hours are for *your* benefit—come with questions, come to work through problems together, or just come to meet the staff. We want to help.
+  - We will provide clear rubrics and expectations for assignments. If something is unclear, ask—and we'll clarify for everyone. TAs are instructed to identify recurring questions and raise them to the instructional team to ensure that consistent clarifications are provided.
+  - We will give you feedback that helps you improve, not just grades. When we point out issues, we'll explain why and how to do better.
+  - We will be honest about what we don't know. The field is vast; no one knows everything. We'll model the learning process ourselves. We will adapt assessments and instruction based on feedback from students and TAs, discussed collaboratively among the instructional team.
+  - We will treat you as colleagues-in-training. We expect professional behavior, and we'll extend the same respect to you.
 
 ## Review the Systematic Program Design and Implementation Process (10 minutes)
 The goal of this class is to help you better understand how to design and implement programs. We provide an explicit, systematic process for doing so, inspired by classical software engineering practices. You should be familiar with this process from CS 2100, which focused on the requirements, design, and implementation steps for medium-scale programs.

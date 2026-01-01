@@ -236,6 +236,12 @@ Suggested background reading and source for much of this section: [Introduction 
 
 Just as we've emphasized systematic program design and implementation (Requirements → Design → Implementation → Validation), we'll see how systematic debugging follows a similar process.
 
+### Debugging as critical thinking
+
+**Debugging is critical thinking applied to code.** The skills you develop here—forming hypotheses, testing assumptions, following evidence, questioning your own beliefs—apply far beyond programming. Whether you're debugging code, analyzing experimental results, evaluating a research paper, or troubleshooting any complex system, the same disciplined thinking process applies.
+
+The key mindset shift: when debugging, you're not just "fixing code"—you're conducting an investigation. The bug is a mystery to be solved through evidence and reasoning, not guessing.
+
 ### The scientific method applied to debugging
 
 Debugging is fundamentally a scientific process of forming and testing hypotheses about program behavior:

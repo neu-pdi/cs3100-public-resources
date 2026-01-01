@@ -168,6 +168,8 @@ What's a meta-review? Who does it? When? What constitutes "quality"? Different s
 
 Scope risk relates to the size and complexity of what you're committing to build. It's not just about feature count—it's about interdependencies, edge cases, and hidden complexity.
 
+**A professional skill: Negotiating scope.** When requirements exceed available time or resources, you need to negotiate priorities with stakeholders. This isn't about saying "no"—it's about collaborative problem-solving: "Given our constraints, how do we deliver the most value?" The ability to advocate for realistic scope while understanding stakeholder priorities is essential in any technical collaboration, whether you're working with a manager, a research advisor, or a client.
+
 **Low Scope Risk:**
 > "Students have a fixed number of late tokens, and can apply late tokens before the deadline, each token allowing at 24-hour extension."
 
@@ -206,6 +208,8 @@ Each question represents additional scope. What seemed like one feature is actua
 ### Risk Dimension 3: Volatility (How likely are requirements to change?)
 
 Volatility risk comes from requirements that are likely to change during or after development.
+
+**A professional skill: Adaptability.** Requirements *will* change—this is not a failure of requirements analysis, but a reality of complex work. The question isn't whether to expect change, but how to respond professionally when it happens. Adaptability means designing systems that can evolve, communicating clearly when changes affect timelines, and maintaining composure when priorities shift. These skills matter in any technical context—not just software engineering.
 
 **Low Volatility Risk:**
 > "Use the university's standard letter grading scale (A, A-, B+, B, B-, C+, C, C-, D+, D, D-, F)"
@@ -402,7 +406,7 @@ Let's identify stakeholders for our grading system and understand their often-co
 
 ### Conflicting Stakeholder Interests
 
-The challenge is that stakeholder interests often directly conflict:
+The challenge is that stakeholder interests often directly conflict. Resolving these conflicts is fundamentally a *negotiation* skill—understanding what each party truly needs (not just what they initially ask for) and finding creative solutions that address underlying concerns. This skill applies whether you're building software, collaborating on research, or working on any team project.
 
 **Student vs. TA Conflict:**
 - Students want unlimited regrade requests for fairness
