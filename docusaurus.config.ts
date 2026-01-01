@@ -136,7 +136,7 @@ const config: Config = {
 
   themeConfig: {
     // Replace with your project's social card
-    image: 'img/qwan-social-card.png',
+    image: 'img/pdi2-software-that-lasts.png',
     navbar: {
       title: 'CS 3100 Public Resources',
       logo: {

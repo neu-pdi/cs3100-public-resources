@@ -7,17 +7,18 @@ import { useWeekSchedule } from '../hooks/useCalendarEvents';
 import { startOfWeek, format, parseISO, isSameDay } from 'date-fns';
 import Link from '@docusaurus/Link';
 import DocusaurusLink from '@docusaurus/Link';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 // Helper to extract lectureId from uid and generate lecture URL
 function getLectureUrlFromUid(uid: string | undefined): string | null {
-  if (!uid || !uid.startsWith("lecture-")) return null;
-  // uid format: lecture-{lectureId}-{dateStr}-{sectionId}
-  // dateStr format: YYYY-MM-DD (has 2 hyphens)
-  // We need to extract everything between "lecture-" and the date pattern
-  const match = uid.match(/^lecture-(.+?)-(\d{4}-\d{2}-\d{2})-/);
-  if (!match || match.length < 2) return null;
-  const lectureId = match[1];
-  return `/lecture-notes/${lectureId}`;
+    if (!uid || !uid.startsWith("lecture-")) return null;
+    // uid format: lecture-{lectureId}-{dateStr}-{sectionId}
+    // dateStr format: YYYY-MM-DD (has 2 hyphens)
+    // We need to extract everything between "lecture-" and the date pattern
+    const match = uid.match(/^lecture-(.+?)-(\d{4}-\d{2}-\d{2})-/);
+    if (!match || match.length < 2) return null;
+    const lectureId = match[1];
+    return `/lecture-notes/${lectureId}`;
 }
 
 export default function Hello() {
@@ -47,12 +48,21 @@ export default function Hello() {
 
                     {/* Course Header */}
                     <Box>
-                        <Text fontSize="sm" color="fg.muted" mb={1}>
-                            {courseConfig?.semester || 'Spring 2026'}
-                        </Text>
-                        <Heading size="2xl" mb={2}>
-                            {courseConfig?.courseCode || 'CS 3100'}: Program Design & Implementation II
-                        </Heading>
+                        <Box mb={0}>
+                            <img
+                                src={useBaseUrl('/img/pdi2-software-that-lasts.png')}
+                                alt="CS 3100: Program Design and Implementation II - Software That Lasts Cover Image shows a technological landscape"
+                                style={{ width: '100%', borderRadius: '8px', objectFit: 'cover' }}
+                            />
+                        </Box>
+                        {/* <HStack justify="space-between" mb={0}>
+                            <Heading>
+                                {courseConfig?.courseCode || 'CS 3100'}: Program Design and Implementation 2
+                            </Heading>
+                            <Heading size="sm" color="fg.muted">
+                                {courseConfig?.semester || 'Spring 2026'}
+                            </Heading>
+                        </HStack> */}
                         <Text color="fg.muted" lineHeight="tall">
                             Most software outlives the assumptions it was built on. Requirements evolve, teams change, and the world around your code shifts in ways you didn't anticipate. This course teaches you to write software that can adapt—code that remains understandable, modifiable, and valuable over its entire lifecycle. You'll learn to think beyond immediate correctness to consider sustainability in multiple dimensions: technical longevity, economic viability, and the broader impacts your software has on its users and society.
                         </Text>
