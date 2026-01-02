@@ -50,7 +50,7 @@ export default function Hello() {
                     <Box>
                         <Box mb={0}>
                             <img
-                                src={useBaseUrl('/img/pdi2-software-that-lasts.png')}
+                                src={useBaseUrl('/img/web/pdi2-software-that-lasts.png')}
                                 alt="CS 3100: Program Design and Implementation II - Software That Lasts Cover Image shows a technological landscape"
                                 style={{ width: '100%', borderRadius: '8px', objectFit: 'cover' }}
                             />

@@ -2,7 +2,10 @@
 sidebar_position: 7
 lecture_number: 7
 title: "Changeability II: Coupling and Cohesion"
+image: /img/lectures/web/l7.png
 ---
+
+![Lecture 7: Changeability II: Coupling and Cohesion](/img/lectures/web/l7.png)
 
 ## Analyze the changeability of a software module for some hypothetical change using the language of coupling and cohesion (10 minutes)
 Recall from last lecture that the specific requirements for a piece of software are often not fully specified at the beginning of a project. As a result, software designers need to be able to reason about how a software module will change in response to changes in requirements.

@@ -2,7 +2,10 @@
 sidebar_position: 5
 lecture_number: 5
 title: Functional Programming and Readability
+image: /img/lectures/web/l5.png
 ---
+
+![Lecture 5: Functional Programming and Readability](/img/lectures/web/l5.png)
 
 ## Describe the historical context of functional programming in the JVM (10 minutes)
 "Functional programming" is a style of programming where functions are first-class values. That is, you can have primitives (e.g. ints, booleans, etc.) and objects that you store as variables, pass as arguments, and return from functions... *and* functions are also objects. This feature was introduced in Java 8 (2014), meaning that it's widely used in modern Java code, but you will also likely see a lot of older code that doesn't use it.

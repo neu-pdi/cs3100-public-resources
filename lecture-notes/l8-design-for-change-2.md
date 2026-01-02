@@ -2,7 +2,10 @@
 sidebar_position: 8
 lecture_number: 8
 title: "Changeability III: Principles for inheritance"
+image: /img/lectures/web/l8.png
 ---
+
+![Lecture 8: Changeability III: Principles for inheritance](/img/lectures/web/l8.png)
 
 ## Other design principles related to changeability: SOLID (20 minutes)
 In the previous two lectures, we explored changeability through information hiding, modularity, coupling, and cohesion. Today, we'll examine a set of design principles known as SOLID, which provide concrete guidelines for creating changeable object-oriented designs.

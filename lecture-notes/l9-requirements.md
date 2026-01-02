@@ -2,7 +2,10 @@
 sidebar_position: 9
 lecture_number: 9
 title: Interpreting Requirements
+image: /img/lectures/web/l9.png
 ---
+
+![Lecture 9: Interpreting Requirements](/img/lectures/web/l9.png)
 
 ## Explain the overall purpose of requirements analysis (10 minutes)
 

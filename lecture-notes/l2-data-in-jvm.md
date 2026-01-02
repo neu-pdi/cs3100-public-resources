@@ -2,14 +2,14 @@
 sidebar_position: 2
 lecture_number: 2
 title: Inheritance and Polymorphism in Java
+image: /img/lectures/web/l2.png
 required_preparation: 
     - Complete sets 1 and 2 of the Java syntax flashcards
 optional_preparation:
     - 'Read [Core Java Volume I: Fundamentals, Ch 3](https://learning.oreilly.com/library/view/core-java-volume/9780135328385/v1/ch3/index.xhtml#ch03lev1sec1)'
 ---
 
-Background material:
-
+![Lecture 2: Inheritance and Polymorphism in Java](/img/lectures/web/l2.png)
 
 ## Describe why inheritance is a core concept of object-oriented programming (10 minutes)
 

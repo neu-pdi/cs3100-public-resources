@@ -1,11 +1,15 @@
 ---
 sidebar_position: 1
 path: /
+image: /img/assignments/web/overview.png
 ---
 
 # Cook Your Books: Project Overview
 
+
 Throughout this semester, you will build CookYourBooks, a comprehensive desktop application for managing digital cookbooks and recipes. This real-world application addresses a common problem: how to efficiently digitize, organize, and use recipes from physical cookbooks and websites. The final product will feature OCR-powered recipe extraction from images, a rich domain model for representing complex recipe structures, intelligent scaling and unit conversion, and both command-line and graphical user interfaces. By the end of the course, you'll have created a fully-functional application that could genuinely be used by home cooks and professional chefs alike—something substantial enough for your portfolio that demonstrates your ability to design and implement complex software systems. For inspiration on what a real-world application might look like, refer to existing products [EatYourBooks](https://eatyourbooks.com/), [ChefSteps' Recipe Interface](https://www.chefsteps.com/activities/skillet-apple-pie), and [CookShelf](https://www.cookshelf.app/). 
+
+![Cook Your Books: Project Overview](/img/assignments/web/overview.png)
 
 The project follows a carefully scaffolded approach where each weekly assignment builds upon the previous one, with our solution to each assignment provided as the foundation for the next. You'll begin in Module 1 (Design in the Small) by implementing the core domain model—learning to design rich object hierarchies for ingredients, quantities, and recipes while practicing fundamental OO principles like inheritance, polymorphism, and encapsulation. As you progress into Module 2 (Design in the Large), you'll add persistence through custom JSON serialization, build comprehensive test suites with mocking, create service layers that separate business logic from infrastructure concerns, and explore architecture patterns for distributed systems. Starting in Assignment 3 (Week 5-6), you'll incorporate AI coding assistants into your workflow, learning to leverage these tools effectively while maintaining code quality and understanding.
 

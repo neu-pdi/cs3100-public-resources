@@ -1,7 +1,9 @@
 ---
 title: "Assignment 2: Unit Conversion, Recipe and Instruction Classes"
 sidebar_position: 3
+image: /img/assignments/web/a2.png
 ---
+
 
 :::warning Preliminary Content
 
@@ -20,6 +22,8 @@ You'll also implement the `Recipe`, `Instruction`, and `RecipeNote` classes that
 **Due:** Thursday, January 29, 2026 at 11:59 PM Boston Time
 
 **Prerequisites:** This assignment builds on the A1 solution (provided). You should be familiar with the `Quantity`, `Ingredient`, and `Unit` hierarchies from Assignment 1.
+
+![Assignment 2: Unit Conversion, Recipe and Instruction Classes](/img/assignments/web/a2.png)
 
 ## Learning Outcomes
 

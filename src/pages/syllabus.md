@@ -254,7 +254,7 @@ We maintain firsthand experience with these tools so we can guide you effectivel
 - Expanding learning objectives into draft lecture notes
 - Drafting project requirements, instructions, solutions, test cases, and initial rubrics
 - Developing Pawtograder, the course operations platform
-- Creating visual assets like the OctoPaws logo and the eerie "Quality Without A Name" social badge
+- Creating visual assets like the OctoPaws logo and all of the pixel art images used in the course content
 - Drafting this very policy document, synthesizing prior writings, emails, and notes that we have exchanged with each other
 
 Using AI for these tasks allows us to focus on work that cannot be delegated: deciding what concepts to teach and in what sequence, designing assignments that build skills progressively, and providing feedback tailored to individual students. Every piece of AI-assisted content goes through the same critical review process we ask you to develop. 

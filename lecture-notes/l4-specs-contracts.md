@@ -2,7 +2,10 @@
 sidebar_position: 4
 lecture_number: 4
 title: Specifications and Common Contracts
+image: /img/lectures/web/l4.png
 ---
+
+![Lecture 4: Specifications and Common Contracts](/img/lectures/web/l4.png)
 
 ## Describe the role of method specifications in achieving program modularity and improving readability (10 minutes)
 

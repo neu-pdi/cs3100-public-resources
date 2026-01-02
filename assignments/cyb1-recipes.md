@@ -1,6 +1,7 @@
 ---
 title: "Assignment 1: Recipe Domain Model"
 sidebar_position: 2
+image: /img/assignments/web/a1.png
 ---
 
 ## Overview
@@ -10,6 +11,8 @@ Welcome to the **CookYourBooks** project! Over the course of the semester, you'l
 In this first assignment, you'll lay the foundation by implementing the core domain model for **ingredients and quantities**. You'll create two class hierarchies that work together: one for representing different types of quantities (exact, fractional, and range), and another for representing ingredients (measured and vague). These classes will be the building blocks for everything else you create this semester, so it's important to get them right!
 
 **Due:** Thursday, January 15, 2026 at 11:59 PM Boston Time
+
+![Assignment 1: Recipe Domain Model](/img/assignments/web/a1.png)
 
 ## Learning Outcomes
 By completing this assignment, you will demonstrate proficiency in the following skills:

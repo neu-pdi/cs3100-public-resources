@@ -2,7 +2,10 @@
 sidebar_position: 3
 lecture_number: 3
 title: Inheritance and Polymorphism in Java II
+image: /img/lectures/web/l3.png
 ---
+
+![Lecture 3: Inheritance and Polymorphism in Java II](/img/lectures/web/l3.png)
 
 ## Review the role of inheritance and dynamic dispatch in Java (5 minutes)
 

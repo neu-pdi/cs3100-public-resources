@@ -2,7 +2,10 @@
 sidebar_position: 6
 lecture_number: 6
 title: "Changeability I: Modularity and Information Hiding"
+image: /img/lectures/web/l6.png
 ---
+
+![Lecture 6: Changeability I: Modularity and Information Hiding](/img/lectures/web/l6.png)
 
 ## Describe the importance of changeability as a goal of program design and implementation (10 minutes)
 
