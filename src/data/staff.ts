@@ -195,13 +195,6 @@ export const staffMembers: StaffMember[] = [
     headshot: "staff-placeholder.svg"
   },
   {
-    name: "Rimjhim Singh",
-    role: "ta",
-    campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg"
-  },
-  {
     name: "Sean Snaider",
     role: "ta",
     campus: "Boston",
@@ -210,6 +203,20 @@ export const staffMembers: StaffMember[] = [
   },
   {
     name: "Advaita Srihari Raghavan",
+    role: "ta",
+    campus: "Boston",
+    bio: "",
+    headshot: "staff-placeholder.svg"
+  },
+  {
+    name: "Samuel Schumacher",
+    role: "ta",
+    campus: "Boston",
+    bio: "",
+    headshot: "staff-placeholder.svg"
+  },
+  {
+    name: "Afrah Fathima Shahabuddin",
     role: "ta",
     campus: "Boston",
     bio: "",
@@ -245,13 +252,6 @@ export const staffMembers: StaffMember[] = [
   },
   {
     name: "Aditya Vij",
-    role: "ta",
-    campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg"
-  },
-  {
-    name: "Grant Wang",
     role: "ta",
     campus: "Boston",
     bio: "",
