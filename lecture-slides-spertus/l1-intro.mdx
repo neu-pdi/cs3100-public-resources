@@ -8,6 +8,7 @@ import RevealJS, { Slide } from '@site/src/components/RevealJS';
 import QuoteSlide from '@site/src/components/QuoteSlide';
 import ImageSlide from '@site/src/components/ImageSlide';
 import Img from '@site/src/components/Img';
+import PollSlide from '@site/src/components/PollSlide';
 
 <RevealJS transition="slide">
 
@@ -160,6 +161,8 @@ import Img from '@site/src/components/Img';
 
 </Slide>
 
+
+
 <Slide>
 
 ## Your Course Team
@@ -207,10 +210,19 @@ import Img from '@site/src/components/Img';
 
 </Slide>
 
-
 {/* ============================================ */}
 {/* ACT 1: A BRIEF HISTORY OF SOFTWARE ENGINEERING */}
 {/* ============================================ */}
+
+
+
+<Slide>
+## How much did a typical computer weigh in the 1940s?
+  <PollSlide
+    choices={['under 10 pounds', '10-100 pounds', '100-200 pounds', '200-2000 pounds', 'over a ton']}
+    username="espertus"
+  />
+</Slide>
 
 {/* 1950s ENIAC slide - image right, side text */}
 <Slide>
