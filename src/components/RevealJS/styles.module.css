@@ -1,12 +1,163 @@
+/* Wrapper fills available Docusaurus content area */
+.revealWrapper {
+  width: 100%;
+  /* Use sticky positioning to stay at top of visible area */
+  position: sticky;
+  top: 0;
+  /* Height calculation: viewport - navbar */
+  height: calc(100vh - var(--ifm-navbar-height, 60px));
+  display: block;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+/* ===================================
+   FOUC Prevention (Flash of Unstyled Content)
+   ===================================
+   
+   Hide slides until RevealJS is initialized to prevent
+   all slides from being visible and stacked on top of each other
+   during the brief initialization period.
+*/
+
+/* Hide all slide content while RevealJS is initializing */
+.revealWrapper.initializing :global(.reveal .slides) {
+  visibility: hidden;
+}
+
+/* Ensure the container still takes up space during initialization */
+.revealWrapper.initializing :global(.reveal) {
+  visibility: visible;
+}
+
+/* ===================================
+   Slide Content Alignment & Padding
+   ===================================
+   
+   Default slide content alignment is top with horizontal padding.
+   Individual slides can override with their own styling.
+*/
+
+/* Align slide content to top by default */
+:global(.reveal .slides section) {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: stretch !important;
+  text-align: left;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+  box-sizing: border-box !important;
+}
+
+/* Nested/vertical slides inherit the same alignment */
+:global(.reveal .slides section section) {
+  justify-content: flex-start !important;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+}
+
+/* ===================================
+   Slide Title Auto-Fit
+   ===================================
+   
+   Slide titles (h2) shrink to fit on one line rather than wrap.
+   Uses CSS scale transform based on container width.
+*/
+
+/* Slide titles: single line, auto-shrink to fit */
+:global(.reveal .slides section h2) {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  width: fit-content !important;
+  max-width: 100% !important;
+  /* Use a smaller base size that scales with slide width */
+  font-size: clamp(1.2em, 4.5cqi, 1.8em) !important;
+}
+
+/* Main title (h1) on title slides - also prevent wrapping */
+:global(.reveal .slides section h1) {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  width: fit-content !important;
+  max-width: 100% !important;
+  font-size: clamp(1.5em, 6cqi, 2.5em) !important;
+}
+
+/* Enable container query context on slides */
+:global(.reveal .slides section) {
+  container-type: inline-size;
+}
+
+/* ===================================
+   Code Block Styling for RevealJS
+   ===================================
+   
+   By default, code blocks scale to fit rather than scroll.
+   This ensures code is visible all at once during presentations.
+   
+   Add class "scrollable" to a code block's parent to enable scrolling.
+*/
+
+/* Code blocks: scale to fit, no scrolling by default */
+:global(.reveal .slides section pre) {
+  max-height: none !important;
+  overflow: hidden !important;
+  /* Responsive font size based on slide width */
+  font-size: clamp(0.4em, 2cqi, 0.9em) !important;
+  width: 100% !important;
+  margin: 0.5em 0 !important;
+}
+
+:global(.reveal .slides section pre code) {
+  max-height: none !important;
+  overflow: hidden !important;
+  font-size: inherit !important;
+  padding: 0.5em !important;
+  white-space: pre !important;
+}
+
+/* Docusaurus code block container adjustments */
+:global(.reveal .slides section [class*="codeBlockContainer"]) {
+  max-height: none !important;
+  overflow: hidden !important;
+}
+
+:global(.reveal .slides section [class*="codeBlockContent"]) {
+  max-height: none !important;
+  overflow: hidden !important;
+}
+
+/* Allow scrolling when explicitly requested via .scrollable class */
+:global(.reveal .slides section .scrollable pre),
+:global(.reveal .slides section .scrollable [class*="codeBlockContainer"]) {
+  max-height: 60vh !important;
+  overflow: auto !important;
+}
+
+:global(.reveal .slides section .scrollable pre code),
+:global(.reveal .slides section .scrollable [class*="codeBlockContent"]) {
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+/* Container fills available space - Reveal.js handles internal positioning */
 .revealContainer {
   position: relative;
   width: 100%;
-  height: 80vh;
-  min-height: 600px;
-  margin: 2rem 0;
+  height: 100%;
+  overflow: hidden;
 }
 
-.revealContainer.fullscreen {
+/* Override Reveal's viewport behavior for embedded mode */
+:global(.reveal.embedded) {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Fullscreen wrapper fills entire viewport with dead space background */
+.revealWrapper.fullscreen {
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
@@ -15,17 +166,88 @@
   width: 100vw !important;
   height: 100vh !important;
   z-index: 99999 !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  background: inherit;
-  display: block !important;
-  visibility: visible !important;
+  /* Dead space background - subtle gray that differs from slide background */
+  background: #e5e5e5;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
+/* Dark mode dead space background */
+:global([data-theme="dark"]) .revealWrapper.fullscreen,
+.revealWrapper.fullscreen:has(.revealContainer[data-theme="black"]) {
+  background: #1a1a1a;
+}
+
+/* Fullscreen container fills the wrapper */
+.revealWrapper.fullscreen .revealContainer {
+  width: 100%;
+  height: 100%;
+}
+
+/* Ensure the reveal element fills its container in fullscreen mode */
+.revealWrapper.fullscreen :global(.reveal) {
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+}
+
+/* Ensure reveal viewport in fullscreen mode fills the space */
+:global(.reveal-fullscreen .reveal-viewport) {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+
+/* ===================================
+   Toolbar Buttons (Fullscreen, PDF Export)
+   ===================================
+*/
+
+.toolbarButtons {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 10000;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.toolbarButton {
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+  backdrop-filter: blur(4px);
+  width: 40px;
+  height: 40px;
+}
+
+.toolbarButton:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.toolbarButton:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+/* When in fullscreen mode, adjust toolbar position */
+.revealWrapper.fullscreen .toolbarButtons {
+  top: 1rem;
+}
+
+/* Legacy class names for backwards compatibility */
 .fullscreenButton {
-  position: fixed;
-  top: calc(var(--ifm-navbar-height, 60px) + 1rem);
-  right: 1rem;
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
   z-index: 10000;
   background: rgba(0, 0, 0, 0.5);
   color: white;
@@ -42,7 +264,6 @@
   height: 40px;
 }
 
-/* When in fullscreen mode, keep at top-right but adjust position */
 .fullscreenButton.fullscreenButtonActive {
   top: 1rem;
 }
@@ -391,6 +612,369 @@
   visibility: hidden !important;
   opacity: 0 !important;
   pointer-events: none !important;
+}
+
+/* ===================================
+   PDF Export / Print Mode Styles
+   ===================================
+   
+   When ?print-pdf is in the URL, Reveal.js enters print mode.
+   These styles hide Docusaurus UI and optimize for PDF output.
+*/
+
+/* Print mode wrapper - shows all slides vertically 
+   CRITICAL: Use absolute positioning (not fixed) so content flows for printing.
+   Fixed positioning clips content to viewport when printing. */
+.revealWrapper.printMode {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 100vh !important;
+  z-index: 99999 !important;
+  background: #e5e5e5 !important;
+  overflow: visible !important;
+  padding: 20px 0 !important;
+}
+
+/* Dark mode background for print wrapper */
+:global([data-theme="dark"]) .revealWrapper.printMode,
+.revealWrapper.printMode:has(.revealContainer[data-theme="black"]) {
+  background: #2a2a2a !important;
+}
+
+/* Hide Docusaurus UI when in print mode */
+:global(.reveal-print-mode) :global(.navbar),
+:global(.reveal-print-mode) :global(.theme-doc-sidebar-container),
+:global(.reveal-print-mode) :global(.theme-doc-toc-desktop),
+:global(.reveal-print-mode) :global(.theme-doc-footer),
+:global(.reveal-print-mode) :global(.pagination-nav),
+:global(.reveal-print-mode) :global(.footer),
+:global(.reveal-print-mode) :global(.theme-doc-breadcrumbs),
+:global(.reveal-print-mode) :global([class*="docMainContainer"]),
+:global(.reveal-print-mode) :global([class*="docPage"]),
+:global(.reveal-print-mode) :global(main:not(#reveal-print-portal *)) {
+  display: none !important;
+}
+
+/* Ensure body/html allow scrolling in print mode (screen) 
+   and overflow visible for print (so all slides print) */
+:global(.reveal-print-mode) {
+  overflow: visible !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+:global(.reveal-print-mode) :global(body) {
+  overflow: visible !important;
+  height: auto !important;
+}
+
+/* Print mode container */
+.printMode .revealContainer {
+  width: 960px !important;
+  height: auto !important;
+  margin: 0 auto !important;
+  overflow: visible !important;
+}
+
+/* Override Reveal.js styles for print mode - show all slides */
+.printMode :global(.reveal) {
+  width: 960px !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+.printMode :global(.reveal .slides) {
+  position: relative !important;
+  width: 960px !important;
+  height: auto !important;
+  left: auto !important;
+  top: auto !important;
+  margin: 0 auto !important;
+  transform: none !important;
+  perspective: none !important;
+  overflow: visible !important;
+  display: block !important;
+}
+
+/* Show all slides in print mode - must target pdf-page wrapper */
+.printMode :global(.reveal .slides > section),
+.printMode :global(.reveal .slides .pdf-page),
+.printMode :global(.reveal .slides .pdf-page > section) {
+  display: block !important;
+  position: relative !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  transform: none !important;
+  width: 960px !important;
+  height: 700px !important;
+  margin: 0 auto 30px auto !important;
+  padding: 20px !important;
+  box-sizing: border-box !important;
+  overflow: visible !important;
+  page-break-after: always !important;
+  break-after: page !important;
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+  border-radius: 4px !important;
+}
+
+/* Light theme slide background */
+.printMode :global(.reveal[data-theme="white"] .slides > section),
+.printMode :global(.reveal[data-theme="white"] .slides .pdf-page > section),
+.printMode .revealContainer[data-theme="white"] :global(.slides > section),
+.printMode .revealContainer[data-theme="white"] :global(.slides .pdf-page > section) {
+  background: #fff !important;
+  color: #222 !important;
+}
+
+/* Dark theme slide background */
+.printMode :global(.reveal[data-theme="black"] .slides > section),
+.printMode :global(.reveal[data-theme="black"] .slides .pdf-page > section),
+.printMode .revealContainer[data-theme="black"] :global(.slides > section),
+.printMode .revealContainer[data-theme="black"] :global(.slides .pdf-page > section) {
+  background: #191919 !important;
+  color: #fff !important;
+}
+
+/* Handle vertical slides (nested sections) */
+.printMode :global(.reveal .slides > section > section),
+.printMode :global(.reveal .slides .pdf-page > section > section) {
+  display: block !important;
+  position: relative !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  transform: none !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 700px !important;
+  margin: 0 0 30px 0 !important;
+  page-break-after: always !important;
+  break-after: page !important;
+}
+
+/* Hide Reveal.js controls and progress in print mode */
+.printMode :global(.reveal .controls),
+.printMode :global(.reveal .progress),
+.printMode :global(.reveal .slide-number),
+.printMode :global(.reveal-viewport) {
+  display: none !important;
+}
+
+/* Hide toolbar buttons in print mode */
+.printMode .toolbarButtons {
+  display: none !important;
+}
+
+/* ===================================
+   @media print Rules for PDF Export
+   ===================================
+   
+   These rules apply when the browser prints the page.
+   Reveal.js adds .reveal-print and .print-pdf classes.
+*/
+
+@media print {
+  /* ===================================
+     Print Mode - Critical Fixes for PDF Export
+     ===================================
+     
+     When printing with ?print-pdf, Reveal.js creates .pdf-page 
+     elements that must be properly styled for multi-page output.
+     
+     CRITICAL: Use :global() for all selectors because CSS modules
+     hash class names and won't match otherwise.
+  */
+  
+  /* Page settings for landscape slides */
+  @page {
+    size: letter landscape;
+    margin: 0;
+  }
+  
+  /* Reset html/body for print - MUST have height auto and overflow visible */
+  :global(html),
+  :global(body) {
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: static !important;
+  }
+
+  /* Hide all Docusaurus chrome */
+  :global(.navbar),
+  :global(.theme-doc-sidebar-container),
+  :global(.theme-doc-toc-desktop),
+  :global(.theme-doc-footer),
+  :global(.pagination-nav),
+  :global(.footer),
+  :global(.theme-doc-breadcrumbs),
+  :global([class*="skipToContent"]),
+  :global(.theme-doc-markdown) {
+    display: none !important;
+  }
+
+  /* Hide toolbar buttons using global attribute selector */
+  :global([class*="toolbarButtons"]),
+  :global([class*="fullscreenButton"]) {
+    display: none !important;
+  }
+
+  /* Ensure colors print correctly */
+  :global(*) {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* CRITICAL: The print portal and wrapper MUST be static position */
+  :global(#reveal-print-portal),
+  :global(#reveal-print-portal > *),
+  :global([class*="revealWrapper"]),
+  :global([class*="printMode"]) {
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+  }
+
+  /* Reveal container for print */
+  :global([class*="revealContainer"]) {
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  /* Reveal.js main container */
+  :global(.reveal) {
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  /* Slides container - must be static and visible */
+  :global(.reveal .slides) {
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    left: auto !important;
+    top: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    perspective: none !important;
+    overflow: visible !important;
+    display: block !important;
+    zoom: 1 !important;
+  }
+
+  /* PDF page elements - each becomes a print page */
+  :global(.reveal .slides .pdf-page) {
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Last page doesn't need page break */
+  :global(.reveal .slides .pdf-page:last-child) {
+    page-break-after: auto !important;
+    break-after: auto !important;
+  }
+
+  /* Slides inside pdf-page - preserve backgrounds for dark themes */
+  :global(.reveal .slides .pdf-page > section),
+  :global(.reveal .slides > section) {
+    position: relative !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 90vh !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 40px !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* Ensure dark theme slides keep their background in print */
+  :global(.reveal[data-theme="black"] .slides .pdf-page > section),
+  :global(.reveal[data-theme="black"] .slides > section),
+  :global(.reveal .slides .pdf-page > section.has-dark-background),
+  :global(.reveal .slides > section.has-dark-background) {
+    background: #191919 !important;
+    color: #fff !important;
+  }
+
+  /* Light theme slides */
+  :global(.reveal[data-theme="white"] .slides .pdf-page > section),
+  :global(.reveal[data-theme="white"] .slides > section) {
+    background: #fff !important;
+    color: #222 !important;
+  }
+
+  /* Ensure code blocks print with backgrounds */
+  :global(.reveal .slides section pre),
+  :global(.reveal .slides section code) {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide Reveal.js controls */
+  :global(.reveal .controls),
+  :global(.reveal .progress),
+  :global(.reveal .slide-number),
+  :global(.reveal .speaker-notes) {
+    display: none !important;
+  }
+
+  /* Slide backgrounds - make them visible in print */
+  :global(.reveal .slide-background) {
+    display: block !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: -1 !important;
+  }
 }
 
 

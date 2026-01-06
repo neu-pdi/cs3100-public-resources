@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, ReactNode, useState, useMemo } from 'react';
+import React, { useEffect, useRef, ReactNode, useState, useMemo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import Reveal from 'reveal.js';
+import RevealNotes from 'reveal.js/plugin/notes/notes.esm.js';
 import 'reveal.js/dist/reveal.css';
 import 'reveal.js/dist/theme/white.css';
 import 'reveal.js/dist/theme/black.css';
@@ -15,6 +16,12 @@ import 'reveal.js/dist/theme/blood.css';
 import 'reveal.js/dist/theme/moon.css';
 import { useColorMode } from '../ui/color-mode';
 import styles from './styles.module.css';
+
+// Detect if we're in PDF export mode via URL query parameter
+const isPrintPDFMode = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  return window.location.search.includes('print-pdf');
+};
 
 interface RevealJSProps {
   children?: ReactNode;
@@ -63,10 +70,23 @@ export default function RevealJS({
   
   const revealRef = useRef<HTMLDivElement>(null);
   const fullscreenRevealRef = useRef<HTMLDivElement>(null);
+  const printRevealRef = useRef<HTMLDivElement>(null);
   const revealInstanceRef = useRef<Reveal.Api | null>(null);
   const fullscreenRevealInstanceRef = useRef<Reveal.Api | null>(null);
+  const printRevealInstanceRef = useRef<Reveal.Api | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isPrintMode, setIsPrintMode] = useState(false);
   const [portalContainer, setPortalContainer] = useState<HTMLDivElement | null>(null);
+  const [printPortalContainer, setPrintPortalContainer] = useState<HTMLDivElement | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [isFullscreenInitialized, setIsFullscreenInitialized] = useState(false);
+
+  // Detect print-pdf mode on mount
+  useEffect(() => {
+    if (isPrintPDFMode()) {
+      setIsPrintMode(true);
+    }
+  }, []);
 
   // Create portal container for fullscreen mode
   useEffect(() => {
@@ -84,6 +104,29 @@ export default function RevealJS({
       };
     }
   }, [isFullscreen]);
+
+  // Create portal container for print mode
+  useEffect(() => {
+    if (isPrintMode && typeof document !== 'undefined') {
+      const container = document.createElement('div');
+      container.id = 'reveal-print-portal';
+      document.body.appendChild(container);
+      setPrintPortalContainer(container);
+
+      // Add print mode class to document for CSS targeting
+      document.documentElement.classList.add('reveal-print-mode');
+      document.body.classList.add('reveal-print-mode');
+
+      return () => {
+        if (container.parentNode) {
+          container.parentNode.removeChild(container);
+        }
+        setPrintPortalContainer(null);
+        document.documentElement.classList.remove('reveal-print-mode');
+        document.body.classList.remove('reveal-print-mode');
+      };
+    }
+  }, [isPrintMode]);
 
   // Handle fullscreen mode - hide Docusaurus UI
   useEffect(() => {
@@ -239,6 +282,37 @@ export default function RevealJS({
     }
   };
 
+  // Scale overflowing slide content to fit within slide bounds
+  const scaleOverflowingContent = (revealInstance: Reveal.Api) => {
+    const config = revealInstance.getConfig();
+    const configuredHeight = (config as any).height || 700;
+    const configuredWidth = (config as any).width || 960;
+    
+    // Get all sections and check for overflow
+    const sections = revealRef.current?.querySelectorAll('.slides > section');
+    sections?.forEach((section) => {
+      const sectionEl = section as HTMLElement;
+      // Reset any previous scaling
+      sectionEl.style.transform = '';
+      sectionEl.style.transformOrigin = '';
+      
+      // Measure content
+      const scrollHeight = sectionEl.scrollHeight;
+      const scrollWidth = sectionEl.scrollWidth;
+      
+      // Calculate scale needed to fit content
+      const scaleY = scrollHeight > configuredHeight ? configuredHeight / scrollHeight : 1;
+      const scaleX = scrollWidth > configuredWidth ? configuredWidth / scrollWidth : 1;
+      const contentScale = Math.min(scaleX, scaleY);
+      
+      // Apply scale if content overflows
+      if (contentScale < 1) {
+        sectionEl.style.transform = `scale(${contentScale})`;
+        sectionEl.style.transformOrigin = 'top left';
+      }
+    });
+  };
+
   // Sync RevealJS slide changes with Docusaurus TOC
   const syncTOCWithSlide = (revealInstance: Reveal.Api) => {
     const currentSlide = revealInstance.getCurrentSlide();
@@ -294,6 +368,9 @@ export default function RevealJS({
   useEffect(() => {
     if (!revealRef.current || isFullscreen) return;
 
+    // Reset initialized state when re-initializing
+    setIsInitialized(false);
+
     // Destroy fullscreen instance if it exists
     if (fullscreenRevealInstanceRef.current) {
       fullscreenRevealInstanceRef.current.destroy();
@@ -304,7 +381,23 @@ export default function RevealJS({
     const timer = setTimeout(() => {
       if (!revealRef.current || isFullscreen) return;
 
-      // Initialize Reveal.js
+      // Get container dimensions for dynamic sizing
+      const containerWidth = revealRef.current.clientWidth || 960;
+      const containerHeight = revealRef.current.clientHeight || 700;
+      
+      // Use 16:9 aspect ratio with dimensions that fit the container
+      // Scale the native dimensions to maximize space usage
+      const aspectRatio = 16 / 9;
+      let slideWidth = 960;
+      let slideHeight = Math.round(slideWidth / aspectRatio);  // ~540 for 16:9
+      
+      // If container is taller than 16:9, use a taller aspect ratio
+      const containerAspectRatio = containerWidth / containerHeight;
+      if (containerAspectRatio < aspectRatio) {
+        // Container is taller, so use container aspect ratio
+        slideHeight = Math.round(slideWidth / containerAspectRatio);
+      }
+      
       const reveal = new Reveal(revealRef.current, {
         hash,
         controls,
@@ -316,10 +409,18 @@ export default function RevealJS({
         overview,
         transition: transition as any,
         theme: theme as any,
+        embedded: true,  // Important: tells Reveal it's embedded in another page
+        width: slideWidth,
+        height: slideHeight,
+        minScale: 0.2,
+        maxScale: 2.0,
+        margin: 0.04,  // Margin around slides
+        plugins: [RevealNotes],
       } as any);
 
       reveal.initialize().then(() => {
         revealInstanceRef.current = reveal;
+        setIsInitialized(true);
         
         // Ensure viewport gets correct background based on theme
         // Reveal.js creates .reveal-viewport as a sibling/ancestor, find it via document
@@ -336,11 +437,27 @@ export default function RevealJS({
           }
         }
         
+        // Ensure notes elements have the correct class attribute (not just className)
+        // The notes plugin looks for elements with class="notes" in the DOM
+        setTimeout(() => {
+          if (revealRef.current) {
+            const notesElements = revealRef.current.querySelectorAll('aside.notes');
+            notesElements.forEach((el) => {
+              if (!el.getAttribute('class')) {
+                el.setAttribute('class', 'notes');
+              }
+            });
+          }
+        }, 100);
+        
         // Initialize Mermaid diagrams after RevealJS is ready
         initializeMermaid(revealRef.current, false, reveal);
         
         // Sync TOC on initial load
         syncTOCWithSlide(reveal);
+        
+        // Scale overflowing content on initial load
+        scaleOverflowingContent(reveal);
         
         // Sync TOC when slide changes
         reveal.on('slidechanged', () => {
@@ -359,6 +476,50 @@ export default function RevealJS({
       }
     };
   }, [theme, transition, controls, progress, center, touch, loop, keyboard, overview, hash, htmlContent, isFullscreen]);
+
+  // Fixed slide dimensions with 20:13 aspect ratio for fullscreen mode
+  // Using large base dimensions that will scale down nicely
+  const FULLSCREEN_SLIDE_WIDTH = 1400;  // 20 units
+  const FULLSCREEN_SLIDE_HEIGHT = 910;  // 13 units (1400 / 20 * 13 = 910)
+
+  // Handle container resize - use ResizeObserver for reliable detection
+  useEffect(() => {
+    let resizeTimeout: NodeJS.Timeout;
+    
+    const handleResize = () => {
+      // Just call layout() - Reveal will scale fixed native dimensions to fit container
+      if (revealInstanceRef.current && !isFullscreen) {
+        revealInstanceRef.current.layout();
+      }
+      if (fullscreenRevealInstanceRef.current && isFullscreen) {
+        // For fullscreen mode, just call layout() - Reveal will scale the fixed 20:13 dimensions
+        // to fit the viewport while maintaining aspect ratio and centering
+        fullscreenRevealInstanceRef.current.layout();
+      }
+    };
+
+    const debouncedResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(handleResize, 50);
+    };
+
+    // Use ResizeObserver for reliable container size change detection
+    let resizeObserver: ResizeObserver | null = null;
+    
+    if (!isFullscreen && revealRef.current?.parentElement) {
+      resizeObserver = new ResizeObserver(debouncedResize);
+      resizeObserver.observe(revealRef.current.parentElement);
+    }
+    
+    // Also listen to window resize for fullscreen mode
+    window.addEventListener('resize', debouncedResize);
+    
+    return () => {
+      window.removeEventListener('resize', debouncedResize);
+      resizeObserver?.disconnect();
+      clearTimeout(resizeTimeout);
+    };
+  }, [isFullscreen]);
 
   // Update viewport background when theme changes (for immediate visual feedback)
   useEffect(() => {
@@ -396,6 +557,9 @@ export default function RevealJS({
   useEffect(() => {
     if (!fullscreenRevealRef.current || !isFullscreen || !portalContainer) return;
 
+    // Reset fullscreen initialized state when re-initializing
+    setIsFullscreenInitialized(false);
+
     // Destroy normal instance if it exists
     if (revealInstanceRef.current) {
       revealInstanceRef.current.destroy();
@@ -406,22 +570,31 @@ export default function RevealJS({
     const timer = setTimeout(() => {
       if (!fullscreenRevealRef.current || !isFullscreen) return;
 
-      // Initialize Reveal.js
+      // Use fixed 20:13 aspect ratio for fullscreen presentations
+      // Reveal.js will scale these dimensions to fit the viewport while maintaining aspect ratio
       const reveal = new Reveal(fullscreenRevealRef.current, {
         hash,
         controls,
         progress,
-        center,
+        center: true,  // Center slides within the viewport
         touch,
         loop,
         keyboard,
         overview,
         transition: transition as any,
         theme: theme as any,
+        embedded: false,  // Fullscreen uses normal mode
+        width: FULLSCREEN_SLIDE_WIDTH,
+        height: FULLSCREEN_SLIDE_HEIGHT,
+        minScale: 0.1,
+        maxScale: 1.5,
+        margin: 0.04,  // Margin around slides for dead space
+        plugins: [RevealNotes],
       } as any);
 
       reveal.initialize().then(() => {
         fullscreenRevealInstanceRef.current = reveal;
+        setIsFullscreenInitialized(true);
         
         // Ensure viewport gets correct background based on theme
         // Reveal.js creates .reveal-viewport as a sibling/ancestor, find it via document
@@ -437,6 +610,19 @@ export default function RevealJS({
             viewport.classList.remove('has-white');
           }
         }
+        
+        // Ensure notes elements have the correct class attribute (not just className)
+        // The notes plugin looks for elements with class="notes" in the DOM
+        setTimeout(() => {
+          if (fullscreenRevealRef.current) {
+            const notesElements = fullscreenRevealRef.current.querySelectorAll('aside.notes');
+            notesElements.forEach((el) => {
+              if (!el.getAttribute('class')) {
+                el.setAttribute('class', 'notes');
+              }
+            });
+          }
+        }, 100);
         
         // Initialize Mermaid diagrams after RevealJS is ready
         initializeMermaid(fullscreenRevealRef.current, false, reveal);
@@ -462,9 +648,150 @@ export default function RevealJS({
     };
   }, [theme, transition, controls, progress, center, touch, loop, keyboard, overview, hash, htmlContent, isFullscreen, portalContainer]);
 
+  // Fixed slide dimensions for print mode (optimized for PDF output)
+  const PRINT_SLIDE_WIDTH = 960;
+  const PRINT_SLIDE_HEIGHT = 700;
+
+  // Initialize Reveal.js for print mode
+  useEffect(() => {
+    if (!printRevealRef.current || !isPrintMode || !printPortalContainer) return;
+
+    // Destroy other instances
+    if (revealInstanceRef.current) {
+      revealInstanceRef.current.destroy();
+      revealInstanceRef.current = null;
+    }
+    if (fullscreenRevealInstanceRef.current) {
+      fullscreenRevealInstanceRef.current.destroy();
+      fullscreenRevealInstanceRef.current = null;
+    }
+
+    // Wait for slides to be rendered
+    const timer = setTimeout(async () => {
+      if (!printRevealRef.current || !isPrintMode) return;
+
+      // Configure Reveal.js for PDF export
+      // Important: embedded must be false for print mode to work
+      const reveal = new Reveal(printRevealRef.current, {
+        hash: false,
+        controls: false,
+        progress: false,
+        center: true,
+        touch: false,
+        loop: false,
+        keyboard: false,
+        overview: false,
+        transition: 'none' as any,
+        theme: theme as any,
+        embedded: false,  // Must be false for print mode
+        width: PRINT_SLIDE_WIDTH,
+        height: PRINT_SLIDE_HEIGHT,
+        minScale: 0.2,
+        maxScale: 2.0,
+        margin: 0.04,
+        // PDF-specific options
+        pdfSeparateFragments: false,  // Don't create separate pages for fragments
+        pdfMaxPagesPerSlide: 1,       // Limit to 1 page per slide
+        // Show slide numbers in PDF
+        slideNumber: true,
+        showSlideNumber: 'print',
+        plugins: [RevealNotes],
+      } as any);
+
+      await reveal.initialize();
+      printRevealInstanceRef.current = reveal;
+      
+      // Initialize Mermaid diagrams
+      initializeMermaid(printRevealRef.current, false, reveal);
+      
+      // Reveal.js should auto-detect print-pdf in URL and activate print view
+      // If it didn't, we need to manually trigger it
+      // Check if print view is active by looking for the class
+      if (!document.documentElement.classList.contains('reveal-print')) {
+        // Manually activate print view by calling the internal method
+        // This happens when Reveal.js doesn't detect the query param properly
+        const revealElement = printRevealRef.current;
+        if (revealElement && (reveal as any).getPlugin) {
+          // Try to get print plugin and activate it
+          try {
+            // Force print mode by adding the required classes
+            document.documentElement.classList.add('reveal-print', 'print-pdf');
+            document.body.style.overflow = 'visible';
+            
+            // Reveal.js print mode lays out all slides vertically
+            // We need to manually trigger this layout
+            const slidesContainer = revealElement.querySelector('.slides');
+            if (slidesContainer) {
+              const slides = slidesContainer.querySelectorAll(':scope > section');
+              slides.forEach((slide, index) => {
+                const slideEl = slide as HTMLElement;
+                slideEl.style.display = 'block';
+                slideEl.style.position = 'relative';
+                slideEl.style.visibility = 'visible';
+                slideEl.style.opacity = '1';
+                slideEl.style.transform = 'none';
+                slideEl.style.pageBreakAfter = 'always';
+                slideEl.style.height = `${PRINT_SLIDE_HEIGHT}px`;
+                slideEl.style.width = `${PRINT_SLIDE_WIDTH}px`;
+                slideEl.style.margin = '0 auto 20px auto';
+                slideEl.style.boxSizing = 'border-box';
+                slideEl.style.overflow = 'hidden';
+                slideEl.style.backgroundColor = theme === 'black' ? '#191919' : '#fff';
+                slideEl.style.color = theme === 'black' ? '#fff' : '#222';
+              });
+              
+              // Style the slides container for print
+              (slidesContainer as HTMLElement).style.position = 'relative';
+              (slidesContainer as HTMLElement).style.width = `${PRINT_SLIDE_WIDTH}px`;
+              (slidesContainer as HTMLElement).style.margin = '0 auto';
+              (slidesContainer as HTMLElement).style.transform = 'none';
+              (slidesContainer as HTMLElement).style.left = 'auto';
+              (slidesContainer as HTMLElement).style.top = 'auto';
+            }
+          } catch (e) {
+            console.warn('Could not activate print mode:', e);
+          }
+        }
+      }
+      
+      // Force layout recalculation for print
+      reveal.layout();
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      if (printRevealInstanceRef.current) {
+        printRevealInstanceRef.current.destroy();
+        printRevealInstanceRef.current = null;
+      }
+      // Clean up print classes
+      document.documentElement.classList.remove('reveal-print', 'print-pdf');
+    };
+  }, [theme, isPrintMode, printPortalContainer, htmlContent]);
+
   const toggleFullscreen = () => {
     setIsFullscreen(!isFullscreen);
   };
+
+  // Handle PDF export - opens print dialog
+  const handleExportPDF = useCallback(() => {
+    // Get current URL and add print-pdf parameter
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.set('print-pdf', '');
+    
+    // Open in new tab - the new tab will detect print-pdf and initialize in print mode
+    const printWindow = window.open(currentUrl.toString(), '_blank');
+    
+    // Try to trigger print dialog after a delay to let RevealJS initialize
+    if (printWindow) {
+      printWindow.addEventListener('load', () => {
+        // Wait for Reveal.js to fully initialize and layout
+        setTimeout(() => {
+          printWindow.print();
+        }, 1500);
+      });
+    }
+  }, []);
 
   // Check if children already contain Slide components
   const hasSlideComponents = useMemo(() => {
@@ -599,42 +926,78 @@ export default function RevealJS({
 
   const revealContent = (
     <>
-      <button
-        className={`${styles.fullscreenButton} ${isFullscreen ? styles.fullscreenButtonActive : ''}`}
-        onClick={toggleFullscreen}
-        aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-        title={isFullscreen ? 'Exit fullscreen (Esc)' : 'Enter fullscreen'}
-      >
-        {isFullscreen ? (
+      <div className={styles.toolbarButtons}>
+        {/* PDF Export Button */}
+        <button
+          className={styles.toolbarButton}
+          onClick={handleExportPDF}
+          aria-label="Export to PDF"
+          title="Export to PDF"
+        >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M8 3v5m0 0H3m5 0v5M16 3v5m0 0h5m-5 0v5M8 21v-5m0 0H3m5 0v-5M16 21v-5m0 0h5m-5 0v-5"/>
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14,2 14,8 20,8"/>
+            <line x1="12" y1="18" x2="12" y2="12"/>
+            <line x1="9" y1="15" x2="12" y2="18"/>
+            <line x1="15" y1="15" x2="12" y2="18"/>
           </svg>
-        ) : (
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
-          </svg>
-        )}
-      </button>
+        </button>
+        {/* Fullscreen Button */}
+        <button
+          className={`${styles.toolbarButton} ${isFullscreen ? styles.toolbarButtonActive : ''}`}
+          onClick={toggleFullscreen}
+          aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+          title={isFullscreen ? 'Exit fullscreen (Esc)' : 'Enter fullscreen'}
+        >
+          {isFullscreen ? (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M8 3v5m0 0H3m5 0v5M16 3v5m0 0h5m-5 0v5M8 21v-5m0 0H3m5 0v-5M16 21v-5m0 0h5m-5 0v-5"/>
+            </svg>
+          ) : (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+            </svg>
+          )}
+        </button>
+      </div>
       <div className="slides">
         {slidesContent}
       </div>
     </>
   );
 
+  // Render print mode via portal (for PDF export)
+  if (isPrintMode && printPortalContainer) {
+    return createPortal(
+      <div className={`${styles.revealWrapper} ${styles.printMode}`}>
+        <div className={`reveal ${styles.revealContainer}`} ref={printRevealRef} data-theme={theme}>
+          <div className="slides">
+            {slidesContent}
+          </div>
+        </div>
+      </div>,
+      printPortalContainer
+    );
+  }
+
   // Render fullscreen via portal
   if (isFullscreen && portalContainer) {
     return (
       <>
         {/* Keep the original element in place but hidden */}
-        <div className={`reveal ${styles.revealContainer}`} ref={revealRef} data-theme={theme} style={{ display: 'none' }}>
-          <div className="slides">
-            {slidesContent}
+        <div className={styles.revealWrapper} style={{ display: 'none' }}>
+          <div className={`reveal ${styles.revealContainer}`} ref={revealRef} data-theme={theme}>
+            <div className="slides">
+              {slidesContent}
+            </div>
           </div>
         </div>
         {/* Render fullscreen version via portal */}
         {createPortal(
-          <div className={`reveal ${styles.revealContainer} ${styles.fullscreen}`} ref={fullscreenRevealRef} data-theme={theme}>
-            {revealContent}
+          <div className={`${styles.revealWrapper} ${styles.fullscreen} ${!isFullscreenInitialized ? styles.initializing : ''}`}>
+            <div className={`reveal ${styles.revealContainer}`} ref={fullscreenRevealRef} data-theme={theme}>
+              {revealContent}
+            </div>
           </div>,
           portalContainer
         )}
@@ -644,8 +1007,10 @@ export default function RevealJS({
 
   // Normal mode
   return (
-    <div className={`reveal ${styles.revealContainer}`} ref={revealRef} data-theme={theme}>
-      {revealContent}
+    <div className={`${styles.revealWrapper} ${!isInitialized ? styles.initializing : ''}`}>
+      <div className={`reveal ${styles.revealContainer}`} ref={revealRef} data-theme={theme}>
+        {revealContent}
+      </div>
     </div>
   );
 }

@@ -63,14 +63,32 @@
   --ifm-paragraph-margin-bottom: 0.5em;
 }
 
-/* RevealJS integration styles */
-.reveal {
-  position: relative;
-  width: 100%;
-  margin: 0;
-  overflow: hidden;
+/* ===================================
+   FOUC Prevention (Flash of Unstyled Content)
+   ===================================
+   
+   Before RevealJS initializes, all slides are rendered in the DOM
+   and would be visible/stacked on top of each other. This CSS
+   hides the slides container until RevealJS takes over.
+   
+   RevealJS adds .present class to the current slide after init.
+   We detect this and reveal the slides container.
+*/
+
+/* Hide the entire slides container before RevealJS initializes */
+/* Use :not(:has(.present)) to detect if RevealJS hasn't run yet */
+.reveal .slides:not(:has(.present)) {
+  opacity: 0 !important;
+  visibility: hidden !important;
 }
 
+/* Once RevealJS initializes and adds .present class, show the container */
+.reveal .slides:has(.present) {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* RevealJS integration styles */
 .reveal .slides {
   text-align: left;
 }
@@ -142,9 +160,9 @@
   display: list-item !important;
 }
 
-.reveal .slides section div[style] {
-  display: flex !important;
-}
+/* Note: Removed overly broad "div[style] { display: flex }" rule that was
+   forcing all styled divs to flex row. Multi-column layouts should use 
+   display: grid with gridTemplateColumns, or explicitly set display: flex. */
 
 /* Ensure code blocks in RevealJS slides use full width */
 .reveal .slides section pre,
@@ -198,20 +216,6 @@
 .reveal .slides section pre {
   overflow-x: auto !important;
   overflow-y: visible !important;
-}
-
-/* Ensure RevealJS presentations take full width in Docusaurus */
-.theme-doc-markdown .reveal {
-  max-width: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-/* Override Docusaurus container constraints for RevealJS */
-.theme-doc-markdown .reveal-container {
-  max-width: 100%;
-  padding: 0;
-  margin: 0;
 }
 
 /* Ensure RevealJS viewport gets correct background based on theme */
@@ -304,6 +308,44 @@
   color: #ddd !important;
 }
 
+/* Hide breadcrumbs, footer, and pagination on pages with RevealJS presentations */
+/* This gives more vertical space for the slides */
+body:has(.reveal) .theme-doc-breadcrumbs {
+  display: none !important;
+}
+
+/* Hide the doc footer (edit this page, last updated) */
+body:has(.reveal) .theme-doc-footer,
+body:has(.reveal) footer.theme-doc-footer,
+body:has(.reveal) .theme-doc-footer-edit-meta-row,
+body:has(.reveal) .docusaurus-mt-lg.theme-doc-footer {
+  display: none !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  visibility: hidden !important;
+}
+
+/* Hide pagination nav (previous/next links) */
+body:has(.reveal) .pagination-nav,
+body:has(.reveal) nav.pagination-nav,
+body:has(.reveal) .docusaurus-mt-lg.pagination-nav {
+  display: none !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  visibility: hidden !important;
+}
+
+/* Also hide the article footer if it exists */
+body:has(.reveal) article > footer {
+  display: none !important;
+}
+
+body:has(.reveal) article > nav {
+  display: none !important;
+}
+
 /* Fullscreen mode - hide ALL Docusaurus UI elements */
 html.reveal-fullscreen body {
   overflow: hidden !important;
@@ -314,7 +356,7 @@ html.reveal-fullscreen #__docusaurus {
   display: none !important;
 }
 
-/* Show only the portal container */
+/* Show only the portal container with dead space background */
 html.reveal-fullscreen #reveal-fullscreen-portal {
   display: block !important;
   position: fixed !important;
@@ -325,6 +367,53 @@ html.reveal-fullscreen #reveal-fullscreen-portal {
   width: 100vw !important;
   height: 100vh !important;
   z-index: 99999 !important;
+  /* Dead space background - light mode default (subtle gray) */
+  background: #d4d4d4 !important;
+}
+
+/* Dark mode dead space background for fullscreen portal */
+html.reveal-fullscreen[data-theme="dark"] #reveal-fullscreen-portal,
+html.reveal-fullscreen:has([data-theme="black"]) #reveal-fullscreen-portal {
+  background: #0a0a0a !important;
+}
+
+/* Override Reveal.js viewport background in fullscreen to show dead space */
+html.reveal-fullscreen .reveal-viewport {
+  background: transparent !important;
+}
+
+/* Ensure the slides container has the proper background and shadow */
+html.reveal-fullscreen .reveal .slides {
+  background: #fff !important;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.15);
+}
+
+html.reveal-fullscreen[data-theme="dark"] .reveal .slides,
+html.reveal-fullscreen .reveal[data-theme="black"] .slides,
+html.reveal-fullscreen .reveal.has-black .slides {
+  background: #191919 !important;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Make individual slide backgrounds follow the slides container size, not full viewport */
+html.reveal-fullscreen .reveal .slide-background {
+  /* Hide individual backgrounds since we're using the slides container bg */
+  display: none !important;
+}
+
+/* Ensure fullscreen reveal fills the portal - DON'T use display:flex as it breaks height inheritance */
+html.reveal-fullscreen #reveal-fullscreen-portal .reveal {
+  width: 100% !important;
+  height: 100% !important;
+  position: relative !important;
+  display: block !important;
+  /* Make reveal background transparent so dead space shows through */
+  background: transparent !important;
+}
+
+/* Also make the slide backgrounds container transparent so dead space shows */
+html.reveal-fullscreen #reveal-fullscreen-portal .reveal .backgrounds {
+  background: transparent !important;
 }
 
 /* Compact title slide - makes h1 smaller to give more room for content */

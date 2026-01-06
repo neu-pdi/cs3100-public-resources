@@ -1,0 +1,464 @@
+cards:
+# Inheritance Basics
+  - title: "Extending a Class"
+    prompt: |
+      How do you declare a class that inherits from another class in Java?
+    answer: |
+      Use the `extends` keyword:
+      
+      ```
+      public class TunableWhiteLight extends DimmableLight {
+          // TunableWhiteLight inherits all fields and methods from DimmableLight
+      }
+      ```
+      
+      - A class can extend **exactly one** superclass
+      - The subclass inherits all fields and methods from its superclass
+
+  - title: "The super Keyword - Constructor"
+    prompt: |
+      How do you call a superclass constructor from a subclass in Java?
+    answer: |
+      Use `super(arguments)` as the **first line** of your constructor:
+      
+      ```
+      public class DimmableLight extends Light {
+          protected int startupBrightness;
+          
+          public DimmableLight(String deviceId, int startupBrightness) {
+              super(deviceId);  // Must be first line!
+              this.startupBrightness = startupBrightness;
+          }
+      }
+      ```
+      
+      This initializes the inherited fields by calling the parent's constructor.
+
+  - title: "The super Keyword - Method Calls"
+    prompt: |
+      How do you call a superclass method from within an overriding method?
+    answer: |
+      Use `super.methodName()`:
+      
+      ```
+      @Override
+      public void turnOn() {
+          setColorTemperature(startupColorTemperature);
+          super.turnOn();  // Call parent's turnOn() after our setup
+      }
+      ```
+      
+      This lets you extend (not replace) the parent's behavior.
+
+  - title: "Method Overriding"
+    prompt: |
+      How do you override a method from a superclass in Java?
+    answer: |
+      Declare a method with the **same signature** and use the `@Override` annotation:
+      
+      ```
+      @Override
+      public void turnOn() {
+          // New implementation
+          setColorTemperature(startupColorTemperature);
+          super.turnOn();
+      }
+      ```
+      
+      - `@Override` is optional but **strongly recommended**
+      - The compiler will error if the method doesn't actually override anything
+      - Same parameters and return type required
+
+# Access Modifiers
+  - title: "Access Modifiers for Members"
+    prompt: |
+      What are the four access levels for fields and methods in Java?
+    answer: |
+      | Modifier | Access Level |
+      |----------|--------------|
+      | `public` | Accessible from anywhere |
+      | `protected` | Same class, subclasses, and same package |
+      | *(no modifier)* | Package-private: same package only |
+      | `private` | Same class only |
+      
+      ```
+      public class Example {
+          public int a;      // anywhere
+          protected int b;   // class + subclasses + package
+          int c;             // package only (avoid this! confusing!)
+          private int d;     // this class only
+      }
+      ```
+
+  - title: "Protected Fields"
+    prompt: |
+      When should you use `protected` for a field in Java?
+    answer: |
+      Use `protected` when a field needs to be accessed by **subclasses**:
+      
+      ```
+      public abstract class BaseIoTDevice {
+          protected String deviceId;      // subclasses can access
+          protected boolean isConnected;  // subclasses can access
+          
+          public BaseIoTDevice(String deviceId) {
+              this.deviceId = deviceId;
+          }
+      }
+      ```
+      
+      Subclasses can read/write `protected` fields directly.
+
+# Interfaces
+  - title: "Interface Declaration"
+    prompt: |
+      How do you declare an interface in Java?
+    answer: |
+      Use the `interface` keyword:
+      
+      ```
+      public interface IoTDevice {
+          /**
+           * Identify the device to a human.
+           */
+          public void identify();
+          
+          /**
+           * Check if the device is available.
+           */
+          public boolean isAvailable();
+      }
+      ```
+      
+      - Methods in interfaces are implicitly `public abstract`
+      - Interfaces cannot be instantiated directly
+      - Interfaces define a **contract** without implementation
+
+  - title: "Implementing an Interface"
+    prompt: |
+      How does a class implement an interface in Java?
+    answer: |
+      Use the `implements` keyword:
+      
+      ```
+      public class BaseIoTDevice implements IoTDevice {
+          @Override
+          public void identify() {
+              // Implementation here
+          }
+          
+          @Override
+          public boolean isAvailable() {
+              return this.isConnected;
+          }
+      }
+      ```
+      
+      - A class can implement **multiple** interfaces
+      - Must provide implementations for all interface methods (unless abstract)
+
+  - title: "Multiple Interface Implementation"
+    prompt: |
+      Can a Java class implement multiple interfaces? How?
+    answer: |
+      Yes! Use a comma-separated list:
+      
+      ```
+      public class SmartLight implements IoTDevice, Dimmable, ColorChangeable {
+          // Must implement all methods from all three interfaces
+      }
+      ```
+      
+      This is different from classes, where you can only extend **one** superclass.
+
+# Abstract Classes
+  - title: "Abstract Class Declaration"
+    prompt: |
+      How do you declare an abstract class in Java?
+    answer: |
+      Use the `abstract` keyword on the class:
+      
+      ```
+      public abstract class BaseIoTDevice implements IoTDevice {
+          protected String deviceId;
+          
+          public BaseIoTDevice(String deviceId) {
+              this.deviceId = deviceId;
+          }
+          
+          @Override
+          public boolean isAvailable() {
+              return this.isConnected;  // Concrete implementation
+          }
+          
+          // No implementation for identify() - subclasses must provide it
+      }
+      ```
+      
+      - Cannot be instantiated directly
+      - Can have both concrete and abstract methods
+
+  - title: "Abstract Methods"
+    prompt: |
+      How do you declare an abstract method in Java?
+    answer: |
+      Use the `abstract` keyword and **no method body**:
+      
+      ```
+      public abstract class BaseIoTDevice {
+          /**
+           * Each device type must implement this differently.
+           */
+          public abstract void identify();
+      }
+      ```
+      
+      - Abstract methods have no `{ }` body, just a semicolon
+      - Subclasses **must** implement abstract methods (unless also abstract)
+      - Only abstract classes can have abstract methods
+
+  - title: "Interface vs Abstract Class"
+    prompt: |
+      What's the difference between an interface and an abstract class in Java?
+    answer: |
+      | Feature | Interface | Abstract Class |
+      |---------|-----------|----------------|
+      | Extend/Implement | Can implement multiple | Can extend only one |
+      | Fields | Only constants | Any fields |
+      | Constructors | None | Can have constructors |
+      | Method bodies | Default methods only | Any methods |
+      | Purpose | Define contract | Provide partial implementation |
+      
+      **Common pattern**: Interface + "skeletal" abstract base class (e.g., `List` + `AbstractList`)
+
+# Polymorphism and Type Casting
+  - title: "Subclass to Superclass Assignment"
+    prompt: |
+      Can you assign a subclass instance to a superclass variable in Java?
+    answer: |
+      Yes! This is called **upcasting** and is always safe:
+      
+      ```
+      Light[] lights = new Light[2];
+      lights[0] = new TunableWhiteLight("light-1", 2700, 100);
+      lights[1] = new DimmableLight("light-2", 100);
+      
+      // Or more concisely:
+      Light[] lights = new Light[] {
+          new TunableWhiteLight("light-1", 2700, 100),
+          new DimmableLight("light-2", 100)
+      };
+      ```
+      
+      This works because a `TunableWhiteLight` **is-a** `Light`.
+
+  - title: "Type Casting (Downcasting)"
+    prompt: |
+      How do you cast a superclass reference to a subclass type in Java?
+    answer: |
+      Use parentheses with the target type:
+      
+      ```
+      Light light = lights[0];  // Actually a TunableWhiteLight
+      
+      // Cast to access subclass methods
+      TunableWhiteLight twl = (TunableWhiteLight) light;
+      twl.setColorTemperature(2700);
+      
+      // Or inline:
+      ((TunableWhiteLight) lights[0]).setColorTemperature(2700);
+      ```
+      
+      ⚠️ **Warning**: Throws `ClassCastException` at runtime if the object isn't actually that type!
+
+  - title: "For-Each Loop"
+    prompt: |
+      What is the syntax for a for-each loop in Java?
+    answer: |
+      ```
+      for (Type variable : collection) {
+          // use variable
+      }
+      ```
+      
+      Example:
+      ```
+      Light[] lights = { new DimmableLight("l1", 100) };
+      
+      for (Light l : lights) {
+          l.turnOn();
+      }
+      ```
+      
+      Works with arrays and any `Iterable` (like `List`, `Set`).
+
+# Dynamic Dispatch
+  - title: "Dynamic Dispatch"
+    prompt: |
+      What is dynamic dispatch in Java, and how does it work?
+    answer: |
+      **Dynamic dispatch** is how the JVM determines which method to call at **runtime** based on the actual object type.
+      
+      ```
+      Light l = new TunableWhiteLight("living-room", 2700, 100);
+      l.turnOn();  // Calls TunableWhiteLight.turnOn(), not Light.turnOn()
+      
+      ((DimmableLight) l).turnOn();  // Still calls TunableWhiteLight.turnOn()!
+      ```
+      
+      **Algorithm**:
+      1. Look for method in the object's actual class
+      2. If not found, check superclass
+      3. Continue up the hierarchy until found
+
+  - title: "Static vs Instance Methods"
+    prompt: |
+      What's the difference between static and instance methods in Java?
+    answer: |
+      | Aspect | Static Method | Instance Method |
+      |--------|---------------|-----------------|
+      | Belongs to | The class | An object instance |
+      | Called on | Class name | Object reference |
+      | Binding | Compile-time (static) | Runtime (dynamic) |
+      | Access to `this` | No | Yes |
+      
+      ```
+      // Static method - called on class
+      int mireds = TunableWhiteLight.degreesKelvinToMired(2700);
+      
+      // Instance method - called on object
+      light.turnOn();
+      ```
+
+  - title: "Declaring Static Methods"
+    prompt: |
+      How do you declare and call a static method in Java?
+    answer: |
+      Add the `static` keyword:
+      
+      ```
+      public class TunableWhiteLight extends DimmableLight {
+          public static int degreesKelvinToMired(int degreesKelvin) {
+              return 1000000 / degreesKelvin;
+          }
+      }
+      ```
+      
+      Call using the class name:
+      ```
+      int mireds = TunableWhiteLight.degreesKelvinToMired(2700);
+      ```
+      
+      Static methods cannot access instance fields or call instance methods.
+
+# Exception Handling
+  - title: "Exception Hierarchy"
+    prompt: |
+      What is the exception class hierarchy in Java?
+    answer: |
+      ```
+      Throwable
+      ├── Error (fatal, don't catch)
+      │   ├── OutOfMemoryError
+      │   └── StackOverflowError
+      └── Exception
+          ├── RuntimeException (unchecked)
+          │   ├── NullPointerException
+          │   ├── IllegalArgumentException
+          │   └── IndexOutOfBoundsException
+          └── IOException (checked)
+      ```
+      
+      - **Error**: JVM problems, don't catch
+      - **Checked exceptions**: Must be caught or declared
+      - **Unchecked exceptions**: Optional to catch (`RuntimeException` subclasses)
+
+  - title: "Checked vs Unchecked Exceptions"
+    prompt: |
+      What's the difference between checked and unchecked exceptions in Java?
+    answer: |
+      **Checked exceptions** (subclasses of `Exception` but not `RuntimeException`):
+      - Compiler **requires** you to handle them
+      - Must use `try-catch` or declare with `throws`
+      - Example: `IOException`, `SQLException`
+      
+      **Unchecked exceptions** (subclasses of `RuntimeException`):
+      - Compiler does **not** require handling
+      - Usually indicate programming errors
+      - Example: `NullPointerException`, `IllegalArgumentException`
+      
+      This is different from Python, where all exceptions are unchecked.
+
+  - title: "Throwing Exceptions"
+    prompt: |
+      How do you throw an exception in Java?
+    answer: |
+      Use the `throw` keyword with a new exception instance:
+      
+      ```
+      public void setColorTemperature(int colorTemperature) {
+          if (colorTemperature < 1000 || colorTemperature > 10000) {
+              throw new IllegalArgumentException(
+                  "Color temperature must be between 1,000 and 10,000"
+              );
+          }
+          // ... rest of method
+      }
+      ```
+
+  - title: "Try-Catch Blocks"
+    prompt: |
+      What is the syntax for catching exceptions in Java?
+    answer: |
+      ```
+      try {
+          // Code that might throw an exception
+          riskyOperation();
+      } catch (SpecificException e) {
+          // Handle specific exception
+          System.out.println("Error: " + e.getMessage());
+      } catch (Exception e) {
+          // Handle any other exception
+      } finally {
+          // Always runs (optional)
+          cleanup();
+      }
+      ```
+      
+      - Catch more specific exceptions first
+      - `finally` runs whether or not an exception occurred
+
+  - title: "Common Standard Exceptions"
+    prompt: |
+      What are the most common standard exceptions to use in Java?
+    answer: |
+      | Exception | When to Use |
+      |-----------|-------------|
+      | `IllegalArgumentException` | Invalid method parameter |
+      | `NullPointerException` | Unexpected null value |
+      | `IllegalStateException` | Object in wrong state for operation |
+      | `IndexOutOfBoundsException` | Index outside valid range |
+      | `UnsupportedOperationException` | Operation not supported |
+      
+      **Best practice**: Favor standard exceptions over custom ones for code reuse.
+
+  - title: "Documenting Exceptions"
+    prompt: |
+      How do you document that a method throws an exception?
+    answer: |
+      Use the `@throws` Javadoc tag:
+      
+      ```
+      /**
+       * Set the color temperature of the light.
+       * @param colorTemperature Temperature in degrees Kelvin.
+       * @throws IllegalArgumentException if outside valid range.
+       */
+      public void setColorTemperature(int colorTemperature) {
+          if (colorTemperature < 1000 || colorTemperature > 10000) {
+              throw new IllegalArgumentException(
+                  "Color temperature must be between 1,000 and 10,000"
+              );
+          }
+      }
+      ```

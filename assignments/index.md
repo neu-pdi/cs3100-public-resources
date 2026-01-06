@@ -20,8 +20,8 @@ Assignments are structured to provide a steady, manageable pace throughout the s
 **Notes:**
 - Each assignment builds on the provided solution from the previous week. Students are trusted to not share these solutions, or to seek them out.
 - AI coding assistants are introduced in Week 5 (Assignment 3) and encouraged thereafter. Students are strongly discouraged from using them in the first two assignments.
-- Group work begins in Week 11 (teams of 4 formed by Week 8). Each team member owns one core GUI feature while collaborating on shared infrastructure and the Feature Buffet.
-- Group assignments use a mix of individual and team grading. Core features are graded individually via automated tests against defined ViewModel interfaces. Feature Buffet items are graded primarily on **process** (design iteration, code review quality, documentation) rather than product.
+- Group work begins in Week 10 (teams of 4 formed by Week 8). Each team member owns one core GUI feature while collaborating on shared infrastructure and the Feature Buffet.
+- The group project (GA1+GA2+Final) is released as **one specification** with accountability checkpoints. **Features must be delivered incrementally**—it is not possible to complete the project at the last minute. Students receive automated grading feedback at checkpoints; full instructor feedback comes at the end. Core features are graded individually via automated tests against defined ViewModel interfaces. Feature Buffet items are graded primarily on **process** (design iteration, code review quality, documentation) rather than product.
 - Labs complement but don't depend on the main project assignments - they always build on a solution from a week earlier.
 
 
@@ -141,15 +141,15 @@ Assignments are structured to provide a steady, manageable pace throughout the s
     - Batch operations (import directory of images, export entire cookbook)
 - [**Lab 9: Serverless**](/labs/lab9-serverless)
   - Deploy recipe API to cloud platform
-- [**Lab 10: Usability**](/labs/lab10-usability)
-  - Conduct heuristic evaluation on provided interfaces
 
 ## **Module 3: Design for Users (Group Work Begins)**
 
 Group assignments are structured around **individual accountability with team collaboration**. Each team member owns one of four core GUI features, implementing against a provided ViewModel interface that enables automated grading. Teams also collaborate on shared infrastructure, integration, and choose additional "menu" features to implement together.
 
+**Important:** The group project (GA1+GA2+Final) is released as a single specification with two accountability checkpoints. **You cannot wait until the end to complete this project**—features must be delivered incrementally, and each checkpoint requires working functionality. You should expect only automated grading feedback at checkpoints; full instructor/TA feedback will be provided at the end. Plan your work from day one and use your team's code review process for iterative improvement.
+
 ### **Week 11-12: Design Sprint and Team Formation**
-- [**Group Assignment 0: Design Sprint**](/assignments/cyb10-design-sprint) (Due 2026-04-02)
+- [**Group Assignment 0: Design Sprint**](/assignments/cyb10-design-sprint) (Due 2026-03-26)
   - Build on A5 solution (provided)
   - **Team Foundation:**
     - Create **Team Charter**: communication norms, availability, decision-making process, conflict resolution plan, accountability expectations
@@ -162,16 +162,20 @@ Group assignments are structured around **individual accountability with team co
   - **Team Deliverables:**
     - Architecture diagram: how do ViewModels connect to existing services from A5?
     - Integrated wireframe document showing navigation flow and shared UI elements
-    - **Feature Buffet selection**: choose 2-3 features for GA2 with rationale
+    - **Feature Buffet selection**: choose 2-3 features for Checkpoint 2 with rationale
     - **"Our Feature" concept**: design a custom feature (not on buffet) to present in final demo
   - *Grading: 60% individual, 40% team*
-- [**Lab 11: User-Centered Design**](/labs/lab11-ucd)
+- [**Lab 10: Usability**](/labs/lab10-usability) (Week 11)
+  - Conduct heuristic evaluation on provided interfaces
+- [**Lab 11: User-Centered Design**](/labs/lab11-ucd) (Week 12)
   - Practice UCD techniques and user research methods
-- [**Lab 12: GUI Programming**](/labs/lab12-gui)
-  - JavaFX workshop
 
-### **Week 13: Core Feature Implementation**
-- [**Group Assignment 1: Core Features**](/assignments/cyb11-gui-advanced) (Due 2026-04-09)
+### **Week 12-15: Group Project**
+- [**Group Project: CookYourBooks GUI**](/assignments/cyb11-gui-advanced) (Released 2026-03-23)
+  
+  This is a **single project** with two accountability checkpoints. The full specification is available from day one—plan your work accordingly. **Checkpoints require working, tested features**; later checkpoints build on earlier ones, so it is impossible to leave everything until the final week. You will receive automated test feedback at each checkpoint, but comprehensive instructor feedback comes only at the final submission.
+
+  #### **Checkpoint 1: Core Features** (Due 2026-04-09)
   - **You are provided:** ViewModel interfaces (contracts) for each of the four core features, plus a shared test suite
   - **Core Features (one owner per team member):**
     1. **Library View**: Browse cookbooks/collections, navigation, collection management
@@ -187,12 +191,9 @@ Group assignments are structured around **individual accountability with team co
     - Shared infrastructure: navigation, theming, error handling components
     - Integration tests verifying feature interactions
     - Evidence of code review (meaningful PR comments applying HRT principles)
-  - *Grading: 70% individual (ViewModel tests), 30% team (integration)*
-- [**Lab 13: Asynchronous Programming**](/labs/lab13-async)
-  - Practice with CompletableFutures
+  - *Checkpoint grading: 70% individual (ViewModel tests), 30% team (integration)*
 
-### **Week 14: Feature Buffet and Polish**
-- [**Group Assignment 2: Feature Buffet**](/assignments/cyb12-ocr-integration) (Due 2026-04-16)
+  #### **Checkpoint 2: Feature Buffet** (Due 2026-04-16)
   - **Choose 2-3 features from the menu** (or propose a custom feature with instructor approval):
     - Recipe scaling calculator with serving size adjustment
     - Shopping list generation from selected recipes
@@ -208,14 +209,9 @@ Group assignments are structured around **individual accountability with team co
     - Design artifacts: show iteration (at least 2 versions with rationale for changes)
     - Implementation journal: git history, PR reviews, documented decisions
     - Testing evidence: unit tests, accessibility check
-    - Demo video (1-2 min) + reflection
-  - **Grading is process-focused:** A well-documented partial feature scores higher than a complete feature with no process evidence
-  - *Grading: 20% individual, 80% team (with peer evaluation adjustment ±10%)*
-- [**Lab 14: Prep for Future of Programming**](/labs/lab14-future-prep)
-  - Explore emerging trends in software development
+  - *Checkpoint grading: 20% individual, 80% team (with peer evaluation adjustment ±10%)*
 
-### **Week 15: Final Report**
-- [**Final Project Report**](/assignments/cyb13-final-integration) (Due 2026-04-20)
+  #### **Final Submission** (Due 2026-04-20)
   - **Application Deliverables:**
     - Full CookYourBooks application with all core features + Feature Buffet selections
     - E2E test suite covering critical user workflows
@@ -225,4 +221,13 @@ Group assignments are structured around **individual accountability with team co
     - Team collaboration reflection: what worked? what would you do differently?
     - Sustainability considerations and recommendations for future iterations
     - **Custom Feature Infographic**: visual one-pager showcasing your team's unique feature with screenshots (optional: opt-in to have this featured on the course website)
+    - Demo video (2-3 min) showcasing your application + reflection
   - Peer evaluation survey submitted
+  - *Final grading incorporates checkpoint scores plus final deliverables*
+
+- [**Lab 12: GUI Programming**](/labs/lab12-gui) (Week 13)
+  - JavaFX workshop
+- [**Lab 13: Asynchronous Programming**](/labs/lab13-async) (Week 14)
+  - Practice with CompletableFutures
+- [**Lab 14: Prep for Future of Programming**](/labs/lab14-future-prep) (Week 15)
+  - Explore emerging trends in software development

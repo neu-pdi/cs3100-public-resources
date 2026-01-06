@@ -40,7 +40,7 @@ Students complete individual programming assignments that build into a larger pr
 
 ## Grading
 
-The course uses a total points system. Your final grade is based on the percentage of points earned out of 1000 total points.
+Students can earn up to 1000 points. Your final grade is based on both the total number of points and the points in each category.
 
 | Category | Points | % of Grade |
 |----------|--------|------------|
@@ -53,6 +53,7 @@ The course uses a total points system. Your final grade is based on the percenta
 | **Total** | **1000** | **100%** |
 
 ### Assignment Point Distribution
+Detailed rubrics will be published with each assignment.
 
 **Individual Assignments:**
 
@@ -99,8 +100,8 @@ Your letter grade is determined by both your total points AND meeting minimum th
 | Grade | Total Points | Individual Assignments | Group Assignments | Exams | Labs | Participation |
 |-------|--------------|------------------------|-------------------|-------|------|---------------|
 | A | &ge;900 | &ge;240 (80%) | &ge;160 (80%) | &ge;280 (70%) | &ge;11 completed | &ge;40 (80%) |
-| B | &ge;800 | &ge;210 (70%) | &ge;140 (70%) | &ge;220 (55%) | &ge;9 completed | &ge;35 (70%) |
-| C | &ge;700 | &ge;180 (60%) | &ge;120 (60%) | &ge;200 (50%) | &ge;7 completed | &ge;30 (60%) |
+| B | &ge;800 | &ge;210 (70%) | &ge;140 (70%) | &ge;220 (55%) | &ge;9 completed | &ge;25 (50%) |
+| C | &ge;700 | &ge;180 (60%) | &ge;120 (60%) | &ge;200 (50%) | &ge;7 completed | — |
 | D | &ge;600 | — | — | — | — | — |
 | F | &lt;600 or fails to meet above minimums | | | | |
 
@@ -108,7 +109,7 @@ Your letter grade is determined by both your total points AND meeting minimum th
 
 | Points | Grade | | Points | Grade | | Points | Grade | | Points | Grade |
 |--------|-------|-|--------|-------|-|--------|-------|-|--------|-------|
-|        |       | | 870–899 | B+ | | 770–799 | C+ | | 670–699 | D+ |
+|        |       | | 870+ | B+ | | 770+ | C+ | | 670+ | D+ |
 | 930–1000 | A | | 830–869 | B | | 730–769 | C |  | 630–669 | D |
 | 900–929 | A- | | 800–829 | B- | | 700–729 | C- | | 600–629 | D- |
 
@@ -117,6 +118,7 @@ Your letter grade is determined by both your total points AND meeting minimum th
 **Why thresholds?** These requirements ensure that you demonstrate competence across different aspects of the course. You cannot compensate for missing fundamental skills (tested in assignments) by only performing well on exams, or vice versa. The exam threshold for a B (55%) is intentionally lower to accommodate students who struggle with timed assessments but demonstrate mastery through their project work.
 
 ### Grade Recovery Policies
+**Grading grievances:** If you have concerns regarding the grading of your work, please let us know right away by opening a regrade request in Pawtograder. **All regrade requests must be submitted within 7 days from your receipt of the graded work**. If your regrade request is closed and you feel that the response was not satisfactory, you may appeal to the instructor via Pawtograder within 3 days of the resolution of your regrade request by the grader.
 
 **Final Exam Replacement:** If your final exam score is greater than the average of your two midterm exam scores, your final exam score will replace that average. This allows you to recover from poor early exam performance by demonstrating mastery on the comprehensive final.
 
@@ -124,13 +126,26 @@ Your letter grade is determined by both your total points AND meeting minimum th
 
 ### Labs and Participation
 
-**Labs (50 points):** Labs are graded on the "good faith effort" standard: if you attend your lab section and make a submission that demonstrates your effort to complete the lab, you will receive full marks for it. There are 14 labs; each is worth approximately 3.5 points, with the total capped at 50 points (allowing you to miss a few without penalty).
+**Labs (50 points):** Labs are graded on the "good faith effort" standard: if you attend your lab section and make a submission that demonstrates your effort to complete the lab, you will receive full marks for it. There are 14 labs; each is worth 5 points, with the total capped at 50 points (allowing you to miss a few without penalty).
 
-**Class Participation (50 points):** Participation is assessed through in-class activities, including polls, discussions, and short exercises. Regular attendance and engagement is expected. Each instructor will provide details on how participation points are earned in the first week of class. Completing online participation activities in violation of instructors' rules (such as completing polls remotely without prior written permission) constitutes an academc integrity violation and will result in losing all participation points for the semester.
+**Class Participation (50 points):** Engagement with course material is essential to learning, and participation is assessed through in-class live-response activities using Poll Everywhere during most lectures (approximately 34 content lectures throughout the semester). You must be physically present in lecture to complete these activities.
 
-Detailed rubrics will be published with each assignment.
+**Attendance Verification:** Instructors take headcounts during participation activities. If the number of poll responses exceeds the number of students present, a roll call will be conducted to identify discrepancies. **Completing participation activities while not physically present in the classroom constitutes an academic integrity violation and will result in forfeiting all 50 participation points for the entire semester. By the letter grade policy above, this means that the maximum letter grade you can earn is a C. Do not make us waste time calling roll.**
 
-**Grading grievances:** If you have concerns regarding the grading of your work, please let us know right away by opening a regrade request in Pawtograder. **All regrade requests must be submitted within 7 days from your receipt of the graded work**. If your regrade request is closed and you feel that the response was not satisfactory, you may appeal to the instructor via Pawtograder within 3 days of the resolution of your regrade request by the grader.
+**Participation Grading:** You may miss up to 6 classes (or participating in 6 days' activities) with no penalty. Beyond 6 absences, your participation score decreases on a non-linear scale—missing a few extra classes has minimal impact, but missing many has a larger effect:
+
+| Missed Polls | Participation Points |
+|----------------|---------------------|
+| 0–6 | 50 (full credit) |
+| 7–11 | 42 |
+| 12–17 | 32 |
+| 18–23 | 20 |
+| 24–29 | 10 |
+| 30+ | 0 |
+
+This scale is designed so that missing up to half the semester's lectures (17 classes) still qualifies you for a B in participation. However, students who attend regularly perform significantly better on exams, and missing all 50 participation points means you must score higher elsewhere to reach your target grade.
+
+**Participation Make-Up Policy:** There is no mechanism to make up individual missed participation activities. Do not request one-off accommodations for missed classes (but do request any disability accommodations to which you are entitled). The policy intentionally allows you to miss up to 6 classes with no penalty, and the marginal penalty is quite small. If circumstances arise that will affect your ability to attend class regularly (illness, family emergency, work conflict, etc.), contact both your academic advisor and your instructor as soon as possible to discuss a plan that best supports your success in the course.
 
 ## Communication with the Course Staff and Peer Support
 
@@ -146,7 +161,13 @@ To make the most of your time:
 - If you need help *debugging* please follow our debugging workflow, as outlined in [Lecture 14](/lecture-notes/l14-program-understanding), and summarized in the syllabus [below](#debugging-workflow).
 - Typical sessions last 10-15 minutes, so focus on one issue at a time.
 
-What we can help with: Clarifying assignment requirements, debugging guidance (we'll help you find the bug, not fix it for you), design and architecture questions, testing strategies, tool usage (Git, IDE, autograder), and conceptual questions about course material.
+What we can help with:
+- clarifying assignment requirements
+- debugging guidance (we'll help you find the bug, not fix it for you)
+- design and architecture trade-offs
+- testing strategies
+- tool usage (git, IDE, Pawtograder, etc.)
+- conceptual questions about course material
 
 What we can't do: Provide direct code solutions, pre-grade your work, or process extension requests (those go through a separate channel).
 

@@ -14,6 +14,8 @@ optional_preparation:
 ## Describe why inheritance is a core concept of object-oriented programming (10 minutes)
 
 - A core principle of program design is: make your data mean something.
+
+![Tagline: 'Make your data mean something' - A tense scene in a corporate conference room, rendered in a modern business illustration style. An auditor (external stakeholder) has arrived with questions about a suspicious transaction. Two scenarios play out side by side. On the left ('Meaningless Data'), developers frantically search through tables: tbl_txn with columns id, amt, ts, uid_1, uid_2, type_cd. The auditor asks 'Show me all transfers over $10,000 from the last quarter with the authorizing manager's approval status.' The developers look at each other—what's type_cd? Which user is the sender vs receiver? Where's approval status stored? The data exists but answering the question requires archaeology. On the right ('Meaningful Data'), the same auditor question gets answered immediately. The code shows Transfer extending Transaction, with clear fields: sender: Account, recipient: Account, amount: Money, authorizedBy: Employee, approvalStatus: ApprovalState. A query practically writes itself. The developers pull the report in minutes; the auditor nods, satisfied. The domain model anticipated the kinds of questions stakeholders ask, because it was built from understanding of what banking actually involves.](/img/lectures/web/l2-make-your-data.png)
 - We write software that manipulates data in some way, and oftentimes this data is related to some real-world concept.
 - When it comes to designing our program, we can leverage our domain knowledge of that real world concept to design a program that is both easy to understand and easy to maintain.
 - Inheritance is a core concept of object-oriented programming that allows us to model real-world "is-a" relationships between types.
@@ -178,6 +180,9 @@ Some rules for overriding methods:
 - We use the `@Override` annotation to indicate that we are overriding a method from the superclass. This is not strictly required by the JVM, but is helpful for readability. It also allows the compiler to catch some errors: if you put `@Override` on a method that doesn't actually override a superclass method, the compiler will generate an error.
 
 Each type in the hierarchy must (by our rule, not by the Java language spec) satisfy the [Liskov Substitution Principle](https://learning.oreilly.com/library/view/program-development-in/9780768685299/ch7.html#:~:text=Subtypes%20must%20satisfy%20the%20substitution%20principle%20):
+
+![Concept: 'The Substitution Test' (Universal Adapter Station) - A stylized electrical/plumbing testing station rendered in clean, technical blueprint style with a hint of mid-century industrial design. The scene shows a universal testing rig where objects must prove they can substitute for their claimed supertypes. On the left, a Light interface is represented as a standardized socket/port with labeled pins: turnOn(), turnOff(), isOn(). In the center, various subtype objects queue up for testing: a DimmableLight (glowing softly), a TunableWhiteLight (with color temperature dial), and a suspicious BrokenLight (cracked and sparking). The DimmableLight plugs in perfectly—all pins connect, a green checkmark appears, and it successfully lights up when turnOn() is called. The TunableWhiteLight also passes (with extra pins for its additional methods safely tucked away). But the BrokenLight fails: its turnOn() pin connects but produces smoke instead of light, triggering a red alarm. A portrait of Barbara Liskov watches approvingly from the wall, captioned with her principle. Tagline: 'If it fits the socket, it must work like the original' or 'Contracts aren't just signatures—they're promises.'](/img/lectures/web/l2-lsp.webp)
+
 - The method signatures (parameters, return type) must be the same as the method it overrides. This is enforced by the compiler.
 - The behavior of the method must be the same as the method it overrides. This is not enforced by the compiler, but is a good design principle. 
     - There is an implicit specification that the method `turnOn` must turn on the light. If a subclass overrides this method and does not turn on the light, it is violating the Liskov Substitution Principle.
@@ -185,6 +190,8 @@ Each type in the hierarchy must (by our rule, not by the Java language spec) sat
 - Any properties that hold for the superclass must also hold for the subclass.
     - Example property: If the light is on, the method `isOn` must return true. If the light is off, the method `isOn` must return false.
 - We'll return to this principle later when we discuss polymorphism and specification.
+
+![Concept: 'The Substitution Test' (Universal Adapter Station) - A stylized electrical/plumbing testing station rendered in clean, technical blueprint style with a hint of mid-century industrial design. The scene shows a universal testing rig where objects must prove they can substitute for their claimed supertypes. On the left, a Light interface is represented as a standardized socket/port with labeled pins: turnOn(), turnOff(), isOn(). In the center, various subtype objects queue up for testing: a DimmableLight (glowing softly), a TunableWhiteLight (with color temperature dial), and a suspicious BrokenLight (cracked and sparking). The DimmableLight plugs in perfectly—all pins connect, a green checkmark appears, and it successfully lights up when turnOn() is called. The TunableWhiteLight also passes (with extra pins for its additional methods safely tucked away). But the BrokenLight fails: its turnOn() pin connects but produces smoke instead of light, triggering a red alarm. A portrait of Barbara Liskov watches approvingly from the wall, captioned with her principle. This visualization makes LSP concrete and memorable: substitutability means 'fits the socket AND does what the socket promises.' The testing station metaphor emphasizes that this isn't just about method signatures (the pins fitting) but about behavior (actually lighting up). The BrokenLight example illustrates the subtle violation: it might have all the right methods but produces wrong behavior—the deepest LSP danger. Tagline: 'If it fits the socket, it must work like the original' or 'Contracts aren't just signatures—they're promises.'](/img/lectures/web/l2-types.webp)
 
 Java allows assignment of a subclass to a superclass reference:
 ```java
@@ -227,6 +234,9 @@ This snippet could also be written more concisely:
 Sometimes we want to declare a set of behaviors that must be implemented by all subclasses, but we don't want to provide a concrete implementation for those behaviors. There are two ways to do this: interfaces and abstract classes.
 
 ### Interfaces
+
+![The Universal Charging Station — Interfaces as Standardized Contracts. A clean, modern illustration showing a universal charging station with multiple USB-C ports, rendered in a technical-but-friendly blueprint style. LEFT SIDE - THE INTERFACE (USB-C Port): A large, detailed USB-C port labeled "Chargeable" with its specification card showing: charge(), getCapacity(), getBatteryLevel(). A sign reads: "Any device implementing this interface can charge here." The port itself is highlighted with a soft glow, emphasizing it's a SPECIFICATION, not a device. RIGHT SIDE - THE IMPLEMENTATIONS: Three very different devices successfully plugged into identical ports: (1) A smartphone labeled "Phone implements Chargeable" — its charge() uses fast-charging circuitry; (2) A laptop labeled "Laptop implements Chargeable" — its charge() manages multiple battery cells; (3) A wireless earbud case labeled "Earbuds implements Chargeable" — its charge() trickle-charges tiny batteries. Each device has a small annotation showing its internal implementation is completely different (different battery sizes, charging speeds, circuits), but they all present the same interface to the charging station. BOTTOM - THE KEY INSIGHT: A callout box states: "The charging station doesn't know or care HOW each device charges. It only knows they all honor the Chargeable contract." Tagline: "One contract, many implementations."](/img/lectures/web/l2-interface-charging-station.png)
+
 - Interfaces:
     - Define a set of methods that a class must implement.
     - Can extend one or more interfaces.
@@ -292,6 +302,17 @@ public abstract class BaseIoTDevice implements IoTDevice {
 - We implement methods common between all subclasses to reduce duplication (like `isAvailable()`)
 - Not all methods from the interface need to be implemented by abstract classes since they are not directly instantiated, but those methods will still be required in concrete classes that `extend` them
 - We can use `abstract methods` such as `identify()` in abstract classes to enforce that subclasses implement behaviors that depend on their specific characteristics (in this case, hardware)
+
+### Why Java doesn't allow multiple class inheritance
+
+Some objects legitimately belong to multiple categories (e.g., a ceiling fan with a built-in light is both a Light and a Fan). However, multiple *class* inheritance creates ambiguity when both parent classes implement the same method differently:
+
+![Conflicting implementations visualization](/img/lectures/web/l2-fan-conflicting.webp)
+
+This is called the "diamond problem." Java avoids it by restricting multiple inheritance to interfaces:
+- Interfaces don't provide implementations (usually), so there's no ambiguity
+- The implementing class must provide the implementation
+- This forces explicit design decisions rather than implicit (and potentially confusing) behavior
 
 ## Describe the JVM's implementation of dynamic dispatch (10 minutes)
 
@@ -367,6 +388,8 @@ There are two subclasses of `Throwable`: `Exception` and `Error`.
 An `Error` is an exception that is typically fatal, and detected by the JVM itself, although you can also throw them explicitly. For example, the JVM throws an `OutOfMemoryError` if it runs out of memory, or a `StackOverflowError` if the stack overflows (too much recursive function calling). These are not expected to be caught by application code. It is generally bad practice to throw an `Error` in your code.
 
 Exceptions are further divided into two categories: `checked` and `unchecked`.
+
+![Revised: 'The Arrivals Hall' (Airport Declaration Channels) - A cheerful airport arrivals hall rendered in the style of a friendly airport signage system—think IKEA-meets-international-terminal wayfinding design. The scene shows the familiar customs area after landing, with two clearly marked channels. The green channel ('Nothing to Declare' / Unchecked Exceptions) shows travelers like NullPointerException and IllegalArgumentException walking straight through without stopping—no paperwork, no inspection, just a quick passage into the main terminal. A small sign notes: 'Travelers choosing this channel accept responsibility for any undeclared items.' The red channel ('Goods to Declare' / Checked Exceptions) shows travelers like IOException and SQLException stopping at a customs desk, filling out declaration forms (the throws clause), having their bags inspected (the try-catch block), and getting their forms stamped before proceeding. The process is slower but orderly. Friendly customs officers (the compiler) check that all declarations match what's actually being carried. Tagline: 'Some exceptions require declaration. Know which channel you're in.'](/img/lectures/web/l2-exceptions.webp)
 
 - `unchecked` exceptions are those that are *not* required to be caught by calling code (all subclasses of `RuntimeException`)
 - `checked` exceptions are those that are *required* to be caught by calling code (all subclasses of `Exception` that are not subclasses of `RuntimeException`)

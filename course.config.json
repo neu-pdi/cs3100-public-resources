@@ -12,6 +12,10 @@
   "startDate": "2026-01-07",
   "endDate": "2026-04-20",
   "timezone": "America/New_York",
+  "defaultSlidesPath": "/lecture-slides",
+  "instructorSlides": {
+    "Spertus, E.": "/lecture-slides-spertus"
+  },
   "sections": [
     {
       "id": "01",
@@ -1322,16 +1326,16 @@
       "title": "Group Assignment 0: Design Sprint",
       "type": "homework",
       "assignedDate": "2026-03-23",
-      "dueDate": "2026-04-02",
+      "dueDate": "2026-03-26",
       "dueTime": "23:59",
       "points": 60,
       "url": "/assignments/cyb10-design-sprint"
     },
     {
       "id": "cyb11",
-      "title": "Group Assignment 1: Core Features",
+      "title": "Group Project: Checkpoint 1 (Core Features)",
       "type": "homework",
-      "assignedDate": "2026-04-02",
+      "assignedDate": "2026-03-23",
       "dueDate": "2026-04-09",
       "dueTime": "23:59",
       "points": 70,
@@ -1339,23 +1343,23 @@
     },
     {
       "id": "cyb12",
-      "title": "Group Assignment 2: Feature Buffet",
+      "title": "Group Project: Checkpoint 2 (Feature Buffet)",
       "type": "homework",
-      "assignedDate": "2026-04-09",
+      "assignedDate": "2026-03-23",
       "dueDate": "2026-04-16",
       "dueTime": "23:59",
       "points": 70,
-      "url": "/assignments/cyb12-ocr-integration"
+      "url": "/assignments/cyb11-gui-advanced"
     },
     {
       "id": "cyb13",
-      "title": "Final Project Report",
+      "title": "Group Project: Final Submission",
       "type": "homework",
-      "assignedDate": "2026-04-16",
+      "assignedDate": "2026-03-23",
       "dueDate": "2026-04-20",
       "dueTime": "23:59",
       "points": 70,
-      "url": "/assignments/cyb13-final-integration"
+      "url": "/assignments/cyb11-gui-advanced"
     }
   ],
   "scheduleNotes": [

@@ -23,6 +23,7 @@ interface DirectoryConfig {
 const DIRECTORIES: DirectoryConfig[] = [
   { source: 'static/img/lectures', output: 'static/img/lectures/web' },
   { source: 'static/img/assignments', output: 'static/img/assignments/web' },
+  { source: 'static/img/labs', output: 'static/img/labs/web' },
   { source: 'static/img', output: 'static/img/web' },
 ];
 

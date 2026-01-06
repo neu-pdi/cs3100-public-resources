@@ -12,13 +12,51 @@ image: /img/lectures/web/l1.png
 ## Understand the structure of this course and what will be expected of you every week (15 minutes)
 - Introduce self, TAs (2-3 minutes)
 - A brief overview of software engineering (5 minutes)
-  - SE goes back to the 1960s: missiles, rockets, business machines (Margaret Hamilton, Grace Hopper, etc.)
+  - SE goes back to the 1950s and 1960s: missiles, rockets, business machines
+  
+  ![Glen Beck and Betty Snyder programming the ENIAC](/img/lectures/l1-intro/Glen_Beck_and_Betty_Snyder_program_the_ENIAC_in_building_328_at_the_Ballistic_Research_Laboratory-public-domain.jpg)
+  *Source: Glen Beck and Betty Snyder program the ENIAC (Public Domain)*
+  
+  - In 1952, Grace Hopper developed the first compiler (A-0), introducing "automatic programming"—the radical idea that machines could translate human-readable code into machine code.
+  
+  ![Grace Hopper in her office](/img/lectures/l1-intro/Grace_Murray_Hopper,_in_her_office_in_Washington_DC,_1978,_by-Lynn_Gilbert-cc-by-sa-4.jpg)
+  *Photo: Lynn Gilbert, CC BY-SA 4.0*
+  
+  - Every generation redefines what "automatic programming" means, and faces skepticism each time:
+  
+  ![Skepticism about automatic programming through history](/img/lectures/web/l1-skepticism.png)
+  
+  - Margaret Hamilton led the Apollo flight control software team and is popularly attributed with popularizing the term "software engineering."
+  
+  ![Margaret Hamilton with Apollo guidance software printouts](/img/lectures/l1-intro/Margaret_Hamilton_apollo-guidance-public-domain.jpg)
+  *Margaret Hamilton with Apollo guidance software printouts (Public Domain)*
+  
+  - Key pioneers: [Margaret Hamilton](https://www.computer.org/publications/tech-news/events/what-to-know-about-the-scientist-who-invented-the-term-software-engineering), Grace Hopper, Betty Holberton, and others
   - SE is the integral of programming over time (Titus Winters essay)
   - This principle will recur throughout the course. It explains why we care about changeability, readability, and testing. It also explains why we'll consider questions that might seem "non-technical": Who uses our software? Who maintains it? What assumptions do we bake in? These become engineering concerns because their costs compound over time.
   - Most of the cost of software is in maintenance, not initial development. This is why sustainability—the ability of software to continue providing value over time—will be a recurring theme. We'll consider four dimensions: technical (can we maintain it?), economic (can we afford it?), social (does it serve people well?), and environmental (what resources does it consume?). These aren't separate from "real" engineering—they *are* engineering concerns when you think over time.
+  - Dijkstra observed that the "software crisis" didn't end—our ambitions simply grew with our capabilities:
+  
+  ![Edsger Dijkstra](/img/lectures/l1-intro/Edsger_Wybe_Dijkstra-cc-by-sa-3-Hamilton-Richards.jpg)
+  *Photo: Hamilton Richards, CC BY-SA 3.0*
+  
+  > "The major cause of the software crisis is that the machines have become several orders of magnitude more powerful! To put it quite bluntly: as long as there were no machines, programming was no problem at all; when we had a few weak computers, programming became a mild problem, and now we have gigantic computers, programming has become an equally gigantic problem." — Dijkstra's 1972 Turing Award lecture
+  
+  - Computing power has grown ~67 million times since 1972, and software complexity has scaled correspondingly:
+  
+  ![Moore's Law visualization](/img/lectures/web/l1-moore.webp)
+  
 - This course expands on principles of program design and implementation, looking at larger scale systems
 - This course is a principles-based course, not a syntax-based course: we will look at the big picture and why things are the way they are, rather than just the syntax of the language
   - We will provide you with flashcards and other resources to help you learn the syntax. We expect you to use them, and will move quickly past the syntax in lecture.
+- Our perspective on AI: AI is a noisy amplifier—it can accelerate your work if you have expertise, but produces plausible-looking nonsense you can't evaluate if you lack expertise.
+  
+  ![Concept: 'The Amplifier, Not the Signal' (Human Context as the Source) - A clean, technical diagram rendered in the style of an audio engineering schematic—but with intentional AI generation artifacts scattered throughout as Easter eggs. The central amplifier unit labeled 'AI' has impressive specs and glowing indicators. The signal flow shows: Input (left side) with a human providing context—requirements documents, stakeholder interviews, domain knowledge. A hand points to the input, but the hand has six fingers (the classic tell). Output (right side) shows amplified results: code, documentation, test cases—generated at impressive speed. But look closely: one document is titled 'Archetecture Design' (misspelled), another shows a code snippet with a subtle logic error visible. The feedback loop shows a human evaluator with a red pen, circling errors. The reveal: A caption at the bottom breaks the fourth wall: 'This image was generated by AI. Did you spot all the errors? Neither can AI—that's why it needs you.'](/img/lectures/web/l1-ai.jpeg)
+  
+  - The hardest parts of software engineering aren't typing code—they're understanding requirements, making tradeoffs, reviewing work, and coordinating with humans.
+  - AI coding assistance is not permitted in weeks 1-5 because you can't effectively review code you couldn't have written yourself:
+  
+  ![Concept: 'The Reviewer's Paradox' (Can't Review What You Can't Write) - A split-panel diagram rendered in the style of a thoughtful editorial illustration. On the left ('Without Foundation'), a student stares at AI-generated code on a screen. The code contains subtle bugs—a logic error here, a security vulnerability there, an inefficient algorithm—but the bugs are invisible, rendered in the same color as correct code. The student's thought bubble shows question marks and uncertainty: 'Is this... right?' A small demon labeled 'Subtle Bug' hides in the code, grinning. The student has no mental model to detect it. On the right ('With Foundation'), the same student, now having completed foundational exercises, reviews similar code. But now the bugs glow red—visible because the student has built the pattern-matching ability to recognize what 'wrong' looks like. Their thought bubble shows a checklist: 'Edge cases? ✓ Security? ⚠️ Performance? ✓' The demon is caught and highlighted. A timeline at the bottom shows the progression: 'Weeks 1-5: Build the detector → Weeks 6+: Use the detector.' Tagline: 'First, learn to see. Then, leverage AI.'](/img/lectures/web/l1-ai-review.webp)
 - Beyond technical skills
   - This course is required for all CS majors—not just those heading into software engineering. Whether you pursue industry, research, ML, data science, or graduate school, you will collaborate with others on technical work.
   - The CS field changes constantly. The specific languages and tools we teach will evolve, but your ability to *learn new things quickly* is a career-long asset. We'll practice this throughout the semester.
@@ -60,15 +98,24 @@ Background material:
 
 - Java was developed in the early 1990's by a team led by James Gosling. It is one of several languages being developed at the time that were based around "object-oriented" programming.
 - One important historical note of Java vs a language like Python is that Java was developed by a company that wanted to monetize the technology - Sun Microsystems. Python is a community-driven language.
-  - Sidebar: How did it go for Sun Microsystems? (Photo of front and back of current Facebook sign w/ Sun logo) How did it go for Oracle? (Google v. Oracle)
+  - Sidebar: How did it go for Sun Microsystems? ([There's A Hidden Message On The Sign Outside Facebook's Campus — It Reminds Employees To Stay Motivated](https://www.businessinsider.com/why-suns-logo-is-on-the-back-of-facebooks-sign-2014-12)) How did it go for Oracle? ([Google v. Oracle](https://en.wikipedia.org/wiki/Google_LLC_v._Oracle_America,_Inc.))
+  - These different governance models shape how the languages evolve—Python accepted breaking changes (Python 2→3), while Java maintains extreme backward compatibility:
+  
+  ![Concept: 'Two Kinds of Community' (Governance Models Shape Language Evolution) - A split-panel illustration in the style of a vintage technical manual, contrasting two approaches to language stewardship. On the LEFT ('The Open Commons'), a public park where diverse individuals gather around a shared garden plot. A teacher, a hobbyist, a startup founder, a student, and a few corporate representatives (visibly outnumbered) all have equal-sized voting cards. A sign reads 'Python Software Foundation - All Welcome.' In the foreground, a small ceremonial bonfire where old code labeled 'Python 2' is being retired—some people cheer while a few look wistful. A banner overhead reads 'Sometimes we break things to make them better.' On the RIGHT ('The Corporate Boardroom'), a polished conference room with a long table. At the head sits an Oracle representative; around the table are six other seats with nameplates reading enterprise company names. A sign on the wall reads 'Java Community Process - Executive Committee.' Prominently displayed: a glass museum case containing ancient code labeled 'Java 1.0 (1995) - STILL RUNS' like a sacred artifact. Red warning signs everywhere: 'DO NOT BREAK BACKWARD COMPATIBILITY.' Tagline options: 'Two definitions of community' / 'Who decides when to break things?' / 'Move fast vs. never break'](/img/lectures/web/l1-governance.webp)
 - No matter what the product pitch was (cable tv set top boxes, web browsers, etc) the core marketing point was "write once, run anywhere" *with performance*
   - CPUs have different instruction sets, OS's have different APIs, how do you run a program on any machine?
   - Both Python and Java are compiled into a "bytecode" (an intermediate representation of the source code) that is then executed by an interpreter. In this sense, they are both "write once, run anywhere" insofar as the interpreter can run on any machine.
+    
+    ![Bytecode visualization](/img/lectures/web/l1-bytecode.webp)
+    
     - Sidebar: Is it really that easy? Who has had the fun of having to compile native Python extensions?
   - Interpreting this bytecode is slower than running "native" code (e.g. C, or Rust, compiled into machine code).
       - Example: Interpeted vs compiled code for a simple "Hello, World" program. Interpeted code is slower because it has to read the source code and execute it line by line. Compiled code is faster because it is already in machine code. Instead of spending 100's of instructions to read the source code and execute it, the machine code is already in memory and can be executed directly.
       - Example: Basic optimizations. A compiler can identify branches that are never taken and remove them. An interpreter has to execute every line of code.
   - Java popularized the concept of a "JIT runtime," which dynamically compiles this bytecode as it is executed. The program that runs the Java code is called the "JVM" (Java Virtual Machine).
+    
+    ![JIT compilation visualization](/img/lectures/web/l1-jit.webp)
+    
     - Sidebar: There are other languages that run on the JVM, like Clojure, Kotlin, Scala, and Groovy. These languages, like Java, are compiled into the language that the JVM speaks, which is called "Java bytecode."
   - While much effort has gone into making a JIT for Python (like PyPy), there are fundamental language design differences that make it difficult to match the performance of a language like Java.
   - Sidebar: We started with cable boxes and web applets... how did that go? Where is Java used today?

@@ -1,0 +1,430 @@
+cards:
+# Package and Import Declarations
+  - title: "Package Declaration"
+    prompt: |
+      What is the syntax for declaring a package in Java, and what is the naming convention?
+    answer: |
+      Use the `package` keyword at the top of the file:
+      ```
+      package io.github.neu_pdi.cs3100.lecture2;
+      ```
+      
+      **Convention**: Use the reverse domain name of the organization. If you don't have one, use io.github.your-username.
+      - Example: GitHub user `octocat` → `io.github.octocat`
+
+  - title: "Import Declaration"
+    prompt: |
+      How do you import a class from another package in Java?
+    answer: |
+      Use the `import` keyword:
+      ```
+      import io.github.neu_pdi.cs3100.utils.OtherClass;
+      ```
+      
+      **Note**: Classes from `java.lang` (like `String` and `System`) are imported automatically.
+
+# Comments
+  - title: "Single-Line Comments"
+    prompt: |
+      What is the syntax for a single-line comment in Java?
+    answer: |
+      Use `//` to start a single-line comment:
+      ```
+      // This is a single-line comment
+      int x = 5; // Comment at end of line
+      ```
+
+  - title: "Multi-Line Comments"
+    prompt: |
+      What is the syntax for a multi-line comment in Java?
+    answer: |
+      Use `/*` to start and `*/` to end:
+      ```
+      /* This is a
+         multi-line
+         comment */
+      ```
+
+  - title: "Javadoc Comments"
+    prompt: |
+      What is a Javadoc comment in Java and what is its syntax?
+    answer: |
+      Javadoc comments are used to generate documentation for code. Use `/**` to start and `*/` to end:
+      ```
+      /**
+       * This method does something useful.
+       * @param x The input value
+       * @return The result
+       */
+      public int doSomething(int x) { ... }
+      ```
+
+# Class Declaration
+  - title: "Class Declaration Syntax"
+    prompt: |
+      What is the basic syntax for declaring a class in Java?
+    answer: |
+      ```
+      public class ClassName {
+          // class contents go here
+      }
+      ```
+      
+      - `public` means the class can be used by other classes
+      - Class contents are enclosed in `{ }` braces
+      - **Important**: Indentation doesn't matter in Java (unlike Python)
+
+  - title: "Access Modifiers for Classes"
+    prompt: |
+      What are the access levels for a Java class?
+    answer: |
+      - `public` – Can be used by any other class
+      - *No modifier* (default) – `package-private`, can only be used by classes in the same package
+      
+      ```
+      public class PublicClass { }  // accessible everywhere
+      class PackagePrivateClass { } // accessible only in same package
+      ```
+
+# Method Declaration
+  - title: "Method Declaration Syntax"
+    prompt: |
+      What is the basic syntax for declaring a method in Java?
+    answer: |
+      ```
+      accessModifier returnType methodName(parameters) {
+          // method body
+      }
+      ```
+      
+      Example:
+      ```
+      public void sayHello(String name) {
+          System.out.println("Hello, " + name);
+      }
+      ```
+
+  - title: "The main Method"
+    prompt: |
+      What is the exact signature of the main method in Java, and why is it important?
+    answer: |
+      ```
+      public static void main(String[] args) {
+          // program entry point
+      }
+      ```
+      
+      - `public` – accessible by the JVM
+      - `static` – can be called without creating an instance
+      - `void` – returns nothing
+      - `String[] args` – command line arguments
+      
+      This is the **entry point** that the JVM looks for when running a program.
+
+  - title: "Static Keyword"
+    prompt: |
+      What does the `static` keyword mean when applied to a method or field in Java?
+    answer: |
+      `static` means the method or field belongs to the **class itself**, not to instances of the class.
+      
+      - Can be called/accessed without creating an object
+      - Similar to Python's class methods
+      
+      ```
+      // Called on class, no instance needed
+      Math.sqrt(16);
+      System.out.println("Hello");
+      ```
+
+  - title: "Void Return Type"
+    prompt: |
+      What does `void` mean as a return type in Java?
+    answer: |
+      `void` indicates the method **does not return a value**.
+      
+      ```
+      public void printMessage() {
+          System.out.println("Hello!");
+          // no return statement needed
+      }
+      ```
+
+# Primitive Types
+  - title: "Java Primitive Types"
+    prompt: |
+      What are the 8 primitive types in Java?
+    answer: |
+      | Type | Size | Description |
+      |------|------|-------------|
+      | `byte` | 1 byte | Integer (-128 to 127) |
+      | `short` | 2 bytes | Integer |
+      | `char` | 2 bytes | Single character |
+      | `int` | 4 bytes | Integer (most common) |
+      | `long` | 8 bytes | Large integer |
+      | `float` | 4 bytes | Decimal number |
+      | `double` | 8 bytes | Decimal (more precision) |
+      | `boolean` | 1 byte | `true` or `false` |
+
+  - title: "Primitive Type Size Memory Trick"
+    prompt: |
+      How can you estimate the range of values for different integer sizes?
+    answer: |
+      **Trick**: $2^{10} \approx 1000 = 10^3$
+      
+      - 1 byte (8 bits): $2^8 = 256$ values
+      - 4 bytes (32 bits): $2^{32} \approx 10^9$ (billions)
+      - 8 bytes (64 bits): $2^{64} \approx 10^{18}$ (quintillions)
+      
+      **Key difference from Python**: Java integers have fixed sizes; Python integers can be arbitrarily large.
+
+  - title: "Primitive vs Reference: Pass by Value"
+    prompt: |
+      What happens when you pass a primitive type to a method in Java?
+    answer: |
+      Primitives are **passed by value** – a copy is made.
+      
+      ```
+      void increment(int x) {
+          x = x + 1;
+          System.out.println("Inside: " + x); // 6
+      }
+      
+      int x = 5;
+      increment(x);
+      System.out.println("Outside: " + x); // Still 5!
+      ```
+      
+      The method receives a **copy** of the value, not the original.
+
+# Reference Types
+  - title: "Reference Types in Java"
+    prompt: |
+      What are reference types in Java?
+    answer: |
+      Reference types are variables that hold a **pointer to an object in memory**.
+      
+      - All objects (instances of classes)
+      - Arrays
+      - Can be `null` (no object referenced)
+      
+      ```
+      String name = "Alice";  // reference to String object
+      int[] numbers = {1, 2, 3};  // reference to array
+      MyClass obj = null;  // null reference
+      ```
+
+  - title: "Reference Equality vs Value Equality"
+    prompt: |
+      What does `==` compare for reference types in Java?
+    answer: |
+      For reference types, `==` compares **reference equality** (same object in memory), not value equality.
+      
+      ```
+      String a = new String("hello");
+      String b = new String("hello");
+      
+      a == b      // false (different objects)
+      a.equals(b) // true (same content)
+      ```
+      
+      Use `.equals()` to compare values.
+
+  - title: "Arrays as Reference Types"
+    prompt: |
+      How do arrays behave when passed to methods in Java?
+    answer: |
+      Arrays are **reference types**, so changes inside a method affect the original.
+      
+      ```
+      void increment(int[] arr) {
+          arr[0] = arr[0] + 1;
+      }
+      
+      int[] arr = {5};
+      increment(arr);
+      System.out.println(arr[0]); // 6 (changed!)
+      ```
+
+# Array Syntax
+  - title: "Array Declaration"
+    prompt: |
+      How do you declare and initialize an array in Java?
+    answer: |
+      **Declaration**:
+      ```
+      int[] numbers;        // preferred style
+      String[] names;
+      ```
+      
+      **Initialization**:
+      ```
+      int[] numbers = {1, 2, 3, 4, 5};
+      int[] zeros = new int[10];  // array of 10 zeros
+      ```
+      
+      **Note**: Arrays have a **fixed size** once created (unlike Python lists).
+
+# Control Flow
+  - title: "For Loop Syntax"
+    prompt: |
+      What is the syntax for a basic for loop in Java?
+    answer: |
+      ```
+      for (initialization; condition; update) {
+          // loop body
+      }
+      ```
+      
+      Example:
+      ```
+      for (int i = 0; i < 10; i++) {
+          System.out.println("Hello, World #" + i);
+      }
+      ```
+      
+      **Note**: Braces `{ }` define the loop scope, not indentation.
+
+# Object Creation
+  - title: "Creating Object Instances"
+    prompt: |
+      How do you create a new instance of a class in Java?
+    answer: |
+      Use the `new` keyword with the constructor:
+      
+      ```
+      OtherClass other = new OtherClass(10);
+      String message = new String("Hello");
+      ArrayList<Integer> list = new ArrayList<>();
+      ```
+      
+      Format: `ClassName variableName = new ClassName(arguments);`
+
+  - title: "Constructor Syntax"
+    prompt: |
+      How do you define a constructor in Java?
+    answer: |
+      A constructor has the **same name as the class** and **no return type**:
+      
+      ```
+      public class OtherClass {
+          private int x;
+          
+          public OtherClass(int x) {
+              this.x = x;
+          }
+      }
+      ```
+      
+      - Use `this.fieldName` to distinguish from parameters
+      - A class can have multiple constructors (overloading)
+
+# Fields and Encapsulation
+  - title: "Private Fields"
+    prompt: |
+      What does the `private` keyword mean for a field, and why use it?
+    answer: |
+      `private` means the field can only be accessed **within the same class**.
+      
+      ```
+      public class Person {
+          private String name;  // hidden from outside
+          
+          public String getName() {
+              return name;  // controlled access
+          }
+      }
+      ```
+      
+      This is **encapsulation** – hiding internal details and controlling access.
+
+  - title: "Getter Methods"
+    prompt: |
+      What is a getter method and how do you write one?
+    answer: |
+      A getter provides controlled read access to a private field.
+      
+      **Convention**: `getFieldName()` (or `isFieldName()` for booleans)
+      
+      ```
+      private int x;
+      
+      public int getX() {
+          return x;
+      }
+      
+      private boolean active;
+      
+      public boolean isActive() {
+          return active;
+      }
+      ```
+
+# Syntax Fundamentals
+  - title: "Statement Termination"
+    prompt: |
+      How do you end a statement in Java?
+    answer: |
+      Every statement in Java must end with a **semicolon** `;`
+      
+      ```
+      int x = 5;
+      System.out.println("Hello");
+      return x + 1;
+      ```
+      
+      This is different from Python, where statements end with a newline.
+
+  - title: "Code Blocks and Braces"
+    prompt: |
+      How are code blocks delimited in Java?
+    answer: |
+      Code blocks are enclosed in **curly braces** `{ }`:
+      
+      ```
+      public class MyClass {          // class block
+          public void method() {      // method block
+              if (true) {             // if block
+                  for (int i = 0; i < 5; i++) {  // loop block
+                      // code here
+                  }
+              }
+          }
+      }
+      ```
+      
+      **Important**: Indentation is for readability only – braces define scope!
+
+  - title: "String Concatenation"
+    prompt: |
+      How do you concatenate strings in Java?
+    answer: |
+      Use the `+` operator:
+      
+      ```
+      String greeting = "Hello, " + "World!";
+      
+      int count = 5;
+      String message = "Count is: " + count;  // auto-converts int
+      
+      System.out.println("Item #" + i + " is " + items[i]);
+      ```
+      
+      Non-string types are automatically converted when concatenated with strings.
+
+# Standard Output
+  - title: "System.out.println"
+    prompt: |
+      How do you print output to the console in Java?
+    answer: |
+      Use `System.out.println()`:
+      
+      ```
+      System.out.println("Hello, World!");  // with newline
+      System.out.print("No newline");       // without newline
+      ```
+      
+      Breaking it down:
+      - `System` – class in `java.lang`
+      - `out` – static field (a `PrintStream`)
+      - `println` – method that prints and adds newline
+

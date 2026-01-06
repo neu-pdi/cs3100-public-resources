@@ -21,3 +21,6 @@ yarn-error.log*
 
 # Auto-generated at build time
 src/pages/overview.md
+
+# Image generation cache (full-size originals and manifest)
+static/img/.image-cache/

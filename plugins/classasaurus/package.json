@@ -24,6 +24,9 @@
     "config-validator.ts",
     "schedule-generator.ts",
     "utils.ts",
+    "image-generator.ts",
+    "image-generator-types.ts",
+    "scripts/generate-images-cli.ts",
     "README.md",
     "QUICKSTART.md"
   ]
