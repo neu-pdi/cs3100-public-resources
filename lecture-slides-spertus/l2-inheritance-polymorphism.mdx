@@ -5,6 +5,7 @@ image: /img/lectures/web/l2.png
 ---
 
 import RevealJS, { Slide } from '@site/src/components/RevealJS';
+import Img from '@site/src/components/Img';
 
 <RevealJS transition="slide">
 
@@ -13,7 +14,7 @@ import RevealJS, { Slide } from '@site/src/components/RevealJS';
 {/* ============================================ */}
 
 <Slide>
-  <img 
+  <Img 
     src="/img/lectures/web/l2.png" 
     alt="Lecture 2 Cover"
   />
@@ -99,7 +100,7 @@ After this lecture, you will be able to:
 
 <Slide>
 ## Software Models Real-World Domains
-<img
+<Img
     src="/img/lectures/web/l2-make-your-data.png" 
     alt="Tagline: 'Make your data mean something'
 A tense scene in a corporate conference room, rendered in a modern business illustration style. An auditor (external stakeholder) has arrived with questions about a suspicious transaction. Two scenarios play out side by side. On the left ('Meaningless Data'), developers frantically search through tables: tbl_txn with columns id, amt, ts, uid_1, uid_2, type_cd. The auditor asks 'Show me all transfers over $10,000 from the last quarter with the authorizing manager's approval status.' The developers look at each other—what's type_cd? Which user is the sender vs receiver? Where's approval status stored? The data exists but answering the question requires archaeology.
@@ -547,7 +548,7 @@ classDiagram
 
 ## Sketch Your Types Before You Code
 
-  <img 
+  <Img 
     src="/img/lectures/web/l2-types.webp" 
     alt="Concept: 'The Substitution Test' (Universal Adapter Station)
 A stylized electrical/plumbing testing station rendered in clean, technical blueprint style with a hint of mid-century industrial design. The scene shows a universal testing rig where objects must prove they can substitute for their claimed supertypes. On the left, a Light interface is represented as a standardized socket/port with labeled pins: turnOn(), turnOff(), isOn(). In the center, various subtype objects queue up for testing: a DimmableLight (glowing softly), a TunableWhiteLight (with color temperature dial), and a suspicious BrokenLight (cracked and sparking). The DimmableLight plugs in perfectly—all pins connect, a green checkmark appears, and it successfully lights up when turnOn() is called. The TunableWhiteLight also passes (with extra pins for its additional methods safely tucked away). But the BrokenLight fails: its turnOn() pin connects but produces smoke instead of light, triggering a red alarm. A portrait of Barbara Liskov watches approvingly from the wall, captioned with her principle.
@@ -794,7 +795,7 @@ public class TunableWhiteLight extends DimmableLight {
 
 <Slide>
 ## Subtypes Must Behave Like Their Supertypes
-  <img 
+  <Img 
     src="/img/lectures/web/l2-lsp.webp" 
     alt="Concept: 'The Substitution Test' (Universal Adapter Station)
 A stylized electrical/plumbing testing station rendered in clean, technical blueprint style with a hint of mid-century industrial design. The scene shows a universal testing rig where objects must prove they can substitute for their claimed supertypes. On the left, a Light interface is represented as a standardized socket/port with labeled pins: turnOn(), turnOff(), isOn(). In the center, various subtype objects queue up for testing: a DimmableLight (glowing softly), a TunableWhiteLight (with color temperature dial), and a suspicious BrokenLight (cracked and sparking). The DimmableLight plugs in perfectly—all pins connect, a green checkmark appears, and it successfully lights up when turnOn() is called. The TunableWhiteLight also passes (with extra pins for its additional methods safely tucked away). But the BrokenLight fails: its turnOn() pin connects but produces smoke instead of light, triggering a red alarm. A portrait of Barbara Liskov watches approvingly from the wall, captioned with her principle.
@@ -1602,7 +1603,7 @@ classDiagram
 
 <Slide>
 ## The Compiler Can't Choose Between Conflicting Implementations
-  <img 
+  <Img 
     src="/img/lectures/web/l2-fan-conflicting.webp" 
     alt="Conflicting implementations visualization"
   />
@@ -1879,7 +1880,7 @@ classDiagram
 <Slide>
 ## Checked Exceptions Must be Declared
 
-  <img 
+  <Img 
     src="/img/lectures/web/l2-exceptions.webp" 
     alt="Revised: 'The Arrivals Hall' (Airport Declaration Channels)
 A cheerful airport arrivals hall rendered in the style of a friendly airport signage system—think IKEA-meets-international-terminal wayfinding design. The scene shows the familiar customs area after landing, with two clearly marked channels. The green channel ('Nothing to Declare' / Unchecked Exceptions) shows travelers like NullPointerException and IllegalArgumentException walking straight through without stopping—no paperwork, no inspection, just a quick passage into the main terminal. A small sign notes: 'Travelers choosing this channel accept responsibility for any undeclared items.' The red channel ('Goods to Declare' / Checked Exceptions) shows travelers like IOException and SQLException stopping at a customs desk, filling out declaration forms (the throws clause), having their bags inspected (the try-catch block), and getting their forms stamped before proceeding. The process is slower but orderly. Friendly customs officers (the compiler) check that all declarations match what's actually being carried.

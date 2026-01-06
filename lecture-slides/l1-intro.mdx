@@ -7,6 +7,7 @@ image: /img/lectures/web/l1.png
 import RevealJS, { Slide } from '@site/src/components/RevealJS';
 import QuoteSlide from '@site/src/components/QuoteSlide';
 import ImageSlide from '@site/src/components/ImageSlide';
+import Img from '@site/src/components/Img';
 
 <RevealJS transition="slide">
 
@@ -15,7 +16,7 @@ import ImageSlide from '@site/src/components/ImageSlide';
 {/* ============================================ */}
 
 <Slide>
-  <img 
+  <Img 
     src="/img/lectures/web/l1.png" 
     alt="Lecture 1 Cover"
     
@@ -227,7 +228,7 @@ import ImageSlide from '@site/src/components/ImageSlide';
 
 <Slide>
 ## Every generation redefines what "automatic programming" means
-  <img 
+  <Img 
     src="/img/lectures/web/l1-skepticism.png" 
     alt="Skepticism about automatic programming"
   />
@@ -406,7 +407,7 @@ Despite innovations in programming:
 
 <Slide>
 ## Moore's Law: Computing Power Has Grown 67 Million Times Since 1972
-  <img 
+  <Img 
     src="/img/lectures/web/l1-moore.webp" 
     alt="Moore's Law visualization"
   />
@@ -599,7 +600,7 @@ Despite innovations in programming:
 
 <Slide>
 ## Our perspective: AI is a noisy amplifier, but can still be useful
-  <img 
+  <Img 
     src="/img/lectures/web/l1-ai.jpeg" 
     alt="Concept: 'The Amplifier, Not the Signal' (Self-Demonstrating Version)
 A clean, technical diagram rendered in the style of an audio engineering schematic—but with intentional AI generation artifacts scattered throughout as Easter eggs. The central amplifier unit labeled 'AI' (or perhaps 'A.I.' with a slightly wonky period) has impressive specs and glowing indicators. The signal flow shows: Input (left side) with a human providing context—requirements documents, stakeholder interviews, domain knowledge. A hand points to the input, but the hand has six fingers (the classic tell). Output (right side) shows amplified results: code, documentation, test cases—generated at impressive speed. But look closely: one document is titled 'Archetecture Design' (misspelled), another shows a code snippet with a subtle logic error visible, and a label reads 'Ssoftware Engineering' or 'Qualty Assurance.' The feedback loop shows a human evaluator with a red pen, circling errors, with thought bubbles: 'Wait, that's not right,' 'This contradicts what we discussed,' 'That's... not how you spell that.'
@@ -629,7 +630,7 @@ AI helps with typing; humans do the hard parts.
 
 <Slide>
 ## AI coding assistance is not permitted in weeks 1-5
-  <img 
+  <Img 
     src="/img/lectures/web/l1-ai-review.webp" 
     alt="Concept: 'The Reviewer's Paradox' (Can't Review What You Can't Write)
 A split-panel diagram rendered in the style of a thoughtful editorial illustration. On the left ('Without Foundation'), a student stares at AI-generated code on a screen. The code contains subtle bugs—a logic error here, a security vulnerability there, an inefficient algorithm—but the bugs are invisible, rendered in the same color as correct code. The student's thought bubble shows question marks and uncertainty: 'Is this... right?' A small demon labeled 'Subtle Bug' hides in the code, grinning. The student has no mental model to detect it. On the right ('With Foundation'), the same student, now having completed foundational exercises, reviews similar code. But now the bugs glow red—visible because the student has built the pattern-matching ability to recognize what 'wrong' looks like. Their thought bubble shows a checklist: 'Edge cases? ✓ Security? ⚠️ Performance? ✓' The demon is caught and highlighted. A timeline at the bottom shows the progression: 'Weeks 1-5: Build the detector → Weeks 6+: Use the detector.'
@@ -1099,7 +1100,7 @@ This visualization addresses the common student question 'Why can't I just use A
 
 ## Governance Shapes Evolution
 
-  <img 
+  <Img 
     src="/img/lectures/web/l1-governance.webp" 
     alt="Concept: 'Two Kinds of Community' (Governance Models Shape Language Evolution)
 
@@ -1236,7 +1237,7 @@ Tagline options: 'Two definitions of community' / 'Who decides when to break thi
 
 <Slide>
 ## Bytecode Provides Platform Independence
-  <img 
+  <Img 
     src="/img/lectures/web/l1-bytecode.webp" 
     alt="Bytecode visualization"
   />
@@ -1351,7 +1352,7 @@ for (int i = 0; i < 1000000; i++) {
 
   </div>
 </div>
-  <img 
+  <Img 
     src="/img/lectures/web/l1-jit.webp" 
     alt="JIT compilation visualization"
   />

@@ -1,6 +1,7 @@
 // https://claude.ai/share/91411c22-222b-47b5-b7e4-bd991c05c8c5
 
 import React from 'react';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 type ImagePlacement = 'left' | 'right';
 
@@ -25,9 +26,12 @@ export default function ImageSlide({
   imagePlacement = 'right',
   imageHeight = '40vh',
 }: ImageSlideProps) {
+  // Handle baseUrl for images
+  const resolvedImageSrc = imageSrc.startsWith('/') ? useBaseUrl(imageSrc) : imageSrc;
+  
   const image = (
     <img
-      src={imageSrc}
+      src={resolvedImageSrc}
       alt={imageAlt || ''}
       style={{ maxHeight: imageHeight, borderRadius: '4px' }}
     />
