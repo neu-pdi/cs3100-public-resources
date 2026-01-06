@@ -79,7 +79,18 @@ const config: Config = {
         rehypePlugins: [rehypeKatex],
       },
     ],
-    function(context, options) {
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'lecture-slides-spertus',
+        path: 'lecture-slides-spertus',
+        routeBasePath: 'lecture-slides-spertus',
+        sidebarPath: './sidebars.ts',
+        remarkPlugins: [remarkMath],
+        rehypePlugins: [rehypeKatex],
+      },
+    ],
+    function (context, options) {
       return {
         name: 'webpack-alias-plugin',
         configureWebpack(config, isServer) {
@@ -91,6 +102,20 @@ const config: Config = {
               },
             },
           };
+        },
+        // Suppress the scrollWidth error in dev server overlay
+        devServer: {
+          client: {
+            overlay: {
+              runtimeErrors: (error: Error) => {
+                // Suppress the benign scrollWidth error during hot reload
+                if (error?.message?.includes('scrollWidth')) {
+                  return false;
+                }
+                return true;
+              },
+            },
+          },
         },
       };
     },
@@ -175,9 +200,7 @@ const config: Config = {
           label: 'Assignments',
         },
         {
-          type: 'docSidebar',
-          sidebarId: 'lectureSlidesSidebar',
-          docsPluginId: 'lecture-slides',
+          type: 'custom-slides',
           position: 'left',
           label: 'Lecture Slides',
         },

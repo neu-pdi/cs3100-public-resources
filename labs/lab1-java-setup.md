@@ -164,7 +164,7 @@ After installing extensions, VS Code will automatically detect the Gradle projec
 
 ### Disable AI Features
 
-For the first several assignments in this course, you must complete your work **without AI assistance** (see the [AI Policy in the syllabus](/syllabus#ai-policy) for details). This isn't because AI tools aren't useful — they absolutely are! But unlike a calculator that always gives correct answers, AI can and does produce incorrect, insecure, or subtly buggy code. To use AI effectively, you need two things:
+For the first several assignments in this course, you must complete your work **without AI assistance** (see the [AI Policy in the syllabus](../syllabus#artificial-intelligence) for details). This isn't because AI tools aren't useful — they absolutely are! But unlike a calculator that always gives correct answers, AI can and does produce incorrect, insecure, or subtly buggy code. To use AI effectively, you need two things:
 
 1. **The ability to review what it produces** — you can only catch AI mistakes if you understand the code well enough to have written it yourself
 2. **The knowledge of what to ask** — effective prompting requires understanding the problem space and knowing what's possible
