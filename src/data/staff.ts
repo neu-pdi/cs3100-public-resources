@@ -56,11 +56,11 @@ export const staffMembers: StaffMember[] = [
   },
   {
     name: "Amit Shesh",
-    pronouns: "",
+    pronouns: "he/him",
     role: "instructor",
     campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg",
+    bio: "Teaching Professor, Assistant Dean of Masters Programs",
+    headshot: "amit_shesh.jpg",
     email: "a.shesh@northeastern.edu"
   },
   {
