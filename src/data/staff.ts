@@ -93,10 +93,11 @@ export const staffMembers: StaffMember[] = [
   },
   {
     name: "Lauren Brissette",
+    pronouns: "she/her",
     role: "ta",
     campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg"
+    bio: "Third year undergrad Computer Science student with a concentration in AI.",
+    headshot: "lbrissette.jpg"
   },
   {
     name: "Edgar Castaneda",
