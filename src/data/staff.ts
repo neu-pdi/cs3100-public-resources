@@ -173,8 +173,8 @@ export const staffMembers: StaffMember[] = [
     name: "Avery Neuner",
     role: "ta",
     campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg"
+    bio: "Undergraduate student in Computer Science and English with a concentration in AI and natural language processing.",
+    headshot: "averyneuner.jpg"
   },
   {
     name: "Shivang Manishkumar Patel",
