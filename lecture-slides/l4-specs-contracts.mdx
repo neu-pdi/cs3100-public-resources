@@ -1,0 +1,2075 @@
+---
+sidebar_position: 4
+title: Specifications and Common Contracts
+image: /img/lectures/web/l4.png
+---
+
+import RevealJS, { Slide } from '@site/src/components/RevealJS';
+import Img from '@site/src/components/Img';
+
+<RevealJS transition="slide">
+
+{/* ============================================ */}
+{/* COVER IMAGE */}
+{/* ============================================ */}
+
+<Slide>
+  <Img 
+    src="/img/lectures/web/l4.png" 
+    alt="Concept: 'The Specification as Universal Translator' (APIs Connecting Different Worlds)
+
+A vibrant, dynamic illustration showing specifications as the crucial bridge between different parts of a software system, rendered in a stylized sci-fi/fantasy crossover aesthetic.
+
+MAIN SCENE - THE TRANSLATION STATION:
+A futuristic hub where two very different worlds connect. On the LEFT: 'Implementer Territory'—a workshop filled with gears, code, algorithms, and technical machinery. Developers here speak in implementation details (loops, pointers, data structures). On the RIGHT: 'Client Territory'—a clean, user-focused space with people trying to accomplish tasks, caring only about results, not mechanisms.
+
+THE SPECIFICATION BRIDGE (Center):
+A glowing, crystalline bridge spans between the two worlds. The bridge IS the specification—a Javadoc comment made physical. On its surface, you can read: '/** Returns the sum of elements. @throws NullPointerException if null */' The specification transforms 'implementation language' (left side) into 'behavior language' (right side).
+
+WHAT FLOWS ACROSS:
+- From left to right: Implementation details are FILTERED OUT. Only promises cross the bridge: 'You will get a sum', 'Null will throw NPE'.
+- From right to left: Usage requests flow back: 'Give me the sum of this array'.
+- Both sides can interact WITHOUT understanding each other's internal details.
+
+KEY VISUAL METAPHORS:
+- The bridge has THREE PILLARS labeled: 'Restrictive' (filters out bad implementations), 'General' (permits many good implementations), 'Clear' (everyone interprets the same way).
+- Under the bridge: chaos and confusion—what happens WITHOUT specs (direct coupling, misunderstandings, broken systems).
+- On the bridge: order and trust—what happens WITH specs (clean interfaces, reliable systems).
+
+DETAIL CALLOUTS:
+- An implementer on the left says: 'I can use any algorithm—linear, binary, parallel—as long as I honor the spec.'
+- A client on the right says: 'I don't care HOW it works, just that it DOES what the spec promises.'
+- Books visible in background: 'Effective Java', 'Liskov & Guttag', 'API Design for Humans'.
+
+BOTTOM TAGLINE:
+'Specifications are contracts that let strangers collaborate safely.'
+
+Style: Colorful, optimistic sci-fi/fantasy aesthetic—think Studio Ghibli meets technical documentation. Warm, inviting colors that make specs feel empowering rather than bureaucratic. The bridge metaphor should immediately convey: specs connect different worlds and make large-scale collaboration possible."
+  />
+
+<aside class="notes">
+**Lecture overview:**
+- **Total time:** ~50 minutes
+- **Prerequisites:** Students understand Java basics, inheritance, interfaces from L1-L3
+- **Connects to:** Assignment 1 (writing well-specified methods), Lab 3 (code readability)
+
+**Structure:**
+- Why specifications matter (psychology + modularity) (~10 min)
+- Three criteria for good specs: restrictiveness, generality, clarity (~15 min)
+- Type annotations for machine-readable specs (~8 min)
+- Common Object contracts: toString, equals, hashCode, compareTo (~17 min)
+
+**Key theme:** Specifications are contracts between implementers and clients—they enable large-scale software development by letting developers reason about code without reading implementations.
+
+→ **Transition:** Let's start with the learning objectives...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* TITLE SLIDE */}
+{/* ============================================ */}
+
+<Slide>
+
+# CS 3100: Program Design and Implementation II
+
+## Lecture 4: Specifications and Common Contracts
+
+<p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
+  ©2025 Jonathan Bell, CC-BY-SA
+</p>
+
+<aside class="notes">
+**Context from L2-L3:**
+- Students learned inheritance, polymorphism, Java syntax details
+- This lecture focuses on *how to document* what methods do
+- Critical for working in teams and on larger codebases
+
+**Key theme:** Good specifications are the glue that holds large software systems together.
+
+→ **Transition:** Here's what you'll be able to do after today...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* LEARNING OBJECTIVES */}
+{/* ============================================ */}
+
+<Slide>
+
+## Learning Objectives
+
+<p style={{fontSize: '0.85em', textAlign: 'left'}}>
+After this lecture, you will be able to:
+</p>
+
+<ol style={{fontSize: '0.75em', textAlign: 'left'}}>
+  <li>Describe the role of method specifications in achieving program modularity and improving readability</li>
+  <li>Evaluate the efficacy of a given specification using the terminology of restrictiveness, generality, and clarity</li>
+  <li>Utilize type annotations to express invariants such as non-nullness</li>
+  <li>Define the role of methods common to all Objects in Java (toString, equals, hashCode, compareTo)</li>
+</ol>
+
+<aside class="notes">
+**Time allocation:**
+- Objective 1: Why specs matter—psychology and modularity (~10 min)
+- Objective 2: The three criteria—restrictiveness, generality, clarity (~15 min)
+- Objective 3: Type annotations—@NonNull, @NullMarked (~8 min)
+- Objective 4: Object contracts—four essential methods (~17 min)
+
+**Why this matters:** Students will write Javadoc for A1 methods. They need to understand what makes a spec good vs. merely present. They'll also override equals/hashCode for domain classes.
+
+→ **Transition:** Let's start with a surprising fact about human memory...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 1: WHY SPECIFICATIONS MATTER */}
+{/* ============================================ */}
+
+<Slide>
+
+## Humans Can Only Hold 7±2 Items in Working Memory
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+  Which is easier to remember?
+</p>
+
+<ul style={{fontSize: '0.8em'}}>
+  <li><strong>Random order:</strong> 50, 30, 60, 20, 80, 10, 40, 70</li>
+  <li><strong>Pattern:</strong>10, 20, 30, 40, 50, 60, 70, 80</li>
+</ul>
+
+<aside class="notes">
+**Miller's Law (1956):**
+- George Miller's famous paper: "The Magical Number Seven, Plus or Minus Two"
+- We can only hold ~7 items in short-term/working memory at once
+- BUT: items can be "chunks" of variable size
+
+**The example:**
+- Both lists contain the same 8 numbers
+- Random order: 8 separate items (exceeds capacity)
+- Pattern: 1 chunk ("multiples of 10")
+- Same information, dramatically different cognitive load
+
+**Why this matters for programming:**
+- We can't hold entire programs in our heads
+- We need to "chunk" code into understandable pieces
+- Specifications are how we create mental chunks
+
+→ **Transition:** Let's dig deeper into what "chunking" means...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Chunking Lets Us Manage More Than 7 Items
+
+<p style={{fontSize: '0.9em'}}>
+  <strong>Chunking</strong> = organizing information into meaningful units
+</p>
+
+<ul style={{fontSize: '0.85em', marginTop: '1em'}}>
+  <li>"FBI" is 1 chunk, not 3 letters</li>
+  <li>"555-1234" is 2 chunks, not 7 digits</li>
+  <li>A chess master sees "castled king position" not 5 pieces</li>
+</ul>
+
+<p style={{fontSize: '0.9em', marginTop: '1em', color: '#9370DB'}}>
+  Expert programmers chunk code the same way:
+</p>
+
+<ul style={{fontSize: '0.85em'}}>
+  <li>"Binary search" → one chunk (not 15 lines)</li>
+  <li>"HashMap lookup" → one chunk (not the internal algorithm)</li>
+</ul>
+
+<aside class="notes">
+**The psychology:**
+- Experts don't have bigger working memory
+- They have better chunks
+- A chess grandmaster and novice have same 7±2 limit
+- But grandmaster's chunks are entire board positions
+
+**For programmers:**
+- Novice: sees individual statements, loops, conditions
+- Expert: sees "sorting," "searching," "validation"
+- Specs let everyone think at the expert level
+
+**The key insight:**
+- Chunking requires LABELS for the chunks
+- In code, the label is the specification
+- Without a spec, you can't chunk the method—you have to hold the whole thing
+
+→ **Transition:** So how do specifications enable chunking?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Specifications Enable Mental Chunking for Code
+
+<p style={{fontSize: '0.9em'}}>
+  When reading a program, we want to understand method behavior <strong>without</strong> reading the implementation.
+</p>
+
+<div style={{display: 'flex', gap: '1em', marginTop: '1em'}}>
+<div style={{flex: 1}}>
+
+**Without spec:** 🤯
+
+```java
+public int mystery(int[] arr) {
+    int result = 0;
+    for (int i = 0; i < arr.length; i++) {
+        result += arr[i];
+    }
+    return result;
+}
+```
+
+<p style={{fontSize: '0.7em', color: '#888'}}>Must read every line to understand</p>
+
+</div>
+<div style={{flex: 1}}>
+
+**With spec:** 😌
+
+```java
+/**
+ * Returns the sum of elements.
+ * @throws NullPointerException if arr is null
+ */
+public int sum(int[] arr) {
+    // ... implementation ...
+}
+```
+
+<p style={{fontSize: '0.7em', color: '#888'}}>Spec tells you what it does</p>
+
+</div>
+</div>
+
+<aside class="notes">
+**The chunking connection:**
+- Left side: must hold the entire implementation in memory
+- Right side: one chunk—"sums the array"
+- The spec lets you skip the implementation details
+
+**Real-world scale:**
+- Methods call other methods, which call other methods...
+- Without specs, understanding one method requires understanding all its dependencies
+- With specs, each method is a self-contained chunk
+
+**Good naming helps too:**
+- "mystery" vs "sum"—names are part of the specification
+- But names alone aren't enough for complex behavior
+
+→ **Transition:** Let's see the real-world impact of this...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## You Spend 10x More Time Reading Code Than Writing It
+
+<p style={{fontSize: '0.9em'}}>
+  You spend <strong>10x more time reading code</strong> than writing it.
+</p>
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+  Consider understanding this call:
+</p>
+
+```java
+int index = collection.binarySearch(target);
+```
+
+<div style={{display: 'flex', gap: '1em', marginTop: '0.5em', fontSize: '0.8em'}}>
+<div style={{flex: 1}}>
+
+**Without spec:**
+- Open source file
+- Read 30 lines of implementation
+- Understand loop invariants
+- Figure out edge cases
+- **Time: 5-10 minutes**
+
+</div>
+<div style={{flex: 1}}>
+
+**With spec:**
+- Read 3-line Javadoc
+- Understand behavior, errors, edge cases
+- **Time: 30 seconds**
+
+</div>
+</div>
+
+<aside class="notes">
+**The math:**
+- Average codebase: thousands of methods
+- Each method calls several others
+- Without specs: O(n²) effort to understand
+- With specs: O(n) effort
+
+**Industry impact:**
+- Onboarding new developers
+- Code review speed
+- Bug investigation time
+- All dramatically improved by good specs
+
+**The investment:**
+- Yes, writing specs takes time
+- But it's amortized across every future reader
+- Write once, read hundreds of times
+
+→ **Transition:** So specs are valuable. But what makes a spec *good*?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## A Good Specification Lets You Predict Behavior
+
+<p style={{fontSize: '0.95em'}}>
+  The goal: a developer can understand what a method does <strong>without reading its code</strong>.
+</p>
+
+<ul style={{fontSize: '0.85em', marginTop: '1em'}}>
+  <li>Any implementation that <strong>satisfies</strong> the spec is correct</li>
+  <li>Any implementation that <strong>violates</strong> the spec is incorrect</li>
+  <li>The spec should be <strong>easier to understand</strong> than the implementation</li>
+</ul>
+
+<p style={{fontSize: '0.9em', marginTop: '1.5em', color: '#9370DB'}}>
+  But how do we evaluate whether a specification is good?
+</p>
+
+<aside class="notes">
+**Three requirements of a good spec:**
+1. Correct implementations satisfy it (not too restrictive)
+2. Incorrect implementations violate it (sufficiently restrictive)
+3. It's actually easier to understand than the code
+
+**The balance:**
+- Too vague: doesn't rule out incorrect implementations
+- Too detailed: might as well read the code
+- Just right: captures essential behavior, omits implementation details
+
+**Source material:**
+- This framework comes from Liskov & Guttag, "Program Development in Java"
+- Chapter 9.2 is excellent reference for students who want more depth
+
+→ **Transition:** Let's look at three specific criteria for evaluating specifications...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 2: THREE CRITERIA FOR GOOD SPECIFICATIONS */}
+{/* ============================================ */}
+
+<Slide>
+
+## Good Specifications Balance Three Criteria
+
+<Img 
+    src="/img/lectures/web/l4-three-criteria.webp" 
+    alt="Concept: 'The Goldilocks Specification Lab' (Finding the Just-Right Balance)
+
+A whimsical-yet-technical laboratory scene rendered in a storybook-meets-engineering style, showing three experimental stations where specifications are being tested.
+
+STATION 1 - 'TOO RESTRICTIVE' (Left):
+A specification document trapped in a tiny, rigid metal cage with bars too close together. Multiple implementations try to enter—some clearly buggy (marked with X), but ALSO several perfectly good implementations (marked with ✓) that can't fit through the narrow bars. A frustrated 'Binary Search' algorithm waves from outside: 'But I'm correct! The spec just demands linear search!' The cage label reads: 'Operational Spec: Must examine each element in order.' A thermometer-style gauge shows 'Flexibility: FROZEN'. Red warning lights flash. Annotation: 'Rejects valid implementations—too picky about HOW, not just WHAT.'
+
+STATION 2 - 'TOO GENERAL' (Center):
+A specification document as a wide-open barn door with no filter at all. A parade of implementations walks through—some with ✓ checkmarks (good), but also clearly buggy ones with skull icons: 'Returns 0 for null!' 'Crashes randomly!' 'Deletes your files!' The bouncer (labeled 'Spec') shrugs helplessly: 'The spec just says return a sum... it doesn't say what to do with null!' A gauge shows 'Flexibility: ANYTHING GOES'. Yellow caution tape everywhere. Annotation: 'Accepts buggy implementations—undefined behavior lurks.'
+
+STATION 3 - 'UNCLEAR' (Right):
+A specification document written in tiny, smudged text with contradictory arrows and question marks. Three developers stand around it, each with a different thought bubble showing completely different interpretations: Dev A thinks 'Returns first index', Dev B thinks 'Returns any index', Dev C thinks 'Returns -1 if not found'. They're all building different implementations, all thinking they're correct. A 'Confidence Meter' shows all three developers at 100% confidence despite complete disagreement. Annotation: 'Readers THINK they understand—the most dangerous failure.'
+
+CENTER - 'JUST RIGHT' (Highlighted, Glowing):
+A perfectly balanced specification shown as a well-designed filter/gate system. The gate is sized exactly right: buggy implementations (with X marks) bounce off, while ALL valid implementations (linear search, binary search, parallel search—all with ✓) pass through smoothly. The spec text is clear and readable: 'Returns AN index containing target, or throws if not found.' Developers reading it all have the same thought bubble. A 'Specification Quality' gauge shows three green bars: Restrictive ✓, General ✓, Clear ✓.
+
+BOTTOM SUMMARY:
+Three columns showing the balance:
+- Restrictiveness: 'Rules out BAD implementations' (bouncer icon)
+- Generality: 'Permits GOOD implementations' (welcome mat icon)  
+- Clarity: 'Everyone understands the SAME thing' (lightbulb icon)
+Central message: 'All three must be balanced—optimize for any one alone and the spec fails.'
+
+Style: Warm fairy-tale laboratory aesthetic with technical precision—think Wes Anderson directing a computer science documentary. Color palette: warm ambers for 'too restrictive', chaotic rainbow for 'too general', foggy grays for 'unclear', and a warm golden glow for 'just right'. Should feel like a memorable fable that teaches a real engineering principle."
+  />
+
+
+<aside class="notes">
+**The three-legged stool metaphor:**
+- All three legs must be the right length
+- If any one is wrong, the stool (and your spec) falls over
+
+**Quick definitions:**
+- **Restrictiveness:** Does the spec rule out BAD implementations?
+- **Generality:** Does the spec allow GOOD implementations?
+- **Clarity:** Can readers UNDERSTAND the spec correctly?
+
+**The tension:**
+- More restrictive often means less general (and vice versa)
+- More detailed might help clarity OR hurt it (too long to read)
+- Good specs balance all three
+
+→ **Transition:** Let's look at each criterion with concrete examples, starting with restrictiveness...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Restrictive Specs Rule Out Bad Implementations
+
+<p style={{fontSize: '0.9em'}}>
+  A spec is <strong>restrictive</strong> if it rules out implementations that clients would find unacceptable.
+</p>
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+  Think of it as: <em>"What BAD behaviors does this spec prohibit?"</em>
+</p>
+
+<ul style={{fontSize: '0.85em', marginTop: '1em'}}>
+  <li>Does it specify what happens for ALL inputs?</li>
+  <li>Does it prohibit surprising or dangerous behavior?</li>
+  <li>Could a malicious implementer satisfy it while being useless?</li>
+</ul>
+
+<aside class="notes">
+**The key question:**
+- For every possible input, is the behavior defined?
+- If not, an implementer could do ANYTHING for undefined inputs
+- "Undefined behavior" in specs = bugs waiting to happen
+
+**Examples of restrictiveness failures:**
+- Not specifying null handling
+- Not specifying ordering guarantees
+- Not specifying thread safety
+- Not specifying what exceptions can be thrown
+
+**The adversarial test:**
+- Imagine an "evil" implementer trying to satisfy the spec while being unhelpful
+- If they can do something bad that satisfies the spec, it's not restrictive enough
+
+→ **Transition:** Let's see a concrete example of an under-specified method...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Under-Specified Behavior Allows Bugs to Hide
+
+<Img 
+    src="/img/lectures/web/l4-underspecified.webp" 
+    alt="Concept: 'The Undefined Behavior Roulette Wheel' (What Happens When Specs Have Gaps)
+
+A dramatic casino/game-show style illustration showing the danger of under-specified behavior.
+
+CENTER - THE ROULETTE WHEEL:
+A large spinning wheel divided into wedges, each showing a different possible outcome for 'sum(null)'. The wheel is labeled 'What happens when arr is null?' and is being spun by an ominous figure labeled 'Undefined Behavior'. The wedges include:
+- 'Throw NullPointerException' (reasonable)
+- 'Return 0' (maybe intended?)
+- 'Return -1' (huh?)
+- 'Crash the JVM' (disaster)
+- 'Hang forever' (worse)
+- 'Corrupt data silently' (technically allowed!)
+- 'Work fine... sometimes' (worst—intermittent bugs)
+A small annotation: 'All of these satisfy the spec! The spec is silent on null.'
+
+LEFT SIDE - THE SPEC:
+A document showing:
+```
+/** Returns the sum of elements.
+ * @param arr the array
+ * @return the sum
+ */
+```
+With a magnifying glass highlighting the ABSENCE of any null handling. A detective character points at the gap: 'No mention of null = UNDEFINED = anything goes!'
+
+RIGHT SIDE - THE CONSEQUENCES:
+Three developers at different companies building on this library:
+- Dev A (Library v1.0) implements: throws NPE
+- Dev B (Library v2.0) implements: returns 0  
+- Dev C (Fork) implements: crashes
+All three say 'My implementation matches the spec!' Meanwhile, OTHER DEVELOPERS who depend on this library are shown at the bottom, frustrated—their code breaks unpredictably when switching library versions. Speech bubble: 'I upgraded the library and now my tests fail randomly!'
+
+BOTTOM - THE FIX:
+A 'well-specified' version with '@throws NullPointerException if arr is null' highlighted in green. The roulette wheel is replaced with a single, predictable path. Caption: 'Silence in a spec = undefined behavior. Define ALL edge cases so developers using your API can rely on consistent behavior.'
+
+Style: Dramatic game-show/casino aesthetic with spotlights, danger colors (reds, blacks), and the tension of gambling. Should convey that leaving behavior undefined is literally gambling with API consumers' ability to write reliable code."
+  />
+<aside class="notes">
+**The problem:**
+- Spec says nothing about null input
+- Behavior is "undefined" for null
+- Implementation could: throw exception, return 0, crash the JVM, launch missiles...
+- All would technically satisfy this spec!
+
+**Why this matters:**
+- Callers can't predict what happens with null
+- Different implementations might behave differently
+- Bugs hide in undefined corners
+
+**Real-world impact:**
+- Team A writes implementation that throws NPE
+- Team B writes caller expecting return 0
+- Neither is "wrong" according to spec
+- Bug discovered in production
+
+→ **Transition:** Let's see how to fix this...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Every Input Needs Defined Behavior
+
+<p style={{fontSize: '0.85em', color: '#27ae60'}}>
+  ✓ Sufficiently restrictive:
+</p>
+
+```java
+/**
+ * Returns the sum of the elements in the array.
+ * @param arr the array to sum
+ * @return the sum of the elements in the array
+ * @throws NullPointerException if the array is null
+ */
+public int sum(int[] arr)
+```
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+  Now <strong>every input</strong> has defined behavior:
+</p>
+
+<ul style={{fontSize: '0.8em'}}>
+  <li>Valid array → returns sum</li>
+  <li>Null → throws NullPointerException</li>
+</ul>
+
+<aside class="notes">
+**What changed:**
+- Added `@throws NullPointerException if the array is null`
+- Now callers know EXACTLY what happens for null
+- Implementations MUST throw NPE for null (not return 0, not crash)
+
+**The principle:**
+- Every possible input should have defined behavior
+- Either: specify the result, or specify the error
+- Silence = undefined = bugs
+
+**Tip for students:**
+- When writing specs, think: "What could callers pass in?"
+- For each possibility: "What should happen?"
+- Document all of them
+
+→ **Transition:** Here's another example of restrictiveness in the Java standard library...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Silence in a Spec Means Undefined Behavior
+
+<div style={{display: 'flex', gap: '1em', fontSize: '0.85em'}}>
+<div style={{flex: 1}}>
+
+❌ **Underspecified:**
+```java
+/**
+ * Returns an iterator over
+ * the elements in this set.
+ * @return an Iterator over the
+ *         elements in this set
+ */
+public Iterator<E> iterator()
+```
+
+<p style={{fontSize: '0.8em', color: '#888'}}>
+  Client might assume insertion order...
+</p>
+
+</div>
+<div style={{flex: 1}}>
+
+✓ **Properly specified:**
+```java
+/**
+ * Returns an iterator over
+ * the elements in this set.
+ * The elements are returned in
+ * no particular order.
+ * @return an Iterator over the
+ *         elements in this set
+ */
+public Iterator<E> iterator()
+```
+
+</div>
+</div>
+
+<aside class="notes">
+**The iterator example:**
+- Left: client might assume elements come in insertion order
+- Right: explicitly states "no particular order"
+- Prevents incorrect assumptions
+
+**Why this matters:**
+- HashSet iterates in hash-bucket order (essentially random)
+- LinkedHashSet iterates in insertion order
+- TreeSet iterates in sorted order
+- Same interface, different behavior—spec must clarify!
+
+**Key insight:**
+- Restrictiveness is about RULING OUT bad behavior
+- Sometimes that means restricting what the CALLER can assume
+- "No particular order" = caller can't rely on order
+
+→ **Transition:** But we can go too far—what if we're TOO restrictive?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## General Specs Don't Over-Constrain Implementations
+
+<p style={{fontSize: '0.9em'}}>
+  A spec is <strong>general</strong> if it doesn't rule out implementations that would be correct.
+</p>
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+  Think of it as: <em>"What GOOD implementations does this spec allow?"</em>
+</p>
+
+<ul style={{fontSize: '0.85em', marginTop: '1em'}}>
+  <li>Does it describe WHAT the method does, or HOW?</li>
+  <li>Could a faster algorithm satisfy it?</li>
+  <li>Does it over-specify implementation details?</li>
+</ul>
+
+<aside class="notes">
+**The key distinction:**
+- Definitional spec: describes the result ("returns the sum")
+- Operational spec: describes the steps ("loop through and add each")
+
+**Why generality matters:**
+- Allows optimization without breaking contract
+- Permits multiple correct implementations
+- Future-proofs the API
+
+**The test:**
+- Think of different ways to implement this method
+- If a correct implementation would violate the spec, it's too restrictive
+
+→ **Transition:** Let's see an example of an overly operational spec...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Operational Specs Reject Valid Implementations
+
+<p style={{fontSize: '0.85em', color: '#e74c3c'}}>
+  ❌ Too operational (not general):
+</p>
+
+```java
+/**
+ * If arr is null, throw a NullPointerException.
+ * Else:
+ *     Examines each element of arr in order.
+ *     If the current element equals searchTarget, return the current index.
+ *     If it reaches the end without finding searchTarget, 
+ *         throw NoSuchElementException.
+ */
+public int search(int[] arr, int searchTarget)
+```
+
+<aside class="notes">
+**The problem:**
+- This spec describes HOW to implement, not WHAT the method does
+- "Examines each element in order" — requires linear search
+- "Return the current index" — requires returning FIRST occurrence
+
+**Why too restrictive:**
+- Binary search would violate this spec (doesn't examine "in order")
+- Returning ANY valid index would violate this spec
+- But both could be correct for many use cases!
+
+**Operational vs. Definitional:**
+- Operational: describes steps to execute
+- Definitional: describes the result/effect
+- Specs should be definitional (what), not operational (how)
+
+→ **Transition:** Let's see the general version...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Describe Results, Not Algorithms
+
+<p style={{fontSize: '0.85em', color: '#27ae60'}}>
+  ✓ Sufficiently general:
+</p>
+
+```java
+/**
+ * Returns an index of arr that contains searchTarget.
+ * @param arr the array to search
+ * @param searchTarget the element to search for
+ * @return an index of arr that contains searchTarget
+ * @throws NullPointerException if arr is null
+ * @throws NoSuchElementException if arr does not contain searchTarget
+ */
+public int search(int[] arr, int searchTarget)
+```
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+  This permits: linear search, binary search, random probing, first/last/any index...
+</p>
+
+<aside class="notes">
+**What changed:**
+- "Returns AN index" not "the first index"
+- No mention of HOW to search
+- Same restrictiveness for error cases
+
+**Benefits:**
+- Implementer can choose best algorithm
+- Caller knows what to expect: a valid index, or an exception
+- Future optimization won't break the contract
+
+**Rule of thumb:**
+- Describe the result (what you get)
+- Not the algorithm (how you get it)
+- Unless the algorithm IS the requirement
+
+→ **Transition:** But what if we really DO need the first index?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Right Balance Depends on What Callers Need
+
+<p style={{fontSize: '0.9em'}}>
+  Sometimes being more specific IS the right choice:
+</p>
+
+```java
+/**
+ * Returns the index of the first occurrence of searchTarget in arr.
+ * @return the smallest index i where arr[i] == searchTarget
+ * @throws NoSuchElementException if arr does not contain searchTarget
+ */
+public int indexOf(int[] arr, int searchTarget)
+```
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+  This is <strong>more restrictive</strong> but <strong>necessarily so</strong> if callers need the first occurrence.
+</p>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#9370DB'}}>
+  The right balance depends on what callers actually need.
+</p>
+
+<aside class="notes">
+**The key insight:**
+- Generality vs. restrictiveness is a tradeoff
+- The "right" balance depends on requirements
+
+**When to be more specific:**
+- Callers genuinely need a specific behavior
+- The extra constraint enables useful assumptions
+- Example: indexOf() vs search()
+
+**When to be more general:**
+- Multiple implementations could satisfy callers
+- You want flexibility to optimize later
+- Example: Collection size vs specific data structure
+
+**The test:**
+- Ask: "Do callers need this level of detail?"
+- If yes: specify it (restrictiveness)
+- If no: leave it open (generality)
+
+→ **Transition:** Now let's look at clarity—can readers understand the spec correctly?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Most Dangerous Specs Are Misunderstood Specs
+
+<p style={{fontSize: '0.9em'}}>
+  A spec is <strong>clear</strong> if readers understand it correctly.
+</p>
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+  The most dangerous specs are those where readers <em>think</em> they understand but don't.
+</p>
+
+<ul style={{fontSize: '0.85em', marginTop: '1em'}}>
+  <li><strong>Too brief:</strong> Readers fill in gaps with assumptions</li>
+  <li><strong>Too long:</strong> Readers skim and miss important details</li>
+  <li><strong>Jargon-heavy:</strong> Readers guess at meaning</li>
+  <li><strong>Redundant:</strong> Readers wonder what's different about each statement</li>
+</ul>
+
+<aside class="notes">
+**The danger:**
+- Unclear specs don't just confuse—they mislead
+- Reader thinks they understand, writes code based on wrong assumption
+- Bug only discovered much later
+
+**Clear specs are:**
+- Concise (but not too brief)
+- Use terms the reader knows
+- Define domain-specific terms
+- Avoid unnecessary repetition
+
+**The test:**
+- Show spec to someone unfamiliar with the code
+- Ask them to explain what the method does
+- Do their assumptions match reality?
+
+→ **Transition:** Let's see examples of clarity problems...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Redundancy Creates Confusion, Not Clarity
+
+<p style={{fontSize: '0.85em', color: '#e74c3c'}}>
+  ❌ Redundant (hurts clarity):
+</p>
+
+```java
+/**
+ * Returns the sum of the elements in the array.
+ * The sum is computed by adding each element of the array.
+ * It is the total of all the elements in the array.
+ * @param arr the array to sum
+ * @return the sum of the elements in the array
+ */
+public int sum(int[] arr)
+```
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+  The reader already knows what "sum" means!
+</p>
+
+<aside class="notes">
+**Problems with redundancy:**
+- Longer to read = higher cognitive load
+- Repeated information suggests there might be subtle differences
+- Reader wonders: "Why are they explaining 'sum'? Am I missing something?"
+
+**Clear specs are concise:**
+- Say it once, say it well
+- Don't explain concepts the reader already knows
+- Extra words = extra chances for confusion
+
+**But wait:**
+- Sometimes redundancy HELPS
+- It depends on your audience's knowledge
+- Let's see an example where more explanation is better...
+
+→ **Transition:** Sometimes more detail helps—when the concept isn't universally known...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Domain-Specific Terms Need Definitions
+
+<p style={{fontSize: '0.85em', color: '#e74c3c'}}>
+  ❌ Unclear (assumes domain knowledge):
+</p>
+
+```java
+/**
+ * Computes the present value of an income stream.
+ * @param income the annual income
+ * @param interestRate the risk-free interest rate
+ * @param years the number of years
+ * @return the present value of the income stream
+ */
+public float presentValue(float income, float interestRate, int years)
+```
+
+<p style={{fontSize: '0.85em', color: '#27ae60', marginTop: '1em'}}>
+  ✓ Clear (provides context):
+</p>
+
+```java
+/**
+ * Computes the present value of an income stream.
+ * The present value is the amount that, if invested at the given 
+ * interest rate, would grow to the total income over the given years.
+ * ...
+ */
+```
+
+<aside class="notes">
+**The problem:**
+- "Present value" is a finance term—not everyone knows it
+- Without definition, reader must look it up or guess
+- Risk: reader THINKS they understand but doesn't
+
+**The fix:**
+- One sentence defining the concept
+- Now reader can verify their understanding
+- Or learn the concept if they didn't know it
+
+**Balancing act:**
+- For "sum"—definition is redundant
+- For "present value"—definition is essential
+- Know your audience!
+
+**General principle:**
+- Define domain-specific terms
+- Don't define common programming terms
+- When in doubt, err toward clarity
+
+→ **Transition:** Unclear specs have long-term costs beyond immediate confusion...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Ambiguity Creates Specification Debt
+
+<Img 
+    src="/img/lectures/web/l4-spec-debt.webp" 
+    alt="Concept: 'The Hidden Decision Factory' (How Ambiguous Specs Create Unintended Consequences)
+
+An illustrated factory scene showing how ambiguous specifications lead to hidden, consequential decisions being made by implementers.
+
+THE AMBIGUOUS SPEC:
+A vague specification document enters the factory on a conveyor belt. It reads: 'Process submissions promptly.' A magnifying glass hovers over it showing NO details about: ordering, fairness, priority, timing. The document has a 'SEEMS FINE' stamp but is leaking question marks.
+
+THE DECISION FACTORY:
+Inside the factory, a developer stands at a workstation with multiple levers and buttons—each representing a DECISION the spec didn't make:
+- Lever 1: 'Processing Order?' (alphabetical / random / first-come / priority-based)
+- Lever 2: 'What is prompt?' (1 second / 1 minute / 1 hour)
+- Lever 3: 'Handle ties how?' (arbitrary / fair rotation)
+The developer shrugs and pulls levers somewhat randomly: 'The spec didn't say... I'll just do alphabetical. Seems reasonable?'
+
+THE UNINTENDED CONSEQUENCE:
+The factory output shows a queue of student submissions being processed. Students named 'Adams', 'Baker', 'Chen' get processed quickly (shown smiling, timer showing '2 min wait'). Students named 'Williams', 'Young', 'Zhang' wait much longer (shown frustrated, timer showing '45 min wait'). A fairness meter shows a red warning. Caption: 'Alphabetical ordering = systematic disadvantage for names late in alphabet. Developer didn't intend this. Spec didn't prevent it.'
+
+THE HIDDEN COST:
+A timeline showing:
+- 'SPEC PHASE: Fix ambiguity for $100' (small, easy)
+- 'DEV PHASE: Fix ambiguity for $1,000' (medium, refactoring)
+- 'PRODUCTION: Fix ambiguity for $100,000' (huge—user complaints, legal review, PR crisis, data migration)
+Caption: 'Specification debt compounds like financial debt. The longer you wait, the more expensive the fix.'
+
+THE LESSON:
+'Ambiguous specs don't eliminate decisions—they delegate them to people who don't realize they're making them. Hidden decisions become invisible assumptions become unintended consequences.'
+
+Style: Whimsical factory/Rube-Goldberg aesthetic with clear cause-and-effect flow. Show the chain from 'vague spec' → 'arbitrary implementation choice' → 'real-world unfairness'. Color palette: grays and browns for the ambiguous input, increasingly alarming reds for the consequences. Should feel like a cautionary tale that makes students want to clarify their specs upfront."
+  />
+
+
+<aside class="notes">
+**The hidden cost:**
+- Ambiguous spec → implementation decision
+- Developer might not realize they're choosing
+- Choice becomes embedded in shipped code
+- Users affected by "accidental" decisions
+
+**The grading example:**
+- "Promptly" is vague—doesn't specify order
+- Alphabetical is a reasonable implementation choice
+- But it has fairness implications the spec didn't consider
+- Now changing it requires refactoring + explaining to users
+
+**Specification debt:**
+- Like technical debt, but in the contract
+- Works fine initially, creates liability over time
+- More users = more diverse expectations = more debt
+
+**Prevention:**
+- Ask: "Could different interpretations lead to different outcomes for different groups?"
+- Resolve ambiguity BEFORE implementation
+
+→ **Transition:** So far we've written specs as comments. Can we do better?
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 3: TYPE ANNOTATIONS */}
+{/* ============================================ */}
+
+<Slide>
+
+## Type Annotations Let Compilers Enforce Specs
+
+<Img 
+    src="/img/lectures/web/l4-type-annotations.webp" 
+    alt="Concept: 'The Factory Quality Control Line' (Comments vs Type Annotations)
+
+A detailed factory floor illustration in a clean industrial design style, showing two parallel assembly lines for 'Method Calls' being quality-checked before shipping to production.
+
+LEFT LINE - 'HONOR SYSTEM QUALITY CONTROL' (Comment-Only Specs):
+A conveyor belt carrying method calls (visualized as packages labeled with their arguments). A laminated sign hangs above: '📋 PLEASE CHECK: arr should not be null - Javadoc says so!' A tired human inspector sits on a stool, barely glancing at packages as they roll by. One package clearly labeled 'null' rolls past—the inspector is looking at their phone. Behind the inspection point: CHAOS. Packages explode on contact with the 'Production' area (labeled 'Runtime'), sparks fly, a NullPointerException alarm blares, developers in hard hats scramble with fire extinguishers. A whiteboard shows: 'Days since last null crash: 0̶ ̶3̶ ̶7̶ 0'. Annotation: 'Comments are suggestions. Humans skip reading them. Bugs ship to production.'
+
+RIGHT LINE - 'AUTOMATED QUALITY GATE' (Type Annotations):
+The same conveyor belt, but now it passes through an imposing automated scanner (glowing, precise, robotic). The scanner display shows: '@NonNull int[] arr — SCANNING...' Valid packages (with proper non-null arrays) get a green checkmark stamp and proceed smoothly to 'Production'. But the 'null' package hits an invisible force field—red lights flash, the scanner announces 'REJECTED: null violates @NonNull constraint', and the package is automatically diverted to a 'Fix Before Shipping' chute that loops back to the developer's desk. Beyond the gate: calm, orderly production floor. A whiteboard shows: 'Days since last null crash: 847'. Annotation: 'Type annotations are machine-enforced. Bugs caught before shipping.'
+
+CENTER COMPARISON PANEL:
+Split view showing the same code:
+- Top: '// @param arr must not be null' + 'sum(null);' → Package makes it to production → 💥 RUNTIME CRASH
+- Bottom: '@NonNull int[] arr' + 'sum(null);' → Package rejected at compile time → 🔧 Developer fixes it
+
+DETAIL CALLOUTS:
+- On the scanner: 'Powered by NullAway + JSpecify' with small logos
+- Developer reaction left: 😰 'Why did this crash in production at 3am?!'
+- Developer reaction right: 😊 'Caught it before I even ran the tests'
+
+BOTTOM:
+A timeline showing: 'Java 8 (2014): Type annotations added' with small portraits of the UW researchers. Caption: 'Moving specs from comments (that humans ignore) to types (that compilers enforce).'
+
+Style: Industrial factory aesthetic with warm yellows/oranges on the chaotic left side, cool blues/greens on the orderly right side. Clean lines, clear labels, immediate visual contrast. Should feel like a safety training poster that makes a compelling case for type annotations. The factory metaphor works because it emphasizes: quality control BEFORE shipping is cheaper than recalls AFTER."
+  />
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+  Type annotations let the <strong>compiler</strong> enforce specification invariants.
+</p>
+
+<aside class="notes">
+**The problem with comments:**
+- Javadoc says "arr must not be null"
+- But caller can pass null anyway
+- Error only discovered at runtime (if you're lucky)
+
+**Type annotations (Java 8+):**
+- Researchers at University of Washington proposed this
+- One of few academic contributions accepted into Java
+- Annotations on types, not just declarations
+
+**The benefit:**
+- Compiler checks nullness at compile time
+- Error before the code even runs
+- Documentation AND enforcement in one
+
+→ **Transition:** Let's see how to use nullness annotations in practice...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## @NonNull Turns Documentation Into Enforcement
+
+```java
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
+public int sum(@NonNull int[] arr) {
+    int sum = 0;
+    for (int i = 0; i < arr.length; i++) {
+        sum += arr[i];
+    }
+    return sum;
+}
+```
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+  With <code>@NonNull</code>, the compiler enforces that <code>arr</code> is never null.
+</p>
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#888'}}>
+  Note: Java has many competing <code>@NonNull</code> definitions. We use <a href="https://jspecify.dev/">JSpecify</a>.
+</p>
+
+<aside class="notes">
+**JSpecify:**
+- Coalition: Google, JetBrains, Microsoft, Uber, Oracle
+- Standard nullness annotations (finally!)
+- Used with NullAway checker in this course
+
+**What changes:**
+- `@NonNull` = this parameter/return/field is never null
+- `@Nullable` = this CAN be null, handle it
+- Compiler error if you pass null to @NonNull
+
+**The annotation mess:**
+- javax.annotation.NonNull, org.jetbrains.annotations.NotNull, etc.
+- Each tool had its own definition
+- JSpecify standardizes this (we hope)
+
+→ **Transition:** Writing @NonNull everywhere gets tedious. There's a better approach...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## @NullMarked Makes Non-Null the Default
+
+<p style={{fontSize: '0.9em'}}>
+  Mark the whole package as "non-null by default":
+</p>
+
+```java
+// In package-info.java
+@NullMarked
+package edu.neu.cs3100.myproject;
+
+import org.jspecify.annotations.NullMarked;
+```
+
+<p style={{fontSize: '0.9em', marginTop: '1em'}}>
+  Now only mark exceptions with <code>@Nullable</code>:
+</p>
+
+```java
+// In a @NullMarked package:
+public int sum(int[] arr) { ... }  // arr assumed non-null
+
+public String format(@Nullable String prefix, String value) { ... }
+// prefix can be null, value cannot
+```
+
+<aside class="notes">
+**The pattern:**
+1. Add @NullMarked to package-info.java
+2. All types in that package are non-null by default
+3. Only annotate things that CAN be null with @Nullable
+
+**Why this is better:**
+- Most types are non-null in practice
+- Less annotation clutter
+- Explicit about the exceptional cases
+
+**For this course:**
+- New projects use @NullMarked
+- You'll see this in starter code
+- Add @Nullable only when needed
+
+→ **Transition:** Let's see what this looks like in a real method...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Annotations Make Nullability Explicit at a Glance
+
+```java
+// In a @NullMarked package
+
+/**
+ * Formats a user's display name.
+ * @param firstName the user's first name
+ * @param middleName the user's middle name, or null if none
+ * @param lastName the user's last name
+ * @return formatted name like "John Q. Public"
+ */
+public String formatName(
+    String firstName,           // non-null (default)
+    @Nullable String middleName, // explicitly nullable
+    String lastName             // non-null (default)
+) {
+    if (middleName == null) {
+        return firstName + " " + lastName;
+    }
+    return firstName + " " + middleName.charAt(0) + ". " + lastName;
+}
+```
+
+<aside class="notes">
+**What the annotations tell us:**
+- firstName: required, cannot be null
+- middleName: optional, might be null
+- lastName: required, cannot be null
+- Return: always non-null (default in @NullMarked)
+
+**The compiler enforces:**
+- Caller must provide non-null firstName and lastName
+- Caller can pass null for middleName
+- Method must check middleName before using it
+- Method must return non-null
+
+**Compare to just Javadoc:**
+- Javadoc says "middleName, or null if none"
+- But nothing enforces the caller reads this
+- @Nullable makes it compiler-checked
+
+→ **Transition:** What about working with existing code that isn't annotated?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Legacy Code Requires Gradual Annotation Adoption
+
+<p style={{fontSize: '0.9em'}}>
+  Two approaches for existing codebases:
+</p>
+
+<div style={{display: 'flex', gap: '1em', marginTop: '1em', fontSize: '0.8em'}}>
+<div style={{flex: 1}}>
+
+**Approach A: @NullMarked (new code)**
+- Mark new packages @NullMarked
+- Existing code left unannotated
+- Gradually migrate package by package
+
+</div>
+<div style={{flex: 1}}>
+
+**Approach B: @NonNull everywhere (legacy)**
+- Don't use @NullMarked
+- Add @NonNull as you verify each type
+- Safer but more verbose
+
+</div>
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB'}}>
+  For this course: new projects use @NullMarked. You'll see this in starter code.
+</p>
+
+<aside class="notes">
+**For new code (this course):**
+- Always use @NullMarked on your packages
+- Fewer annotations, cleaner code
+- Only add @Nullable when needed
+
+**For legacy code (industry):**
+- Often can't add @NullMarked to existing packages
+- Would require auditing every type
+- Gradual @NonNull approach is safer
+
+**The future:**
+- JSpecify + NullAway are gaining adoption
+- Eventually most Java code may be null-checked
+- Skills you learn now will be valuable
+
+**Active research area:**
+- Beyond nullness: immutability annotations, ownership types
+- Making more invariants machine-checkable
+
+→ **Transition:** Beyond nullness, Java has other standard contracts—let's look at the ones every Object has...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 4: COMMON OBJECT CONTRACTS */}
+{/* ============================================ */}
+
+<Slide>
+
+## Every Java Object Inherits Four Key Contracts
+
+<p style={{fontSize: '0.9em'}}>
+  Every class extends <code>java.lang.Object</code>, which defines methods you should consider overriding:
+</p>
+
+<ul style={{fontSize: '0.85em', marginTop: '1em'}}>
+  <li><code>toString()</code> — human-readable representation</li>
+  <li><code>equals(Object)</code> — logical equality</li>
+  <li><code>hashCode()</code> — hash value for collections</li>
+</ul>
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+  Plus the <code>Comparable</code> interface:
+</p>
+
+<ul style={{fontSize: '0.85em'}}>
+  <li><code>compareTo(T)</code> — natural ordering</li>
+</ul>
+
+<aside class="notes">
+**Why these matter:**
+- toString: debugging, logging
+- equals: comparing objects, Set membership, List.contains()
+- hashCode: HashMap keys, HashSet membership
+- compareTo: sorting, TreeSet, TreeMap
+
+**The contracts are interdependent:**
+- If you override equals, you MUST override hashCode
+- compareTo should be consistent with equals
+- Getting these wrong causes subtle, hard-to-find bugs
+
+**Source:**
+- "Effective Java" by Joshua Bloch has excellent coverage
+- Items 10-14 cover these methods in detail
+
+→ **Transition:** Let's start with the simplest one—toString...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## toString Should Be Concise But Informative
+
+<p style={{fontSize: '0.9em'}}>
+  From the Java documentation:
+</p>
+
+<blockquote style={{fontSize: '0.8em', fontStyle: 'italic', borderLeft: '3px solid #9370DB', paddingLeft: '1em'}}>
+  "Returns a string that textually represents this object. The result should be a concise but informative representation that is easy for a person to read."
+</blockquote>
+
+<div style={{display: 'flex', gap: '1em', marginTop: '1em', fontSize: '0.8em'}}>
+<div style={{flex: 1}}>
+
+**Default (useless):**
+```
+DimmableLight@1a2b3c4d
+```
+
+</div>
+<div style={{flex: 1}}>
+
+**Overridden (helpful):**
+```
+DimmableLight(color=2700K, 
+  brightness=100, on=true)
+```
+
+</div>
+</div>
+
+<aside class="notes">
+**The default:**
+- Class name + "@" + hex hash code
+- Essentially useless for debugging
+- Tells you the type but nothing about state
+
+**The contract is flexible:**
+- "Concise but informative"
+- OK to change between versions
+- OK to return different strings for same object state
+
+**Always override toString:**
+- Called by println, logging, debugger
+- Good toString saves hours of debugging
+
+→ **Transition:** Let's see implementation tips...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Good toString Saves Hours of Debugging
+
+```java
+@Override
+public String toString() {
+    return "DimmableLight(color=" + color + "K, " +
+           "brightness=" + brightness + ", " +
+           "on=" + on + ")";
+}
+```
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+  <strong>Best practices:</strong>
+</p>
+
+<ul style={{fontSize: '0.8em'}}>
+  <li>Include the class name</li>
+  <li>Include fields that matter for understanding the object</li>
+  <li>Format for readability (not just dump all fields)</li>
+  <li>Consider what you'd want to see in a log file</li>
+</ul>
+
+<aside class="notes">
+**Format considerations:**
+- Include class name (helps when logging collections)
+- Show key fields with their names
+- Omit derived/computed values unless important
+- Keep it single-line for log readability (usually)
+
+**Common patterns:**
+- ClassName(field1=value1, field2=value2)
+- ClassName[field1=value1, field2=value2]
+- IDE can generate these for you
+
+**What NOT to do:**
+- Don't include passwords or sensitive data
+- Don't make it too long (logs become unreadable)
+- Don't include mutable state that changes frequently
+
+→ **Transition:** Now let's look at equals—it's more complex and more critical...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Every Object Must Equal Itself
+
+<p style={{fontSize: '0.95em'}}>
+  <strong>Reflexive:</strong> For any non-null <code>x</code>, <code>x.equals(x)</code> must return <code>true</code>.
+</p>
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+  An object must equal itself. This seems obvious, but it can be violated:
+</p>
+
+```java
+// BAD: violates reflexivity
+@Override
+public boolean equals(Object obj) {
+    if (!(obj instanceof Light other)) return false;
+    return this.brightness == other.brightness 
+        && someVolatileState != other.someVolatileState; // Oops!
+}
+```
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#888'}}>
+  If someVolatileState changes between calls, x.equals(x) might return false!
+</p>
+
+<aside class="notes">
+**Why reflexivity matters:**
+- If x.equals(x) is false, Collections break
+- list.contains(x) would return false even if x is in the list
+- set.add(x) followed by set.contains(x) could return false
+
+**How to violate it (don't do this!):**
+- Compare mutable fields that change between the two reads
+- Use random numbers in comparison
+- Have side effects that change state during equals()
+
+**The rule:**
+- equals() should be pure—no side effects
+- Only compare stable state
+- Test: call x.equals(x) twice, must both be true
+
+→ **Transition:** Next property: symmetry...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Equality Must Work in Both Directions
+
+<p style={{fontSize: '0.95em'}}>
+  <strong>Symmetric:</strong> For any <code>x</code> and <code>y</code>, <code>x.equals(y)</code> must return <code>true</code> if and only if <code>y.equals(x)</code> returns <code>true</code>.
+</p>
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#e74c3c'}}>
+  Common violation: comparing across types
+</p>
+
+```java
+// In CaseInsensitiveString class - BAD!
+@Override
+public boolean equals(Object obj) {
+    if (obj instanceof CaseInsensitiveString cis) {
+        return this.value.equalsIgnoreCase(cis.value);
+    }
+    if (obj instanceof String s) {
+        return this.value.equalsIgnoreCase(s); // Asymmetric!
+    }
+    return false;
+}
+```
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+  <code>cis.equals("hello")</code> → true, but <code>"hello".equals(cis)</code> → false!
+</p>
+
+<aside class="notes">
+**The problem:**
+- CaseInsensitiveString knows about String
+- But String doesn't know about CaseInsensitiveString
+- String.equals() will always return false for non-String
+
+**Why symmetry matters:**
+- Collections may compare in either order
+- set.contains() might call a.equals(b) or b.equals(a)
+- Inconsistent results = bugs
+
+**The fix:**
+- Don't try to be equal to objects of other types
+- instanceof check should be for YOUR type only
+- Different types = different equivalence classes
+
+→ **Transition:** Property 3: transitivity...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Equality Chains Must Be Consistent
+
+<p style={{fontSize: '0.95em'}}>
+  <strong>Transitive:</strong> If <code>x.equals(y)</code> and <code>y.equals(z)</code>, then <code>x.equals(z)</code>.
+</p>
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+  If A = B and B = C, then A = C. Seems obvious, but inheritance makes it tricky:
+</p>
+
+```java
+class Point { int x, y; }
+class ColorPoint extends Point { Color color; }
+
+Point p = new Point(1, 2);
+ColorPoint cp1 = new ColorPoint(1, 2, RED);
+ColorPoint cp2 = new ColorPoint(1, 2, BLUE);
+
+// If we try to make Point and ColorPoint "equal" when coordinates match:
+p.equals(cp1)  // true (ignoring color)
+p.equals(cp2)  // true (ignoring color)
+// But: cp1.equals(cp2) should be... false? (different colors)
+// Transitivity violated!
+```
+
+<aside class="notes">
+**The inheritance problem:**
+- Point equals ColorPoint if coordinates match
+- But ColorPoint equals ColorPoint only if colors also match
+- p = cp1, p = cp2, but cp1 ≠ cp2 → transitivity broken
+
+**The lesson:**
+- Don't try to make subclass and superclass equal
+- Generally: instanceof should check for exact type
+- "Effective Java" Item 10 covers this in depth
+
+**Safe approach:**
+- Objects of different types are never equal
+- Use getClass() instead of instanceof (sometimes)
+- Or accept that subclass adds significant meaning
+
+→ **Transition:** Property 4: consistency...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## equals Must Be Deterministic and Handle Null
+
+<p style={{fontSize: '0.9em'}}>
+  <strong>Consistent:</strong> Multiple calls to <code>x.equals(y)</code> must consistently return the same result (unless the objects are modified).
+</p>
+
+<ul style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+  <li>Don't base equals on unreliable external data</li>
+  <li>Don't use random numbers or timestamps</li>
+  <li>Example: <code>java.net.URL</code> compares by IP address—BAD! (DNS can change)</li>
+</ul>
+
+<p style={{fontSize: '0.9em', marginTop: '1em'}}>
+  <strong>Null-safe:</strong> For any non-null <code>x</code>, <code>x.equals(null)</code> must return <code>false</code>.
+</p>
+
+<ul style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+  <li>Must return false, not throw NullPointerException</li>
+  <li>The <code>instanceof</code> check handles this automatically!</li>
+</ul>
+
+<aside class="notes">
+**Consistency:**
+- equals() should be deterministic
+- Same inputs → same output
+- java.net.URL is a famous mistake: equals() does DNS lookup!
+
+**Null safety:**
+- Contract says: x.equals(null) returns FALSE
+- Not: throws NullPointerException
+- The instanceof check returns false for null automatically
+
+**Why instanceof handles null:**
+- `null instanceof AnyType` is always false
+- So `if (!(obj instanceof MyType))` catches null
+- No separate null check needed
+
+→ **Transition:** Now let's see the recipe for implementing equals correctly...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Four Steps to a Correct equals Implementation
+
+```java
+@Override
+public boolean equals(@Nullable Object obj) {
+    // 1. Same reference? Return true (optimization)
+    if (this == obj) return true;
+    
+    // 2. Wrong type (or null)? Return false
+    if (!(obj instanceof DimmableLight other)) return false;
+    
+    // 3. Compare fields that define equality
+    return this.color == other.color 
+        && this.brightness == other.brightness 
+        && this.on == other.on;
+}
+```
+
+<aside class="notes">
+**The four steps:**
+1. Check if same object (== comparison)—performance optimization
+2. Check type with instanceof—returns false for null too!
+3. Cast to correct type (Java 16+ pattern matching shown)
+4. Compare each field that matters for equality
+
+**Why @Nullable on parameter:**
+- Contract says x.equals(null) returns false
+- So null is a valid argument
+- In @NullMarked package, must explicitly allow it
+
+**Field comparison tips:**
+- Primitives: use ==
+- Objects: use Objects.equals(a, b) for null-safety
+- Arrays: use Arrays.equals() or Arrays.deepEquals()
+
+→ **Transition:** Let's look at common mistakes...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## These equals Mistakes Will Break Your Collections
+
+<div style={{fontSize: '0.8em'}}>
+
+| Mistake | Problem | Fix |
+|---------|---------|-----|
+| Wrong signature: `equals(MyType obj)` | Overloads instead of overrides | Use `equals(Object obj)` |
+| Forgetting `@Nullable` | NullAway error in @NullMarked | Add `@Nullable Object obj` |
+| Using `==` for object fields | Compares references, not values | Use `Objects.equals(a, b)` |
+| Comparing across types | Breaks symmetry | Only equal to same type |
+| Including mutable fields | Breaks consistency | Use immutable fields only |
+| Forgetting to override hashCode | HashMap/HashSet broken | Always override both! |
+
+</div>
+
+<aside class="notes">
+**Most common mistake:**
+- Using == for object fields
+- String a = "hello"; String b = new String("hello");
+- a == b is false, but a.equals(b) is true
+
+**The overload trap:**
+- `public boolean equals(DimmableLight other)` DOES NOT override
+- It overloads—both methods exist
+- Object.equals(Object) still uses reference equality
+
+**@Override annotation:**
+- Always use @Override when overriding
+- Compiler will catch if signature is wrong
+- No excuse for the overload mistake
+
+→ **Transition:** If you override equals, you MUST also override hashCode...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## hashCode Enables O(1) Lookup in Collections
+
+<Img 
+    src="/img/lectures/web/l4-hashcode-buckets.webp" 
+    alt="Concept: 'The Hash Table Post Office' (How hashCode and equals Work Together)
+
+A detailed post office / mail sorting facility illustration showing how HashMap finds objects in O(1) time.
+
+THE MAIL SORTING FACILITY:
+A bird's-eye view of a mail sorting center with numbered bins (0-15, representing hash buckets). Each bin can hold multiple packages (objects).
+
+STEP 1 - COMPUTING THE HASH:
+A package (DimmableLight object) arrives at the 'Hash Calculator' station—a machine that examines the object's fields (color=2700, brightness=100, on=true) and produces a number. The machine display shows: 'hashCode() → 234789234 → mod 16 → Bucket 7'. An arrow shows the package being directed toward Bucket 7. Annotation: 'hashCode() tells us WHICH bucket to check—like a ZIP code for objects.'
+
+STEP 2 - FINDING THE BUCKET:
+Bucket 7 is highlighted, showing it contains 3 packages (objects with the same hash). Each package has a label showing its identity. A postal worker (the equals() method) stands at the bucket, examining each package one by one. Annotation: 'Multiple objects can have the same hashCode (collision). That's fine—buckets can hold several.'
+
+STEP 3 - THE EQUALS CHECK:
+The postal worker compares the incoming package against each package in the bucket using equals(). Two packages don't match (red X). One matches exactly (green ✓)! The worker calls out: 'Found it! This is the one.' Annotation: 'equals() confirms exact identity within the bucket—like checking the full address, not just ZIP code.'
+
+BOTTOM COMPARISON - O(1) vs O(n):
+Left: 'Without hashCode: Check EVERY object in the collection' — shows searching through 1000 packages one by one. Time: O(n).
+Right: 'With hashCode: Go directly to bucket, check only 2-3 objects' — shows jumping to bucket 7 and checking 3 items. Time: O(1) average.
+
+KEY INSIGHT CALLOUT:
+'hashCode = fast, approximate (which bucket?)'
+'equals = slow, exact (is this the one?)'
+'BOTH are needed. hashCode narrows the search; equals confirms the match.'
+
+THE CONTRACT WARNING: 
+Shows what happens when equals and hashCode disagree (red alert box):
+- Two 'equal' objects with different hashCodes → they go to different buckets → 'light2' is in bucket 7, but 'light1' (which equals light2) is in bucket 3 → search for light1 looks in bucket 3, never finds light2 → 'OBJECT DISAPPEARED!'
+A small diagram shows the failed lookup, with the object seemingly vanishing. Caption: 'If equal objects have different hashCodes, HashMap BREAKS.'
+
+Style: Warm, friendly postal/logistics aesthetic with clear numbering, organized bins, and helpful workers. Color-code the buckets, highlight the 'found' path in green. Should make the two-phase lookup (hash → bucket → equals → found) crystal clear. The post office metaphor works because everyone understands: ZIP code gets you to the right area, then you need the full address to find the exact house."
+  />
+
+<aside class="notes">
+**How hash collections work:**
+- Objects sorted into "buckets" by hashCode
+- Each bucket is a small list
+- To find an object: compute hash → go to bucket → linear search with equals()
+
+**Why both are needed:**
+- hashCode: fast, approximate (which bucket?)
+- equals: slow, exact (is this the one?)
+- hashCode narrows the search, equals confirms
+
+**The contract connection:**
+- Equal objects MUST have equal hash codes
+- Otherwise: object in wrong bucket → never found
+- This is why overriding equals requires overriding hashCode
+
+→ **Transition:** Let's look at the hashCode contract...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Equal Objects Must Have Equal Hash Codes
+
+<p style={{fontSize: '0.9em'}}>
+  The contract (simplified):
+</p>
+
+<ul style={{fontSize: '0.85em'}}>
+  <li><strong>Required:</strong> If <code>x.equals(y)</code>, then <code>x.hashCode() == y.hashCode()</code></li>
+  <li><strong>Recommended:</strong> If <code>!x.equals(y)</code>, hash codes <em>should</em> differ</li>
+  <li><strong>Required:</strong> Consistent within one execution</li>
+</ul>
+
+<p style={{fontSize: '0.9em', marginTop: '1em', color: '#e74c3c'}}>
+  ⚠️ If you override <code>equals</code>, you <strong>must</strong> override <code>hashCode</code>!
+</p>
+
+<aside class="notes">
+**The critical rule:**
+- Equal objects MUST have equal hash codes
+- Otherwise HashMap/HashSet break completely
+
+**The recommendation:**
+- Unequal objects SHOULD have different hash codes
+- If all objects have same hash code, HashMap becomes a linked list
+- O(1) lookup becomes O(n)
+
+**What the contract allows:**
+- Unequal objects CAN have same hash code (collision)
+- hashCode can change between JVM executions
+- hashCode should NOT change during one execution
+
+→ **Transition:** Here's how to implement hashCode...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Use the Same Fields in hashCode as in equals
+
+```java
+@Override
+public int hashCode() {
+    int result = Integer.hashCode(color);
+    result = 31 * result + Integer.hashCode(brightness);
+    result = 31 * result + Boolean.hashCode(on);
+    return result;
+}
+
+// Or simply:
+@Override
+public int hashCode() {
+    return Objects.hash(color, brightness, on);
+}
+```
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+  Use the <strong>same fields</strong> as <code>equals</code>. See <em>Effective Java</em> Item 11 for details.
+</p>
+
+<aside class="notes">
+**The recipe:**
+1. Start with hashCode of first field
+2. Combine: 31 * result + nextField.hashCode()
+3. Return result
+
+**Why 31?**
+- Prime number (reduces collisions)
+- 31 * x can be optimized to (x &lt;&lt; 5) - x
+- Traditional Java choice
+
+**The easy way:**
+- Objects.hash(field1, field2, ...) does this for you
+- Slightly slower (creates array) but correct
+- Use for non-performance-critical code
+
+**Key rule:**
+- Same fields in equals → same fields in hashCode
+- If a field affects equality, it must affect hash code
+
+→ **Transition:** Let's see what happens when you get this wrong...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Override equals Without hashCode and Objects Disappear
+
+```java
+Map<DimmableLight, String> rooms = new HashMap<>();
+
+DimmableLight light1 = new DimmableLight(2700, 100, true);
+rooms.put(light1, "Living Room");
+
+// Later, create an equal object
+DimmableLight light2 = new DimmableLight(2700, 100, true);
+System.out.println(light1.equals(light2));  // true!
+
+String room = rooms.get(light2);
+System.out.println(room);  // null?!?!
+```
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+  light1 and light2 are <code>equals()</code>, but have different <code>hashCode()</code> → different buckets → not found!
+</p>
+
+<aside class="notes">
+**What happened:**
+- light1.hashCode() → bucket 7 (for example)
+- light2.hashCode() → bucket 23 (different!)
+- get(light2) looks in bucket 23
+- light1 is in bucket 7
+- Never found, even though equals() is true
+
+**The disaster:**
+- Objects "disappear" from maps
+- set.contains() returns false for objects in the set
+- Bugs that are incredibly hard to track down
+
+**The rule (memorize it!):**
+- Override equals → MUST override hashCode
+- Same fields in both
+- No exceptions
+
+→ **Transition:** One more contract to cover—Comparable for sorting...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## compareTo Defines How Objects Sort Naturally
+
+<p style={{fontSize: '0.9em'}}>
+  For classes with a natural order, implement <code>Comparable&lt;T&gt;</code>:
+</p>
+
+```java
+public class Student implements Comparable<Student> {
+    private String name;
+    private int graduationYear;
+    
+    @Override
+    public int compareTo(Student other) {
+        int yearCmp = Integer.compare(this.graduationYear, other.graduationYear);
+        if (yearCmp != 0) return yearCmp;
+        return this.name.compareTo(other.name);
+    }
+}
+```
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+  Returns: negative if <code>this &lt; other</code>, zero if equal, positive if <code>this &gt; other</code>
+</p>
+
+<aside class="notes">
+**When to implement Comparable:**
+- When there's an obvious natural ordering
+- Strings: alphabetical
+- Dates: chronological
+- Numbers: numerical
+
+**The contract:**
+- Reversible: sgn(x.compareTo(y)) == -sgn(y.compareTo(x))
+- Transitive: if x > y and y > z, then x > z
+- Consistent with equals (recommended): x.compareTo(y) == 0 implies x.equals(y)
+
+**Benefits:**
+- Works with Arrays.sort(), Collections.sort()
+- Works with TreeSet, TreeMap
+- One interface, universal sorting
+
+→ **Transition:** A few more implementation tips for compareTo...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Compare Most Significant Fields First
+
+```java
+@Override
+public int compareTo(Student other) {
+    // Multi-field comparison: most significant field first
+    int yearCmp = Integer.compare(this.graduationYear, other.graduationYear);
+    if (yearCmp != 0) return yearCmp;
+    return this.name.compareTo(other.name);
+}
+```
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+  <strong>Key differences from equals:</strong>
+</p>
+
+<ul style={{fontSize: '0.8em'}}>
+  <li><code>compareTo(null)</code> throws <code>NullPointerException</code> (unlike equals)</li>
+  <li>Only compares objects of the same type (generic parameter)</li>
+  <li>Should be consistent with <code>equals()</code>: if <code>compareTo</code> returns 0, <code>equals</code> should return true</li>
+</ul>
+
+<aside class="notes">
+**Multi-field comparison pattern:**
+- Compare most significant field first
+- If not equal, return the comparison result
+- If equal, move to next field
+- Chain as many fields as needed
+
+**Null handling:**
+- Unlike equals, compareTo should throw NPE for null
+- The contract explicitly says this
+
+**Consistency with equals:**
+- Not required, but strongly recommended
+- TreeSet uses compareTo, HashSet uses equals
+- Inconsistency = different sets have different behavior
+
+**Use Comparator.comparing() for modern Java:**
+- Comparator.comparing(Student::getYear).thenComparing(Student::getName)
+- More readable for complex comparisons
+
+→ **Transition:** Let's wrap up everything we've learned...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* SUMMARY */}
+{/* ============================================ */}
+
+<Slide>
+
+## Summary: Specifications as Contracts
+
+<ol style={{fontSize: '0.85em'}}>
+  <li><strong>Specifications enable modularity</strong> — understand methods without reading implementations (Miller's Law, chunking)</li>
+  <li><strong>Good specs balance three criteria:</strong></li>
+    <ul>
+      <li>Restrictiveness — rule out bad implementations</li>
+      <li>Generality — permit good implementations</li>
+      <li>Clarity — easy to understand correctly</li>
+    </ul>
+  <li><strong>Type annotations</strong> make specs machine-checkable (@NullMarked, @Nullable)</li>
+  <li><strong>Java's standard contracts</strong> (toString, equals, hashCode, compareTo) must be implemented correctly</li>
+</ol>
+
+<aside class="notes">
+**Key takeaways:**
+- Specs let us reason about large systems (Miller's Law, chunking)
+- Balance restrictiveness, generality, clarity
+- Use type annotations when possible (compiler > comments)
+- Learn the Object method contracts by heart
+
+**Critical rules:**
+- Override equals → MUST override hashCode
+- Use same fields in both
+- equals(null) returns false, compareTo(null) throws
+
+**Connections to upcoming work:**
+- A1: Write good Javadoc for your methods
+- A1: Override equals/hashCode for domain classes
+- Lab 3: Evaluate specification quality
+- Future lectures: Requirements gathering (where specs come from)
+
+→ **Transition:** Let's look at next steps.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Next Steps
+
+<ul style={{fontSize: '0.95em'}}>
+  <li>Assignment 1 due Thursday, January 15 at 11:59 PM</li>
+  <li>Complete flashcard set 4 (Specifications & Contracts)</li>
+</ul>
+
+<p style={{marginTop: '1.5em', fontSize: '0.9em'}}><strong>Optional readings:</strong></p>
+
+<ul style={{fontSize: '0.85em'}}>
+  <li><a href="https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch3.xhtml">Effective Java, Items 10-14</a> (equals, hashCode, toString, Comparable)</li>
+  <li><a href="https://learning.oreilly.com/library/view/program-development-in/9780768685299/ch9.html">Liskov & Guttag, Chapter 9.2</a> (Specification theory)</li>
+  <li><a href="https://jspecify.dev/docs/start-here/">JSpecify Documentation</a> (Nullness annotations standard)</li>
+</ul>
+
+<p style={{marginTop: '1.5em', fontSize: '0.9em'}}><strong>Next time:</strong> Functional Programming and Readability</p>
+
+<aside className="notes">
+Assignment 1 is due Thursday—make sure your methods have good Javadoc and that you override equals/hashCode correctly for your domain classes. The flashcards will help reinforce today's concepts.
+
+**Optional readings:**
+- Effective Java Items 10-14 go deeper on the Object method contracts—highly recommended if you want to understand the edge cases
+- Liskov & Guttag provides the theoretical foundation for specification design
+- JSpecify docs if you want to understand the nullness annotation ecosystem
+
+**Next lecture preview:**
+- We'll learn lambdas, records, and method references
+- Java was decades late to functional programming—Haskell had lambdas in 1990, Java got them in 2014
+- But better late than never! These tools let us write code where intent is visible, not buried in boilerplate
+
+Any questions before we wrap up?
+</aside>
+
+</Slide>
+
+</RevealJS>
+
