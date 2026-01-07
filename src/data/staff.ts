@@ -264,8 +264,8 @@ export const staffMembers: StaffMember[] = [
     name: "Aditya Vij",
     role: "ta",
     campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg"
+    bio: "Second year undergrad CS student with a concentration in AI.",
+    headshot: "avij.jpg"
   },
   {
     name: "Rebecca Williams",
