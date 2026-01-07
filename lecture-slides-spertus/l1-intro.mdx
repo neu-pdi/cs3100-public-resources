@@ -214,14 +214,36 @@ import PollSlide from '@site/src/components/PollSlide';
 {/* ACT 1: A BRIEF HISTORY OF SOFTWARE ENGINEERING */}
 {/* ============================================ */}
 
+<Slide>
 
+## Let's set the WABAC machine to the 1940s...
+
+  <ImageSlide
+    imageSrc="/img/lectures/ellen/common/wabac-machine.jpg"
+    imageAlt="Cartoon showing Mr. Peabody (a dog) and Sherman (a boy) in front of a complicated machine"
+  />
+
+</Slide>
 
 <Slide>
 ## How much did a typical computer weigh in the 1940s?
   <PollSlide
-    choices={['under 10 pounds', '10-100 pounds', '100-200 pounds', '200-2000 pounds', 'over a ton']}
+    choices={['under 100 pounds', '100-200 pounds', '200-2000 pounds', 'over a ton']}
     username="espertus"
   />
+</Slide>
+
+<Slide>
+
+  <ImageSlide
+    imageSrc="/img/lectures/ellen/l1-jennings-bilas-upenn.png"
+    imageAlt="Black and white photo showing two women adjusting a large computer"
+    source="University Archives and Records Center/University of Pennsylvania via IEEE Spectrum"
+    belowText="Jean Jennings and Frances Bilas adjusting ENIAC (1946)"
+    imageHeight='60vh'
+
+  />
+
 </Slide>
 
 {/* 1950s ENIAC slide - image right, side text */}
@@ -310,6 +332,15 @@ import PollSlide from '@site/src/components/PollSlide';
 
 </Slide>
 
+<Slide>
+
+## Something to think about
+
+<ImageSlide
+ imageSrc="/img/lectures/ellen/l1-ship-in-port.jpg"
+ imageAlt="Picture of Grace Hopper in naval uniform with quotation 'A ship in port is safe, but that's not what ships are built for."
+/>
+</Slide>
 <Slide>
 
 ## 1960s: Margaret Hamilton
@@ -439,7 +470,18 @@ Despite innovations in programming:
 
 </Slide>
 
+<Slide>
 
+## Software engineering?
+
+   <QuoteSlide
+     quote="If builders built houses the way programmers built programs, the first woodpecker to come along would destroy civilization."
+     imageSrc="/img/lectures/ellen/l1-gerald-weinberg.jpg"
+     imageAlt="Gerald Weinberg"
+     attribution="Photo: SE Radio 280"
+   />
+
+</Slide>
 <Slide>
 
 ## Did the software crisis end?
@@ -1434,7 +1476,19 @@ for (int i = 0; i < 1000000; i++) {
 </aside>
 
 </Slide>
+<Slide>
 
+## Old Days 1
+
+  <ImageSlide
+    imageSrc="/img/lectures/ellen/l1-xkcd-old-days1.png"
+    imageAlt="xkcd cartoon in which an old lady tells unlikely stories about computing in the old days"
+    source="xkcd 1755 | CC BY-NC 2.5"
+    imageHeight='60vh'
+  />
+</Slide>
+
+{/*
 <Slide>
 
 ## Dynamic Typing Makes JIT Optimization Hard
@@ -1465,6 +1519,8 @@ PyPy and others have tried...
 </aside>
 
 </Slide>
+
+*/}
 
 {/* ============================================ */}
 {/* PRACTICAL TRANSITION */}
@@ -1544,6 +1600,7 @@ PyPy and others have tried...
 
 </Slide>
 
+{/*
 <Slide>
 
 ## Discussion
@@ -1568,6 +1625,7 @@ PyPy and others have tried...
 </aside>
 
 </Slide>
+*/}
 
 {/* ============================================ */}
 {/* JAVA SYNTAX */}
@@ -2148,8 +2206,9 @@ System.out.println(a == b);  // false!
 
 - Optional follow-up reading: [A Short History of Java (Horstmann)](https://learning.oreilly.com/library/view/core-java-volume/9780135328385/v1/ch1/index.xhtml#ch01lev1sec4)
 - Complete the lecture 1 Java flashcards
+- **[Syllabus Quiz](https://northeastern.instructure.com/courses/239399/quizzes/759109)** (due Sunday, Jan 11)
 - **Lab 1:** Java setup and first program, ASAP
-- **Assignment 1:** Recipe Domain Model (due Jan 15)
+- **Assignment 1:** Recipe Domain Model (due Thursday, Jan 15)
 - Review [Lecture 2 notes](/lecture-notes/l2-data-in-jvm)
 
 
@@ -2162,7 +2221,7 @@ System.out.println(a == b);  // false!
 
 **Ask:** Any questions before we wrap up?
 
-**End of Lecture 1** (~55 minutes)
+**End of Lecture 1** (~65 minutes)
 </aside>
 
 </Slide>
