@@ -56,11 +56,11 @@ export const staffMembers: StaffMember[] = [
   },
   {
     name: "Amit Shesh",
-    pronouns: "",
+    pronouns: "he/him",
     role: "instructor",
     campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg",
+    bio: "Teaching Professor, Assistant Dean of Masters Programs",
+    headshot: "amit_shesh.jpg",
     email: "a.shesh@northeastern.edu"
   },
   {
@@ -163,18 +163,18 @@ export const staffMembers: StaffMember[] = [
     headshot: "staff-placeholder.svg"
   },
   {
-    name: "Pratham Kiran Mehta",
+    name: "Pratham Mehta",
     role: "ta",
     campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg"
+    bio: "Computer Science graduate student",
+    headshot: "Pratham.jpeg"
   },
   {
     name: "Avery Neuner",
     role: "ta",
     campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg"
+    bio: "Undergraduate student in Computer Science and English with a concentration in AI and natural language processing.",
+    headshot: "averyneuner.jpg"
   },
   {
     name: "Shivang Manishkumar Patel",
@@ -264,8 +264,8 @@ export const staffMembers: StaffMember[] = [
     name: "Aditya Vij",
     role: "ta",
     campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg"
+    bio: "Second year undergrad CS student with a concentration in AI.",
+    headshot: "avij.jpg"
   },
   {
     name: "Rebecca Williams",
