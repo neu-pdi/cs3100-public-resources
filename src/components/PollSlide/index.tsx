@@ -4,7 +4,6 @@ import React from 'react';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 interface PollSlideProps {
-  question: string;
   choices: string[];
   username: string;
   codeFormat?: boolean;

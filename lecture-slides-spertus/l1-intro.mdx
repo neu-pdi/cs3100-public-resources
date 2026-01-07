@@ -92,30 +92,6 @@ import PollSlide from '@site/src/components/PollSlide';
 
 <Slide>
 
-## Introduction
-
-- Ellen, Prof. Spertus, Dr. Spertus, Prof. Ellen
-- Industry experience:
-  - Microsoft (80s and 90s)
-  - Google (2004-2014)
-  - Mozilla (2019-2020)
-- Open source contributor
-
-<aside class="notes">
-**Keep brief (2-3 min):**
-- Share your preferred name/title
-- Mention research interests—students like knowing you're active in the field
-- Open source work = real-world SE example
-
-**Why this matters:** Humanizes the course, models professional identity
-
-→ **Transition:** Let me introduce our full course team...
-</aside>
-
-</Slide>
-
-<Slide>
-
 ## Ellen Spertus
 
 <div style={{position: 'relative', height: '70vh', width: '100%'}}>
@@ -273,6 +249,35 @@ import PollSlide from '@site/src/components/PollSlide';
 
 → **Transition:** Then came a radical idea from Grace Hopper...
 </aside>
+
+</Slide>
+
+<Slide>
+
+## Levels of programming
+
+<table style={{width: '100%', borderCollapse: 'collapse', fontSize: '1.1em'}}>
+  <tbody>
+    <tr style={{borderBottom: '1px solid #666'}}>
+      <td style={{padding: '1em 0', width: '40%'}}>High-Level Language</td>
+      <td style={{padding: '1em 0'}}><pre>count = index + 1</pre></td>
+    </tr>
+    <tr style={{borderBottom: '1px solid #666'}}>
+      <td style={{padding: '1em 0'}}>Assembly Language</td>
+      <td style={{padding: '1em 0'}}>
+        <pre style={{margin: 0, background: 'none', padding: 0}}>{`load $r1, 1
+add $r2, $r3, $r1`}</pre>
+      </td>
+    </tr>
+    <tr>
+      <td style={{padding: '1em 0'}}>Machine Language</td>
+      <td style={{padding: '1em 0'}}>
+        <code>00110001 00000001</code><br/>
+        <code>11000010 00110001</code>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 </Slide>
 
@@ -733,6 +738,15 @@ AI helps with typing; humans do the hard parts.
 </Slide>
 
 <Slide>
+## What's your experience with AI coding?
+  <PollSlide
+    choices={[]}
+    username="espertus"
+  />
+</Slide>
+
+
+<Slide>
 ## AI coding assistance is not permitted in weeks 1-5
   <Img
     src="/img/lectures/web/l1-ai-review.webp"
@@ -1005,6 +1019,28 @@ This visualization addresses the common student question 'Why can't I just use A
 
 → **Transition:** Now let's shift to understanding Java's historical context...
 </aside>
+
+</Slide>
+
+<Slide>
+## What are your goals for CS 3100?
+  <PollSlide
+    choices={['Learning as much as possible', 'Getting a high grade', 'Getting a strong letter of recommendation', 'Having time for other projects']}
+    username="espertus"
+  />
+</Slide>
+
+<Slide>
+## Static vs. dynamic typing
+
+When do you want errors reported?
+
+```python
+print("hello" / "world")
+```
+
+* static typing → compile-time (Java)
+* dynamic typing → run-time (Python)
 
 </Slide>
 
@@ -1360,7 +1396,14 @@ Tagline options: 'Two definitions of community' / 'Who decides when to break thi
 </aside>
 
 </Slide>
+<Slide>
+## Java compilation/execution
 
+  <ImageSlide
+    imageSrc="/img/lectures/ellen/l1-byte-code.png"
+  />
+  
+</Slide>
 <Slide>
 
 ## Compilation Enables Optimization
@@ -1652,6 +1695,15 @@ PyPy and others have tried...
 → **Transition:** Here's the classic Hello World...
 </aside>
 
+</Slide>
+
+
+<Slide>
+## Have you programmed in Java before?
+  <PollSlide
+    choices={['Nope', 'A little', 'Some', 'Lots']}
+    username="espertus"
+  />
 </Slide>
 
 <Slide>
