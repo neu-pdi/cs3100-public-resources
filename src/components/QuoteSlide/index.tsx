@@ -1,6 +1,8 @@
 // https://claude.ai/share/91411c22-222b-47b5-b7e4-bd991c05c8c5
+// https://claude.ai/share/0e69d802-5558-466f-a0ae-b205ba4608d9
 
 import React from 'react';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 type Size = 'auto' | 'short' | 'medium' | 'long';
 
@@ -35,7 +37,7 @@ function getAutoSize(quote: string): keyof typeof sizePresets {
   return 'long';
 }
 
-export default function QuoteSlide({ 
+export default function QuoteSlide({
   quote,
   attribution,
   imageSrc,
@@ -46,21 +48,26 @@ export default function QuoteSlide({
   const resolvedSize = size === 'auto' ? getAutoSize(quote) : size;
   const { fontSize, imageHeight } = sizePresets[resolvedSize];
 
+  // Handle baseUrl for absolute paths
+  const resolvedImageSrc = imageSrc && imageSrc.startsWith('/')
+    ? useBaseUrl(imageSrc)
+    : imageSrc;
+
   return (
     <>
       <div style={{display: 'flex', alignItems: 'flex-start', gap: '1.5em'}}>
-        {imageSrc && (
-          <img 
-            src={imageSrc} 
-            alt={imageAlt || 'Portrait'} 
-            style={{maxHeight: imageHeight, borderRadius: '4px'}} 
+        {resolvedImageSrc && (
+          <img
+            src={resolvedImageSrc}
+            alt={imageAlt || 'Portrait'}
+            style={{maxHeight: imageHeight, borderRadius: '4px'}}
           />
         )}
         <blockquote style={{
-          fontSize, 
-          fontStyle: 'italic', 
-          borderLeft: `4px solid ${accentColor}`, 
-          paddingLeft: '1em', 
+          fontSize,
+          fontStyle: 'italic',
+          borderLeft: `4px solid ${accentColor}`,
+          paddingLeft: '1em',
           textAlign: 'left',
           margin: 0,
         }}>
