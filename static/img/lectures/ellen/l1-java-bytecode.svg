@@ -1,0 +1,55 @@
+<svg viewBox="0 0 760 480" xmlns="http://www.w3.org/2000/svg" font-family="monospace">
+  
+  <!-- Java box -->
+  <rect x="20" y="10" width="320" height="160" fill="none" stroke="#e040fb" stroke-width="3"/>
+  <rect x="20" y="10" width="320" height="30" fill="#e040fb"/>
+  <text x="180" y="32" text-anchor="middle" fill="white" font-size="18" font-weight="bold">Java</text>
+  
+  <!-- Java code -->
+  <text x="30" y="60" fill="#e040fb" font-size="12" font-weight="bold">static int <tspan fill="#00bcd4">cube</tspan>(int <tspan fill="#00bcd4">x</tspan>) {</text>
+  <text x="40" y="80" fill="#e040fb" font-size="12" font-weight="bold">return <tspan fill="#00bcd4">x</tspan> * <tspan fill="#00bcd4">x</tspan> * <tspan fill="#00bcd4">x</tspan>;</text>
+  <text x="30" y="100" fill="#e040fb" font-size="12" font-weight="bold">}</text>
+  <text x="30" y="122" fill="#e040fb" font-size="12" font-weight="bold">public static void <tspan fill="#00bcd4">main</tspan>(String[] <tspan fill="#00bcd4">args</tspan>) {</text>
+  <text x="40" y="142" fill="#e040fb" font-size="12" font-weight="bold">System.<tspan fill="#00bcd4">out</tspan>.println(<tspan fill="#00bcd4">cube</tspan>(1));</text>
+  <text x="30" y="162" fill="#e040fb" font-size="12" font-weight="bold">}</text>
+  
+  <!-- Arrow down + compiler label to the right -->
+  <polygon points="180,180 160,180 180,215 200,180 180,180" fill="#9c27b0"/>
+  <text x="220" y="203" fill="#000" font-size="18" font-family="sans-serif">compiler</text>
+  
+  <!-- Byte code box -->
+  <rect x="20" y="230" width="540" height="220" fill="none" stroke="#f44336" stroke-width="3"/>
+  <rect x="20" y="230" width="540" height="30" fill="#f44336"/>
+  <text x="290" y="252" text-anchor="middle" fill="white" font-size="18" font-weight="bold">byte code</text>
+  
+  <!-- Byte code - left column (cube method) -->
+  <text x="30" y="278" fill="#000" font-size="12">static cube(I)I</text>
+  <text x="45" y="294" fill="#000" font-size="12">ILOAD 0</text>
+  <text x="45" y="310" fill="#000" font-size="12">ILOAD 0</text>
+  <text x="45" y="326" fill="#000" font-size="12">IMUL</text>
+  <text x="45" y="342" fill="#000" font-size="12">ILOAD 0</text>
+  <text x="45" y="358" fill="#000" font-size="12">IMUL</text>
+  <text x="45" y="374" fill="#000" font-size="12">IRETURN</text>
+  
+  <!-- Byte code - right column (main method) -->
+  <text x="180" y="278" fill="#000" font-size="12">public static main(<tspan fill="#00bcd4" text-decoration="underline">Ljava/lang/String</tspan>)V</text>
+  <text x="190" y="294" fill="#000" font-size="12">L0</text>
+  <text x="200" y="310" fill="#000" font-size="12">LINENUMBER 8 L0</text>
+  <text x="200" y="326" fill="#000" font-size="12">GETSTATIC <tspan fill="#00bcd4" text-decoration="underline">System.out</tspan> : Ljava/io/PrintStream;</text>
+  <text x="200" y="342" fill="#000" font-size="12">ICONST_1</text>
+  <text x="200" y="358" fill="#000" font-size="12">INVOKESTATIC <tspan fill="#00bcd4" text-decoration="underline">Main.triple</tspan> (I)I</text>
+  <text x="200" y="374" fill="#000" font-size="12">INVOKEVIRTUAL java/io/<tspan fill="#00bcd4" text-decoration="underline">PrintStream.println</tspan> (I)V</text>
+  <text x="190" y="390" fill="#000" font-size="12">L1</text>
+  <text x="200" y="406" fill="#000" font-size="12">LINENUMBER 9 L1</text>
+  <text x="200" y="422" fill="#000" font-size="12">RETURN</text>
+  
+  <!-- JVM label above arrow -->
+  <text x="595" y="315" text-anchor="middle" fill="#000" font-size="18" font-family="sans-serif">JVM</text>
+  
+  <!-- Arrow right -->
+  <polygon points="570,340 570,320 620,340 570,360 570,340" fill="#9c27b0"/>
+  
+  <!-- Output -->
+  <text x="680" y="345" text-anchor="middle" fill="#00bcd4" font-size="32" font-weight="bold">27</text>
+  
+</svg>
