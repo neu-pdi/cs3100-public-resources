@@ -163,11 +163,11 @@ export const staffMembers: StaffMember[] = [
     headshot: "staff-placeholder.svg"
   },
   {
-    name: "Pratham Kiran Mehta",
+    name: "Pratham Mehta",
     role: "ta",
     campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg"
+    bio: "Computer Science graduate student",
+    headshot: "Pratham.jpeg"
   },
   {
     name: "Avery Neuner",
