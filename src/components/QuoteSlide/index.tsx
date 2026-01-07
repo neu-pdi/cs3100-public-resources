@@ -48,9 +48,10 @@ export default function QuoteSlide({
   const resolvedSize = size === 'auto' ? getAutoSize(quote) : size;
   const { fontSize, imageHeight } = sizePresets[resolvedSize];
 
-  // Handle baseUrl for absolute paths
+  // Handle baseUrl for absolute paths - call hook unconditionally
+  const baseUrlResult = useBaseUrl(imageSrc || '');
   const resolvedImageSrc = imageSrc && imageSrc.startsWith('/')
-    ? useBaseUrl(imageSrc)
+    ? baseUrlResult
     : imageSrc;
 
   return (
