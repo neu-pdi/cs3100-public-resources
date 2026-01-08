@@ -253,7 +253,13 @@ This project uses two static analysis tools:
 - **Error Prone** — catches common Java mistakes (like using `==` instead of `.equals()`)
 - **NullAway** — catches potential null pointer exceptions before your code runs
 
-You can also see these warnings in VS Code's **Problems** panel (View → Problems, or ⌘+Shift+M / Ctrl+Shift+M). This panel shows all errors and warnings in your project — it's a great way to find issues!
+> ⚠️ **Important about the Problems panel**: VS Code's **Problems** panel (View → Problems, or ⌘+Shift+M / Ctrl+Shift+M) shows many warnings and errors, but **it may not show all static analysis warnings** from Error Prone and NullAway. We're working on improving this integration. For now, **rely on the terminal output** from `./gradlew compileJava` to see all warnings.
+
+> 🔄 **Gradle caching**: Gradle is smart — it won't recompile unchanged files. If you run `./gradlew compileJava` again without making changes, you won't see the warnings again! To force Gradle to rebuild and show output, run:
+> ```bash
+> ./gradlew clean compileJava
+> ```
+> The `clean` task deletes the build output, forcing a fresh compilation.
 
 > 💡 **Your first task will be to fix these warnings.** But first, let's explore the codebase.
 
@@ -306,7 +312,9 @@ Complete the following tasks. Each task should take just a few minutes.
 
 Remember those 4 warnings from compiling? Let's fix them!
 
-1. Open the **Problems panel** (⌘+Shift+M on Mac, Ctrl+Shift+M on Windows) to see all warnings in one place. Click on a warning to jump directly to that line!
+1. **Review the warnings in the terminal output** from `./gradlew compileJava`. Look for the `warning:` lines that show the file path and line number.
+   
+   > 💡 **Note:** The VS Code Problems panel (⌘+Shift+M / Ctrl+Shift+M) may not show all static analysis warnings. **Use the terminal output** as your primary source of truth!
 
 2. **Research** each warning by clicking the links in the terminal output or searching online:
    - [ReferenceEquality](https://errorprone.info/bugpattern/ReferenceEquality) — why `==` is wrong for comparing objects
@@ -320,10 +328,11 @@ Remember those 4 warnings from compiling? Let's fix them!
 
 4. Rebuild to verify **0 warnings**:
    ```bash
-   ./gradlew compileJava
+   ./gradlew clean compileJava
    ```
+   (The `clean` ensures you see fresh output even if you haven't changed anything)
 
-> 🛠️ **VS Code tip:** After fixing each warning, the Problems panel updates automatically. You can also hover over the yellow squiggly underlines in the editor to see the warning message.
+> 🛠️ **VS Code tip:** You can hover over yellow squiggly underlines in the editor to see some warning messages, but remember that not all static analysis warnings appear in the editor — check the terminal output!
 
 ### Task 2: Run Tests and Fix the Bug in `Fan.java` 🐛
 
