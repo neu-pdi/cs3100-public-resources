@@ -273,7 +273,7 @@ classDiagram
       breathe() lungs
     }
     class Fish {
-      feed() gills
+      breathe() gills
     }
     Animal <|-- Cat
     Animal <|-- Fish
@@ -1832,7 +1832,7 @@ Light light = new TunableWhiteLight("living-room", 2700, 100);
 light.turnOn();
 // Calls TunableWhiteLight.turnOn()
 
-((DimmableLight) l).turnOn();
+((DimmableLight) light).turnOn();
 // STILL calls TunableWhiteLight.turnOn()!
 ```
 
