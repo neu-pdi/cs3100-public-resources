@@ -6,6 +6,8 @@ image: /img/lectures/web/l2.png
 
 import RevealJS, { Slide } from '@site/src/components/RevealJS';
 import Img from '@site/src/components/Img';
+import ImageSlide from "@site/src/components/ImageSlide";
+import PollSlide from "@site/src/components/PollSlide";
 
 <RevealJS transition="slide">
 
@@ -14,8 +16,8 @@ import Img from '@site/src/components/Img';
 {/* ============================================ */}
 
 <Slide>
-  <Img 
-    src="/img/lectures/web/l2.png" 
+  <Img
+    src="/img/lectures/web/l2.png"
     alt="Lecture 2 Cover"
   />
 
@@ -47,7 +49,7 @@ import Img from '@site/src/components/Img';
 ## Lecture 2: Inheritance and Polymorphism in Java
 
 <p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
-  ©2025 Jonathan Bell, CC-BY-SA
+  ©2026 Jonathan Bell & Ellen Spertus, CC-BY-SA
 </p>
 
 <aside class="notes">
@@ -101,7 +103,7 @@ After this lecture, you will be able to:
 <Slide>
 ## Software Models Real-World Domains
 <Img
-    src="/img/lectures/web/l2-make-your-data.png" 
+    src="/img/lectures/web/l2-make-your-data.png"
     alt="Tagline: 'Make your data mean something'
 A tense scene in a corporate conference room, rendered in a modern business illustration style. An auditor (external stakeholder) has arrived with questions about a suspicious transaction. Two scenarios play out side by side. On the left ('Meaningless Data'), developers frantically search through tables: tbl_txn with columns id, amt, ts, uid_1, uid_2, type_cd. The auditor asks 'Show me all transfers over $10,000 from the last quarter with the authorizing manager's approval status.' The developers look at each other—what's type_cd? Which user is the sender vs receiver? Where's approval status stored? The data exists but answering the question requires archaeology.
 On the right ('Meaningful Data'), the same auditor question gets answered immediately. The code shows Transfer extending Transaction, with clear fields: sender: Account, recipient: Account, amount: Money, authorizedBy: Employee, approvalStatus: ApprovalState. A query practically writes itself. The developers pull the report in minutes; the auditor nods, satisfied. The domain model anticipated the kinds of questions stakeholders ask, because it was built from understanding of what banking actually involves. A small annotation notes: 'The team that understood their domain modeled 'authorization' as a first-class concept. The other team stored it in a JSON blob called 'metadata'.' The meaningful data doesn't just serve the code—it serves everyone who needs to understand what the system does."
@@ -124,6 +126,308 @@ On the right ('Meaningful Data'), the same auditor question gets answered immedi
 
 → **Transition:** Let's explore a concrete domain—smart home IoT devices...
 </aside>
+</Slide>
+
+
+<Slide>
+
+## IS-A relationship
+
+<div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', minHeight: '50vh'}}>
+
+<div>
+
+Would you agree that:
+* A Cat is-a Animal
+* A Fish is-a Animal
+
+</div>
+
+<div className="fragment" style={{transform: 'scale(1.5)', transformOrigin: 'top right'}}>
+
+```mermaid
+classDiagram
+    class Animal {
+    }
+    class Cat {
+    }
+    class Fish {
+    }
+    Animal <|-- Cat
+    Animal <|-- Fish
+```
+
+</div>
+
+</div>
+
+<div className="fragment" style={{marginTop: '1em'}}>
+
+We say that Cat and Fish are **subtypes** of Animal.
+
+</div>
+
+</Slide>
+
+{/* ============================================ */}
+{/* LISKOV SUBSTITUTION PRINCIPLE */}
+{/* ============================================ */}
+
+<Slide>
+
+## The Liskov Substitution Principle
+
+<blockquote style={{fontSize: '0.9em', fontStyle: 'italic', borderLeft: '4px solid #9370DB', paddingLeft: '1em', textAlign: 'left'}}>
+  "If S is a subtype of T, then objects of type T may be replaced with objects of type S without altering the correctness of the program."
+</blockquote>
+
+<p style={{marginTop: '1em', fontSize: '0.85em', color: '#666'}}>
+  — Barbara Liskov, 1987
+</p>
+
+<aside class="notes">
+**In plain terms:** If your code works with a Light, it must work with ANY Light subtype—DimmableLight, TunableWhiteLight, future types you haven't written yet.
+
+**Classic violation:** Square extends Rectangle. If setWidth() on Rectangle doesn't affect height, but on Square it must change height to match... that breaks code expecting Rectangle behavior.
+
+**Key insight:** Inheritance is a CONTRACT. Subtypes must honor the supertype's behavioral promises.
+
+→ **Transition:** Let's visualize what this means...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Subtypes Can Be Substituted for Their Supertypes
+
+<div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', minHeight: '50vh'}}>
+
+<div>
+
+Given:
+* A Cat is-a Animal
+* A Fish is-a Animal
+* You can feed an Animal
+
+Would you agree that:
+
+* You can feed a Cat
+* You can feed a Fish
+
+</div>
+
+<div className="fragment" style={{transform: 'scale(1.5)', transformOrigin: 'top right'}}>
+
+```mermaid
+classDiagram
+    class Animal {
+      feed()
+    }
+    class Cat {
+      feed()
+    }
+    class Fish {
+      feed()
+    }
+    Animal <|-- Cat
+    Animal <|-- Fish
+```
+
+</div>
+
+</div>
+
+<div className="fragment" style={{marginTop: '1em'}}>
+
+Because Cat and Fish are subtypes of Animal, anything you can do to/with an Animal
+can be done to/with a Cat. <br/>
+
+In other words, you can substitute an instance of a subtype for an instance
+of the supertype.
+
+</div>
+
+</Slide>
+
+<Slide>
+
+## Abstract Methods
+
+<div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', minHeight: '50vh'}}>
+
+<div>
+
+Animals breathe, but they breathe in different ways.
+
+</div>
+
+<div className="fragment" style={{transform: 'scale(1.5)', transformOrigin: 'top right'}}>
+
+```mermaid
+classDiagram
+    class Animal {
+      breathe()*
+    }
+    class Cat {
+      breathe() lungs
+    }
+    class Fish {
+      breathe() gills
+    }
+    Animal <|-- Cat
+    Animal <|-- Fish
+```
+
+</div>
+
+</div>
+
+<div className="fragment" style={{marginTop: '1em', fontSize: '0.8em'}}>
+
+
+We say that `breathe()` is an `abstract` method in `Animal` because it is
+declared but not implemented.<br/>
+
+It is a `concrete` method in `Cat` and `Fish` because it is implemented.
+
+</div>
+
+</Slide>
+
+<Slide>
+
+## Java interfaces
+
+<div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '2em', minHeight: '50vh'}}>
+
+<div style={{transform: 'scale(1.2)', transformOrigin: 'top left'}}>
+
+```mermaid
+classDiagram
+    class Animal {
+      <<interface>>
+      breathe()*
+    }
+    class Cat {
+      breathe() lungs
+    }
+    class Fish {
+      breathe() gills
+    }
+    Animal <|-- Cat
+    Animal <|-- Fish
+
+    style Animal fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+</div>
+
+<div style={{flex: 1}}>
+
+```java
+interface Animal {
+  void breathe();
+}
+
+class Cat implements Animal {
+  void breathe() {
+    // use lungs
+  }
+}
+
+class Fish implements Animal {
+  void breathe() {
+    // use gills
+  }
+}
+```
+
+</div>
+
+</div>
+
+<div className="fragment" style={{marginTop: '1em', fontSize: '0.8em'}}>
+
+An interface _declares_ but does not _implement_ methods. It consists entirely
+of _abstract_ methods.<br/>
+
+Subtypes _implement_ the interface and provide _concrete_ implementations of the required methods.
+
+</div>
+
+</Slide>
+
+<Slide>
+
+## How Can We Share Code?
+
+Different types of mob move and take damage the same way, but they make different
+sounds. How can they share code?
+
+<div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '2em', minHeight: '45vh'}}>
+
+<div style={{transform: 'scale(1.2)', transformOrigin: 'top left'}}>
+
+```mermaid
+classDiagram
+    class BaseMob {
+      <<abstract>>
+      takeDamage()
+      move()
+      makeSound()*
+    }
+    class Cow {
+      makeSound()
+    }
+    class Skeleton {
+      makeSound()
+    }
+    BaseMob <|-- Cow
+    BaseMob <|-- Skeleton
+```
+
+</div>
+
+<div style={{flex: 1}}>
+
+```java
+abstract class BaseMob {
+  void takeDamage() {
+    // shared implementation
+  }
+  void move() {
+    // shared implementation
+  }
+  abstract void makeSound();
+}
+
+class Cow extends BaseMob {
+  void makeSound() {
+    System.out.println("Moo!");
+  }
+}
+
+class Skeleton extends BaseMob {
+  void makeSound() {
+    System.out.println("Rattle!");
+  }
+}
+```
+
+</div>
+
+</div>
+
+<div className="fragment" style={{marginTop: '1em', fontSize: '0.8em'}}>
+
+We can't put code in an interface. Instead, we use an _abstract class_:
+a class that can contain both concrete methods and abstract methods.
+
+Subclasses _inherit_ the code from their superclasses.
+
+</div>
+
 </Slide>
 
 <Slide>
@@ -240,14 +544,20 @@ On the right ('Meaningful Data'), the same auditor question gets answered immedi
 classDiagram
     class IoTDevice {
         <<interface>>
-        +identify()
-        +isAvailable()
+        +identify()*
+        +isAvailable()*
     }
+
+    style IoTDevice fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
 ```
 
 <ul style={{marginTop: '0.5em', fontSize: '0.85em'}}>
   <li><code>identify()</code> — help a human find the device (e.g., flash a light, wiggle a shade or fan)</li>
   <li><code>isAvailable()</code> — check if the device is reachable</li>
+  </ul>
+<ul style={{marginTop: '0.5em', fontSize: '0.85em'}}>
+  <li><code>+</code> — indicates that a method is public</li>
+  <li>_italics_  — indicates a method is _abstract_ (not implemented)</li>
 </ul>
 
 <aside class="notes">
@@ -275,14 +585,13 @@ classDiagram
 classDiagram
     class IoTDevice {
         <<interface>>
-        +identify()
-        +isAvailable()
+        +identify()*
+        +isAvailable()*
     }
     class BaseIoTDevice {
         <<abstract>>
-        #deviceId: String
+        deviceId: String
         +isAvailable()
-        +identify()*
     }
     class Light {
         <<abstract>>
@@ -296,6 +605,7 @@ classDiagram
     IoTDevice <|.. BaseIoTDevice
     BaseIoTDevice <|-- Light
     BaseIoTDevice <|-- Fan
+    style IoTDevice fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
 ```
 
 <aside class="notes">
@@ -359,6 +669,11 @@ classDiagram
 
 ```mermaid
 classDiagram
+    class IoTDevice {
+        <<interface>>
+        +identify()*
+        +isAvailable()*
+    }
     class Light {
         <<abstract>>
         +turnOn()
@@ -381,6 +696,8 @@ classDiagram
     Light <|-- SwitchedLight
     Light <|-- DimmableLight
     DimmableLight <|-- TunableWhiteLight
+    IoTDevice <|.. Light
+    style IoTDevice fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
 ```
 
 <aside class="notes">
@@ -406,14 +723,13 @@ classDiagram
 classDiagram
     class IoTDevice {
         <<interface>>
-        +identify()
-        +isAvailable()
+        +identify()*
+        +isAvailable()*
     }
     class BaseIoTDevice {
         <<abstract>>
         #deviceId: String
         +isAvailable()
-        +identify()*
     }
     class Light {
         <<abstract>>
@@ -443,6 +759,7 @@ classDiagram
     Light <|-- SwitchedLight
     Light <|-- DimmableLight
     DimmableLight <|-- TunableWhiteLight
+    style IoTDevice fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
 ```
 
 <aside class="notes">
@@ -520,6 +837,75 @@ classDiagram
 
 <Slide>
 
+## Test Your Understanding: Animal
+
+<p style={{fontSize: '0.95em'}}>
+  Where should `getSpecies()` be _implemented_ (not abstract)?
+</p>
+
+```mermaid
+classDiagram
+    class Animal {
+        <<abstract>>
+        +getSpecies() String*
+    }
+    class Cat {
+        +getSpecies() String
+    }
+    class Dog {
+        +getSpecies() String
+    }
+    Animal <|-- Cat
+    Animal <|-- Dog
+```
+<p style={{marginTop: '0.75em', fontSize: '0.5em'}}>
+<code>
+Cat cat = new Cat();<br/>
+System.out.println(cat.getSpecies()); // Felis catus<br/>
+Dog dog = new Dog();<br/>
+System.out.println(dog.getSpecies()); // Canis familiaris<br/>
+</code>
+</p>
+</Slide>
+
+{/*
+<Slide>
+## Animal code
+
+```java
+abstract class Animal {
+  public abstract String getSpecies();
+}
+
+class Cat extends Animal {
+  @Override
+  public String getSpecies() {
+    return "Felis catus";
+  }
+}
+
+class Dog extends Animal {
+  @Override
+  public String getSpecies() {
+    return "Canis familiaris";
+  }
+}
+```
+</Slide>
+*/}
+
+<Slide>
+## Animal Class Diagram and Code 1
+
+<ImageSlide imageSrc="/img/lectures/ellen/l2-animal-uml-code1.png"
+imageAlt="UML and code for Animal class" />
+
+</Slide>
+
+
+
+<Slide>
+
 ## Your Code Should Tell a Story About the Domain
 
 <ul style={{fontSize: '0.95em'}}>
@@ -544,12 +930,70 @@ classDiagram
 
 </Slide>
 
+{/*
+<Slide>
+## Animal code 2
+
+```java
+public abstract class Animal {
+  public abstract String getSpecies();
+  public void shed() {
+    ...;
+  }
+}
+
+class Cat extends Animal {
+  @Override
+  public String getSpecies() {
+    return "Felis catus";
+  }
+}
+
+class Dog extends Animal {
+  @Override
+  public String getSpecies() {
+    return "Canis familiaris";
+  }
+}
+```
+</Slide>
+
+<Slide>
+## Animal Diagram 2
+
+```mermaid
+classDiagram
+    class Animal {
+        <<abstract>>
+        +getSpecies() String*
+        +shed()
+    }
+    class Cat {
+        +getSpecies() String
+    }
+    class Dog {
+        +getSpecies() String
+    }
+    Animal <|-- Cat
+    Animal <|-- Dog
+```
+</Slide>
+*/}
+
+<Slide>
+
+## Animal Class Diagram and Code 2
+
+<ImageSlide imageSrc="/img/lectures/ellen/l2-animal-uml-code2.png"
+imageAlt="UML and code for Animal class" />
+</Slide>
+
 <Slide>
 
 ## Sketch Your Types Before You Code
 
-  <Img 
-    src="/img/lectures/web/l2-types.webp" 
+  <Img
+    src="/img/lectures/web/l2-types.webp"
     alt="Concept: 'The Substitution Test' (Universal Adapter Station)
 A stylized electrical/plumbing testing station rendered in clean, technical blueprint style with a hint of mid-century industrial design. The scene shows a universal testing rig where objects must prove they can substitute for their claimed supertypes. On the left, a Light interface is represented as a standardized socket/port with labeled pins: turnOn(), turnOff(), isOn(). In the center, various subtype objects queue up for testing: a DimmableLight (glowing softly), a TunableWhiteLight (with color temperature dial), and a suspicious BrokenLight (cracked and sparking). The DimmableLight plugs in perfectly—all pins connect, a green checkmark appears, and it successfully lights up when turnOn() is called. The TunableWhiteLight also passes (with extra pins for its additional methods safely tucked away). But the BrokenLight fails: its turnOn() pin connects but produces smoke instead of light, triggering a red alarm. A portrait of Barbara Liskov watches approvingly from the wall, captioned with her principle.
 This visualization makes LSP concrete and memorable: substitutability means 'fits the socket AND does what the socket promises.' The testing station metaphor emphasizes that this isn't just about method signatures (the pins fitting) but about behavior (actually lighting up). The BrokenLight example illustrates the subtle violation: it might have all the right methods but produces wrong behavior—the deepest LSP danger. Technical details add depth: tolerance specifications on the socket, a 'Behavioral Contract' document hanging on the wall, and test results showing 'Signature: ✓ | Behavior: ?' for the suspicious cases. The mid-century industrial aesthetic suggests standardization and interchangeability—exactly what LSP enables. A sign reads 'Any subtype must be usable wherever its supertype is expected—without surprises.' This builds intuition for why inheritance is a contract, not just code reuse. Tagline: 'If it fits the socket, it must work like the original' or 'Contracts aren't just signatures—they're promises.'"
@@ -642,18 +1086,18 @@ This visualization makes LSP concrete and memorable: substitutability means 'fit
 ```java
 public class TunableWhiteLight extends DimmableLight {
     private int startupColorTemperature;
-    
+
     public TunableWhiteLight(String deviceId, int colorTemp, int brightness) {
         super(deviceId, brightness);  // Call parent constructor
         this.startupColorTemperature = colorTemp;
     }
-    
+
     @Override
     public void turnOn() {
         setColorTemperature(startupColorTemperature);
         super.turnOn();  // Call parent's turnOn
     }
-    
+
     public void setColorTemperature(int colorTemperature) { /* ... */ }
     public int getColorTemperature() { /* ... */ }
 }
@@ -765,38 +1209,12 @@ public class TunableWhiteLight extends DimmableLight {
 
 </Slide>
 
-{/* ============================================ */}
-{/* LISKOV SUBSTITUTION PRINCIPLE */}
-{/* ============================================ */}
 
-<Slide>
-
-## The Liskov Substitution Principle
-
-<blockquote style={{fontSize: '0.9em', fontStyle: 'italic', borderLeft: '4px solid #9370DB', paddingLeft: '1em', textAlign: 'left'}}>
-  "If S is a subtype of T, then objects of type T may be replaced with objects of type S without altering the correctness of the program."
-</blockquote>
-
-<p style={{marginTop: '1em', fontSize: '0.85em', color: '#666'}}>
-  — Barbara Liskov, 1987
-</p>
-
-<aside class="notes">
-**In plain terms:** If your code works with a Light, it must work with ANY Light subtype—DimmableLight, TunableWhiteLight, future types you haven't written yet.
-
-**Classic violation:** Square extends Rectangle. If setWidth() on Rectangle doesn't affect height, but on Square it must change height to match... that breaks code expecting Rectangle behavior.
-
-**Key insight:** Inheritance is a CONTRACT. Subtypes must honor the supertype's behavioral promises.
-
-→ **Transition:** Let's visualize what this means...
-</aside>
-
-</Slide>
 
 <Slide>
 ## Subtypes Must Behave Like Their Supertypes
-  <Img 
-    src="/img/lectures/web/l2-lsp.webp" 
+  <Img
+    src="/img/lectures/web/l2-lsp.webp"
     alt="Concept: 'The Substitution Test' (Universal Adapter Station)
 A stylized electrical/plumbing testing station rendered in clean, technical blueprint style with a hint of mid-century industrial design. The scene shows a universal testing rig where objects must prove they can substitute for their claimed supertypes. On the left, a Light interface is represented as a standardized socket/port with labeled pins: turnOn(), turnOff(), isOn(). In the center, various subtype objects queue up for testing: a DimmableLight (glowing softly), a TunableWhiteLight (with color temperature dial), and a suspicious BrokenLight (cracked and sparking). The DimmableLight plugs in perfectly—all pins connect, a green checkmark appears, and it successfully lights up when turnOn() is called. The TunableWhiteLight also passes (with extra pins for its additional methods safely tucked away). But the BrokenLight fails: its turnOn() pin connects but produces smoke instead of light, triggering a red alarm. A portrait of Barbara Liskov watches approvingly from the wall, captioned with her principle.
 This visualization makes LSP concrete and memorable: substitutability means 'fits the socket AND does what the socket promises.' The testing station metaphor emphasizes that this isn't just about method signatures (the pins fitting) but about behavior (actually lighting up). The BrokenLight example illustrates the subtle violation: it might have all the right methods but produces wrong behavior—the deepest LSP danger. Technical details add depth: tolerance specifications on the socket, a 'Behavioral Contract' document hanging on the wall, and test results showing 'Signature: ✓ | Behavior: ?' for the suspicious cases. The mid-century industrial aesthetic suggests standardization and interchangeability—exactly what LSP enables. A sign reads 'Any subtype must be usable wherever its supertype is expected—without surprises.' This builds intuition for why inheritance is a contract, not just code reuse. Tagline: 'If it fits the socket, it must work like the original' or 'Contracts aren't just signatures—they're promises.'"
@@ -827,8 +1245,8 @@ lights[0] = light1;  // ✓ TunableWhiteLight IS-A Light
 DimmableLight light2 = new DimmableLight("light-2", 100);
 lights[1] = light2;  // ✓ DimmableLight IS-A Light
 
-for (Light l : lights) {
-    l.turnOn();  // Works for any Light!
+for (Light light : lights) {
+    light.turnOn();  // Works for any Light!
 }
 ```
 
@@ -858,6 +1276,10 @@ for (Light l : lights) {
   To access subclass-specific methods, <strong>cast</strong> the reference:
 </p>
 
+<div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '2em'}}>
+
+<div style={{flex: 1}}>
+
 ```java
 // Explicit cast to access subclass method
 TunableWhiteLight twl = (TunableWhiteLight) lights[0];
@@ -870,6 +1292,29 @@ twl.setColorTemperature(2200);
 <p style={{marginTop: '0.75em', fontSize: '0.85em', color: '#c00'}}>
   ⚠️ Throws <code>ClassCastException</code> if the cast is invalid!
 </p>
+
+</div>
+
+<div style={{transform: 'scale(1.2)', transformOrigin: 'top right'}}>
+
+```mermaid
+classDiagram
+    class Light {
+        <<interface>>
+    }
+    class DimmableLight {
+    }
+    class TunableWhiteLight {
+        +setColorTemperature()
+    }
+    Light <|.. DimmableLight
+    DimmableLight <|-- TunableWhiteLight
+    style Light fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+</div>
+
+</div>
 
 <aside class="notes">
 **When you need to downcast:**
@@ -923,7 +1368,7 @@ twl.setColorTemperature(2200);
 public interface IoTDevice {
     /** Identify the device to a human (flash, spin, beep). */
     void identify();
-    
+
     /** Check if the device is available. */
     boolean isAvailable();
 }
@@ -1055,8 +1500,8 @@ Light[] lights = new Light[] {
     new DimmableLight("light-2", 100)
 };
 
-for (Light l : lights) {
-    l.turnOn();  // Which turnOn() is called?
+for (Light light : lights) {
+    light.turnOn();  // Which turnOn() is called?
 }
 ```
 
@@ -1095,7 +1540,7 @@ for (Light l : lights) {
 classDiagram
     class Light {
         <<interface>>
-        +turnOn()
+        +turnOn()*
     }
     class DimmableLight {
         +turnOn()
@@ -1107,6 +1552,7 @@ classDiagram
     }
     Light <|.. DimmableLight
     DimmableLight <|-- TunableWhiteLight
+    style Light fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
 ```
 
   </div>
@@ -1136,7 +1582,7 @@ classDiagram
       <strong>Call:</strong> <code style={{backgroundColor: '#2d5a2d', padding: '0.2em 0.4em', borderRadius: '4px'}}>twl.turnOn()</code>
     </p>
 ```java
-TunableWhiteLight twl = 
+TunableWhiteLight twl =
     new TunableWhiteLight("living-room", 2700, 100);
 twl.turnOn();
 ```
@@ -1157,7 +1603,7 @@ twl.turnOn();
 classDiagram
     class Light {
         <<interface>>
-        +turnOn()
+        +turnOn()*
     }
     class DimmableLight {
         +turnOn()
@@ -1170,6 +1616,7 @@ classDiagram
     Light <|.. DimmableLight
     DimmableLight <|-- TunableWhiteLight
     style TunableWhiteLight fill:#2d5a2d,stroke:#4a4,stroke-width:3px
+    style Light fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
 ```
 
   </div>
@@ -1198,7 +1645,7 @@ classDiagram
       <strong>Call:</strong> <code style={{backgroundColor: '#5a3d2d', padding: '0.2em 0.4em', borderRadius: '4px'}}>twl.setBrightness(50)</code>
     </p>
 ```java
-TunableWhiteLight twl = 
+TunableWhiteLight twl =
     new TunableWhiteLight("living-room", 2700, 100);
 twl.setBrightness(50);
 ```
@@ -1222,7 +1669,7 @@ twl.setBrightness(50);
 classDiagram
     class Light {
         <<interface>>
-        +turnOn()
+        +turnOn()*
     }
     class DimmableLight {
         +turnOn()
@@ -1234,6 +1681,7 @@ classDiagram
     }
     Light <|.. DimmableLight
     DimmableLight <|-- TunableWhiteLight
+    style Light fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
     style TunableWhiteLight fill:#3a3a3a,stroke:#666,stroke-width:2px
     style DimmableLight fill:#5a3d2d,stroke:#c93,stroke-width:3px
 ```
@@ -1264,7 +1712,7 @@ classDiagram
       <strong>Call:</strong> <code style={{backgroundColor: '#2d4a5a', padding: '0.2em 0.4em', borderRadius: '4px'}}>light.turnOn()</code>
     </p>
 ```java
-Light light = 
+Light light =
     new TunableWhiteLight("living-room", 2700, 100);
 light.turnOn();
 ```
@@ -1288,7 +1736,7 @@ light.turnOn();
 classDiagram
     class Light {
         <<interface>>
-        +turnOn()
+        +turnOn()*
     }
     class DimmableLight {
         +turnOn()
@@ -1325,16 +1773,66 @@ classDiagram
 </Slide>
 
 <Slide>
+## Poll: What does this print? 1
+
+<PollSlide
+  code={`
+    abstract class Animal {
+      public abstract String getSpecies();
+    }
+
+    class Cat extends Animal {
+      @Override
+      public String getSpecies() {
+        return "Felis catus";
+      }
+
+      public static void main(String[] args) {
+        Animal animal = new Cat();
+        System.out.println(animal.getSpecies());
+      }
+    }
+  `}
+  choices={['nothing', 'Felis catus', 'error']}
+  username="espertus"/>
+</Slide>
+
+<Slide>
+## Poll: What does this print? 2
+
+<PollSlide
+  code={`
+    abstract class Animal {
+      public abstract String getSpecies();
+    }
+
+    class Cat extends Animal {
+      @Override
+      public String getSpecies() {
+        return "Felis catus";
+      }
+
+      public static void main(String[] args) {
+        Animal animal = new Animal();
+        System.out.println(animal.getSpecies());
+      }
+    }
+  `}
+  choices={['nothing', 'Felis catus', 'error']}
+  username="espertus"/>
+</Slide>
+
+<Slide>
 
 ## Casting Doesn't Change Which Method Runs
 
 ```java
-Light l = new TunableWhiteLight("living-room", 2700, 100);
+Light light = new TunableWhiteLight("living-room", 2700, 100);
 
-l.turnOn();  
+light.turnOn();
 // Calls TunableWhiteLight.turnOn()
 
-((DimmableLight) l).turnOn();  
+((DimmableLight) light).turnOn();
 // STILL calls TunableWhiteLight.turnOn()!
 ```
 
@@ -1405,7 +1903,7 @@ l.turnOn();
 ```java
 public class TunableWhiteLight extends DimmableLight {
     // ...
-    
+
     /**
      * Convert color temperature from Kelvin to mireds.
      */
@@ -1443,30 +1941,129 @@ int mireds = TunableWhiteLight.degreesKelvinToMired(2700);
 
 ## Some Objects Belong to Multiple Categories
 
-<p style={{fontSize: '1.1em'}}>
-  When a class inherits from <strong>more than one</strong> parent type
-</p>
+What if a class has more than one supertype? For example,
+a Cat is both an Animal and a FuzzyThing.
 
-<p style={{marginTop: '1em', fontSize: '0.95em'}}>
-  Some languages (C++, Python) support this directly for classes
-</p>
+<div className="fragment" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '2em', minHeight: '40vh'}}>
 
-<p style={{marginTop: '1em', fontSize: '0.95em', color: '#666'}}>
-  Java allows multiple inheritance only through <strong>interfaces</strong>
-</p>
+<div style={{transform: 'scale(1.2)', transformOrigin: 'top left'}}>
 
-<aside class="notes">
-**The desire:** Real-world objects often belong to multiple categories simultaneously.
+```mermaid
+classDiagram
+    class Animal {
+        <<interface>>
+        +feed()*
+    }
+    class FuzzyThing {
+        <<interface>>
+        +shed()*
+    }
+    class Cat {
+        +feed()
+        +shed()
+    }
+    Animal <|.. Cat
+    FuzzyThing <|.. Cat
+    style Animal fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style FuzzyThing fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+```
 
-**Language approaches:**
-- C++: Full multiple class inheritance (complex rules)
-- Python: Multiple inheritance with MRO (method resolution order)
-- Java: Single class inheritance, multiple interfaces
+</div>
 
-**Why Java's restriction?** Avoids the "diamond problem"—coming up.
+<div style={{flex: 1}}>
 
-→ **Transition:** Let's see why multiple inheritance is desirable...
-</aside>
+```java
+interface Animal {
+  void feed();
+}
+
+interface FuzzyThing {
+  void shed();
+}
+
+class Cat implements Animal, FuzzyThing {
+  public void feed() {
+    System.out.println("Nom nom nom");
+  }
+  public void shed() {
+    System.out.println("Hair everywhere!");
+  }
+}
+```
+
+</div>
+
+</div>
+
+<div className="fragment" style={{marginTop: '1em', fontSize: '0.85em'}}>
+
+Can Cat be a subtype of both? **Yes!** A class can implement multiple interfaces.
+
+</div>
+
+</Slide>
+
+<Slide>
+
+## Multiple Inheritance
+
+Can a class be a subtype of two classes?
+
+<div className="fragment" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '2em', minHeight: '40vh'}}>
+
+<div style={{transform: 'scale(1.2)', transformOrigin: 'top left'}}>
+
+```mermaid
+classDiagram
+    class Animal {
+        <<abstract>>
+        +causesAllergies() boolean
+    }
+    class FuzzyThing {
+        <<abstract>>
+        +causesAllergies() boolean
+    }
+    class Cat {
+        +causesAllergies() ???
+    }
+    Animal <|-- Cat
+    FuzzyThing <|-- Cat
+```
+
+</div>
+
+<div style={{flex: 1}}>
+
+```java
+abstract class Animal {
+  boolean causesAllergies() {
+    return false;  // most animals don't
+  }
+}
+
+abstract class FuzzyThing {
+  boolean causesAllergies() {
+    return true;  // fuzzy things do
+  }
+}
+
+// NOT ALLOWED IN JAVA!
+class Cat extends Animal, FuzzyThing {
+  // Which causesAllergies() do we inherit?
+}
+```
+
+</div>
+
+</div>
+
+<div className="fragment" style={{marginTop: '1em', fontSize: '0.85em'}}>
+
+Which implementation would Cat use?
+
+To avoid this problem, Java disallows multiple inheritance. (C++ and Python permit it.)
+
+</div>
 
 </Slide>
 
@@ -1482,19 +2079,19 @@ int mireds = TunableWhiteLight.degreesKelvinToMired(2700);
 classDiagram
     class IoTDevice {
         <<interface>>
-        +identify()
-        +isAvailable()
+        +identify()*
+        +isAvailable()*
     }
     class Light {
         <<interface>>
-        +turnOn()
-        +turnOff()
-        +isOn()
+        +turnOn()*
+        +turnOff()*
+        +isOn()*
     }
     class Fan {
         <<interface>>
-        +setSpeed(speed)
-        +getSpeed()
+        +setSpeed(speed)*
+        +getSpeed()*
     }
     class CeilingFanWithLight {
         ???
@@ -1503,6 +2100,9 @@ classDiagram
     IoTDevice <|-- Fan
     Light <|.. CeilingFanWithLight
     Fan <|.. CeilingFanWithLight
+    style Light fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style IoTDevice fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style Fan fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
 ```
 
 <p style={{marginTop: '0.5em', fontSize: '0.85em', color: '#9370DB'}}>
@@ -1603,8 +2203,8 @@ classDiagram
 
 <Slide>
 ## The Compiler Can't Choose Between Conflicting Implementations
-  <Img 
-    src="/img/lectures/web/l2-fan-conflicting.webp" 
+  <Img
+    src="/img/lectures/web/l2-fan-conflicting.webp"
     alt="Conflicting implementations visualization"
   />
 <aside class="notes">
@@ -1710,14 +2310,14 @@ classDiagram
 public class CeilingFanWithLight implements IoTDevice {
     private Light light;  // has-a light
     private Fan fan;      // has-a fan
-    
+
     @Override
     public void identify() {
         // No ambiguity — we explicitly delegate to both!
         light.identify();  // flashes the light
         fan.identify();    // wiggles the blades forward/backward
     }
-    
+
     public void turnOnLight() { light.turnOn(); }
     public void setFanSpeed(int speed) { fan.setSpeed(speed); }
 }
@@ -1798,17 +2398,17 @@ public class CeilingFanWithLight implements IoTDevice {
 public class CeilingFanWithLight implements Light, Fan, IoTDevice {
     private Light lightComponent;  // Delegate to this
     private Fan fanComponent;      // Delegate to this
-    
+
     @Override
     public void identify() {
         lightComponent.identify();
         fanComponent.identify();
     }
-    
+
     @Override
     public void turnOn() { lightComponent.turnOn(); }
-    
-    @Override  
+
+    @Override
     public void setSpeed(int speed) { fanComponent.setSpeed(speed); }
     // ... other delegated methods
 }
@@ -1880,8 +2480,8 @@ classDiagram
 <Slide>
 ## Checked Exceptions Must be Declared
 
-  <Img 
-    src="/img/lectures/web/l2-exceptions.webp" 
+  <Img
+    src="/img/lectures/web/l2-exceptions.webp"
     alt="Revised: 'The Arrivals Hall' (Airport Declaration Channels)
 A cheerful airport arrivals hall rendered in the style of a friendly airport signage system—think IKEA-meets-international-terminal wayfinding design. The scene shows the familiar customs area after landing, with two clearly marked channels. The green channel ('Nothing to Declare' / Unchecked Exceptions) shows travelers like NullPointerException and IllegalArgumentException walking straight through without stopping—no paperwork, no inspection, just a quick passage into the main terminal. A small sign notes: 'Travelers choosing this channel accept responsibility for any undeclared items.' The red channel ('Goods to Declare' / Checked Exceptions) shows travelers like IOException and SQLException stopping at a customs desk, filling out declaration forms (the throws clause), having their bags inspected (the try-catch block), and getting their forms stamped before proceeding. The process is slower but orderly. Friendly customs officers (the compiler) check that all declarations match what's actually being carried.
 This visualization keeps the 'two paths with different requirements' structure while using a universally relatable, low-stakes scenario that most travelers have experienced. The green/red channel system is internationally recognized and immediately intuitive: some things require declaration, others don't. The metaphor maps cleanly: checked exceptions are like goods that must be declared—you can't just walk through pretending you don't have them. Unchecked exceptions are like personal items—no declaration required, but if something goes wrong (you actually did have something to declare), that's on you. Details include: declaration forms with fields for 'Exception Type' and 'Handling Strategy,' a duty-free shop in the background labeled 'Standard Exceptions' (the ones you don't need to create yourself), and arrival screens showing 'Flight from MethodCall' and 'Destination: CallerLand.' A small Error like OutOfMemoryError appears as an emergency exit—bypassing customs entirely because the whole terminal is being evacuated. The friendly airport aesthetic makes exception handling feel routine rather than adversarial. Tagline: 'Some exceptions require declaration. Know which channel you're in.'"
