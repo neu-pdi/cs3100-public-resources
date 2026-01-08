@@ -108,10 +108,11 @@ export const staffMembers: StaffMember[] = [
   },
   {
     name: "Edward Chan",
+    pronouns: "he/him",
     role: "ta",
     campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg"
+    bio: "PlusOne Master's student in CS and a 10th-semester TA supporting students across Khoury's core programming courses.",
+    headshot: "echan.jpg"
   },
   {
     name: "Rohan Kumar Chitra",
