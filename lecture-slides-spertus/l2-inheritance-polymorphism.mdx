@@ -96,6 +96,33 @@ After this lecture, you will be able to:
 
 </Slide>
 
+<Slide>
+
+## Can students complete polls when outside of the classroom?
+
+<PollSlide
+  choices={["No, it's physically impossible.", "Yes, and you should complete polls whether or not you're physically present.", "Yes, but it's an academic integrity violation."]}
+  username="espertus"/>
+
+</Slide>
+
+<Slide>
+## Ellen's Office Hours
+
+* Mondays and Thursdays, 3-4 PM, online and in CPM 201
+* Other days [by appointment](https://calendly.com/espertusnu)
+
+</Slide>
+
+<Slide>
+
+## Would you attend in-person office hours?
+<PollSlide
+  choices={['Yes, often', 'Occasionally', 'Rarely, if ever']}
+  username="espertus"/>
+
+</Slide>
+
 {/* ============================================ */}
 {/* DOMAIN MODELING & WHY INHERITANCE */}
 {/* ============================================ */}
@@ -427,6 +454,23 @@ a class that can contain both concrete methods and abstract methods.
 Subclasses _inherit_ the code from their superclasses.
 
 </div>
+
+</Slide>
+
+<Slide>
+## Not How Inheritance Is Supposed To Work
+
+<ImageSlide imageSrc="/img/lectures/ellen/l2-inheritance-meme.webp"
+imageHeight="70vh"
+imageAlt="Meme about someone inheriting their mother's code." />
+
+</Slide>
+
+<Slide>
+## Y2K Bug
+
+<ImageSlide imageSrc="/img/lectures/ellen/l2-y2k-cartoon.gif"
+imageAlt="Dilbert cartoon" />
 
 </Slide>
 
@@ -1076,6 +1120,15 @@ This visualization makes LSP concrete and memorable: substitutability means 'fit
 
 → **Transition:** Let's see the syntax for defining a class...
 </aside>
+
+</Slide>
+
+<Slide>
+## No Multiple Inheritance
+
+<ImageSlide imageSrc="/img/lectures/ellen/l2-multiple-inheritance.png"
+imageHeight="70vh"
+imageAlt="Meme about multiple inheritance: And when everyone's Super...No one will be." />
 
 </Slide>
 
@@ -1773,7 +1826,7 @@ classDiagram
 </Slide>
 
 <Slide>
-## Poll: What does this print? 1
+## Poll: What does this do? 1
 
 <PollSlide
   code={`
@@ -1793,12 +1846,12 @@ classDiagram
       }
     }
   `}
-  choices={['nothing', 'Felis catus', 'error']}
+  choices={['nothing', 'prints "Felis catus"', 'does not compile', 'has runtime error']}
   username="espertus"/>
 </Slide>
 
 <Slide>
-## Poll: What does this print? 2
+## Poll: What does this do? 2
 
 <PollSlide
   code={`
@@ -1818,7 +1871,7 @@ classDiagram
       }
     }
   `}
-  choices={['nothing', 'Felis catus', 'error']}
+  choices={['nothing', 'prints "Felis catus"', 'does not compile', 'has runtime error']}
   username="espertus"/>
 </Slide>
 
