@@ -7,28 +7,58 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 interface PollSlideProps {
   choices?: string[];
   image?: string;
+  code?: string;
+  language?: string;
   username: string;
   codeFormat?: boolean;
 }
 
 /**
  * Poll slide component for Poll Everywhere integration.
- * Displays optional image, optional choices, and QR code for voting.
+ * Displays optional image, optional code block, optional choices, and QR code for voting.
  *
  * @param choices - Array of answer choices (auto-labeled A, B, C, etc.)
  * @param image - Optional image path (relative to static folder)
+ * @param code - Optional code snippet to display
+ * @param language - Language for code syntax highlighting (default: "java")
  * @param username - Poll Everywhere username (e.g., "espertus")
  * @param codeFormat - Whether to format choices as code (default: false)
  */
 export default function PollSlide({
   choices,
   image,
+  code,
+  language = 'java',
   username,
   codeFormat = false
 }: PollSlideProps) {
   const qrSrc = useBaseUrl(`/img/lectures/pollev-qr-codes/qr-pollev-${username}.png`);
   const imageSrc = useBaseUrl(image ?? '');
   const pollUrl = `https://pollev.com/${username}`;
+
+  // Dedent code by removing common leading whitespace
+  const dedent = (str: string): string => {
+    const lines = str.split('\n');
+    // Remove empty first/last lines from template literal formatting
+    if (lines[0]?.trim() === '') lines.shift();
+    if (lines[lines.length - 1]?.trim() === '') lines.pop();
+
+    // Find minimum indentation (ignoring empty lines)
+    const minIndent = lines
+      .filter(line => line.trim().length > 0)
+      .reduce((min, line) => {
+        const match = line.match(/^(\s*)/);
+        const indent = match ? match[1].length : 0;
+        return Math.min(min, indent);
+      }, Infinity);
+
+    // Remove that indentation from all lines
+    return lines
+      .map(line => line.slice(minIndent === Infinity ? 0 : minIndent))
+      .join('\n');
+  };
+
+  const formattedCode = code ? dedent(code) : '';
 
   const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
@@ -38,7 +68,8 @@ export default function PollSlide({
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
-        marginTop: '1em'
+        marginTop: '1em',
+        gap: '2em'
       }}>
 
         <div style={{ flex: 1 }}>
@@ -48,6 +79,17 @@ export default function PollSlide({
               alt="Poll image"
               style={{ maxHeight: '40vh', maxWidth: '100%', marginBottom: '1em' }}
             />
+          )}
+
+          {code && (
+            <pre style={{
+              fontSize: '0.7em',
+              textAlign: 'left',
+              margin: 0,
+              marginBottom: choices ? '1em' : 0
+            }}>
+              <code className={`language-${language}`}>{formattedCode}</code>
+            </pre>
           )}
 
           {choices && choices.length > 0 && (
@@ -62,7 +104,7 @@ export default function PollSlide({
           )}
         </div>
 
-        <div style={{ textAlign: 'center', marginLeft: '2em' }}>
+        <div style={{ textAlign: 'center', flexShrink: 0 }}>
           <img
             src={qrSrc}
             alt="Poll Everywhere QR Code"
