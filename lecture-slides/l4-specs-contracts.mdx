@@ -121,6 +121,8 @@ After this lecture, you will be able to:
 
 **Why this matters:** Students will write Javadoc for A1 methods. They need to understand what makes a spec good vs. merely present. They'll also override equals/hashCode for domain classes.
 
+**AI foreshadowing:** Later in the course, students will use AI assistants. The spec skills they learn today directly apply—ambiguous prompts yield unpredictable results.
+
 → **Transition:** Let's start with a surprising fact about human memory...
 </aside>
 
@@ -956,6 +958,144 @@ public float presentValue(float income, float interestRate, int years)
 - Define domain-specific terms
 - Don't define common programming terms
 - When in doubt, err toward clarity
+
+→ **Transition:** Now think about WHO is reading your spec. Have you ever written down a recipe?
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* BRIDGE: SPECS SCALE FROM METHODS TO AI */}
+{/* ============================================ */}
+
+<Slide>
+
+## The Same Spec Principles Apply at Every Scale
+
+<Img 
+    src="/img/lectures/web/l4-spec-scales.webp" 
+    alt="Concept: 'The Recipe Card at Different Scales' (Same Principles, Different Kitchens)
+
+A warm, inviting three-panel illustration showing that recipe-writing principles remain constant whether you're cooking for yourself, running a restaurant, or programming a robot baker. Rendered in a cozy culinary-meets-technical style with consistent visual language across all three scales.
+
+LEFT PANEL - 'HOME KITCHEN' (You as Implementer):
+A cozy home kitchen with a handwritten recipe card pinned to the fridge: 'Chocolate Chip Cookies - Mix ingredients, bake until golden.' A home cook (you) stands at the counter, confidently filling in the gaps: thought bubbles show 'I like them crispy,' 'Mom's recipe uses butter not margarine,' 'Golden means 12 minutes in MY oven.' The cookies come out perfect because YOUR context matches YOUR intent. A small note: 'Spec works because you share context with yourself.' Warm, golden lighting. Caption: 'Vague specs work when you implement them yourself.'
+
+CENTER PANEL - 'RESTAURANT KITCHEN' (Team of Humans):
+A bustling professional kitchen with multiple cooks at different stations, all reading the SAME recipe card—but now it's more detailed: '225g butter (unsalted), 2.5g salt per 100g flour, bake at 177°C for 11 minutes.' Different cooks have different thought bubbles showing their interpretations: Cook A thinks 'golden brown = deep amber,' Cook B thinks 'golden brown = light tan,' Cook C (new hire) thinks 'wait, what's golden brown?' Some cookies come out perfect, some burnt, some underdone. A quality control inspector looks frustrated. Note: 'Same spec, different contexts, different results.' Caption: 'More implementers = more interpretations.'
+
+RIGHT PANEL - 'ROBOT BAKER' (AI/Automated System):
+A gleaming automated bakery line with a robot arm and conveyor belt. The recipe is now a detailed specification document: 'Bake until internal temp reaches 93°C AND surface reflectance measures 0.35 on colorimeter AND elapsed time ≥ 10 min. If flour hopper < 500g, HALT and alert. If oven temp deviates > 2°C, compensate by...' The robot executes EXACTLY what's specified—no more, no less. One batch shows perfect cookies. Another batch shows the robot has stopped mid-production because the spec said 'halt' but didn't say what to do after refilling flour. An engineer scratches their head: 'It did exactly what we said...' Caption: 'AI/automation executes literally. Every gap becomes a decision point.'
+
+BOTTOM UNIFYING ELEMENT:
+A horizontal strip showing the same three principles (Restrictive, General, Clear) as measuring cups that appear in all three kitchens—same tools, different scales. Central message: 'The recipe-writing principles don't change. The consequences of ambiguity do. A vague instruction like 'bake until done' works when YOU'RE baking—but fails at scale.'
+
+THE TWIST (Important callout box):
+Shows the home cook returning to their kitchen 6 months later, following their own vague recipe... and the cookies come out wrong. Thought bubble: 'Wait, did I used to bake these at 350 or 375? What did I mean by golden?' Caption: 'Plot twist: Even YOUR context changes over time. Future-you is also a different implementer.'
+
+BOTTOM TAGLINE:
+'Every implementer—including yourself tomorrow—fills gaps with their own context. The question isn't WHO interprets your spec. It's whether your spec eliminated the wrong interpretations.'
+
+Style: Warm bakery aesthetic with rich browns, warm yellows, and cream colors. Each panel should feel progressively more industrial/technical while maintaining the cooking metaphor. The home kitchen is cozy and personal, the restaurant is professional but human, the robot bakery is precise and clinical. Should feel like a relatable story that makes students think: 'Oh, I've been that home cook who couldn't follow my own recipe later!'"
+  />
+
+<aside class="notes">
+**The recipe metaphor:**
+- Everyone's written a vague recipe that worked... for them, that day
+- But try handing that recipe to someone else, or following it 6 months later
+- Same problem with code specs!
+
+**Home kitchen (you as implementer):**
+- "Bake until golden" works because YOU know what golden means to YOU
+- Your context matches your intent perfectly
+- This is why quick personal scripts don't need elaborate docs
+
+**Restaurant kitchen (team of humans):**
+- Same recipe, 5 cooks, 5 interpretations of "golden brown"
+- One cook's "golden" is another's "burnt"
+- The new hire has NO context—what even IS golden brown?
+- This is enterprise software: same spec, different developers, different results
+
+**Robot baker (AI/automation):**
+- Must specify EVERYTHING: exact temperatures, sensor readings, error handling
+- Robot does EXACTLY what you say—no more, no less
+- "Halt if flour low" → robot halts... forever, because you didn't say what happens AFTER refilling
+- AI is the same: fills gaps with training data patterns, might be totally wrong for YOUR context
+
+**The twist (key insight!):**
+- Ask students: "Ever tried to follow your own recipe months later?"
+- YOUR context changes too! Future-you is also a different implementer
+- This is why we document code—even for ourselves
+
+**The real lesson:**
+- It's not "humans good, AI bad"
+- ALL implementers fill gaps with their own context
+- AI just makes this visible FASTER (and with more surprising context)
+- Good specs protect you from everyone—including yourself tomorrow
+
+**Connection to later course:**
+- Lecture 13: AI-Assisted Development
+- You'll write specs (prompts) for AI assistants
+- Same skills, faster feedback loop
+
+→ **Transition:** Let's see what happens when ambiguous specs compound over time...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## "Process" and "Handle" Are Not Specifications
+
+<p style={{fontSize: '0.9em'}}>
+  Consider this seemingly reasonable API:
+</p>
+
+```java
+/**
+ * Processes the given payment.
+ * @param payment the payment to process
+ * @throws PaymentException if the payment cannot be processed
+ */
+public void processPayment(Payment payment)
+```
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#e74c3c'}}>
+  What does "process" actually mean? Every implementer fills the gap differently.
+</p>
+
+<ul style={{fontSize: '0.75em', marginTop: '0.5em'}}>
+  <li>Validate the amount? Charge the card? Send confirmation email?</li>
+  <li>What if partially successful? Retry on failure?</li>
+  <li>Idempotent if called twice? Timeout behavior?</li>
+</ul>
+
+<aside class="notes">
+**The "process" trap:**
+- "Process" is a verb that sounds specific but isn't
+- Same problem with: handle, manage, deal with, take care of
+- These words delegate ALL decisions to the implementer
+
+**Both humans AND AI fill gaps with context:**
+- Human implementer: fills gaps with domain knowledge, past experience, assumptions about "reasonable" behavior
+- AI implementer: fills gaps with training data patterns, which might be from a completely different domain
+- BOTH might be wrong! The human's context might not match the spec writer's intent either
+
+**The key insight:**
+- It's not "humans right, AI wrong"
+- It's "ambiguous specs → unpredictable implementations"
+- AI just makes this visible FASTER and with DIFFERENT (often surprising) context
+- A human with wrong domain assumptions is just as dangerous—just slower
+
+**The fix preview:**
+- Define WHAT happens, not just that something happens
+- Every edge case needs explicit behavior
+- "Process" should become 5-10 specific requirements
+
+**Real examples (human AND AI):**
+- "Handle the error appropriately" → Junior dev logs and continues, senior dev halts (who's right?)
+- "Send the notification" → One team sends immediately, another batches (spec didn't say!)
+- AI just produces these mismatches in seconds instead of days
 
 → **Transition:** Unclear specs have long-term costs beyond immediate confusion...
 </aside>
@@ -1999,7 +2139,7 @@ public int compareTo(Student other) {
 
 ## Summary: Specifications as Contracts
 
-<ol style={{fontSize: '0.85em'}}>
+<ol style={{fontSize: '0.8em'}}>
   <li><strong>Specifications enable modularity</strong> — understand methods without reading implementations (Miller's Law, chunking)</li>
   <li><strong>Good specs balance three criteria:</strong></li>
     <ul>
@@ -2007,6 +2147,7 @@ public int compareTo(Student other) {
       <li>Generality — permit good implementations</li>
       <li>Clarity — easy to understand correctly</li>
     </ul>
+  <li><strong>Same principles scale</strong> — from <code>sum()</code> to enterprise APIs to AI prompts</li>
   <li><strong>Type annotations</strong> make specs machine-checkable (@NullMarked, @Nullable)</li>
   <li><strong>Java's standard contracts</strong> (toString, equals, hashCode, compareTo) must be implemented correctly</li>
 </ol>
@@ -2015,6 +2156,7 @@ public int compareTo(Student other) {
 **Key takeaways:**
 - Specs let us reason about large systems (Miller's Law, chunking)
 - Balance restrictiveness, generality, clarity
+- Same principles at every scale—method, API, AI prompt
 - Use type annotations when possible (compiler > comments)
 - Learn the Object method contracts by heart
 
@@ -2023,10 +2165,16 @@ public int compareTo(Student other) {
 - Use same fields in both
 - equals(null) returns false, compareTo(null) throws
 
+**The AI connection (preview):**
+- When you prompt an AI to implement something, you're writing a spec
+- Vague prompts → unpredictable implementations
+- The skills from today apply directly to AI-assisted development (Lecture 13)
+
 **Connections to upcoming work:**
 - A1: Write good Javadoc for your methods
 - A1: Override equals/hashCode for domain classes
 - Lab 3: Evaluate specification quality
+- Lecture 13: AI-assisted development (specs for AI)
 - Future lectures: Requirements gathering (where specs come from)
 
 → **Transition:** Let's look at next steps.
