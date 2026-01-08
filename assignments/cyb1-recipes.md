@@ -24,6 +24,8 @@ In this first assignment, you'll lay the foundation by implementing the core dom
 
 **Key constraints:** [No AI assistance](#3-ai-policy-for-this-assignment) for this assignment. Complete the [Reflection](#6-reflection) questions in `REFLECTION.md`.
 
+**Development strategy:** Work incrementally—implement and test one class at a time in order (units → quantities → ingredients). Submit early and often (max 5 submissions/day) to get feedback from the autograder as you progress.
+
 ## 2. Learning Outcomes
 By completing this assignment, you will demonstrate proficiency in the following skills:
 
@@ -58,6 +60,8 @@ You should carefully read the [Grading Rubric](#8-grading-rubric) section below 
 ## 5. Technical Specifications
 
 This section contains everything you need to implement the assignment. Start with [5.1 Domain Concepts](#51-domain-concepts) to understand what you're modeling. Review the [5.2 Class Design](#52-class-design) diagram to see how the pieces fit together. Then implement each class according to the contracts in [5.3 Invariants and Contracts](#53-invariants-and-contracts)—this is where you'll find constructor preconditions, method specifications, and `toString()` formatting rules. Follow the [5.4 Design Requirements](#54-design-requirements) for encapsulation and style. **For each class you implement, write its tests immediately** following the guidance in [5.5 Testing Overview](#55-testing-overview)—remember, you won't receive implementation points without effective tests.
+
+**Recommended workflow:** Work through the classes in order: (1) enums (units), (2) quantities, (3) ingredients. After implementing and testing each class (or small group of related classes), commit your work and submit to get autograder feedback. With a maximum of 5 submissions per day, this incremental approach helps you catch issues early and build confidence as you progress through the assignment.
 
 ### 5.1 Domain Concepts
 
@@ -213,7 +217,7 @@ classDiagram
 ### 5.3 Invariants and Contracts
 Utilize JSpecify's `@NonNull` annotations to express the non-nullness of parameters and return values.
 
-Java Enums are a special type of class that represents a fixed set of constants. They are declared using the `enum` keyword and are instantiated using the `new` keyword. To learn more about Enums, you should refer directly to [the Java documentation](https://docs.oracle.com/javase/tutorial/java/javaOO/enum.html).
+Java Enums are a special type of class that represents a fixed set of constants. They are declared using the `enum` keyword. To learn more about Enums, you should refer directly to [the Java documentation](https://docs.oracle.com/javase/tutorial/java/javaOO/enum.html).
 
 #### 5.3.1 `UnitSystem` (enum)
 
@@ -246,7 +250,7 @@ You should use your judgement to determine how to implement the enum, relying pr
 - Metric (volume): `MILLILITER` (METRIC, VOLUME, "ml", "ml"), `LITER` (METRIC, VOLUME, "L", "L")
 - Metric (weight): `GRAM` (METRIC, WEIGHT, "g", "g"), `KILOGRAM` (METRIC, WEIGHT, "kg", "kg")
 - House: `PINCH` (HOUSE, OTHER, "pinch", "pinches"), `DASH` (HOUSE, OTHER, "dash", "dashes"), `HANDFUL` (HOUSE, OTHER, "handful", "handfuls"), `TO_TASTE` (HOUSE, OTHER, "to taste", "to taste")
-- House (count): `WHOLE` (IMPERIAL, COUNT, "whole", "whole") - used for counting items like eggs
+- House (count): `WHOLE` (HOUSE, COUNT, "whole", "whole") - used for counting items like eggs
 
 **Methods:**
 - `public UnitSystem getSystem()` - Returns the unit system this unit belongs to
@@ -567,6 +571,8 @@ Final Score = Automated Score − Manual Deductions
 When you submit your assignment, the automated score will be shown. The manual deductions will only be applied after the assignment is graded by the staff.
 
 ## 9. Submission
+
+**Strategy:** You don't need to complete everything before your first submission! Work incrementally—implement and test units first, then quantities, then ingredients. Submit after each milestone to get feedback from the autograder. You have up to 5 submissions per 24-hour period, so use them strategically to catch issues early rather than saving all submissions for the end.
 
 1. **Clone the repository from Pawtograder:** Clone it to your local machine
 2. **Implement the enums:** Create the following files in `src/main/java/app/cookyourbooks/domain/`:
