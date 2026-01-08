@@ -74,7 +74,7 @@ export default function PollSlide({
         <div style={{ flex: 1 }}>
           {image && (
             <img
-+             src={useBaseUrl(image)}
+              src={useBaseUrl(image)}
               alt="Poll image"
               style={{ maxHeight: '40vh', maxWidth: '100%', marginBottom: '1em' }}
             />
