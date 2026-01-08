@@ -117,6 +117,8 @@ sudo apt install temurin-21-jdk
 
 Before you can clone repositories from our course organization, you need to connect VS Code to GitHub with proper authorization.
 
+> **Important step if you already have connected VS Code to GitHub for another course:** You will need to force a complete re-authorization of VSCode (and any git helpers, like Git Credential Manager) for the `neu-cs3100` organization. This is because the previous authorization may not have included the `neu-cs3100` organization. The easiest way that we know how to do this is to open your [GitHub Settings](https://github.com/settings/applications). Click on "Authorized OAuth Apps" and then click "Revoke all" (at a minimum, you will need to revoke VSCode, and potentially Git Credential Manager, and potentially "Microsoft Corporation" - if you are OK simply with "Revoke all", it is the most surefire way to do this). Then, follow the steps above to reconnect VS Code to GitHub for the `neu-cs3100` organization.
+
 1. Open VS Code
 2. Click the **Accounts** icon in the bottom-left corner of the sidebar (person icon)
 3. If you see a GitHub account already connected:
@@ -236,7 +238,7 @@ We recommend [setting the default](https://stackoverflow.com/a/45899693/631051) 
 ./gradlew compileJava
 ```
 
-On Windows PowerShell, use:
+**On Windows** PowerShell (the DEFAULT if you have not changed it to Git Bash), use:
 ```cmd
 .\gradlew.bat compileJava
 ```

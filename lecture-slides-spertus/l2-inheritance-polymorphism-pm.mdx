@@ -1,6 +1,6 @@
 ---
 sidebar_position: 2
-title: Inheritance and Polymorphism in Java
+title: Inheritance and Polymorphism in Java (PM)
 image: /img/lectures/web/l2.png
 ---
 
@@ -156,323 +156,8 @@ On the right ('Meaningful Data'), the same auditor question gets answered immedi
 </Slide>
 
 
-<Slide>
 
-## IS-A relationship
 
-<div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', minHeight: '50vh'}}>
-
-<div>
-
-Would you agree that:
-* A Cat is-a Animal
-* A Fish is-a Animal
-
-</div>
-
-<div className="fragment" style={{transform: 'scale(1.5)', transformOrigin: 'top right'}}>
-
-```mermaid
-classDiagram
-    class Animal {
-    }
-    class Cat {
-    }
-    class Fish {
-    }
-    Animal <|-- Cat
-    Animal <|-- Fish
-```
-
-</div>
-
-</div>
-
-<div className="fragment" style={{marginTop: '1em'}}>
-
-We say that Cat and Fish are **subtypes** of Animal.
-
-</div>
-
-</Slide>
-
-{/* ============================================ */}
-{/* LISKOV SUBSTITUTION PRINCIPLE */}
-{/* ============================================ */}
-
-<Slide>
-
-## The Liskov Substitution Principle
-
-<blockquote style={{fontSize: '0.9em', fontStyle: 'italic', borderLeft: '4px solid #9370DB', paddingLeft: '1em', textAlign: 'left'}}>
-  "If S is a subtype of T, then objects of type T may be replaced with objects of type S without altering the correctness of the program."
-</blockquote>
-
-<p style={{marginTop: '1em', fontSize: '0.85em', color: '#666'}}>
-  — Barbara Liskov, 1987
-</p>
-
-<aside class="notes">
-**In plain terms:** If your code works with a Light, it must work with ANY Light subtype—DimmableLight, TunableWhiteLight, future types you haven't written yet.
-
-**Classic violation:** Square extends Rectangle. If setWidth() on Rectangle doesn't affect height, but on Square it must change height to match... that breaks code expecting Rectangle behavior.
-
-**Key insight:** Inheritance is a CONTRACT. Subtypes must honor the supertype's behavioral promises.
-
-→ **Transition:** Let's visualize what this means...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Subtypes Can Be Substituted for Their Supertypes
-
-<div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', minHeight: '50vh'}}>
-
-<div>
-
-Given:
-* A Cat is-a Animal
-* A Fish is-a Animal
-* You can feed an Animal
-
-Would you agree that:
-
-* You can feed a Cat
-* You can feed a Fish
-
-</div>
-
-<div className="fragment" style={{transform: 'scale(1.5)', transformOrigin: 'top right'}}>
-
-```mermaid
-classDiagram
-    class Animal {
-      feed()
-    }
-    class Cat {
-      feed()
-    }
-    class Fish {
-      feed()
-    }
-    Animal <|-- Cat
-    Animal <|-- Fish
-```
-
-</div>
-
-</div>
-
-<div className="fragment" style={{marginTop: '1em'}}>
-
-Because Cat and Fish are subtypes of Animal, anything you can do to/with an Animal
-can be done to/with a Cat. <br/>
-
-In other words, you can substitute an instance of a subtype for an instance
-of the supertype.
-
-</div>
-
-</Slide>
-
-<Slide>
-
-## Abstract Methods
-
-<div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', minHeight: '50vh'}}>
-
-<div>
-
-Animals breathe, but they breathe in different ways.
-
-</div>
-
-<div className="fragment" style={{transform: 'scale(1.5)', transformOrigin: 'top right'}}>
-
-```mermaid
-classDiagram
-    class Animal {
-      breathe()*
-    }
-    class Cat {
-      breathe() lungs
-    }
-    class Fish {
-      breathe() gills
-    }
-    Animal <|-- Cat
-    Animal <|-- Fish
-```
-
-</div>
-
-</div>
-
-<div className="fragment" style={{marginTop: '1em', fontSize: '0.8em'}}>
-
-
-We say that `breathe()` is an `abstract` method in `Animal` because it is
-declared but not implemented.<br/>
-
-It is a `concrete` method in `Cat` and `Fish` because it is implemented.
-
-</div>
-
-</Slide>
-
-<Slide>
-
-## Java interfaces
-
-<div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '2em', minHeight: '50vh'}}>
-
-<div style={{transform: 'scale(1.2)', transformOrigin: 'top left'}}>
-
-```mermaid
-classDiagram
-    class Animal {
-      <<interface>>
-      breathe()*
-    }
-    class Cat {
-      breathe() lungs
-    }
-    class Fish {
-      breathe() gills
-    }
-    Animal <|-- Cat
-    Animal <|-- Fish
-
-    style Animal fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
-```
-
-</div>
-
-<div style={{flex: 1}}>
-
-```java
-interface Animal {
-  void breathe();
-}
-
-class Cat implements Animal {
-  void breathe() {
-    // use lungs
-  }
-}
-
-class Fish implements Animal {
-  void breathe() {
-    // use gills
-  }
-}
-```
-
-</div>
-
-</div>
-
-<div className="fragment" style={{marginTop: '1em', fontSize: '0.8em'}}>
-
-An interface _declares_ but does not _implement_ methods. It consists entirely
-of _abstract_ methods.<br/>
-
-Subtypes _implement_ the interface and provide _concrete_ implementations of the required methods.
-
-</div>
-
-</Slide>
-
-<Slide>
-
-## How Can We Share Code?
-
-Different types of mob move and take damage the same way, but they make different
-sounds. How can they share code?
-
-<div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '2em', minHeight: '45vh'}}>
-
-<div style={{transform: 'scale(1.2)', transformOrigin: 'top left'}}>
-
-```mermaid
-classDiagram
-    class BaseMob {
-      <<abstract>>
-      takeDamage()
-      move()
-      makeSound()*
-    }
-    class Cow {
-      makeSound()
-    }
-    class Skeleton {
-      makeSound()
-    }
-    BaseMob <|-- Cow
-    BaseMob <|-- Skeleton
-```
-
-</div>
-
-<div style={{flex: 1}}>
-
-```java
-abstract class BaseMob {
-  void takeDamage() {
-    // shared implementation
-  }
-  void move() {
-    // shared implementation
-  }
-  abstract void makeSound();
-}
-
-class Cow extends BaseMob {
-  void makeSound() {
-    System.out.println("Moo!");
-  }
-}
-
-class Skeleton extends BaseMob {
-  void makeSound() {
-    System.out.println("Rattle!");
-  }
-}
-```
-
-</div>
-
-</div>
-
-<div className="fragment" style={{marginTop: '1em', fontSize: '0.8em'}}>
-
-We can't put code in an interface. Instead, we use an _abstract class_:
-a class that can contain both concrete methods and abstract methods.
-
-Subclasses _inherit_ the code from their superclasses.
-
-</div>
-
-</Slide>
-
-<Slide>
-## Not How Inheritance Is Supposed To Work
-
-<ImageSlide imageSrc="/img/lectures/ellen/l2-inheritance-meme.webp"
-imageHeight="70vh"
-imageAlt="Meme about someone inheriting their mother's code." />
-
-</Slide>
-
-<Slide>
-## Y2K Bug
-
-<ImageSlide imageSrc="/img/lectures/ellen/l2-y2k-cartoon.gif"
-imageAlt="Dilbert cartoon" />
-
-</Slide>
 
 <Slide>
 
@@ -573,6 +258,24 @@ imageAlt="Dilbert cartoon" />
 
 → **Transition:** Let's define the base type that all devices share...
 </aside>
+
+</Slide>
+
+
+<Slide>
+## Not How Inheritance Is Supposed To Work
+
+<ImageSlide imageSrc="/img/lectures/ellen/l2-inheritance-meme.webp"
+imageHeight="70vh"
+imageAlt="Meme about someone inheriting their mother's code." />
+
+</Slide>
+
+<Slide>
+## Y2K Bug
+
+<ImageSlide imageSrc="/img/lectures/ellen/l2-y2k-cartoon.gif"
+imageAlt="Dilbert cartoon" />
 
 </Slide>
 
@@ -1058,6 +761,34 @@ This visualization makes LSP concrete and memorable: substitutability means 'fit
 </Slide>
 
 {/* ============================================ */}
+{/* LISKOV SUBSTITUTION PRINCIPLE */}
+{/* ============================================ */}
+
+<Slide>
+
+## The Liskov Substitution Principle
+
+<blockquote style={{fontSize: '0.9em', fontStyle: 'italic', borderLeft: '4px solid #9370DB', paddingLeft: '1em', textAlign: 'left'}}>
+  "If S is a subtype of T, then objects of type T may be replaced with objects of type S without altering the correctness of the program."
+</blockquote>
+
+<p style={{marginTop: '1em', fontSize: '0.85em', color: '#666'}}>
+  — Barbara Liskov, 1987
+</p>
+
+<aside class="notes">
+**In plain terms:** If your code works with a Light, it must work with ANY Light subtype—DimmableLight, TunableWhiteLight, future types you haven't written yet.
+
+**Classic violation:** Square extends Rectangle. If setWidth() on Rectangle doesn't affect height, but on Square it must change height to match... that breaks code expecting Rectangle behavior.
+
+**Key insight:** Inheritance is a CONTRACT. Subtypes must honor the supertype's behavioral promises.
+
+→ **Transition:** Let's visualize what this means...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
 {/* CLASSES IN JAVA */}
 {/* ============================================ */}
 
@@ -1123,14 +854,6 @@ This visualization makes LSP concrete and memorable: substitutability means 'fit
 
 </Slide>
 
-<Slide>
-## No Multiple Inheritance
-
-<ImageSlide imageSrc="/img/lectures/ellen/l2-multiple-inheritance.png"
-imageHeight="70vh"
-imageAlt="Meme about multiple inheritance: And when everyone's Super...No one will be." />
-
-</Slide>
 
 <Slide>
 
@@ -2263,6 +1986,16 @@ classDiagram
 <aside class="notes">
 Called the "diamond problem" because the inheritance diagram forms a diamond shape. Java avoids this by disallowing multiple class inheritance—you can only extend one class, but implement many interfaces.
 </aside>
+</Slide>
+
+
+<Slide>
+## No Multiple Inheritance
+
+<ImageSlide imageSrc="/img/lectures/ellen/l2-multiple-inheritance.png"
+imageHeight="70vh"
+imageAlt="Meme about multiple inheritance: And when everyone's Super...No one will be." />
+
 </Slide>
 
 <Slide>
