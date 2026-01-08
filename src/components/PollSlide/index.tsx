@@ -33,7 +33,6 @@ export default function PollSlide({
   codeFormat = false
 }: PollSlideProps) {
   const qrSrc = useBaseUrl(`/img/lectures/pollev-qr-codes/qr-pollev-${username}.png`);
-  const imageSrc = useBaseUrl(image ?? '');
   const pollUrl = `https://pollev.com/${username}`;
 
   // Dedent code by removing common leading whitespace
@@ -75,7 +74,7 @@ export default function PollSlide({
         <div style={{ flex: 1 }}>
           {image && (
             <img
-              src={imageSrc}
++             src={useBaseUrl(image)}
               alt="Poll image"
               style={{ maxHeight: '40vh', maxWidth: '100%', marginBottom: '1em' }}
             />
