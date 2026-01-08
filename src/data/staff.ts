@@ -233,11 +233,12 @@ export const staffMembers: StaffMember[] = [
     headshot: "staff-placeholder.svg"
   },
   {
-    name: "Liangliang Sun",
+    name: "Lucia Sun",
+    pronouns: "she/her",
     role: "ta",
     campus: "Oakland",
-    bio: "",
-    headshot: "staff-placeholder.svg"
+    bio: "Second year MS student",
+    headshot: "lucia-sun.jpg"
   },
   {
     name: "Jessica Teurn",
