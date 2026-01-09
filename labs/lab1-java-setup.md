@@ -61,7 +61,7 @@ For detailed instructions with screenshots, see the [Pawtograder Student Guide](
 
 ### Quick Setup Steps
 
-1. **Log in to Pawtograder** at [pawtograder.com](https://pawtograder.com) using your Northeastern credentials (click "Continue with Microsoft")
+1. **Log in to Pawtograder** at [pawtograder.com](https://app.pawtograder.com) using your Northeastern credentials (click "Continue with Microsoft")
 2. **Connect your GitHub account** — when prompted, click "Sign in with GitHub" and authorize Pawtograder
 3. **Accept the organization invitation** — click "Open GitHub Organization Invitation" and accept using your GitHub account
 
