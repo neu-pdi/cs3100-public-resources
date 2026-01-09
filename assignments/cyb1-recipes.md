@@ -223,13 +223,9 @@ classDiagram
 ### 5.3 Invariants and Contracts
 Utilize JSpecify's `@NonNull` annotations to express the non-nullness of parameters and return values.
 
-<<<<<<< Updated upstream
-Java Enums are a special type of class that represents a fixed set of constants. They are declared using the `enum` keyword. To learn more about Enums, you should refer directly to [the Java documentation](https://docs.oracle.com/javase/tutorial/java/javaOO/enum.html).
-=======
 **Important: NullAway and Testing.** This project uses NullAway, a static analysis tool that enforces null-safety at compile time. When a parameter is annotated with `@NonNull`, the compiler will prevent null values from being passed to that parameter. **Therefore, you should NOT write tests that verify `IllegalArgumentException` is thrown when null is passed to `@NonNull` parameters**—the compiler already guarantees this cannot happen. Focus your testing efforts on validating the other preconditions (e.g., positive values, non-blank strings, valid ranges) and the behavior of your methods.
 
-Java Enums are a special type of class that represents a fixed set of constants. They are declared using the `enum` keyword and are instantiated using the `new` keyword. To learn more about Enums, you should refer directly to [the Java documentation](https://docs.oracle.com/javase/tutorial/java/javaOO/enum.html).
->>>>>>> Stashed changes
+Java Enums are a special type of class that represents a fixed set of constants. They are declared using the `enum` keyword. To learn more about Enums, you should refer directly to [the Java documentation](https://docs.oracle.com/javase/tutorial/java/javaOO/enum.html).
 
 #### 5.3.1 `UnitSystem` (enum)
 
