@@ -80,6 +80,19 @@ export default function Hello() {
                         </Box>
                     </Box>
 
+                    {/* Resources at a glance */}
+                    <Box>
+                        <Heading size="md" mb={2}>Resources at a Glance</Heading>
+                        <Box as="ol" fontSize="sm" color="fg.muted" pl={5} css={{ '& li': { marginBottom: '0.25rem' } }}>
+                            <li>Assignments and Lab Descriptions: HERE</li>
+                            <li>Assignments and Lab Submissions: <Link to="https://app.pawtograder.com/course/500/assignments">Pawtograder</Link></li>
+                            <li>Office Hour Schedule and Queues (Instructors and TAs): <Link to="https://app.pawtograder.com/course/500/office-hours">Pawtograder</Link></li>
+                            <li>Discussion Forum and FAQs: <Link to="https://app.pawtograder.com/course/500/discussion">Pawtograder</Link></li>
+                            <li>Grades and Feedback on Assignments and Labs: <Link to="https://app.pawtograder.com/course/500/assignments">Pawtograder</Link></li>
+                            <li>Participation Quizzes: Ask your instructor</li>
+                        </Box>
+                    </Box>
+
                     {/* Navigation */}
                     <Box borderY="1px solid" borderColor="border.muted" py={4}>
                         <HStack gap={6} flexWrap="wrap" justify="center">
