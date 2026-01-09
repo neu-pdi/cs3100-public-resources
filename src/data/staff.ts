@@ -93,10 +93,11 @@ export const staffMembers: StaffMember[] = [
   },
   {
     name: "Lauren Brissette",
+    pronouns: "she/her",
     role: "ta",
     campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg"
+    bio: "Third year undergrad Computer Science student with a concentration in AI.",
+    headshot: "lbrissette.jpg"
   },
   {
     name: "Edgar Castaneda",
@@ -107,17 +108,19 @@ export const staffMembers: StaffMember[] = [
   },
   {
     name: "Edward Chan",
+    pronouns: "he/him",
     role: "ta",
     campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg"
+    bio: "PlusOne Master's student in CS and a 10th-semester TA supporting students across Khoury's core programming courses.",
+    headshot: "echan.jpg"
   },
   {
     name: "Rohan Kumar Chitra",
+    pronouns: "he/him",
     role: "ta",
     campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg"
+    bio: "First year Computer Science Graduate Student",
+    headshot: "rohan.kumar.jpg"
   },
   {
     name: "Sahil Chute",
@@ -162,18 +165,18 @@ export const staffMembers: StaffMember[] = [
     headshot: "staff-placeholder.svg"
   },
   {
-    name: "Pratham Kiran Mehta",
+    name: "Pratham Mehta",
     role: "ta",
     campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg"
+    bio: "Computer Science graduate student",
+    headshot: "Pratham.jpeg"
   },
   {
     name: "Avery Neuner",
     role: "ta",
     campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg"
+    bio: "Undergraduate student in Computer Science and English with a concentration in AI and natural language processing.",
+    headshot: "averyneuner.jpg"
   },
   {
     name: "Shivang Manishkumar Patel",
@@ -232,11 +235,12 @@ export const staffMembers: StaffMember[] = [
     headshot: "staff-placeholder.svg"
   },
   {
-    name: "Liangliang Sun",
+    name: "Lucia Sun",
+    pronouns: "she/her",
     role: "ta",
     campus: "Oakland",
-    bio: "",
-    headshot: "staff-placeholder.svg"
+    bio: "Second year MS student",
+    headshot: "lucia-sun.jpg"
   },
   {
     name: "Jessica Teurn",
@@ -263,8 +267,8 @@ export const staffMembers: StaffMember[] = [
     name: "Aditya Vij",
     role: "ta",
     campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg"
+    bio: "Second year undergrad CS student with a concentration in AI.",
+    headshot: "avij.jpg"
   },
   {
     name: "Rebecca Williams",

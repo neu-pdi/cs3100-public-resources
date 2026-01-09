@@ -8,6 +8,7 @@ import RevealJS, { Slide } from '@site/src/components/RevealJS';
 import QuoteSlide from '@site/src/components/QuoteSlide';
 import ImageSlide from '@site/src/components/ImageSlide';
 import Img from '@site/src/components/Img';
+import PollSlide from '@site/src/components/PollSlide';
 
 <RevealJS transition="slide">
 
@@ -91,23 +92,52 @@ import Img from '@site/src/components/Img';
 
 <Slide>
 
-## Introduction
+## Ellen Spertus
 
-- Ellen, Prof. Spertus, Dr. Spertus, Prof. Ellen, ...
-- Open source contributor & project founder
+<div style={{position: 'relative', height: '70vh', width: '100%'}}>
 
-<aside class="notes">
-**Keep brief (2-3 min):**
-- Share your preferred name/title
-- Mention research interests—students like knowing you're active in the field
-- Open source work = real-world SE example
+  <Img className="fragment" data-fragment-index="0" src="/img/lectures/ellen/l1-illinois.png" alt="Illinois"
+       style={{position: 'absolute', top: '0%', left: '3%', height: '15vh'}} />
 
-**Why this matters:** Humanizes the course, models professional identity
+  <Img className="fragment" data-fragment-index="1" src="/img/lectures/ellen/l1-mit.png" alt="MIT"
+       style={{position: 'absolute', top: '30%', left: '0%', height: '24vh'}} />
 
+  <Img className="fragment" data-fragment-index="2" src="/img/lectures/ellen/l1-microsoft.jpg" alt="Microsoft"
+       style={{position: 'absolute', top: '0%', left: '20%', height: '15vh'}} />
+
+  <Img className="fragment" data-fragment-index="3" src="/img/lectures/ellen/l1-uw.png" alt="University of Washington"
+       style={{position: 'absolute', bottom: '5%', left: '1%', height: '15vh'}} />
+
+  <Img className="fragment" data-fragment-index="4" src="/img/lectures/ellen/l1-mills.png" alt="Mills College"
+       style={{position: 'absolute', bottom: '10%', left: '26%', height: '8vh'}} />
+
+   <Img className="fragment" data-fragment-index="5" src="/img/lectures/ellen/l1-google.png" alt="Google"
+       style={{position: 'absolute', top: '20%', left: '22%', height: '15vh'}} />
+
+  <Img className="fragment" data-fragment-index="6" src="/img/lectures/ellen/l1-app-inventor.jpg" alt="App Inventor 2 Book"
+       style={{position: 'absolute', top: '0%', left: '65%', height: '35vh'}} />
+
+  <Img className="fragment" data-fragment-index="7" src="/img/lectures/ellen/l1-hour-of-code.png" alt="Hour of Code"
+       style={{position: 'absolute', bottom: '20%', left: '65%', height: '15vh'}} />
+
+  <Img className="fragment" data-fragment-index="8" src="/img/lectures/ellen/l1-mozilla.png" alt="Mozilla"
+       style={{position: 'absolute', top: '45%', left: '28%', height: '6vh'}} />
+
+  <Img className="fragment" data-fragment-index="9" src="/img/lectures/ellen/l1-codepath.png" alt="CodePath"
+       style={{position: 'absolute', bottom: '20%', right: '5%', height: '15vh'}} />
+
+  <Img className="fragment" data-fragment-index="10" src="/img/lectures/ellen/l1-wave.gif" alt="Wave"
+       style={{position: 'absolute', bottom: '0%', right: '12%', height: '13vh'}} />
+
+</div>
+
+<aside className="notes">
 → **Transition:** Let me introduce our full course team...
 </aside>
 
 </Slide>
+
+
 
 <Slide>
 
@@ -115,7 +145,7 @@ import Img from '@site/src/components/Img';
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.9em'}}>
   <div>
-    <h3 style={{marginTop: 0}}>4 Instructors</h3>
+    <h3 style={{marginTop: 0}}>5 Instructors</h3>
     <ul style={{marginTop: '0.3em'}}>
       <li><strong>Boston:</strong> Prof. Bell, Prof. Shesh, Prof. Vesely</li>
       <li><strong>Oakland:</strong> Prof. Spertus</li>
@@ -156,10 +186,41 @@ import Img from '@site/src/components/Img';
 
 </Slide>
 
-
 {/* ============================================ */}
 {/* ACT 1: A BRIEF HISTORY OF SOFTWARE ENGINEERING */}
 {/* ============================================ */}
+
+<Slide>
+
+## Let's set the WABAC machine to the 1940s...
+
+  <ImageSlide
+    imageSrc="/img/lectures/ellen/common/wabac-machine.jpg"
+    imageAlt="Cartoon showing Mr. Peabody (a dog) and Sherman (a boy) in front of a complicated machine"
+  />
+
+</Slide>
+
+<Slide>
+## How much did a typical computer weigh in the 1940s?
+  <PollSlide
+    choices={['under 100 pounds', '100-200 pounds', '200-2000 pounds', 'over a ton']}
+    username="espertus"
+  />
+</Slide>
+
+<Slide>
+
+  <ImageSlide
+    imageSrc="/img/lectures/ellen/l1-jennings-bilas-upenn.png"
+    imageAlt="Black and white photo showing two women adjusting a large computer"
+    source="University Archives and Records Center/University of Pennsylvania via IEEE Spectrum"
+    belowText="Jean Jennings and Frances Bilas adjusting ENIAC (1946)"
+    imageHeight='60vh'
+
+  />
+
+</Slide>
 
 {/* 1950s ENIAC slide - image right, side text */}
 <Slide>
@@ -188,6 +249,35 @@ import Img from '@site/src/components/Img';
 
 → **Transition:** Then came a radical idea from Grace Hopper...
 </aside>
+
+</Slide>
+
+<Slide>
+
+## Levels of programming
+
+<table style={{width: '100%', borderCollapse: 'collapse', fontSize: '1.1em'}}>
+  <tbody>
+    <tr style={{borderBottom: '1px solid #666'}}>
+      <td style={{padding: '1em 0', width: '40%'}}>High-Level Language</td>
+      <td style={{padding: '1em 0'}}><pre>count = index + 1</pre></td>
+    </tr>
+    <tr style={{borderBottom: '1px solid #666'}}>
+      <td style={{padding: '1em 0'}}>Assembly Language</td>
+      <td style={{padding: '1em 0'}}>
+        <pre style={{margin: 0, background: 'none', padding: 0}}>{`load $r1, 1
+add $r2, $r3, $r1`}</pre>
+      </td>
+    </tr>
+    <tr>
+      <td style={{padding: '1em 0'}}>Machine Language</td>
+      <td style={{padding: '1em 0'}}>
+        <code>00110001 00000001</code><br/>
+        <code>11000010 00110001</code>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 </Slide>
 
@@ -247,6 +337,15 @@ import Img from '@site/src/components/Img';
 
 </Slide>
 
+<Slide>
+
+## Something to think about
+
+<ImageSlide
+ imageSrc="/img/lectures/ellen/l1-ship-in-port.jpg"
+ imageAlt="Picture of Grace Hopper in naval uniform with quotation 'A ship in port is safe, but that's not what ships are built for."
+/>
+</Slide>
 <Slide>
 
 ## 1960s: Margaret Hamilton
@@ -376,7 +475,18 @@ Despite innovations in programming:
 
 </Slide>
 
+<Slide>
 
+## Software engineering?
+
+   <QuoteSlide
+     quote="If builders built houses the way programmers built programs, the first woodpecker to come along would destroy civilization."
+     imageSrc="/img/lectures/ellen/l1-gerald-weinberg.jpg"
+     imageAlt="Gerald Weinberg"
+     attribution="Photo: SE Radio 280"
+   />
+
+</Slide>
 <Slide>
 
 ## Did the software crisis end?
@@ -542,35 +652,10 @@ Despite innovations in programming:
 
 ## Good Process Helps You Design Better Programs
 
-<p style={{fontSize: '1.1em'}}>
-  The goal: help you better understand how to <strong>design and implement programs</strong>
-</p>
-<p style={{marginTop: '1em', fontSize: '0.95em'}}>
-  Inspired by classical software engineering processes
-</p>
-
-<aside class="notes">
-**Learning Objective 2:** Systematic Program Design and Implementation Process
-
-**Students should know from CS 2100:** Requirements, design, implementation (medium-scale)
-
-**What's new here:** Expand scale + explore validation & operations (deeper in CS 4530)
-
-**Key insight:** Good process isn't bureaucracy—it's accumulated wisdom about what works
-
-→ **Transition:** Here's the process we'll follow...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## The Process
-
   <ImageSlide
     imageSrc="/img/software_design_process_fall_2025.png"
     imageAlt="Software Design Process"
-    imageHeight="60vh"
+    imageHeight="55vh"
     belowText={
       <p style={{fontSize: '0.8em'}}>
       "Shift Left" on bugs: find issues faster to reduce the cost of fixing them
@@ -579,6 +664,8 @@ Despite innovations in programming:
   />
 
 <aside class="notes">
+**Learning Objective 2:** Systematic Program Design and Implementation Process
+
 **Walk through the diagram:**
 - Requirements → Design → Implementation → Validation → Operations
 - Each stage feeds forward; feedback flows backward
@@ -649,6 +736,15 @@ AI helps with typing; humans do the hard parts.
 </aside>
 
 </Slide>
+
+<Slide>
+## What's your experience with AI coding?
+  <PollSlide
+    image="/img/lectures/ellen/common/pollev-smiles.png"
+    username="espertus"
+  />
+</Slide>
+
 
 <Slide>
 ## AI coding assistance is not permitted in weeks 1-5
@@ -927,6 +1023,28 @@ This visualization addresses the common student question 'Why can't I just use A
 </Slide>
 
 <Slide>
+## What are your goals for CS 3100?
+  <PollSlide
+    choices={['Learning as much as possible', 'Getting a high grade', 'Getting a strong letter of recommendation', 'Having time for other projects']}
+    username="espertus"
+  />
+</Slide>
+
+<Slide>
+## Static vs. dynamic typing
+
+When do you want errors reported?
+
+```python
+print("hello" / "world")
+```
+
+* static typing → compile-time (Java)
+* dynamic typing → run-time (Python)
+
+</Slide>
+
+<Slide>
 
 ## The 1990s Brought Platform Fragmentation and the Internet
 
@@ -1062,7 +1180,143 @@ This visualization addresses the common student question 'Why can't I just use A
 
 **Why Java:** Understanding static typing prepares you for this industry-wide shift
 
-→ **Transition:** How does Java deliver on its "write once, run anywhere" promise?
+→ **Transition:** But there's another major difference between these languages...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* BREAKING CHANGES & SUSTAINABILITY */}
+{/* ============================================ */}
+
+<Slide>
+
+## Breaking Changes: A Tale of Two Philosophies
+
+<p style={{fontSize: '1.1em'}}>
+  <strong>How do languages evolve without breaking existing code?</strong>
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2em', marginTop: '1em'}}>
+  <div>
+    <p style={{fontWeight: 'bold'}}>Python 2 → 3</p>
+    <ul style={{fontSize: '0.85em', marginTop: '0.3em'}}>
+      <li><code>print "hello"</code> → <code>print("hello")</code></li>
+      <li><code>3 / 2 = 1</code> → <code>3 / 2 = 1.5</code></li>
+      <li>Strings became Unicode by default</li>
+      <li><strong>12+ years to sunset Python 2</strong></li>
+    </ul>
+  </div>
+  <div>
+    <p style={{fontWeight: 'bold'}}>Java 1.0 → 21</p>
+    <ul style={{fontSize: '0.85em', marginTop: '0.3em'}}>
+      <li>Code from 1995 still compiles</li>
+      <li>Deprecated features stay for years</li>
+      <li>Binary compatibility guaranteed</li>
+      <li><strong>Your old code keeps working</strong></li>
+    </ul>
+  </div>
+</div>
+
+<aside class="notes">
+**The Python 2→3 migration is legendary:**
+- Announced 2006, Python 2 EOL in 2020
+- Many organizations stuck on Python 2 for years
+- Some Python 2 code STILL running in production
+
+**Java's approach = extreme backward compatibility:**
+- Code from 1995 compiles on Java 21
+- Deprecated doesn't mean removed (for a LONG time)
+- Even bytecode from 25 years ago runs
+
+**Question for class:** "Which approach is better?"—this is a values question!
+
+→ **Transition:** Why such different approaches?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Governance Shapes Evolution
+
+  <Img
+    src="/img/lectures/web/l1-governance.webp"
+    alt="Concept: 'Two Kinds of Community' (Governance Models Shape Language Evolution)
+
+A split-panel illustration in the style of a vintage technical manual, contrasting two approaches to language stewardship.
+
+On the LEFT ('The Open Commons'), a public park where diverse individuals gather around a shared garden plot. A teacher, a hobbyist, a startup founder, a student, and a few corporate representatives (visibly outnumbered) all have equal-sized voting cards. A sign reads 'Python Software Foundation - All Welcome.' In the foreground, a small ceremonial bonfire where old code labeled 'Python 2' is being retired—some people cheer while a few look wistful. A banner overhead reads 'Sometimes we break things to make them better.' The community bulletin board shows a PEP titled 'Breaking Change Proposal' with many thumbs-up stickers. The mood is: progress sometimes requires letting go of the old.
+
+On the RIGHT ('The Corporate Boardroom'), a polished conference room with a long table. At the head sits an Oracle representative; around the table are six other seats with nameplates reading: 'Acme Systems,' 'GlobalTech Industries,' 'Nexus Financial,' 'Titan Enterprises,' 'Synergy Corp,' and 'MegaBank Holdings.' All wear business attire. A sign on the wall reads 'Java Community Process - Executive Committee.' Prominently displayed: a glass museum case containing ancient code labeled 'Java 1.0 (1995) - STILL RUNS' like a sacred artifact. Red warning signs everywhere: 'DO NOT BREAK BACKWARD COMPATIBILITY' and 'Our customers have millions of lines of code.' A velvet rope separates the table from a small 'observer gallery' where several individual developers can watch but not vote. One observer holds a sign: 'Can we please have nullness annotations?' A committee member responds: 'That might break existing code.'
+
+The visual contrast captures two attitudes toward breaking changes: LEFT embraces them when the community decides the benefit is worth the cost; RIGHT treats them as existential threats because enterprise customers demand stability. Both are legitimate—but 'community' and 'progress' mean very different things in each context.
+
+Tagline options: 'Two definitions of community' / 'Who decides when to break things?' / 'Move fast vs. never break'"
+  />
+
+<aside class="notes">
+**The image contrasts governance models:**
+- Python = community garden (PSF), decisions by consensus
+- Java = corporate greenhouse (Sun → Oracle), decisions by business interests
+
+**Why Java prioritizes compatibility:**
+- Enterprises pay for stability (literally—Oracle licenses)
+- Breaking code = breaking trust = losing customers
+- "Write once, run anywhere" promise extends through time
+
+**Why Python accepted breaking changes:**
+- Community wanted cleaner language (Unicode strings, print function)
+- No commercial contracts demanding compatibility
+- Innovation over preservation
+
+→ **Transition:** This connects directly to the sustainability framework we introduced earlier...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Language Choice Is a Sustainability Decision
+
+<p style={{fontSize: '1em', marginBottom: '0.5em'}}>
+  Remember: software engineering is "the integral of programming over time."
+</p>
+
+<p style={{fontSize: '0.95em'}}>
+  The Python/Java comparison shows the four sustainability dimensions in action:
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', marginTop: '0.5em', fontSize: '0.8em'}}>
+  <div><strong>Technical:</strong> Will my code still run in 10 years?</div>
+  <div><strong>Economic:</strong> What will migration cost?</div>
+  <div><strong>Social:</strong> Who decides when to break things?</div>
+  <div><strong>Environmental:</strong> What resources does evolution consume?</div>
+</div>
+
+<p style={{marginTop: '0.75em', fontSize: '0.9em'}}>
+  🔄 <strong>Recurring theme:</strong> We'll apply this framework to every major topic this semester.
+</p>
+
+<aside class="notes">
+**Connect back to earlier slide:** We introduced sustainability with four dimensions—now we see it applied to a real decision (language/platform choice).
+
+**Concrete examples from Python/Java:**
+- **Technical:** Java code from 1995 runs; Python 2 code doesn't
+- **Economic:** Instagram spent months of engineer-years on Py3 migration
+- **Social:** PSF = individuals vote; JCP = corporations vote
+- **Environmental:** Migration = compute cycles, energy, e-waste from obsolete systems
+
+**Key message:** This isn't a one-time topic. Every lecture this semester touches sustainability:
+- Readability → technical sustainability
+- Testing → technical sustainability
+- Architecture → technical + economic
+- Accessibility → social sustainability
+- Performance → environmental sustainability
+
+**This is the first concrete example; it won't be the last.**
+
+→ **Transition:** Now let's see how Java delivers on its technical promises...
 </aside>
 
 </Slide>
@@ -1142,67 +1396,45 @@ This visualization addresses the common student question 'Why can't I just use A
 </aside>
 
 </Slide>
+<Slide>
+## Java compilation/execution
 
+  <ImageSlide
+    imageSrc="/img/lectures/ellen/l1-java-bytecode.svg"
+    imageHeight = '60vh'
+  />
+
+</Slide>
 <Slide>
 
 ## Compilation Enables Optimization
 
-<table style={{margin: '0 auto', fontSize: '0.9em'}}>
-  <thead>
-    <tr>
-      <th style={{padding: '0.5em 1em'}}>Interpreted</th>
-      <th style={{padding: '0.5em 1em'}}>Native Compiled</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style={{padding: '0.5em 1em'}}>Reads & executes line by line</td>
-      <td style={{padding: '0.5em 1em'}}>Already in machine code</td>
-    </tr>
-    <tr>
-      <td style={{padding: '0.5em 1em'}}>100s of instructions per statement</td>
-      <td style={{padding: '0.5em 1em'}}>Direct CPU execution</td>
-    </tr>
-    <tr>
-      <td style={{padding: '0.5em 1em', color: '#c00'}}>Slower</td>
-      <td style={{padding: '0.5em 1em', color: '#060'}}>Faster</td>
-    </tr>
-  </tbody>
-</table>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.85em'}}>
+  <div>
+    <p style={{fontWeight: 'bold'}}>Interpreted</p>
+    <ul style={{marginTop: '0.3em'}}>
+      <li>Reads & executes line by line</li>
+      <li>100s of instructions per statement</li>
+      <li>Executes every branch, every time</li>
+    </ul>
+  </div>
+  <div>
+    <p style={{fontWeight: 'bold'}}>Native Compiled</p>
+    <ul style={{marginTop: '0.3em'}}>
+      <li>Already in machine code</li>
+      <li>Direct CPU execution</li>
+      <li>Dead code eliminated, functions inlined</li>
+    </ul>
+  </div>
+</div>
 
 <aside class="notes">
 **Why interpretation is slower:**
 - Interpreter: decode instruction → look up action → execute (100s of extra instructions)
 - Native: CPU executes machine code directly
 
-**Example:** Simple operation that's 10 native instructions might be 1000 interpreted
-
-**Where it matters:** Tight loops, computation-heavy code
-
-→ **Transition:** Compilers can also do more sophisticated optimizations...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Compilers Can Eliminate Unnecessary Work
-
-A compiler can:
-
-- Identify branches never taken → remove them
-- Inline small functions
-- Optimize memory access patterns
-
-<p style={{marginTop: '1em', fontSize: '0.9em', color: '#666'}}>
-  An interpreter executes every line, every time
-</p>
-
-<aside class="notes">
 **Compiler optimizations interpreters can't do:**
-- Dead code elimination (remove code that never executes)
-- Function inlining (remove call overhead)
-- Loop optimizations (improve memory access patterns)
+- Dead code elimination, function inlining, loop optimizations
 
 **Key difference:** Interpreter checks every branch every time. Compiler analyzes whole program and removes unnecessary work ahead of time.
 
@@ -1288,7 +1520,19 @@ for (int i = 0; i < 1000000; i++) {
 </aside>
 
 </Slide>
+<Slide>
 
+## Old Days 1
+
+  <ImageSlide
+    imageSrc="/img/lectures/ellen/l1-xkcd-old-days1.png"
+    imageAlt="xkcd cartoon in which an old lady tells unlikely stories about computing in the old days"
+    source="xkcd 1755 | CC BY-NC 2.5"
+    imageHeight='60vh'
+  />
+</Slide>
+
+{/*
 <Slide>
 
 ## Dynamic Typing Makes JIT Optimization Hard
@@ -1319,6 +1563,8 @@ PyPy and others have tried...
 </aside>
 
 </Slide>
+
+*/}
 
 {/* ============================================ */}
 {/* PRACTICAL TRANSITION */}
@@ -1398,6 +1644,7 @@ PyPy and others have tried...
 
 </Slide>
 
+{/*
 <Slide>
 
 ## Discussion
@@ -1422,6 +1669,7 @@ PyPy and others have tried...
 </aside>
 
 </Slide>
+*/}
 
 {/* ============================================ */}
 {/* JAVA SYNTAX */}
@@ -1448,6 +1696,15 @@ PyPy and others have tried...
 → **Transition:** Here's the classic Hello World...
 </aside>
 
+</Slide>
+
+
+<Slide>
+## Have you programmed in Java before?
+  <PollSlide
+    choices={['Nope', 'A little', 'Some', 'Lots']}
+    username="espertus"
+  />
 </Slide>
 
 <Slide>
@@ -1490,83 +1747,28 @@ public class HelloWorld {
 
 <Slide>
 
-## Packages Organize Code Like Python Modules
+## Java File Structure: Packages, Imports, Comments
 
 ```java
-package io.github.neu_pdi.cs3100.lecture2;
-```
+package io.github.neu_pdi.cs3100.lecture2;  // Reverse domain convention
 
-- Similar to Python modules
-- Convention: **reverse domain name**
-- Example: GitHub user `octocat` → `io.github.octocat`
+import io.github.neu_pdi.cs3100.utils.OtherClass;  // java.lang.* auto-imported
+
+// Single-line comment
+/* Multi-line comment */
+/** Javadoc comment — generates documentation */
+```
 
 <aside class="notes">
 **Packages = like Python modules**
+- Convention: Reverse domain name (GitHub user octocat → io.github.octocat.*)
+- Prevents naming collisions
 
-**Convention:** Reverse domain name
-- Own example.com → com.example.*
-- GitHub user octocat → io.github.octocat.*
+**Imports:**
+- `java.lang.*` auto-imported (String, System, Object)
+- Everything else: explicit import
 
-**Why:** Prevents naming collisions (two orgs can both have "utils")
-
-**Note:** Can choose any name, but convention = recognizable + professional
-
-→ **Transition:** Imports work similarly...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Import Declaration
-
-```java
-import io.github.neu_pdi.cs3100.utils.OtherClass;
-```
-
-- Imports classes from other packages
-- `java.lang.*` imported by default
-- → No need to import `String`, `System`, etc.
-
-<aside class="notes">
-**Import = make classes available without full qualification**
-- Without import: write full path every time
-- With import: just use class name
-
-**Special case:** `java.lang.*` auto-imported (String, System, Object, etc.)
-
-**Everything else:** Must explicitly import
-
-→ **Transition:** Three types of comments...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Comments
-
-```java
-// Single line comment
-
-/* Multi-line
-   comment */
-
-/**
- * Documentation comment (Javadoc)
- * Used to generate documentation
- */
-```
-
-<aside class="notes">
-**Three comment types:**
-- `//` single line
-- `/* */` multi-line
-- `/** */` Javadoc (generates HTML documentation)
-
-**Javadoc:** Before classes, methods, fields you want documented. More detail later.
-
-**Good comments:** Explain WHY, not WHAT (code shows what)
+**Three comment types:** `//`, `/* */`, `/** */` (Javadoc)
 
 → **Transition:** All Java code lives in classes...
 </aside>
@@ -1763,7 +1965,7 @@ public class OtherClass {
   </thead>
   <tbody>
     <tr><td><code>byte</code></td><td>1 byte</td><td>-128 to 127</td></tr>
-    <tr><td><code>short</code></td><td>2 bytes</td><td>±32,767</td></tr>
+    <tr><td><code>short</code></td><td>2 bytes</td><td>-32,768 to 32,767</td></tr>
     <tr><td><code>char</code></td><td>2 bytes</td><td>Unicode character</td></tr>
     <tr><td><code>int</code></td><td>4 bytes</td><td>±2 billion</td></tr>
     <tr><td><code>long</code></td><td>8 bytes</td><td>±9 quintillion</td></tr>
@@ -1793,83 +1995,34 @@ public class OtherClass {
 
 ## ⚠️ Java Integers Have Fixed Sizes and Can Overflow
 
-<p style={{fontSize: '1.3em', color: '#c00'}}>
-  Integers have <strong>fixed sizes!</strong>
-</p>
-<p style={{marginTop: '1em'}}>
-  Python integers can be arbitrarily large
-</p>
-<p style={{marginTop: '0.5em'}}>
-  Java integers overflow at their limits
-</p>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.85em'}}>
+  <div>
+    <p style={{fontWeight: 'bold'}}>Unlike Python:</p>
+    <ul style={{marginTop: '0.3em'}}>
+      <li>Python integers grow arbitrarily</li>
+      <li>Java integers <strong>wrap around</strong> silently!</li>
+      <li>`int` max ≈ 2 billion ($2^{31} - 1$)</li>
+    </ul>
+  </div>
+  <div>
+    <p style={{fontWeight: 'bold'}}>Why it matters at scale:</p>
+    <ul style={{marginTop: '0.3em'}}>
+      <li>`byte` (1B) × 8 billion = 8 GB</li>
+      <li>`long` (8B) × 8 billion = 64 GB</li>
+      <li>numpy/pandas use fixed-size types</li>
+    </ul>
+  </div>
+</div>
 
 <aside class="notes">
 **⚠️ Major warning for Python programmers:**
 - Python integers grow to any size automatically
 - Java integers WRAP AROUND silently at limits!
+- Example: Integer.MAX_VALUE + 1 = large NEGATIVE number
 
-**Example:** Integer.MAX_VALUE + 1 = large NEGATIVE number (not 2 billion + 1)
+**Quick math:** 4 bytes = 32 bits ≈ 4 billion values; 8 bytes ≈ 18 quintillion
 
-**If you need arbitrary precision:** Use BigInteger (class, not primitive)
-
-**For most purposes:** int is fine, but be aware of limits
-
-→ **Transition:** Quick math to remember sizes...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Quick Math: Memory Sizes
-
-1 byte = 8 bits → $2^8$ = 256 values
-
-4 bytes = 32 bits → $2^{32}$ ≈ $10^9$ (billions)
-
-8 bytes = 64 bits → $2^{64}$ ≈ $10^{18}$ (quintillions)
-
-<p style={{marginTop: '1em', fontSize: '0.85em', color: '#666'}}>
-  Trick: $2^{10}$ ≈ $10^3$ (1,024 ≈ 1,000)
-</p>
-
-<aside class="notes">
-**Quick math:**
-- 1 byte = 8 bits = 256 values
-- 4 bytes = 32 bits ≈ 4 billion values
-- 8 bytes = 64 bits ≈ 18 quintillion values
-
-**Useful trick:** 2^10 ≈ 1000, so 2^32 ≈ 4 × 10^9
-
-**Example:** Store everyone's age on Earth? 8 billion × 1 byte = 8 GB (tractable!)
-
-→ **Transition:** Type choice matters at scale...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Choosing the Right Type Saves Memory at Scale
-
-Storing age (in years) for 8 billion people:
-
-- `byte` (1 byte) → **8 GB**
-- `long` (8 bytes) → **64 GB**
-
-<p style={{marginTop: '1em', fontSize: '0.85em', color: '#666'}}>
-  Memory was expensive in the 1990s!<br/>
-  Today: matters for big data (numpy, pandas are C extensions)
-</p>
-
-<aside class="notes">
-**Concrete example (storing ages for 8 billion people):**
-- byte (1 byte) → 8 GB
-- long (8 bytes) → 64 GB
-
-**Historical note:** 1990s memory was precious. Today often doesn't matter... until big data.
-
-**Connection:** numpy/pandas = C extensions using fixed-size types for performance. When scale matters, type size matters.
+**Why type size matters:** Storing ages for 8 billion people: byte = 8GB, long = 64GB. When scale matters, type size matters.
 
 → **Transition:** Reference types work differently...
 </aside>
@@ -1967,10 +2120,8 @@ System.out.println(a == b);  // false!
 
 <aside class="notes">
 **Java arrays ≠ Python lists:**
-- Java: Fixed size, single type, contiguous memory
-- Python: Dynamic size, mixed types, pointers scattered in memory
-
-**Java's constraints enable:** Fast access via contiguous memory
+- Java: Fixed size, single type
+- Python: Dynamic size
 
 **For dynamic behavior:** Use ArrayList (wraps array, handles resizing)—collections covered later
 
@@ -2102,13 +2253,28 @@ System.out.println(a == b);  // false!
 
 <Slide>
 
+## Flashcards
+
+<ImageSlide
+  imageSrc="/img/lectures/ellen/l1-pawtograder-flashcards.png"
+    imageAlt="Screenshot showing flashcard access in Pawtograder"
+    imageHeight='50vh'
+  />
+
+</Slide>
+
+<Slide>
+
 ## Next Steps
 
 - Optional follow-up reading: [A Short History of Java (Horstmann)](https://learning.oreilly.com/library/view/core-java-volume/9780135328385/v1/ch1/index.xhtml#ch01lev1sec4)
-- Complete the lecture 1 Java flashcards
+- Optionally, complete the lecture 1 Java flashcards
+- **[Syllabus Quiz](https://northeastern.instructure.com/courses/239399/quizzes/759109)** (due Sunday, Jan 11)
 - **Lab 1:** Java setup and first program, ASAP
-- **Assignment 1:** Recipe Domain Model (due Jan 15)
+- **Assignment 1:** Recipe Domain Model (due Thursday, Jan 15)
 - Review [Lecture 2 notes](/lecture-notes/l2-data-in-jvm)
+
+*Any questions? Ask on Pawtograder.*
 
 
 <aside class="notes">
@@ -2120,7 +2286,7 @@ System.out.println(a == b);  // false!
 
 **Ask:** Any questions before we wrap up?
 
-**End of Lecture 1** (~55 minutes)
+**End of Lecture 1** (~65 minutes)
 </aside>
 
 </Slide>
