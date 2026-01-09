@@ -116,10 +116,11 @@ export const staffMembers: StaffMember[] = [
   },
   {
     name: "Rohan Kumar Chitra",
+    pronouns: "he/him",
     role: "ta",
     campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg"
+    bio: "First year Computer Science Graduate Student",
+    headshot: "rohan.kumar.jpg"
   },
   {
     name: "Sahil Chute",
