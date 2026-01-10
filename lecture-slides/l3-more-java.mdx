@@ -6,6 +6,7 @@ image: /img/lectures/web/l3.png
 
 import RevealJS, { Slide } from '@site/src/components/RevealJS';
 import Img from '@site/src/components/Img';
+import PollSlide from '@site/src/components/PollSlide';
 
 <RevealJS transition="slide">
 
@@ -14,8 +15,8 @@ import Img from '@site/src/components/Img';
 {/* ============================================ */}
 
 <Slide>
-  <Img 
-    src="/img/lectures/web/l3.png" 
+  <Img
+    src="/img/lectures/web/l3.png"
     alt="Lecture 3 Cover"
   />
 </Slide>
@@ -31,7 +32,7 @@ import Img from '@site/src/components/Img';
 ## Lecture 3: Inheritance and Polymorphism in Java II
 
 <p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
-  ©2025 Jonathan Bell, CC-BY-SA
+  ©2025 Jonathan Bell & Ellen Spertus, CC-BY-SA
 </p>
 
 <aside className="notes">
@@ -43,6 +44,19 @@ import Img from '@site/src/components/Img';
 **Transition:** Let's start with the learning objectives for today.
 </aside>
 
+</Slide>
+
+{/* ============================================ */}
+{/* CHECK-IN POLL */}
+{/* ============================================ */}
+
+<Slide>
+## How's Assignment 1 going?
+
+{/* Add username=espertus (for example) for QR code */}
+<PollSlide
+  choices={["Haven't looked at it", "Looked at it but haven't started", "Started it but got stuck", "Started it and doing alright", "Pretty far along", "Completed it"]}
+/>
 </Slide>
 
 {/* ============================================ */}
@@ -89,8 +103,8 @@ After this lecture, you will be able to:
 classDiagram
     class IoTDevice {
         <<interface>>
-        +identify()
-        +isAvailable()
+        +identify()*
+        +isAvailable()*
     }
     class Light {
         <<abstract>>
@@ -106,6 +120,8 @@ classDiagram
     IoTDevice <|.. Light
     Light <|-- DimmableLight
     DimmableLight <|-- TunableWhiteLight
+
+    style IotDevice fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
 ```
 
 <p style={{marginTop: '0.5em', fontSize: '0.85em', color: '#9370DB'}}>
@@ -165,8 +181,8 @@ classDiagram
 
 ## Collections Need Flexibility AND Safety
 
-<Img 
-  src="/img/lectures/web/l3-warehouse.webp" 
+<Img
+  src="/img/lectures/web/l3-warehouse.webp"
   alt="Concept: 'The Unlabeled Warehouse' (Type-Unsafe Storage)
 Tagline: 'When everything is Object, anything can go wrong.'
 
@@ -225,6 +241,54 @@ TunableWhiteLight light = (TunableWhiteLight) list.get(1);
 
 </Slide>
 
+
+<Slide>
+## Java programmers demanded generic types
+<Img
+  src="/img/lectures/web/l3-programmers-demanded-generics.webp"
+  alt="Concept: 'The Generics Rebellion' (Why Java Added Generics)
+Tagline: 'Java programmers demanded generic types.'
+A warm, nostalgic editorial illustration in late-1990s tech magazine style with slightly desaturated
+colors suggesting aged newsprint. The scene depicts a protest outside Sun Microsystems headquarters, capturing the real community tension that led to Java generics.
+Main scene — The Protest:
+A crowd of passionate programmers of different genders and races gathered on the
+sidewalk outside a corporate building with the iconic Sun Microsystems logo (purple diamond with 'sun' text) prominently displayed above the entrance. The protesters have a grassroots, developer-community feel — mix of ages, casual late-90s attire (khakis, blue jeans, polo shirts, some conference t-shirts), several wearing glasses.
+Protest signs held high, hand-lettered with programmer frustration:
+
+'ClassCastException Ruined My Weekend'
+'I Want the Compiler to Catch My Bugs!'
+'List of WHAT?'
+'Stop the Runtime Errors!'
+'Type Safety NOW!'
+One desperate sign simply reads 'PLEASE'
+Expressions range from determined to exasperated. One protester waves a printed stack of bug reports. Another holds a coffee mug defensively. A few are mid-chant.
+The Generic Java booth — The Underground:
+Off to one side, slightly in shadow, a folding table with a hand-painted banner reading 'Generic Java' in rebellious red letters. The booth has a distinctly grassroots, almost samizdat feeling:
+
+Stacks of photocopied flyers with 'GJ' headers
+A cardboard box of floppy disks labeled 'GJ'
+A hand-written sign: 'Type Safety Today — Don't Wait for Sun'
+A laptop (chunky late-90s style) showing a demo
+Several programmers are scurrying toward the booth with eager, conspiratorial expressions, glancing over their shoulders. The booth operator — an academic type with glasses — hands a floppy disk to a grateful developer who clutches it like contraband.
+Period details throughout:
+
+CRT monitors visible through Sun's windows
+Beige computer equipment
+Printed JavaWorld magazines poking out of messenger bags
+Period-appropriate cars in the parking lot
+Atmosphere:
+The lighting suggests late afternoon, lending an urgent 'movement at a crossroads' feeling. Sun's headquarters looms corporate and unmoved, while the developer community swirls with energy below. There's humor in the scene but also genuine frustration — these are programmers who have been burned by runtime errors one too many times.
+Bottom banner in aged parchment style:
+'Java programmers demanded generic types'"/>
+
+<aside className="notes">
+- Java programmers demanded generic types.
+- They were already available in C++.
+- For a time, there was a schism in the community, with some using Generic Java.
+- The schism ended with Java 5 (2004), which added generics to Java.
+</aside>
+
+</Slide>
 <Slide>
 
 ## Generics Catch Type Errors at Compile Time
@@ -321,7 +385,7 @@ Map<String, List<IoTDevice>> devicesByRoom = new HashMap<>();
 </table>
 
 <p style={{marginTop: '0.75em', fontSize: '0.8em', color: '#666'}}>
-  See Effective Java, Items 26, 27, 29, 30
+  See Effective Java, Items 26, 27, 29, 30.
 </p>
 
 <aside className="notes">
@@ -330,6 +394,7 @@ Map<String, List<IoTDevice>> devicesByRoom = new HashMap<>();
 - Rule 2: Treat unchecked warnings as errors—if the compiler says "unchecked," something might fail at runtime
 - Rule 3: When designing your own classes, make them generic when it makes sense—more reusable code
 - These rules will prevent most generic-related bugs
+- The author of Effective Java, Josh Bloch, wrote the Collections library.
 
 **Transition:** There's one annoying limitation of generics that students should know about.
 </aside>
@@ -379,8 +444,8 @@ if (lights instanceof List) { }  // This works, but less useful
 
 ## The Right Data Structure Makes the Job Easy
 
-<Img 
-  src="/img/lectures/web/l3-toolbox.webp" 
+<Img
+  src="/img/lectures/web/l3-toolbox.webp"
   alt="Concept: 'Three Ways to Organize' (Data Structure Choice)
 Tagline: 'List for sequences. Set for membership. Map for lookup.'
 
@@ -417,21 +482,21 @@ Bottom summary: 'What's your question? By position → List. Already have it? �
 classDiagram
     class Iterable~E~ {
         <<interface>>
-        +iterator()
+        +iterator()*
     }
     class Collection~E~ {
         <<interface>>
-        +add(E e) boolean
-        +remove(Object o) boolean
-        +contains(Object o) boolean
-        +size() int
-        +isEmpty() boolean
+        +add(E e) boolean*
+        +remove(Object o) boolean*
+        +contains(Object o) boolean*
+        +size() int*
+        +isEmpty() boolean*
     }
     class List~E~ {
         <<interface>>
-        +get(int index) E
-        +add(int index, E e)
-        +indexOf(Object o) int
+        +get(int index) E*
+        +add(int index, E e)*
+        +indexOf(Object o) int*
     }
     class Set~E~ {
         <<interface>>
@@ -445,6 +510,11 @@ classDiagram
     List <|.. ArrayList
     List <|.. LinkedList
     Set <|.. HashSet
+
+    style Iterable fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style Collection fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style List fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style Set fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
 ```
 
 <aside className="notes">
@@ -606,12 +676,24 @@ lights[3] = new Fan("oops");  // ArrayIndexOutOfBoundsException!
 {/* BRIEF BIG-O INTERLUDE */}
 {/* ============================================ */}
 
+
+<Slide>
+
+## What's your understanding of Big-O notation?
+
+  <PollSlide
+  choices={["I've never heard of it", "I've heard of it but don't remember it", "I know the basics", "I've mastered it"]}
+  />
+
+
+</Slide>
+
 <Slide>
 
 ## Absolute Time Doesn't Measure Algorithm Quality
 
-<Img 
-  src="/img/lectures/web/l3-bigo.webp" 
+<Img
+  src="/img/lectures/web/l3-bigo.webp"
   alt="Concept: 'The Speed of Finding Things' (Library Search Comparison)
 Tagline: 'It's not how fast—it's how it scales.'
 
@@ -742,6 +824,15 @@ Summary bar at bottom with concrete numbers: 'With n=1,000 items: O(1)=1 operati
 </Slide>
 
 <Slide>
+## Big-O Described in Emojis
+
+<Img src="/img/lectures/web/l3-big-o-emojis.webp"
+alt="Meme humorously describing big-O notation"
+/>
+
+</Slide>
+
+<Slide>
 
 ## The Wrong Algorithm Fails at Scale
 
@@ -782,16 +873,16 @@ Here's why this matters in practice. An O(1) operation is essentially instant re
 public class ArrayList<E> {
     private Object[] elementData;  // The backing array!
     private int size;              // How many elements we actually have
-    
+
     public ArrayList() {
         this.elementData = new Object[10];  // Default capacity: 10
         this.size = 0;
     }
-    
+
     public E get(int index) {
         return (E) elementData[index];  // O(1) — just array access
     }
-    
+
     public boolean add(E element) {
         if (size == elementData.length) {
             grow();  // Array full — need to resize!
@@ -831,12 +922,12 @@ private void grow() {
 
     // Create a new, bigger array
     Object[] newArray = new Object[newCapacity];
-    
+
     // Copy all elements to the new array
     for (int i = 0; i < size; i++) {
         newArray[i] = elementData[i];
     }
-    
+
     // Switch to the new array
     elementData = newArray;
     // Old array becomes garbage — GC will clean it up
@@ -897,8 +988,8 @@ Let's trace through it. First 10 adds: no resize, no copying. 11th add triggers 
 
 ## Each Linked List Node Points to Its Neighbors
 
-<Img 
-  src="/img/lectures/web/l3-linkedlist.webp" 
+<Img
+  src="/img/lectures/web/l3-linkedlist.webp"
   alt="Concept: 'The Chain of Nodes' (LinkedList Structure)
 Tagline: 'Direct access to the ends, but follow the chain for everything else.'
 
@@ -1018,7 +1109,7 @@ Maps associate keys with values—think of a dictionary or phone book. Each key 
 
 <Slide>
 
-## Example: Playlists Need Order and Allow Duplicates 
+## Example: Playlists Need Order and Allow Duplicates
 
 <p style={{fontSize: '1em'}}>
   <strong>Scenario:</strong> Store a playlist of songs in the order they should play
@@ -1052,7 +1143,7 @@ Let's practice choosing collections. A playlist needs order—songs play first t
 
 <Slide>
 
-## Example: Preventing Double-Votes Requires Uniqueness 
+## Example: Preventing Double-Votes Requires Uniqueness
 
 <p style={{fontSize: '1em'}}>
   <strong>Scenario:</strong> Track which users have already voted (prevent double-voting)
@@ -1091,7 +1182,7 @@ Preventing double-voting is a perfect Set use case. You only care "has this user
 
 <Slide>
 
-## Example: Looking Up Grades by Student ID 
+## Example: Looking Up Grades by Student ID
 
 <p style={{fontSize: '1em'}}>
   <strong>Scenario:</strong> Look up a student's grade by their student ID
@@ -1126,7 +1217,7 @@ When you have a natural key—like student ID—and need to look up associated d
 
 <Slide>
 
-## Example: First-Come-First-Served Processing 
+## Example: First-Come-First-Served Processing
 
 <p style={{fontSize: '1em'}}>
   <strong>Scenario:</strong> Process customer support tickets in the order they arrived
@@ -1160,7 +1251,7 @@ Here's a case where LinkedList shines—when used as a Queue. The Queue interfac
 
 <Slide>
 
-## Example: Grouping Devices by Room 
+## Example: Grouping Devices by Room
 
 <p style={{fontSize: '1em'}}>
   <strong>Scenario:</strong> Store all devices in each room of a smart home
@@ -1247,8 +1338,8 @@ Here's your cheat sheet. ArrayList for most list needs. LinkedList only for queu
 
 ## Primitives Need Wrapper Classes for Collections
 
-<Img 
-  src="/img/lectures/web/l3-boxing.webp" 
+<Img
+  src="/img/lectures/web/l3-boxing.webp"
   alt="Concept: 'The Gift Wrapping Station' (Primitive Boxing)
 Tagline: 'Boxing has costs. The == trap has victims.'
 
@@ -1301,7 +1392,7 @@ List<Integer> numbers = new ArrayList<>();
 // Autoboxing: int → Integer
 numbers.add(42);
 
-// Autounboxing: Integer → int  
+// Autounboxing: Integer → int
 int x = numbers.get(0);
 
 // Can do arithmetic directly
@@ -1387,8 +1478,8 @@ The performance difference can be dramatic. Each boxing/unboxing operation alloc
 
 ## Streams Provide a Uniform Abstraction for All I/O
 
-<Img 
-  src="/img/lectures/web/l3-streams.webp" 
+<Img
+  src="/img/lectures/web/l3-streams.webp"
   alt="Concept: 'The Universal Plumbing System' (Stream Architecture)
 Tagline: 'Data flows in, data flows out—streams make it uniform.'
 
@@ -1623,7 +1714,7 @@ try {
   <div>
     <p style={{fontSize: '0.8em', color: '#060'}}>The modern way (Java 7+):</p>
 ```java
-try (Scanner scanner = 
+try (Scanner scanner =
         new Scanner(
             new File("input.txt"))) {
     while (scanner.hasNext()) {
@@ -1651,14 +1742,14 @@ Remember Closeable from the hierarchy? Any Closeable can be used in try-with-res
 ```java
 public List<IoTDevice> loadDevices(String filename) {
     List<IoTDevice> devices = new ArrayList<>();
-    
+
     try (Scanner scanner = new Scanner(new File(filename))) {
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
             String[] parts = line.split(",");
             String type = parts[0];
             String id = parts[1];
-            
+
             if (type.equals("light")) {
                 int brightness = Integer.parseInt(parts[2]);
                 devices.add(new DimmableLight(id, brightness));
@@ -1669,7 +1760,7 @@ public List<IoTDevice> loadDevices(String filename) {
     } catch (FileNotFoundException e) {
         System.err.println("Could not load devices: " + e.getMessage());
     }
-    
+
     return devices;
 }
 ```
@@ -1714,7 +1805,7 @@ Here's a realistic example combining what we've learned. We read a CSV file of d
 ```java
 // Overloading example from InputStream
 public abstract int read();              // Read one byte
-public int read(byte[] b);               // Read into array  
+public int read(byte[] b);               // Read into array
 public int read(byte[] b, int off, int len);  // Read portion
 ```
 
