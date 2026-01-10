@@ -348,38 +348,6 @@ Java provides three main collection types, each with different characteristics:
 | **Set** | Unordered, no duplicates | You need to track unique items or check "contains?" | `HashSet<T>` |
 | **Map** | Key-value pairs, unique keys | You need to look up values by a key | `HashMap<K, V>` |
 
-**Examples:**
-```java
-// List: ordered collection with duplicates allowed
-List<String> roomNames = new ArrayList<String>();
-roomNames.add("bedroom");
-roomNames.add("bedroom");  // Duplicate is allowed
-System.out.println(roomNames.get(0));  // Access by index
-
-// Set: unordered collection with no duplicates
-Set<String> uniqueRooms = new HashSet<String>();
-uniqueRooms.add("bedroom");
-uniqueRooms.add("bedroom");  // Second add has no effect
-System.out.println(uniqueRooms.size());  // Prints 1
-
-// Map: key-value pairs
-Map<String, IoTDevice> deviceRegistry = new HashMap<String, IoTDevice>();
-deviceRegistry.put("living-room-light", new DimmableLight("living-room", 100));
-IoTDevice device = deviceRegistry.get("living-room-light");  // Fast lookup by key
-
-// Nested collections: Map with List values (useful for grouping)
-Map<String, List<IoTDevice>> devicesByRoom = new HashMap<String, List<IoTDevice>>();
-
-// To add a device to a room, first ensure the room's list exists:
-if (!devicesByRoom.containsKey("bedroom")) {
-    devicesByRoom.put("bedroom", new ArrayList<IoTDevice>());
-}
-devicesByRoom.get("bedroom").add(new Fan("bedroom-fan"));
-
-// Or use computeIfAbsent for a more concise pattern:
-devicesByRoom.computeIfAbsent("kitchen", k -> new ArrayList<>()).add(new DimmableLight("kitchen-light", 100));
-```
-
 **ArrayList vs LinkedList:**
 
 Java provides two main `List` implementations, but they work very differently internally:
@@ -467,8 +435,36 @@ Verify your Part 2 code compiles:
 .\gradlew.bat compileJava
 ```
 
+### Interactive Testing with `main()`
+
+Part 2 doesn't have automated JUnit tests. Why? Because **sometimes the fastest way to test during exploratory development is to poke at your code interactively**, not to spend time writing exhaustive test suites.
+
+We've provided a `main()` method in `CollectionsExercises.java` that demonstrates this approach:
+
+```bash
+# macOS/Linux
+./gradlew runPart2
+
+# Windows
+.\gradlew.bat runPart2
+```
+
+This will:
+- Print out what collections you created
+- Show you their contents
+- Give you commented-out code to uncomment as you implement each method
+
+**The Philosophy:** When you're learning a new library or exploring a design, a simple `main()` method lets you:
+- Quickly see what your data structures contain
+- Try operations and observe results immediately
+- Understand behavior before committing to a design
+
+Once you understand what you're building, *then* you write proper tests. But for initial exploration? `main()` may be your friend.
+
+Feel free to modify the `main()` method to test your own scenarios!
+
 :::note No Automated Tests for Part 2
-Part 2 exercises are manually verified. As long as your code compiles and you've chosen appropriate collection types, you're good! Lab leaders will discuss your choices at the sync point.
+Part 2 exercises are manually verified - as long as you put some effort in, you will get marks. Lab leaders will discuss your choices at the sync point.
 :::
 
 ### 🔄 Sync Point 2
@@ -549,10 +545,10 @@ The starter code includes a `runPerformanceComparison()` method that:
 Run the performance test:
 ```bash
 # macOS/Linux
-./gradlew run
+./gradlew runPart3
 
 # Windows
-.\gradlew.bat run
+.\gradlew.bat runPart3
 ```
 
 **Record your results:**
