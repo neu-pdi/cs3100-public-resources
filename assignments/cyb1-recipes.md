@@ -6,6 +6,8 @@ image: /img/assignments/web/a1.png
 
 ## Update Log
 
+**January 10, 2026:** Specified that `DECIMAL_PRECISION` constant for `ExactQuantity` and `RangeQuantity` must be set to 3. This allows you to write tests that assume that the precision is 3 decimal places, rather than requiring tests to be aware of the actual precision currently set.
+
 **January 9, 2026:** Clarified that NullAway compiler checks eliminate the need to test for null parameter exceptions on `@NonNull` annotated parameters. You should NOT write tests that verify `IllegalArgumentException` is thrown when null is passed to `@NonNull` parameters—the compiler prevents this at compile-time.
 
 ---
@@ -297,7 +299,7 @@ Represents a precise decimal quantity.
   - **Postconditions:** Creates an exact quantity with the given amount and unit
 
 **Constants:**
-- `public static final int DECIMAL_PRECISION` - The maximum number of decimal places to display when formatting quantities (you should choose a reasonable value, such as 2 or 3)
+- `public static final int DECIMAL_PRECISION = 3` - The maximum number of decimal places to display when formatting quantities (must be set to 3)
 
 **Methods:**
 - `public double getAmount()` - Returns the amount (always > 0.0)
@@ -358,7 +360,7 @@ Represents a range of quantities (e.g., "2-3 cups").
   - **Postconditions:** Creates a range quantity with the given min, max, and unit
 
 **Constants:**
-- `public static final int DECIMAL_PRECISION` - The maximum number of decimal places to display when formatting quantities (you should choose a reasonable value, such as 2 or 3)
+- `public static final int DECIMAL_PRECISION = 3` - The maximum number of decimal places to display when formatting quantities (must be set to 3)
 
 **Methods:**
 - `public double getMin()` - Returns the minimum amount (always > 0.0)
