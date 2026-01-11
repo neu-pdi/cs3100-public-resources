@@ -18,3 +18,4 @@ export default function Img({ src, ...props }: ImgProps) {
   return <img src={imageSrc} {...props} />;
 }
 
+

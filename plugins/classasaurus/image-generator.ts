@@ -81,15 +81,8 @@ export function extractImagesFromMdx(
     return 0;
   };
 
-  // Pattern to find complete <img ... /> tags (handles multiline)
-  // Must match to actual /> not just > which might appear in alt text (like -> in lambda syntax)
-  // Use greedy match up to /> which is the actual tag terminator for self-closing tags
-  const imgTagPattern = /<img\s+[\s\S]*?\/>/g;
-  
-  let match: RegExpExecArray | null;
-  while ((match = imgTagPattern.exec(content)) !== null) {
-    const tagContent = match[0];
-    
+  // Helper function to process a tag and extract image if valid
+  const processImageTag = (tagContent: string): void => {
     // Extract src and alt attributes
     const src = extractAttribute(tagContent, 'src');
     const alt = extractAttribute(tagContent, 'alt');
@@ -101,6 +94,18 @@ export function extractImagesFromMdx(
         images.push(extracted);
       }
     }
+  };
+
+  // Pattern to find complete <img ... /> or <Img ... /> tags (handles multiline)
+  // Must match to actual /> not just > which might appear in alt text (like -> in lambda syntax)
+  // Use greedy match up to /> which is the actual tag terminator for self-closing tags
+  // Case-insensitive to match both <img> and <Img> (custom component)
+  // This handles both standard HTML <img> tags and custom React <Img> components
+  const imgTagPattern = /<img\s+[\s\S]*?\/>/gi;
+  
+  let match: RegExpExecArray | null;
+  while ((match = imgTagPattern.exec(content)) !== null) {
+    processImageTag(match[0]);
   }
 
   // Pattern for Markdown images: ![alt](src)

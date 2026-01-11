@@ -94,6 +94,8 @@ Today's lecture will continue to explore the role of inheritance and dynamic dis
 ## Describe the role of generics in the Collections API (10 minutes)
 The Collections API provides core data structures like Lists, Maps, and Sets. Before we go too far into discussion Collections, we should discuss a type system feature of Java called *generics*.
 
+![The Unlabeled Warehouse - When everything is Object, anything can go wrong](/img/lectures/web/l3-warehouse.webp)
+
 Generics allow us to write code that is reusable *and* type-safe, without knowing in advance what type of data we will be working with. For example, here is a basic list interface in Java that does not use generics:
 
 ```java
@@ -195,6 +197,9 @@ This is because the type information is erased at runtime, so the `list` variabl
 We'll continue to explore generics as we discuss the Collections API. In the context fo this course, it is important to know that you should [favor generic types](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch5.xhtml#lev29) and [favor generic methods](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch5.xhtml#lev30) when designing your own classes. 
 
 ## Recognize and apply Java's core data structures (10 minutes)
+
+![Three Ways to Organize - List for sequences, Set for membership, Map for lookup](/img/lectures/web/l3-toolbox.webp)
+
 We briefly introduced arrays on the first day of the course. As a reminder, here are the properties of arrays in Java:
 - Arrays are a fixed size
 - Arrays are zero-indexed (first element is at index 0)
@@ -279,12 +284,18 @@ The only difference between the two is the underlying data structure:
 
 By "resizable array", we mean that the `ArrayList` stores its elements in a contiguous block of memory, and can grow or shrink as needed. When it needs to grow, it creates a new, larger array and copies the elements over. When it needs to shrink, it creates a new, smaller array and copies the elements over.
 
+![The Growing Classroom - How ArrayList manages capacity](/img/lectures/web/l3-arraylist-classroom.png)
+
 By "doubly-linked list", we mean that each element in the list contains a reference to the previous and next elements in the list. This allows for efficient insertion and removal of elements from the middle of the list, but at the cost of more memory usage per element.
+
+![The Chain of Nodes - LinkedList structure](/img/lectures/web/l3-linkedlist.webp)
 
 When choosing between `ArrayList` and `LinkedList`, consider the following tradeoffs:
 
 :::note Looking Ahead
 We will talk more about the tradeoffs between `ArrayList` and `LinkedList` in [Lecture 34 (Performance)](/lecture-notes/l34-performance), when we discuss runtime complexity and memory access patterns. For now, a rule of thumb: **use `ArrayList` by default**. The reasons why will become clearer once we understand how modern CPUs interact with memory.
+
+![The Speed of Finding Things - It's not how fast, it's how it scales](/img/lectures/web/l3-bigo.webp)
 :::
 
 ### Sets
@@ -308,6 +319,8 @@ The [`Map` interface](https://docs.oracle.com/en/java/javase/21/docs/api/java.ba
 The most common implementation of `Map` is [`HashMap`](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/HashMap.html).
 
 ## Describe the purpose of primitive wrapper types (5 minutes)
+
+![The Gift Wrapping Station - Boxing has costs, the == trap has victims](/img/lectures/web/l3-boxing.webp)
 
 Recall from lecture 1 that Java has "primitive types" like `int`, `double`, `boolean`, etc. that are not objects. We started this lecture talking about how great it is to use generic types like `List<T>` to write code that works with any type. We must clarify that by "any type" we really mean "any reference type". Primitive types are not objects, and cannot be used as the type parameter for a generic type.
 
@@ -348,6 +361,9 @@ System.out.println(Q == R); //This will print true
 So, to repeat: [Prefer primitive types to wrapper types](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch9.xhtml#lev61).
 
 ## Utilize Java methods for reading input and writing output to streams (15 minutes)
+
+![The Universal Plumbing System - Data flows in, data flows out, streams make it uniform](/img/lectures/web/l3-streams.webp)
+
 In order to do anything useful, we probably need to be able to read input from the outside world (user, file, etc.) and write output to the outside world (user, file, etc.).
 
 We saw how to write output to the console using `System.out.println`. `System.out` is an instance of `PrintStream`, which is a type that represents a stream of characters to a specific destination (in this case, the "standard output" stream).
