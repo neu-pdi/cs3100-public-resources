@@ -48,12 +48,16 @@ If lab leaders observe that you are **not working on the lab** during the sectio
 - Your name and year/program
 - What you're excited about in CS
 
+**Announcement (30 seconds):** "If you had any trouble with Lab 1 or your development environment isn't fully working yet, don't worry! We're here to help. As you start working on Part 1, we'll come around and make sure everyone's setup is good to go. Just flag us down if you're stuck."
+
 **Student Introductions (3 minutes):**
 - Have students turn to 1-2 people near them
 - Share: name, year, one thing they're working on this semester (can be academic or personal)
 - Optional ice-breaker: "What's one thing you've learned in the first two lectures that surprised you or clicked for you? Or that you're looking forward to learning more about?"
 
 This brief connection-building helps students feel comfortable asking each other questions during the lab.
+
+**During Part 1:** Circulate and check that everyone can clone the Lab 2 repo and run `./gradlew build`. Use the Pawtograder dashboard to identify students who didn't complete Lab 1, and prioritize helping them get their environment working.
 
 :::
 
