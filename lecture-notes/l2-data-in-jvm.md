@@ -262,7 +262,7 @@ public interface IoTDevice {
 ### Abstract classes
 - Abstract classes:
     - Define a set of methods that a class must implement.
-    - Can extend one or more classes.
+    - Can extend up to one superclass and multiple interfaces.
     - Can provide a default implementation for some methods
     - Cannot be instantiated directly.
 

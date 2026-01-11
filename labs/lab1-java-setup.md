@@ -61,7 +61,7 @@ For detailed instructions with screenshots, see the [Pawtograder Student Guide](
 
 ### Quick Setup Steps
 
-1. **Log in to Pawtograder** at [pawtograder.com](https://pawtograder.com) using your Northeastern credentials (click "Continue with Microsoft")
+1. **Log in to Pawtograder** at [pawtograder.com](https://app.pawtograder.com) using your Northeastern credentials (click "Continue with Microsoft")
 2. **Connect your GitHub account** — when prompted, click "Sign in with GitHub" and authorize Pawtograder
 3. **Accept the organization invitation** — click "Open GitHub Organization Invitation" and accept using your GitHub account
 
@@ -117,6 +117,8 @@ sudo apt install temurin-21-jdk
 
 Before you can clone repositories from our course organization, you need to connect VS Code to GitHub with proper authorization.
 
+> **Important step if you already have connected VS Code to GitHub for another course:** You will need to force a complete re-authorization of VSCode (and any git helpers, like Git Credential Manager) for the `neu-cs3100` organization. This is because the previous authorization may not have included the `neu-cs3100` organization. The easiest way that we know how to do this is to open your [GitHub Settings](https://github.com/settings/applications). Click on "Authorized OAuth Apps" and then click "Revoke all" (at a minimum, you will need to revoke VSCode, and potentially Git Credential Manager, and potentially "Microsoft Corporation" - if you are OK simply with "Revoke all", it is the most surefire way to do this). Then, follow the steps above to reconnect VS Code to GitHub for the `neu-cs3100` organization.
+
 1. Open VS Code
 2. Click the **Accounts** icon in the bottom-left corner of the sidebar (person icon)
 3. If you see a GitHub account already connected:
@@ -136,7 +138,129 @@ Before you can clone repositories from our course organization, you need to conn
 
 > 🚨 **Did you complete the SAML authorization step?** If you skipped step 6 or didn't see the organization authorization screen, **the next step will fail**. You won't be able to clone repositories from `neu-cs3100`. Go back, sign out (step 3), sign back in, and make sure you authorize the `neu-cs3100` organization. This is required even if you've used VS Code with GitHub before!
 
+### Alternative: Set Up SSH Keys (Recommended to Avoid SAML Issues)
+
+Many students experience authentication problems with SAML SSO when using HTTPS to clone repositories. **Using SSH keys is a more reliable authentication method** that bypasses these issues entirely.
+
+> 💡 **Why SSH keys?** SSH keys provide a secure, persistent way to authenticate with GitHub without repeatedly entering credentials or dealing with SAML SSO prompts. Once configured, Git operations work seamlessly.
+
+#### Check for Existing SSH Keys
+
+Before creating new keys, check if you already have SSH keys configured:
+
+**macOS/Linux:**
+```bash
+ls -la ~/.ssh
+```
+
+**Windows (PowerShell):**
+```powershell
+ls ~\.ssh
+```
+
+Look for files named `id_rsa.pub`, `id_ed25519.pub`, or `id_ecdsa.pub`. If you see these files, you already have SSH keys and can skip to [Add SSH Key to GitHub](#add-ssh-key-to-github).
+
+#### Generate a New SSH Key
+
+If you don't have SSH keys or want to create new ones for this course:
+
+**macOS:**
+1. Open Terminal (⌘+Space, type "Terminal")
+2. Generate the key (replace with your GitHub email):
+   ```bash
+   ssh-keygen -t ed25519 -C "your-github-email@example.com"
+   ```
+3. When prompted "Enter a file in which to save the key," press **Enter** to accept the default location (`~/.ssh/id_ed25519`)
+4. When prompted for a passphrase, you can either:
+   - Press **Enter** twice to create a key without a passphrase (easier, but less secure)
+   - Type a secure passphrase (you'll need to enter it when using the key)
+
+5. Start the SSH agent and add your key:
+   ```bash
+   eval "$(ssh-agent -s)"
+   ssh-add ~/.ssh/id_ed25519
+   ```
+
+6. Copy your public key to clipboard:
+   ```bash
+   pbcopy < ~/.ssh/id_ed25519.pub
+   ```
+
+**Windows:**
+1. Open Git Bash (or PowerShell)
+2. Generate the key (replace with your GitHub email):
+   ```bash
+   ssh-keygen -t ed25519 -C "your-github-email@example.com"
+   ```
+3. When prompted "Enter a file in which to save the key," press **Enter** to accept the default location (`C:\Users\YourName\.ssh\id_ed25519`)
+4. When prompted for a passphrase, you can either:
+   - Press **Enter** twice to create a key without a passphrase (easier, but less secure)
+   - Type a secure passphrase (you'll need to enter it when using the key)
+
+5. Start the SSH agent (in PowerShell as Administrator):
+   ```powershell
+   Get-Service ssh-agent | Set-Service -StartupType Automatic
+   Start-Service ssh-agent
+   ```
+
+6. Add your key to the SSH agent (Git Bash):
+   ```bash
+   ssh-add ~/.ssh/id_ed25519
+   ```
+
+7. Copy your public key to clipboard (PowerShell):
+   ```powershell
+   Get-Content ~\.ssh\id_ed25519.pub | Set-Clipboard
+   ```
+   Or using Git Bash:
+   ```bash
+   clip < ~/.ssh/id_ed25519.pub
+   ```
+
+> ⚠️ **Important:** Only share your **public key** (the `.pub` file). Never share your private key (the file without `.pub`)!
+
+#### Add SSH Key to GitHub
+
+Now add your SSH public key to your GitHub account:
+
+1. Go to [GitHub SSH Settings](https://github.com/settings/keys)
+2. Click **New SSH key** (green button in top-right)
+3. Add a descriptive title (e.g., "My CS3100 Laptop" or "MacBook Pro")
+4. Paste your public key into the "Key" field (it should start with `ssh-ed25519` and end with your email)
+5. Click **Add SSH key**
+6. If prompted, confirm with your GitHub password
+
+#### Test Your SSH Connection
+
+Verify that SSH is working:
+
+```bash
+ssh -T git@github.com
+```
+
+You should see a message like:
+```
+Hi username! You've successfully authenticated, but GitHub does not provide shell access.
+```
+
+If you see this message, **SSH is configured correctly!** You can now clone repositories using SSH URLs (which start with `git@github.com:` instead of `https://`).
+
+> 🎉 **Success!** You won't need to deal with SAML SSO authentication issues when using SSH.
+
 ### Clone the Lab Repository
+
+Now you're ready to clone your lab repository. First, find your repository in Pawtograder:
+
+1. Go to [Pawtograder](https://pawtograder.com)
+2. Navigate to **Lab 1: Java Tooling and Setup**
+3. You'll see your repository link displayed on the assignment page
+4. Note whether you want to use HTTPS or SSH (see methods below)
+
+> 💡 **Tip:** Your repository link will be in the format `https://github.com/neu-cs3100/sp26-lab1-<your-username>` or `git@github.com:neu-cs3100/sp26-lab1-<your-username>.git` for SSH.
+
+Now choose your cloning method:
+
+**Method 1: Using VS Code with HTTPS (default, easier setup):**
 
 1. Open VS Code (if not already open)
 2. Open the Command Palette (⌘+Shift+P on Mac, Ctrl+Shift+P on Windows/Linux)
@@ -146,6 +270,20 @@ Before you can clone repositories from our course organization, you need to conn
 6. In the search box, type `neu-cs3100/sp26-lab1-` and select your repository (it will have your GitHub username at the end)
 7. Choose a folder on your computer to clone into (we would suggest making a new CS3100 folder to place all of your repositories in)
 8. When prompted "Would you like to open the cloned repository?", click **Open**
+
+**Method 2: Using SSH (recommended if you experience SAML issues):**
+
+1. From Pawtograder, click on your repository link to open it on GitHub
+2. Click the green **Code** button on GitHub
+3. Select the **SSH** tab (you must have completed the [SSH setup](#alternative-set-up-ssh-keys-recommended-to-avoid-saml-issues) first)
+4. Copy the SSH URL (it should look like `git@github.com:neu-cs3100/sp26-lab1-<your-username>.git`)
+5. In VS Code, open the Command Palette (⌘+Shift+P on Mac, Ctrl+Shift+P on Windows/Linux)
+6. Type "Git: Clone" and select it
+7. Paste the SSH URL when prompted
+8. Choose a folder on your computer to clone into
+9. When prompted "Would you like to open the cloned repository?", click **Open**
+
+> 💡 **Tip:** If you set up SSH keys, using SSH means you won't encounter SAML authentication issues in the future when pushing and pulling code!
 
 ### Install Suggested Extensions
 
@@ -236,7 +374,7 @@ We recommend [setting the default](https://stackoverflow.com/a/45899693/631051) 
 ./gradlew compileJava
 ```
 
-On Windows PowerShell, use:
+**On Windows** PowerShell (the DEFAULT if you have not changed it to Git Bash), use:
 ```cmd
 .\gradlew.bat compileJava
 ```
@@ -253,7 +391,13 @@ This project uses two static analysis tools:
 - **Error Prone** — catches common Java mistakes (like using `==` instead of `.equals()`)
 - **NullAway** — catches potential null pointer exceptions before your code runs
 
-You can also see these warnings in VS Code's **Problems** panel (View → Problems, or ⌘+Shift+M / Ctrl+Shift+M). This panel shows all errors and warnings in your project — it's a great way to find issues!
+> ⚠️ **Important about the Problems panel**: VS Code's **Problems** panel (View → Problems, or ⌘+Shift+M / Ctrl+Shift+M) shows many warnings and errors, but **it may not show all static analysis warnings** from Error Prone and NullAway. We're working on improving this integration. For now, **rely on the terminal output** from `./gradlew compileJava` to see all warnings.
+
+> 🔄 **Gradle caching**: Gradle is smart — it won't recompile unchanged files. If you run `./gradlew compileJava` again without making changes, you won't see the warnings again! To force Gradle to rebuild and show output, run:
+> ```bash
+> ./gradlew clean compileJava
+> ```
+> The `clean` task deletes the build output, forcing a fresh compilation.
 
 > 💡 **Your first task will be to fix these warnings.** But first, let's explore the codebase.
 
@@ -306,7 +450,9 @@ Complete the following tasks. Each task should take just a few minutes.
 
 Remember those 4 warnings from compiling? Let's fix them!
 
-1. Open the **Problems panel** (⌘+Shift+M on Mac, Ctrl+Shift+M on Windows) to see all warnings in one place. Click on a warning to jump directly to that line!
+1. **Review the warnings in the terminal output** from `./gradlew compileJava`. Look for the `warning:` lines that show the file path and line number.
+   
+   > 💡 **Note:** The VS Code Problems panel (⌘+Shift+M / Ctrl+Shift+M) may not show all static analysis warnings. **Use the terminal output** as your primary source of truth!
 
 2. **Research** each warning by clicking the links in the terminal output or searching online:
    - [ReferenceEquality](https://errorprone.info/bugpattern/ReferenceEquality) — why `==` is wrong for comparing objects
@@ -320,10 +466,11 @@ Remember those 4 warnings from compiling? Let's fix them!
 
 4. Rebuild to verify **0 warnings**:
    ```bash
-   ./gradlew compileJava
+   ./gradlew clean compileJava
    ```
+   (The `clean` ensures you see fresh output even if you haven't changed anything)
 
-> 🛠️ **VS Code tip:** After fixing each warning, the Problems panel updates automatically. You can also hover over the yellow squiggly underlines in the editor to see the warning message.
+> 🛠️ **VS Code tip:** You can hover over yellow squiggly underlines in the editor to see some warning messages, but remember that not all static analysis warnings appear in the editor — check the terminal output!
 
 ### Task 2: Run Tests and Fix the Bug in `Fan.java` 🐛
 
@@ -514,6 +661,43 @@ Try clearing the Gradle cache:
 ```bash
 ./gradlew clean build --refresh-dependencies
 ```
+
+### SSH Authentication Issues
+
+If you're having trouble with SSH authentication:
+
+**"Permission denied (publickey)"**
+- Make sure you've added your SSH key to GitHub (see [Add SSH Key to GitHub](#add-ssh-key-to-github))
+- Test your connection: `ssh -T git@github.com`
+- Make sure the SSH agent is running and has your key:
+  ```bash
+  ssh-add -l
+  ```
+  If your key isn't listed, add it:
+  ```bash
+  ssh-add ~/.ssh/id_ed25519
+  ```
+
+**SSH agent not running (Windows)**
+- Open PowerShell as Administrator and run:
+  ```powershell
+  Get-Service ssh-agent | Set-Service -StartupType Automatic
+  Start-Service ssh-agent
+  ```
+
+**SSH key passphrase prompts**
+- If you set a passphrase on your SSH key, you'll be prompted to enter it when using the key
+- On macOS, you can add your key to the keychain so you don't have to re-enter the passphrase:
+  ```bash
+  ssh-add --apple-use-keychain ~/.ssh/id_ed25519
+  ```
+
+**Still having SAML/authentication issues with HTTPS?**
+- Switch to SSH authentication by following the [SSH setup instructions](#alternative-set-up-ssh-keys-recommended-to-avoid-saml-issues)
+- If you already cloned with HTTPS, you can change to SSH:
+  ```bash
+  git remote set-url origin git@github.com:neu-cs3100/sp26-lab1-<your-username>.git
+  ```
 
 ## Resources
 
