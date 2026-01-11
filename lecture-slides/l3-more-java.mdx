@@ -41,6 +41,12 @@ import PollSlide from '@site/src/components/PollSlide';
 - These aren't just APIs to memorize—they're exemplars of good object-oriented design
 - Students will use these libraries throughout their careers; understanding the design helps them use them effectively
 
+**TIME MANAGEMENT NOTES:**
+- If running long, consider skipping: the Big-O emoji meme slide, the ArrayList classroom analogy, and/or 1-2 of the data structure poll questions
+- The LinkedList section can be condensed to just "use ArrayList unless you need a Queue"
+- The "Generics Rebellion" historical slide is skippable if pressed for time
+- Core priorities: generics syntax, List/Set/Map selection, wrapper == trap, try-with-resources
+
 **Transition:** Let's start with the learning objectives for today.
 </aside>
 
@@ -108,8 +114,8 @@ classDiagram
     }
     class Light {
         <<abstract>>
-        +turnOn()
-        +turnOff()
+        +turnOn()*
+        +turnOff()*
     }
     class DimmableLight {
         +setBrightness(brightness)
@@ -282,6 +288,8 @@ Bottom banner in aged parchment style:
 'Java programmers demanded generic types'"/>
 
 <aside className="notes">
+**⏱️ SKIPPABLE SLIDE** — This historical context is fun but not essential. Skip if behind schedule.
+
 - Java programmers demanded generic types.
 - They were already available in C++.
 - For a time, there was a schism in the community, with some using Generic Java.
@@ -442,40 +450,6 @@ if (lights instanceof List) { }  // This works, but less useful
 
 <Slide>
 
-## The Right Data Structure Makes the Job Easy
-
-<Img
-  src="/img/lectures/web/l3-toolbox.webp"
-  alt="Concept: 'Three Ways to Organize' (Data Structure Choice)
-Tagline: 'List for sequences. Set for membership. Map for lookup.'
-
-A clean three-panel comparison in flat infographic style, each panel showing the same four IoT devices (Light, Fan, Thermostat, Sensor) organized differently:
-
-LIST panel: Devices in numbered slots [0], [1], [2], [3]. Caption: 'Ordered by position. Duplicates OK.' Code: 'devices.get(2)' with arrow pointing directly to slot 2. Badge: 'O(1) by index'.
-
-SET panel: Devices scattered without numbers, each unique. A duplicate Light bounces away with an X. Caption: 'Unique only. Order not guaranteed.' Code: 'devices.contains(fan)' with checkmark. Badge: 'O(1) membership'.
-
-MAP panel: Devices in labeled compartments: 'living-room' → Light, 'bedroom' → Fan. Caption: 'Find by key, not position.' Code: 'devices.get(bedroom)' returns Fan. Badge: 'O(1) by key'.
-
-Bottom summary: 'What's your question? By position → List. Already have it? → Set. By name → Map.'"
-/>
-
-<aside className="notes">
-- **Learning Objective 2:** Recognize and apply Java's core data structures
-- The graphic shows a toolbox metaphor—different tools for different jobs
-- List = numbered hooks (order matters, access by position)
-- Set = magnetic board (each item appears once, duplicates bounce off)
-- Map = labeled drawers (find by name/key, not position)
-- Key insight: Choosing the right data structure makes code simpler AND faster
-- Choose wrong, and you fight your tools instead of solving your problem
-
-**Transition:** Let's look at the actual inheritance hierarchy of these collections.
-</aside>
-
-</Slide>
-
-<Slide>
-
 ## Collections Form an Inheritance Hierarchy
 
 ```mermaid
@@ -518,6 +492,8 @@ classDiagram
 ```
 
 <aside className="notes">
+**⏱️ CHECKPOINT: ~10 min into lecture.** If you're past 15 min here, pick up the pace on upcoming slides.
+
 - Walk through the hierarchy top-to-bottom:
 - Iterable: anything that can be used in a for-each loop
 - Collection: core operations (add, remove, contains, size)
@@ -830,6 +806,12 @@ Summary bar at bottom with concrete numbers: 'With n=1,000 items: O(1)=1 operati
 alt="Meme humorously describing big-O notation"
 />
 
+<aside className="notes">
+**⏱️ SKIPPABLE SLIDE** — Fun meme but adds no new content. Skip if behind schedule.
+
+Just a quick visual reinforcement—move on quickly or skip entirely.
+</aside>
+
 </Slide>
 
 <Slide>
@@ -956,6 +938,12 @@ When the backing array fills up, ArrayList grows it. The strategy: create a new 
 
 ## Classroom Analogy
 
+<aside className="notes">
+**⏱️ SKIPPABLE SLIDE** — The previous code slide already explains ArrayList resizing. This visual analogy is helpful but redundant if time is tight.
+
+**⏱️ CHECKPOINT: ~20 min into lecture.** Should not have spent more than 25 min to reach here. If over, skip this slide and move directly to LinkedList.
+</aside>
+
 <Img src="/img/lectures/web/l3-arraylist-classroom.png"
 alt="
 Concept: 'The Growing Classroom' (How ArrayList Manages Capacity)Tagline: 'When you run out of seats, you don't add one chair—you move to a room twice the size.'
@@ -1016,6 +1004,8 @@ Bottom banner:
 </p>
 
 <aside className="notes">
+**⏱️ SKIPPABLE SLIDE** — Amortized analysis is a deeper concept. If short on time, just say "resizes are rare so add() averages O(1)" and move on.
+
 Let's trace through it. First 10 adds: no resize, no copying. 11th add triggers resize—copy 10 elements. Adds 12-15: no resize. 16th add: resize, copy 15 elements. The pattern: we do O(n) work, but then get O(n) free adds before the next resize. The math works out to about 2N total copies for N insertions, which is O(1) per insertion on average. This "amortized analysis" is a key concept in algorithm design—understanding the average cost over many operations.
 </aside>
 
@@ -1023,48 +1013,26 @@ Let's trace through it. First 10 adds: no resize, no copying. 11th add triggers 
 
 <Slide>
 
-## Each Linked List Node Points to Its Neighbors
+## LinkedList: Use It Only for Queues
 
-<Img
-  src="/img/lectures/web/l3-linkedlist.webp"
-  alt="Concept: 'The Chain of Nodes' (LinkedList Structure)
-Tagline: 'Direct access to the ends, but follow the chain for everything else.'
-
-A clear technical diagram in blueprint style showing a LinkedList with 4 IoT device elements: 'Light-A', 'Fan-B', 'Light-C', 'Thermo-D'.
-
-The main structure shows a 'LinkedList<IoTDevice>' object on the left with two labeled arrows prominently displayed: 'first' pointing directly to Node A, 'last' pointing directly to Node D, and 'size: 4'. These two pointers are highlighted with a green glow and labeled 'ALWAYS DIRECT ACCESS - O(1)!' to emphasize that the LinkedList maintains constant-time access to both ends. Four Node boxes arranged horizontally, each containing three fields: 'prev' pointer (arrow pointing left, or null for first), 'item' field showing the device ('Light-A', 'Fan-B', 'Light-C', 'Thermo-D'), and 'next' pointer (arrow pointing right, or null for last). Bidirectional arrows clearly show the chain: A↔B↔C↔D. Node A's 'prev' shows 'null', Node D's 'next' shows 'null'.
-
-Below, THREE operations are illustrated with step counts:
-1. 'addFirst(newLight)' operation (LEFT, highlighted in bright green): Shows a new green Node X being inserted at the front. A direct green arrow from 'first' pointer to the new node. Only 3 pointer updates needed (first→X, X.next→A, A.prev→X). Large caption: 'ALWAYS O(1)—direct pointer to first!' with '0 hops, just rewire'. Code: 'linkedList.addFirst(newLight) // instant!'
-2. 'addLast(newThermo)' operation (RIGHT, highlighted in bright green): Shows a new green Node Y being inserted at the end. A direct green arrow from 'last' pointer to the new node. Only 3 pointer updates needed (last→Y, D.next→Y, Y.prev→D). Large caption: 'ALWAYS O(1)—direct pointer to last!' with '0 hops, just rewire'. Code: 'linkedList.addLast(newThermo) // instant!'
-3. 'get(2)' operation (CENTER, in orange): A dotted orange line shows traversing from 'first' through Node A (step 1), then Node B (step 2), finally reaching Node C (step 3). Counter shows '3 hops to reach index 2'. Caption: 'Must walk the chain—O(n)'. Code: 'linkedList.get(2) // 3 pointer hops!'
-
-A 'Key Insight' callout box in green states: 'LinkedList ALWAYS has O(1) addFirst() and addLast() because it stores direct pointers to both ends. No traversal needed—ever!'
-
-A 'Common Misconception' sidebar shows two developers arguing. Developer A: 'LinkedList is faster for insertions!' Developer B points to the diagram: 'Only addFirst/addLast are guaranteed O(1). For add(index, element) in the middle? Finding position 500,000 means 250,000 hops first—then you can insert in O(1).' A performance comparison shows: 'Middle insert: ArrayList O(n) shift but cache-friendly vs LinkedList O(n) traversal + O(1) insert with cache misses. ArrayList usually wins! But addFirst/addLast? LinkedList wins every time.'
-
-Color coding: existing nodes in blue, addFirst/addLast operations in bright green with 'O(1) GUARANTEED' badges, traversal path in orange, misconception callout in red."
-/>
-
-<aside className="notes">
-Here's the visual structure. Each node contains data plus two pointers. The LinkedList object only knows where the chain starts and ends. To find the middle, you must walk the chain node by node. This is fundamentally different from an array where you can jump directly to any index. The doubly-linked structure means you can walk either direction, and insertions/deletions just require rewiring a few pointers.
-</aside>
-
-</Slide>
-
-<Slide>
-
-## LinkedList Excels Only as a Queue or Deque
-
-<p style={{fontSize: '0.95em'}}>
-  LinkedList shines in <strong>very specific</strong> scenarios:
-</p>
-
-<ul style={{fontSize: '0.85em'}}>
-  <li><strong>Queue operations</strong> — add at end, remove from front (use as <code>Queue</code>)</li>
-  <li><strong>Deque operations</strong> — add/remove at both ends</li>
-  <li><strong>Iterator-based modification</strong> — insert/remove while iterating</li>
-</ul>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.85em'}}>
+  <div>
+    <p><strong>How it works:</strong></p>
+    <ul>
+      <li>Chain of nodes, each pointing to neighbors</li>
+      <li>O(1) add/remove at <em>both ends</em></li>
+      <li>O(n) to access middle elements (must walk chain)</li>
+    </ul>
+  </div>
+  <div>
+    <p><strong>When to use it:</strong></p>
+    <ul>
+      <li>As a <code>Queue</code> (FIFO)</li>
+      <li>As a <code>Deque</code> (double-ended)</li>
+      <li><em>Almost never</em> as a general <code>List</code></li>
+    </ul>
+  </div>
+</div>
 
 ```java
 // Good use of LinkedList: as a Queue
@@ -1072,16 +1040,16 @@ Queue<Task> taskQueue = new LinkedList<>();
 taskQueue.offer(new Task("process"));  // Add to end — O(1)
 Task next = taskQueue.poll();          // Remove from front — O(1)
 
-// Still use ArrayList for most other cases
+// For everything else, use ArrayList
 List<Light> lights = new ArrayList<>();  // Default choice
 ```
 
 <p style={{marginTop: '0.5em', fontSize: '0.9em', color: '#9370DB'}}>
-  <strong>Rule of thumb: Use ArrayList unless you specifically need queue/deque behavior</strong>
+  <strong>Rule: Use ArrayList unless you specifically need queue behavior</strong>
 </p>
 
 <aside className="notes">
-So when should you actually use LinkedList? When you're using it as a Queue or Deque—adding at one end and removing from the other. LinkedList implements both Queue and Deque interfaces with true O(1) operations at both ends. It's also useful when you're iterating with an Iterator and need to insert/remove at the current position without index-based access. For everything else—random access, searching, typical list operations—ArrayList wins. This isn't just theoretical; real-world benchmarks consistently show ArrayList outperforming LinkedList for most use cases.
+LinkedList stores elements as a chain of nodes, each pointing to its neighbors. It has O(1) operations at both ends, but O(n) to access the middle—you must walk the chain. Use LinkedList only when you need Queue or Deque behavior. For everything else, ArrayList wins in real-world benchmarks due to better cache locality. Don't overthink this: ArrayList is your default.
 </aside>
 
 </Slide>
@@ -1110,6 +1078,8 @@ for (String id : deviceIds) {
 </p>
 
 <aside className="notes">
+**⏱️ CHECKPOINT: ~25 min into lecture.** You should be finishing core data structures. If past 30 min here, consider skipping 1-2 poll questions ahead.
+
 Sets guarantee uniqueness—adding a duplicate has no effect. This is perfect when you need to track "have I seen this?" The contains check is O(1) with HashSet, compared to O(n) for a List. The tradeoff: HashSet doesn't maintain any particular order. If you need order AND uniqueness, use LinkedHashSet which maintains insertion order, or TreeSet which maintains sorted order.
 </aside>
 
@@ -1134,7 +1104,7 @@ device.identify();
 
 // Check before accessing
 if (deviceRegistry.containsKey("kitchen-light")) {
-    deviceRegistry.get("kitchen-light").turnOn();
+    deviceRegistry.get("kitchen-light").identify();
 }
 ```
 
@@ -1196,6 +1166,10 @@ Let's practice choosing collections. A playlist needs order—songs play first t
   choices={["ArrayList", "LinkedList/Queue", "Set", "Map", "I have no idea"]}
   bottomText="We need to track which users have voted to prevent double-voting."
 />
+
+<aside className="notes">
+**⏱️ SKIPPABLE POLL** — Set is straightforward; students usually get this. If behind, skip this poll and just show the answer slide quickly.
+</aside>
 </Slide>
 
 <Slide>
@@ -1331,6 +1305,10 @@ Here's a case where LinkedList shines—when used as a Queue. The Queue interfac
   choices={["ArrayList", "LinkedList/Queue", "Set", "Map", "I have no idea"]}
   bottomText="Given a room, we want to retrieve all of the devices in it."
 />
+
+<aside className="notes">
+**⏱️ SKIPPABLE POLL** — This nested generics example is advanced. Skip if behind—the summary table covers the essentials.
+</aside>
 </Slide>
 
 <Slide>
@@ -1411,6 +1389,8 @@ Real problems often need nested collections. Here we want to find devices by roo
 </table>
 
 <aside className="notes">
+**⏱️ CHECKPOINT: ~35 min into lecture.** Collections section complete. If past 40 min, you're behind—move quickly through wrapper types, focus on the == trap.
+
 Here's your cheat sheet. ArrayList for most list needs. LinkedList only for queues. HashSet for fast membership testing. HashMap for key-value lookup. With practice, choosing the right collection becomes second nature—you'll think "I need to find things by ID" and immediately reach for HashMap.
 </aside>
 
@@ -1551,6 +1531,8 @@ for (Integer i = 0; i < 1000000; i++) {
 </ul>
 
 <aside className="notes">
+**⏱️ SKIPPABLE SLIDE** — The performance point is nice-to-know but not critical. The == trap (previous slide) is the must-know content.
+
 The performance difference can be dramatic. Each boxing/unboxing operation allocates memory and does extra work. In a tight loop, this adds up fast. The second example creates millions of temporary Integer objects. Rule of thumb: use primitives for computation, wrappers only when you must—like putting numbers in collections. And never use == on wrapper types unless you really mean identity comparison.
 </aside>
 
@@ -1593,6 +1575,8 @@ INHERITANCE DIAGRAM (above house): A family tree shows the hierarchy: 'Closeable
 />
 
 <aside className="notes">
+**⏱️ CHECKPOINT: ~40 min into lecture.** Starting I/O section. If past 45 min here, condense remaining I/O slides—focus on Scanner and try-with-resources.
+
 Learning Objective 4: Utilize Java I/O methods. Programs need to interact with the outside world—read from files, accept user input, write results. Java's stream abstraction treats all these uniformly: data flows in through InputStreams, flows out through OutputStreams. Whether you're reading from a file, network, or keyboard, the API is consistent. This is polymorphism in action: different sources and destinations, same interface.
 </aside>
 
@@ -1685,6 +1669,8 @@ classDiagram
 ```
 
 <aside className="notes">
+**⏱️ SKIPPABLE SLIDE** — This hierarchy diagram reinforces OOP but isn't essential for using I/O. If behind, skip and go directly to Scanner usage.
+
 Here's the inheritance hierarchy. Closeable defines close()—streams must be closed when done. InputStream and OutputStream are abstract base classes defining raw byte operations. FileInputStream and FileOutputStream read/write files. PrintStream extends OutputStream with convenient formatting methods like println. Notice the pattern: interface defines the contract (Closeable), abstract classes provide basic implementation, concrete classes handle specific sources/destinations.
 </aside>
 
@@ -1819,6 +1805,8 @@ try (Scanner scanner =
 </div>
 
 <aside className="notes">
+**⏱️ CHECKPOINT: ~50 min into lecture.** Try-with-resources is essential—don't skip this one! Should have ~10 min left for wrap-up.
+
 Remember Closeable from the hierarchy? Any Closeable can be used in try-with-resources. Declare the resource in parentheses after try, and Java automatically calls close() when the block exits—even if an exception is thrown. This is much cleaner than manually closing in a finally block. It took Java 15 years to get this syntax, but now there's no excuse for resource leaks. Use try-with-resources for all Closeable resources: streams, scanners, database connections.
 </aside>
 
@@ -1855,6 +1843,8 @@ public List<IoTDevice> loadDevices(String filename) {
 ```
 
 <aside className="notes">
+**⏱️ SKIPPABLE SLIDE** — Good capstone example but can be cut if behind. Students will see similar patterns in lab.
+
 Here's a realistic example combining what we've learned. We read a CSV file of devices, parse each line, and create appropriate objects. Notice try-with-resources ensures the Scanner closes. We use a List to collect devices. Integer.parseInt converts strings to ints. The method returns an empty list if the file doesn't exist rather than crashing. This pattern—read file, parse lines, build objects—is extremely common in real applications.
 </aside>
 

@@ -1965,6 +1965,248 @@ double distanceMeters;       // vs distanceFeet
 
 <Slide>
 
+## Step 1: Select the Concepts to Include
+
+<p style={{fontSize: '0.9em'}}>
+  What ideas does this variable, method, or class represent?
+</p>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+  Consider a field storing the color temperature of a light:
+</p>
+
+<ul style={{fontSize: '0.85em'}}>
+  <li><strong>What</strong> we're tracking (color temperature)</li>
+  <li><strong>When</strong> it applies (startup? current? target?)</li>
+  <li><strong>Unit</strong> of measurement (Kelvins? Is that obvious to everyone?)</li>
+</ul>
+
+```java
+// Concepts: "startup" + "color temperature"
+int startupColorTemperature;
+
+// Should we include the unit?
+int startupColorTemperatureKelvin;
+```
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#888'}}>
+  Decision depends on your codebase. If ALL temperatures are in Kelvins, including the unit adds noise.
+</p>
+
+<aside class="notes">
+**The question to ask:**
+- What concepts MUST be in the name for it to be clear?
+- What concepts are OBVIOUS from context?
+
+**Examples of context:**
+- If the class is `ColorTemperatureController`, you might not need "colorTemperature" in every field
+- If the codebase mixes Kelvin and mired, you MUST include units
+- If everything is startup configuration, you might not need "startup" prefix
+
+**The tradeoff:**
+- Too few concepts → ambiguous
+- Too many concepts → verbose
+- Find the minimum for clarity
+
+→ **Transition:** Once you know the concepts, you need words for them...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Step 2: Choose Words Consistently
+
+<p style={{fontSize: '0.9em'}}>
+  <strong>Same concept = same word EVERYWHERE.</strong>
+</p>
+
+<div style={{display: 'flex', gap: '1em', fontSize: '0.8em', marginTop: '1em'}}>
+<div style={{flex: 1}}>
+
+**✓ Consistent:**
+```java
+int getColorTemperature();
+void setColorTemperature(int ct);
+Predicate<Light> filterByColorTemperature;
+ColorTemperature defaultColorTemperature;
+```
+
+</div>
+<div style={{flex: 1}}>
+
+**✗ Inconsistent:**
+```java
+int getColorTemperature();
+void setCCT(int cct);
+Predicate<Light> filterByWhitePoint;
+ColorTemp defaultColorTemp;
+```
+
+</div>
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#e74c3c'}}>
+  Mixing synonyms forces readers to verify: "Do these mean the same thing?"
+</p>
+
+<aside class="notes">
+**The consistency rule:**
+- Pick ONE word for each concept
+- Use it EVERYWHERE
+- Never mix synonyms
+
+**Why this matters:**
+- Reader builds mental model: "colorTemperature means X"
+- Synonyms break the model: "Wait, is CCT the same as colorTemperature?"
+- Now they have to READ implementations to verify
+
+**Team practice:**
+- Some teams maintain a LEXICON
+- Documented mapping: concept → canonical word
+- Especially valuable for large/long-lived projects
+
+**Common violations:**
+- Full word vs abbreviation (colorTemperature vs colorTemp)
+- Technical vs user term (CCT vs colorTemperature)
+- Different teams using different words
+
+→ **Transition:** Now assemble the name...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Step 3: Construct the Name Consistently
+
+<p style={{fontSize: '0.9em'}}>
+  Assemble words in a <strong>consistent order</strong>:
+</p>
+
+<div style={{display: 'flex', gap: '1em', fontSize: '0.85em', marginTop: '1em'}}>
+<div style={{flex: 1}}>
+
+**Modifier-first:**
+```java
+startupColorTemperature
+currentColorTemperature
+targetColorTemperature
+```
+
+</div>
+<div style={{flex: 1}}>
+
+**Modifier-last:**
+```java
+colorTemperatureStartup
+colorTemperatureCurrent
+colorTemperatureTarget
+```
+
+</div>
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+  <strong>Name length should match scope:</strong>
+</p>
+
+```java
+// Short scope = short name is fine
+for (TunableWhiteLight light : lights) {
+    light.setColorTemperature(2700);
+}
+
+// Long-lived field = descriptive name
+private final int startupColorTemperatureKelvin;
+```
+
+<aside class="notes">
+**Word ordering:**
+- Pick a convention (modifier-first or modifier-last)
+- Use it consistently throughout codebase
+- Don't mix: startupColorTemperature AND colorTemperatureTarget
+
+**Casing conventions:**
+- Java: camelCase for variables/methods, PascalCase for classes
+- The SPECIFIC convention matters less than CONSISTENCY
+- Use your team's style guide
+
+**Length vs scope:**
+- Loop variable: `light` is fine
+- Method parameter: `colorTemperature` is clearer
+- Class field: `startupColorTemperatureKelvin` is appropriate
+- The longer something lives, the more context it needs
+
+→ **Transition:** Let's see complete examples...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Naming in Practice: Before and After
+
+<div style={{fontSize: '0.75em'}}>
+
+```java
+// BEFORE: Cryptic, inconsistent, ambiguous
+class LightMgr {
+    private int ct;           // What is ct?
+    private int lvl;          // Level of what?
+    private boolean stat;     // Status? Static?
+
+    void proc(int x) {        // Process what? What is x?
+        if (stat) lvl = x;
+    }
+
+    int getTemp() { return ct; }  // Temperature? Temporary?
+}
+```
+
+```java
+// AFTER: Clear, consistent, unambiguous
+class DimmableLightController {
+    private int colorTemperatureKelvin;
+    private int brightnessPercent;
+    private boolean isOn;
+
+    void setBrightness(int brightnessPercent) {
+        if (isOn) this.brightnessPercent = brightnessPercent;
+    }
+
+    int getColorTemperatureKelvin() { return colorTemperatureKelvin; }
+}
+```
+
+</div>
+
+<aside class="notes">
+**The problems with BEFORE:**
+- `ct`, `lvl`, `stat` — abbreviations hide meaning
+- `proc`, `x` — what does this DO?
+- `getTemp` — temperature? temporary value?
+- `LightMgr` — manager of what exactly?
+
+**The improvements in AFTER:**
+- Full words reveal meaning
+- Units in names (Kelvin, Percent)
+- Boolean named as question: `isOn`
+- Method name describes action: `setBrightness`
+- Class name is specific: `DimmableLightController`
+
+**The test:**
+- Can someone new understand this WITHOUT reading the implementation?
+- BEFORE: No, they have to trace through everything
+- AFTER: Yes, the names tell the story
+
+→ **Transition:** Here's a real-world example of why this matters...
+</aside>
+
+</Slide>
+
+<Slide>
+
 ## The Reader's Journey: Maze or Path?
 
 <Img 

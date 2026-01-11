@@ -1422,6 +1422,55 @@ public String formatName(
 - Beyond nullness: immutability annotations, ownership types
 - Making more invariants machine-checkable
 
+→ **Transition:** But what about calling code that ISN'T annotated?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Unannotated Libraries Need Runtime Assertions
+
+<p style={{fontSize: '0.9em'}}>
+  Even <code>java.util</code> isn't fully annotated! The checker can't know if library methods return null.
+</p>
+
+```java
+String name = "Alice";
+List<String> names = List.of(name); // Checker: "might be null!"
+System.out.println(names.size()); // Warning!
+```
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+  Use <code>Objects.requireNonNull</code> to assert your domain knowledge:
+</p>
+
+```java
+List<String> names = Objects.requireNonNull(List.of(name));
+// Checker now knows names is non-null
+```
+
+<aside class="notes">
+**The problem:**
+- You call List.of() which NEVER returns null (it's documented!)
+- But the checker doesn't know—Java standard library isn't annotated
+- You get a warning even though your code is correct
+
+**Objects.requireNonNull does two things:**
+1. Tells the nullness checker "I guarantee this is non-null"
+2. Fails fast with clear NPE if you're wrong (instead of confusing error later)
+
+**When to use it:**
+- Calling standard library methods like List.of(), Set.of(), Map.of() that never return null
+- Calling library methods documented as non-null
+- Receiving values from unannotated third-party code
+
+**Caution:**
+- Don't use it to silence warnings you don't understand
+- If unsure whether something can be null, add a proper null check
+- requireNonNull is for when YOU know it's non-null but the CHECKER doesn't
+- DON'T use it for methods like Map.get() that genuinely CAN return null—that needs real null handling
+
 → **Transition:** Beyond nullness, Java has other standard contracts—let's look at the ones every Object has...
 </aside>
 
