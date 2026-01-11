@@ -12,6 +12,7 @@ interface PollSlideProps {
   language?: string;
   username?: string;
   codeFormat?: boolean;
+  bottomText?: string;
 }
 
 /**
@@ -24,6 +25,7 @@ interface PollSlideProps {
  * @param language - Language for code syntax highlighting (default: "java")
  * @param username - Poll Everywhere username (e.g., "espertus"). If omitted, no QR code or link is shown.
  * @param codeFormat - Whether to format choices as code (default: false)
+ * @param bottomText - Optional additional text displayed below the choices
  */
 export default function PollSlide({
   choices,
@@ -31,7 +33,8 @@ export default function PollSlide({
   code,
   language = 'java',
   username,
-  codeFormat = false
+  codeFormat = false,
+  bottomText
 }: PollSlideProps) {
   const qrSrc = useBaseUrl(`/img/lectures/poll-ev/qr-pollev-${username}.png`);
   const pollUrl = username ? `https://pollev.com/${username}` : '';
@@ -102,12 +105,18 @@ export default function PollSlide({
               ))}
             </div>
           )}
+
+          {bottomText && (
+            <p style={{ fontSize: '0.85em', fontStyle: 'italic', marginTop: '1em' }}>
+              {bottomText}
+            </p>
+          )}
         </div>
 
         <div style={{ textAlign: 'center', flexShrink: 0 }}>
           <img
             src={username ? qrSrc : useBaseUrl('/img/lectures/poll-ev/poll-ev.png')}
-            alt="Poll Everywhere QR Code or Logo"
+            alt="Poll Everywhere QR Code"
             style={{ height: '30vh' }}
           />
           {username && (

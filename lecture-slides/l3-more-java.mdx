@@ -841,8 +841,8 @@ alt="Meme humorously describing big-O notation"
 Light light = lights.get(500000);  // Same speed as get(0)
 
 // O(n) — finding an element: slower as list grows
-for (Light l : lights) {
-    if (l.getId().equals("target")) { /* found! */ }
+for (Light light : lights) {
+    if (light.getId().equals("target")) { /* found! */ }
 }
 // 1 million lights = up to 1 million comparisons
 
@@ -954,6 +954,43 @@ When the backing array fills up, ArrayList grows it. The strategy: create a new 
 
 <Slide>
 
+## Classroom Analogy
+
+<Img src="/img/lectures/web/l3-arraylist-classroom.png"
+alt="
+Concept: 'The Growing Classroom' (How ArrayList Manages Capacity)Tagline: 'When you run out of seats, you don't add one chair—you move to a room twice the size.'
+A warm educational illustration in storybook style with soft lighting and friendly colors, showing a three-panel sequence depicting how ArrayList dynamically resizes. Each panel shows the same group of young adult college students (representing elements) moving to progressively larger classrooms.
+Panel 1 — 'Capacity: 4, Size: 4 (FULL)':
+A cozy, small classroom with exactly 4 wooden chairs arranged in a row, each occupied by a student. The students look comfortable but the room is clearly at capacity. A sign on the wall reads 'Room 101 — Capacity: 4'. A new young adult student peeks through the doorway, eager to join, but there's visibly no place to sit. A teacher with glasses and very long very curly brown hair (representing the ArrayList) notices the problem with a thoughtful expression, hand on chin. A thought bubble shows 'Time to move!'
+Above the panel: add('Eve') with an arrow pointing to the eager student at the door.
+Small caption below: 'No empty seats. Adding one more means everyone moves.'
+Panel 2 — 'The Migration':
+A bustling hallway scene showing all 4 original students walking in a line, carrying their belongings (notebooks, backpacks), following the teacher toward a new room. The teacher leads the way holding a clipboard, looking organized but slightly hurried. Behind them, the old Room 101 door is closing. Ahead, double doors labeled 'Room 102' are propped open invitingly, warm light spilling out.
+A hallway sign with an arrow reads: 'Room 102 — Capacity: 8 →'
+Small caption below: 'Copy every element to the new, larger array.'
+Panel 3 — 'Capacity: 8, Size: 5 (Room to Grow)':
+A noticeably larger classroom with exactly 8 chairs arranged in a single horizontal row stretching across the room. From left to right: the first 5 chairs are occupied by the original 4 students plus Eve, all looking relieved and settled. Then, clearly separated with a visible gap, exactly 3 empty wooden chairs sit waiting on the right side of the row. The room feels spacious. The teacher stands at the front, gesturing welcomingly toward the three empty seats. Sunlight streams through bigger windows.
+Above each of the 8 chairs, clear index labels in order: [0] [1] [2] [3] [4] above the five seated students, then [5] [6] [7] above the three empty chairs. The empty chairs have dotted outlines of future students to emphasize available space.
+A sign on the wall reads 'Room 102 — Capacity: 8'. A small chalkboard in the corner shows:
+
+'Old capacity: 4'
+'New capacity: 4 × 2 = 8'
+'Empty seats: 3'
+Small caption below: 'Doubling means we won't move again for a while.'
+Visual consistency across panels:
+
+Same students in same order (representing element preservation)
+Students wearing lettered name tags: 'A', 'B', 'C', 'D', then 'E'
+Teacher in consistent outfit, perhaps with a coffee mug labeled 'ArrayList'
+Warm, consistent color palette suggesting a friendly school environment
+Bottom banner:
+'ArrayList: Grows when it needs to, leaving space for future elements.'
+"/>
+
+</Slide>
+
+<Slide>
+
 ## Infrequent Resizes Average Out to O(1) Per Add
 
 <div style={{fontSize: '0.85em'}}>
@@ -1040,7 +1077,7 @@ List<Light> lights = new ArrayList<>();  // Default choice
 ```
 
 <p style={{marginTop: '0.5em', fontSize: '0.9em', color: '#9370DB'}}>
-  <strong>Rule of thumb: ArrayList unless you specifically need queue/deque behavior</strong>
+  <strong>Rule of thumb: Use ArrayList unless you specifically need queue/deque behavior</strong>
 </p>
 
 <aside className="notes">
@@ -1051,7 +1088,7 @@ So when should you actually use LinkedList? When you're using it as a Queue or D
 
 <Slide>
 
-## Sets Guarantee Uniqueness with O(1) Lookup
+## HashSets Guarantee Uniqueness with O(1) Lookup
 
 ```java
 Set<String> deviceIds = new HashSet<>();
@@ -1109,7 +1146,18 @@ Maps associate keys with values—think of a dictionary or phone book. Each key 
 
 <Slide>
 
-## Example: Playlists Need Order and Allow Duplicates
+## Poll: What should be used for a playlist?
+
+<PollSlide
+  choices={["ArrayList", "LinkedList", "Set", "Map", "I have no idea"]}
+  bottomText="Assume that songs can be played in order or referenced by
+  number and that duplicates are allowed."
+/>
+</Slide>
+
+<Slide>
+
+## Answer: Data structure for playlist
 
 <p style={{fontSize: '1em'}}>
   <strong>Scenario:</strong> Store a playlist of songs in the order they should play
@@ -1142,8 +1190,17 @@ Let's practice choosing collections. A playlist needs order—songs play first t
 </Slide>
 
 <Slide>
+## Poll: What should be used for voter list?
 
-## Example: Preventing Double-Votes Requires Uniqueness
+<PollSlide
+  choices={["ArrayList", "LinkedList/Queue", "Set", "Map", "I have no idea"]}
+  bottomText="We need to track which users have voted to prevent double-voting."
+/>
+</Slide>
+
+<Slide>
+
+## Answer: Data Structure for Voter List
 
 <p style={{fontSize: '1em'}}>
   <strong>Scenario:</strong> Track which users have already voted (prevent double-voting)
@@ -1181,11 +1238,20 @@ Preventing double-voting is a perfect Set use case. You only care "has this user
 </Slide>
 
 <Slide>
+## Poll: What should be used for a student grade?
 
-## Example: Looking Up Grades by Student ID
+<PollSlide
+  choices={["ArrayList", "LinkedList/Queue", "Set", "Map", "I have no idea"]}
+  bottomText="Given a student ID, we want to find their course average."
+/>
+</Slide>
+
+<Slide>
+
+## Answer: Data Structure for Student Grade
 
 <p style={{fontSize: '1em'}}>
-  <strong>Scenario:</strong> Look up a student's grade by their student ID
+  <strong>Scenario:</strong> Look up a student's average by student ID
 </p>
 
 <div className="fragment">
@@ -1204,23 +1270,32 @@ Map<String, Double> grades = new HashMap<>();
 grades.put("12345", 92.5);
 grades.put("67890", 87.0);
 
-Double grade = grades.get("12345");  // 92.5
+double grade = grades.get("12345");  // 92.5
 grades.put("12345", 94.0);  // Update after extra credit
 ```
 </div>
 
 <aside className="notes">
-When you have a natural key—like student ID—and need to look up associated data, use a Map. The student ID is the key, the grade is the value. O(1) lookup means you can handle millions of students without slowdown. If you used a List, you'd have to search through every student to find the one you want.
+ When you have a natural key—like student ID—and need to look up associated data, use a Map. The student ID is the key, the grade is the value. O(1) lookup means you can handle millions of students without slowdown. If you used a List, you'd have to search through every student to find the one you want.
 </aside>
 
 </Slide>
 
 <Slide>
+## Poll: What should be used for office hours requests?
 
-## Example: First-Come-First-Served Processing
+<PollSlide
+  choices={["ArrayList", "LinkedList/Queue", "Set", "Map", "I have no idea"]}
+  bottomText="We want to process office hour requests in the order they arrive."
+/>
+</Slide>
+
+<Slide>
+
+## Answer: Data Structure for Office Hours Requests
 
 <p style={{fontSize: '1em'}}>
-  <strong>Scenario:</strong> Process customer support tickets in the order they arrived
+  <strong>Scenario:</strong> Process office hour requests in the order they arrived
 </p>
 
 <div className="fragment">
@@ -1236,10 +1311,10 @@ When you have a natural key—like student ID—and need to look up associated d
 
 ```java
 Queue<Ticket> supportQueue = new LinkedList<>();
-supportQueue.offer(new Ticket("Password reset"));
-supportQueue.offer(new Ticket("Billing question"));
+supportQueue.offer(new Ticket("build problem"));
+supportQueue.offer(new Ticket("debug help"));
 
-Ticket next = supportQueue.poll();  // Gets "Password reset"
+Ticket next = supportQueue.poll();  // Gets "build problem"
 ```
 </div>
 
@@ -1250,8 +1325,17 @@ Here's a case where LinkedList shines—when used as a Queue. The Queue interfac
 </Slide>
 
 <Slide>
+## Poll: What should be used to store devices by room?
 
-## Example: Grouping Devices by Room
+<PollSlide
+  choices={["ArrayList", "LinkedList/Queue", "Set", "Map", "I have no idea"]}
+  bottomText="Given a room, we want to retrieve all of the devices in it."
+/>
+</Slide>
+
+<Slide>
+
+## Answer: Data Structures for Devices by Room
 
 <p style={{fontSize: '1em'}}>
   <strong>Scenario:</strong> Store all devices in each room of a smart home
@@ -1259,7 +1343,9 @@ Here's a case where LinkedList shines—when used as a Queue. The Queue interfac
 
 <div className="fragment">
 <p style={{marginTop: '1em', fontSize: '1em', color: '#9370DB'}}>
-  <strong>Use: <code>Map&lt;String, List&lt;IoTDevice&gt;&gt;</code></strong>
+  <strong>Use: <code>Map&lt;String, List&lt;IoTDevice&gt;&gt;</code></strong> or
+  <strong>Use: <code>Map&lt;String, Set&lt;IoTDevice&gt;&gt;</code></strong> Or
+
 </p>
 
 <ul style={{fontSize: '0.85em'}}>
@@ -1544,7 +1630,7 @@ Learning Objective 4: Utilize Java I/O methods. Programs need to interact with t
 </table>
 
 <p style={{marginTop: '0.75em', fontSize: '0.85em', color: '#666'}}>
-  A Unix heritage from 1969 that every Java program inherits
+  Unix heritage from 1969 that every Java program inherits
 </p>
 
 ```java
@@ -1566,23 +1652,25 @@ Every Java program automatically has three streams connected. System.in reads fr
 classDiagram
     class Closeable {
         <<interface>>
-        +close()
+        +close()*
     }
     class InputStream {
         <<abstract>>
-        +read() int
+        +read() int*
         +read(byte[] b) int
     }
     class OutputStream {
         <<abstract>>
-        +write(int b)
+        +write(int b)*
         +write(byte[] b)
     }
     class FileInputStream {
         +FileInputStream(String name)
+        +read() int
     }
     class FileOutputStream {
         +FileOutputStream(String name)
+        +write(int b)
     }
     class PrintStream {
         +print(String s)
@@ -1593,6 +1681,7 @@ classDiagram
     InputStream <|-- FileInputStream
     OutputStream <|-- FileOutputStream
     OutputStream <|-- PrintStream
+    style Closeable fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
 ```
 
 <aside className="notes">
@@ -1772,46 +1861,46 @@ Here's a realistic example combining what we've learned. We read a CSV file of d
 </Slide>
 
 <Slide>
+## Commonly Confused Term: Overloading
 
-## Overloading Resolves at Compile Time; Overriding at Runtime
-
-<table style={{margin: '0 auto', fontSize: '0.85em'}}>
-  <thead>
-    <tr>
-      <th style={{padding: '0.5em'}}>Overloading</th>
-      <th style={{padding: '0.5em'}}>Overriding</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style={{padding: '0.5em'}}>Same name, <strong>different parameters</strong></td>
-      <td style={{padding: '0.5em'}}>Same name, <strong>same parameters</strong></td>
-    </tr>
-    <tr>
-      <td style={{padding: '0.5em'}}>Resolved at <strong>compile time</strong></td>
-      <td style={{padding: '0.5em'}}>Resolved at <strong>runtime</strong></td>
-    </tr>
-    <tr>
-      <td style={{padding: '0.5em'}}>Within same class or inherited</td>
-      <td style={{padding: '0.5em'}}>Subclass redefines parent method</td>
-    </tr>
-    <tr>
-      <td style={{padding: '0.5em'}}><code>read()</code>, <code>read(byte[])</code></td>
-      <td style={{padding: '0.5em'}}><code>Light.turnOn()</code> → <code>DimmableLight.turnOn()</code></td>
-    </tr>
-  </tbody>
-</table>
-
+<p style={{fontSize: '0.9em'}}>Overloading is having multiple methods with the same name and different parameter types.</p>
 ```java
-// Overloading example from InputStream
-public abstract int read();              // Read one byte
-public int read(byte[] b);               // Read into array
-public int read(byte[] b, int off, int len);  // Read portion
+public class Vet {
+    public void treat(Animal a) { System.out.println("Treating animal"); }
+    public void treat(Dog d) { System.out.println("Treating dog"); }
+}
+
+Vet vet = new Vet();
+Animal a = new Animal();
+Animal d = new Dog();    // declared: Animal, runtime: Dog
+vet.treat(a);   // prints "Treating animal"
+vet.treat(d);   // prints "Treating animal" - uses declared type!
 ```
 
-<aside className="notes">
-A quick clarification on terminology that trips people up. Overloading means same method name with different parameter lists—the compiler chooses which to call based on arguments. Overriding means a subclass provides a new implementation of an inherited method—the JVM chooses at runtime via dynamic dispatch. InputStream shows overloading: three read methods with different signatures. Our DimmableLight.turnOn() overriding Light.turnOn() is overriding. Both are useful; don't confuse them.
-</aside>
+<p style={{fontSize: '0.9em'}}>Methods are resolved at **compile-time** based on declared parameter types.</p>
+
+</Slide>
+
+<Slide>
+## Commonly Confused Term: Overriding
+
+<p style={{fontSize: '0.9em'}}>Overriding is providing a new implementation of an inherited method in a subclass.</p>
+```java
+public class Animal {
+    public String speak() { return "..."; }
+}
+public class Dog extends Animal {
+    @Override
+    public String speak() { return "Woof!"; }
+}
+
+Animal a = new Animal();
+Animal d = new Dog();    // declared: Animal, runtime: Dog
+a.speak();   // returns "..."
+d.speak();   // returns "Woof!" - uses runtime type
+```
+
+<p style={{fontSize: '0.9em'}}>Methods are resolved at **run-time** based on the actual object type.</p>
 
 </Slide>
 
