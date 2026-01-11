@@ -23,7 +23,7 @@ interface PollSlideProps {
  * @param image - Optional image path (relative to static folder)
  * @param code - Optional code snippet to display
  * @param language - Language for code syntax highlighting (default: "java")
- * @param username - Poll Everywhere username (e.g., "espertus"). If omitted, no QR code or link is shown.
+ * @param username - Poll Everywhere username (e.g., "espertus"); If omitted, logo is shown
  * @param codeFormat - Whether to format choices as code (default: false)
  * @param bottomText - Optional additional text displayed below the choices
  */
@@ -36,7 +36,10 @@ export default function PollSlide({
   codeFormat = false,
   bottomText
 }: PollSlideProps) {
+  // All useBaseUrl calls at top level to satisfy React hooks rules
   const qrSrc = useBaseUrl(`/img/lectures/poll-ev/qr-pollev-${username}.png`);
+  const logoSrc = useBaseUrl('/img/lectures/poll-ev/poll-ev.png');
+  const imageSrc = useBaseUrl(image || '');
   const pollUrl = username ? `https://pollev.com/${username}` : '';
 
   // Dedent code by removing common leading whitespace
@@ -78,7 +81,7 @@ export default function PollSlide({
         <div style={{ flex: 1 }}>
           {image && (
             <img
-              src={useBaseUrl(image)}
+              src={imageSrc}
               alt="Poll image"
               style={{ maxHeight: '40vh', maxWidth: '100%', marginBottom: '1em' }}
             />
@@ -115,7 +118,7 @@ export default function PollSlide({
 
         <div style={{ textAlign: 'center', flexShrink: 0 }}>
           <img
-            src={username ? qrSrc : useBaseUrl('/img/lectures/poll-ev/poll-ev.png')}
+            src={username ? qrSrc : logoSrc}
             alt="Poll Everywhere QR Code"
             style={{ height: '30vh' }}
           />

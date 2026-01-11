@@ -121,7 +121,7 @@ classDiagram
     Light <|-- DimmableLight
     DimmableLight <|-- TunableWhiteLight
 
-    style IotDevice fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style IoTDevice fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
 ```
 
 <p style={{marginTop: '0.5em', fontSize: '0.85em', color: '#9370DB'}}>
@@ -1220,11 +1220,11 @@ Let's practice choosing collections. A playlist needs order—songs play first t
 ```java
 Set<String> voterIds = new HashSet<>();
 
-public boolean recordVote(String oderId, String choice) {
-    if (voterIds.contains(oderId)) {
+public boolean recordVote(String voterId, String choice) {
+    if (voterIds.contains(voterId)) {
         return false;  // Already voted!
     }
-    voterIds.add(oderId);
+    voterIds.add(voterId);
     // ... record the vote
     return true;
 }
