@@ -14,40 +14,30 @@ import Img from '@site/src/components/Img';
 {/* ============================================ */}
 
 <Slide>
-  <Img 
-    src="/img/lectures/web/l4.png" 
-    alt="Concept: 'The Specification as Universal Translator' (APIs Connecting Different Worlds)
+  <Img
+    src="/img/lectures/web/l4.png"
+    prompt="Concept: 'The Vending Machine Contract' (Program Design & Implementation)Tagline: 'Same Promise. Many Machines.'Subtitle: 'Specifications: The Boundary of Trust.'
+A pixel art style educational illustration showing the concept of interface contracts and implementations. The scene shows three vending machines side by side, each with the same interface but different internal mechanisms, plus a rejected fourth machine demonstrating contract violation.
+Header banner:
+'CS 3100: Program Design & Implementation 2' with subtitle 'The Vending Machine Contract'
+Machine 1 — 'Machine 1 (Gravity)':
+A vending machine with a simple gravity-based mechanism visible through a cutaway view. Metal ramps and chutes guide products down using gravity and springs. The display shows three items: 'A1: Chips ($1.00)', 'B2: Soda ($1.50)', 'C3: Candy ($0.75)'. A customer stands in front, with a speech bubble saying 'Simple promise. I trust it.' A chip bag slides down the ramp toward the dispensing slot.
+Machine 2 — 'Machine 2 (Pneumatic)':
+A vending machine with an elaborate pneumatic tube system visible through a cutaway view. Pipes, pressure gauges, valves, and steam elements create a complex but functional delivery system. Same display showing identical items: 'A1: Chips ($1.00)', 'B2: Soda ($1.50)', 'C3: Candy ($0.75)'. A customer presses the B2 button, and a soda can travels through the pneumatic tubes toward the output.
+Machine 3 — 'Machine 3 (Hamsters)':
+A vending machine with an absurd hamster-powered mechanism visible through a cutaway view. Hamsters run on wheels, operate tiny conveyor belts, and push products through an elaborate Rube Goldberg-style system with gears and pulleys. Same display showing identical items: 'A1: Chips ($1.00)', 'B2: Soda ($1.50)', 'C3: Candy ($0.75)'. A customer waits as hamsters work to deliver a candy bar through the ridiculous but functional system.
+Below the three machines:
+A label reads: 'Generality: Multiple implementations satisfy the same spec.'
+Rejected machine scene (bottom right corner):
+A broken, malfunctioning vending machine lies cracked and tilted in a trash heap. Its display shows 'A1: Chips ($1.00)' but instead of chips, a boot sits in the dispensing tray. A large red X marks the machine. Callout labels read: 'Failed Contract! Promised Chips, Dispensed Boot.' and 'Rejected Machine (Violation)'. Additional label: 'Restrictiveness: Violations Rejected.'
+Bottom banner:
+'Same Promise. Many Machines.' with subtitle 'Specifications: The Boundary of Trust.'
+Visual style:
+Retro pixel art with a cohesive color palette of teals, blues, and warm accents. Clear cutaway views showing internal mechanisms. Consistent vending machine frames with identical user interfaces despite wildly different implementations."
+  alt='A pixel art illustration titled "The Vending Machine Contract" showing three vending machines with identical interfaces (Chips $1.00, Soda $1.50, Candy $0.75) but different internal mechanisms: one uses gravity and ramps, one uses pneumatic tubes with steam gauges, and one uses hamsters running on wheels and conveyor belts. All three successfully deliver the correct products. In the corner, a rejected fourth machine lies broken in a trash heap—it promised chips but dispensed a boot, violating the contract. The caption reads "Same Promise. Many Machines." illustrating how multiple implementations can satisfy the same specification, but violations are rejected.'
+/>
 
-A vibrant, dynamic illustration showing specifications as the crucial bridge between different parts of a software system, rendered in a stylized sci-fi/fantasy crossover aesthetic.
-
-MAIN SCENE - THE TRANSLATION STATION:
-A futuristic hub where two very different worlds connect. On the LEFT: 'Implementer Territory'—a workshop filled with gears, code, algorithms, and technical machinery. Developers here speak in implementation details (loops, pointers, data structures). On the RIGHT: 'Client Territory'—a clean, user-focused space with people trying to accomplish tasks, caring only about results, not mechanisms.
-
-THE SPECIFICATION BRIDGE (Center):
-A glowing, crystalline bridge spans between the two worlds. The bridge IS the specification—a Javadoc comment made physical. On its surface, you can read: '/** Returns the sum of elements. @throws NullPointerException if null */' The specification transforms 'implementation language' (left side) into 'behavior language' (right side).
-
-WHAT FLOWS ACROSS:
-- From left to right: Implementation details are FILTERED OUT. Only promises cross the bridge: 'You will get a sum', 'Null will throw NPE'.
-- From right to left: Usage requests flow back: 'Give me the sum of this array'.
-- Both sides can interact WITHOUT understanding each other's internal details.
-
-KEY VISUAL METAPHORS:
-- The bridge has THREE PILLARS labeled: 'Restrictive' (filters out bad implementations), 'General' (permits many good implementations), 'Clear' (everyone interprets the same way).
-- Under the bridge: chaos and confusion—what happens WITHOUT specs (direct coupling, misunderstandings, broken systems).
-- On the bridge: order and trust—what happens WITH specs (clean interfaces, reliable systems).
-
-DETAIL CALLOUTS:
-- An implementer on the left says: 'I can use any algorithm—linear, binary, parallel—as long as I honor the spec.'
-- A client on the right says: 'I don't care HOW it works, just that it DOES what the spec promises.'
-- Books visible in background: 'Effective Java', 'Liskov & Guttag', 'API Design for Humans'.
-
-BOTTOM TAGLINE:
-'Specifications are contracts that let strangers collaborate safely.'
-
-Style: Colorful, optimistic sci-fi/fantasy aesthetic—think Studio Ghibli meets technical documentation. Warm, inviting colors that make specs feel empowering rather than bureaucratic. The bridge metaphor should immediately convey: specs connect different worlds and make large-scale collaboration possible."
-  />
-
-<aside class="notes">
+<aside className="notes">
 **Lecture overview:**
 - **Total time:** ~50 minutes
 - **Prerequisites:** Students understand Java basics, inheritance, interfaces from L1-L3
@@ -80,7 +70,7 @@ Style: Colorful, optimistic sci-fi/fantasy aesthetic—think Studio Ghibli meets
   ©2025 Jonathan Bell, CC-BY-SA
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **Context from L2-L3:**
 - Students learned inheritance, polymorphism, Java syntax details
 - This lecture focuses on *how to document* what methods do
@@ -112,7 +102,7 @@ After this lecture, you will be able to:
   <li>Define the role of methods common to all Objects in Java (toString, equals, hashCode, compareTo)</li>
 </ol>
 
-<aside class="notes">
+<aside className="notes">
 **Time allocation:**
 - Objective 1: Why specs matter—psychology and modularity (~10 min)
 - Objective 2: The three criteria—restrictiveness, generality, clarity (~15 min)
@@ -145,7 +135,7 @@ After this lecture, you will be able to:
   <li><strong>Pattern:</strong>10, 20, 30, 40, 50, 60, 70, 80</li>
 </ul>
 
-<aside class="notes">
+<aside className="notes">
 **Miller's Law (1956):**
 - George Miller's famous paper: "The Magical Number Seven, Plus or Minus Two"
 - We can only hold ~7 items in short-term/working memory at once
@@ -190,7 +180,7 @@ After this lecture, you will be able to:
   <li>"HashMap lookup" → one chunk (not the internal algorithm)</li>
 </ul>
 
-<aside class="notes">
+<aside className="notes">
 **The psychology:**
 - Experts don't have bigger working memory
 - They have better chunks
@@ -244,7 +234,8 @@ public int mystery(int[] arr) {
 
 ```java
 /**
- * Returns the sum of elements.
+ * Calculates the sum of the elements.
+ * @returns the sum of the elements, or 0 if arr is empty
  * @throws NullPointerException if arr is null
  */
 public int sum(int[] arr) {
@@ -257,7 +248,7 @@ public int sum(int[] arr) {
 </div>
 </div>
 
-<aside class="notes">
+<aside className="notes">
 **The chunking connection:**
 - Left side: must hold the entire implementation in memory
 - Right side: one chunk—"sums the array"
@@ -297,7 +288,7 @@ int index = collection.binarySearch(target);
 <div style={{flex: 1}}>
 
 **Without spec:**
-- Open source file
+- Open the source file
 - Read 30 lines of implementation
 - Understand loop invariants
 - Figure out edge cases
@@ -314,7 +305,7 @@ int index = collection.binarySearch(target);
 </div>
 </div>
 
-<aside class="notes">
+<aside className="notes">
 **The math:**
 - Average codebase: thousands of methods
 - Each method calls several others
@@ -355,7 +346,7 @@ int index = collection.binarySearch(target);
   But how do we evaluate whether a specification is good?
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **Three requirements of a good spec:**
 1. Correct implementations satisfy it (not too restrictive)
 2. Incorrect implementations violate it (sufficiently restrictive)
@@ -383,9 +374,9 @@ int index = collection.binarySearch(target);
 
 ## Good Specifications Balance Three Criteria
 
-<Img 
-    src="/img/lectures/web/l4-three-criteria.webp" 
-    alt="Concept: 'The Goldilocks Specification Lab' (Finding the Just-Right Balance)
+<Img
+    src="/img/lectures/web/l4-three-criteria.png"
+    prompt="Concept: 'The Goldilocks Specification Lab' (Finding the Just-Right Balance)
 
 A whimsical-yet-technical laboratory scene rendered in a storybook-meets-engineering style, showing three experimental stations where specifications are being tested.
 
@@ -393,26 +384,27 @@ STATION 1 - 'TOO RESTRICTIVE' (Left):
 A specification document trapped in a tiny, rigid metal cage with bars too close together. Multiple implementations try to enter—some clearly buggy (marked with X), but ALSO several perfectly good implementations (marked with ✓) that can't fit through the narrow bars. A frustrated 'Binary Search' algorithm waves from outside: 'But I'm correct! The spec just demands linear search!' The cage label reads: 'Operational Spec: Must examine each element in order.' A thermometer-style gauge shows 'Flexibility: FROZEN'. Red warning lights flash. Annotation: 'Rejects valid implementations—too picky about HOW, not just WHAT.'
 
 STATION 2 - 'TOO GENERAL' (Center):
-A specification document as a wide-open barn door with no filter at all. A parade of implementations walks through—some with ✓ checkmarks (good), but also clearly buggy ones with skull icons: 'Returns 0 for null!' 'Crashes randomly!' 'Deletes your files!' The bouncer (labeled 'Spec') shrugs helplessly: 'The spec just says return a sum... it doesn't say what to do with null!' A gauge shows 'Flexibility: ANYTHING GOES'. Yellow caution tape everywhere. Annotation: 'Accepts buggy implementations—undefined behavior lurks.'
+A specification document as a wide-open barn door with no filter at all. A parade of implementations walks through—some with ✓ checkmarks (good), but also clearly buggy ones with skull icons: 'Returns 0 if item not found!' 'Crashes randomly!' 'Deletes your files!' The bouncer (labeled 'Spec') shrugs helplessly: 'The spec just says return an index, not what to do if item isn't found!' A gauge shows 'Flexibility: ANYTHING GOES'. Yellow caution tape everywhere. Annotation: 'Accepts buggy implementations—undefined behavior lurks.'
 
 STATION 3 - 'UNCLEAR' (Right):
 A specification document written in tiny, smudged text with contradictory arrows and question marks. Three developers stand around it, each with a different thought bubble showing completely different interpretations: Dev A thinks 'Returns first index', Dev B thinks 'Returns any index', Dev C thinks 'Returns -1 if not found'. They're all building different implementations, all thinking they're correct. A 'Confidence Meter' shows all three developers at 100% confidence despite complete disagreement. Annotation: 'Readers THINK they understand—the most dangerous failure.'
 
 CENTER - 'JUST RIGHT' (Highlighted, Glowing):
-A perfectly balanced specification shown as a well-designed filter/gate system. The gate is sized exactly right: buggy implementations (with X marks) bounce off, while ALL valid implementations (linear search, binary search, parallel search—all with ✓) pass through smoothly. The spec text is clear and readable: 'Returns AN index containing target, or throws if not found.' Developers reading it all have the same thought bubble. A 'Specification Quality' gauge shows three green bars: Restrictive ✓, General ✓, Clear ✓.
+A perfectly balanced specification shown as a well-designed filter/gate system. The gate is sized exactly right: buggy implementations (with X marks) bounce off, while ALL valid implementations (linear search, binary search, parallel search—all with ✓) pass through smoothly. The spec text is clear and readable: 'Returns AN index containing target, or throws exception if not found.' Developers reading it all have the same thought bubble. A 'Specification Quality' gauge shows three green bars: Restrictive ✓, General ✓, Clear ✓.
 
 BOTTOM SUMMARY:
 Three columns showing the balance:
 - Restrictiveness: 'Rules out BAD implementations' (bouncer icon)
-- Generality: 'Permits GOOD implementations' (welcome mat icon)  
+- Generality: 'Permits GOOD implementations' (welcome mat icon)
 - Clarity: 'Everyone understands the SAME thing' (lightbulb icon)
 Central message: 'All three must be balanced—optimize for any one alone and the spec fails.'
 
 Style: Warm fairy-tale laboratory aesthetic with technical precision—think Wes Anderson directing a computer science documentary. Color palette: warm ambers for 'too restrictive', chaotic rainbow for 'too general', foggy grays for 'unclear', and a warm golden glow for 'just right'. Should feel like a memorable fable that teaches a real engineering principle."
-  />
+
+    alt='A whimsical laboratory illustration titled "The Goldilocks Specification Lab." Three stations demonstrate specification failures: "Too Restrictive" shows a cage rejecting valid code like Binary Search; "Too General" depicts a barn door admitting buggy implementations; and "Unclear" features confused developers interpreting smudged text differently. In the glowing center, a "Just Right" machine perfectly filters code, allowing all valid implementations (linear, binary, parallel) to pass while rejecting bugs. A summary panel emphasizes balancing restrictiveness, generality, and clarity to create effective software specifications.' />
 
 
-<aside class="notes">
+<aside className="notes">
 **The three-legged stool metaphor:**
 - All three legs must be the right length
 - If any one is wrong, the stool (and your spec) falls over
@@ -450,7 +442,7 @@ Style: Warm fairy-tale laboratory aesthetic with technical precision—think Wes
   <li>Could a malicious implementer satisfy it while being useless?</li>
 </ul>
 
-<aside class="notes">
+<aside className="notes">
 **The key question:**
 - For every possible input, is the behavior defined?
 - If not, an implementer could do ANYTHING for undefined inputs
@@ -475,8 +467,8 @@ Style: Warm fairy-tale laboratory aesthetic with technical precision—think Wes
 
 ## Under-Specified Behavior Allows Bugs to Hide
 
-<Img 
-    src="/img/lectures/web/l4-underspecified.webp" 
+<Img
+    src="/img/lectures/web/l4-underspecified.webp"
     alt="Concept: 'The Undefined Behavior Roulette Wheel' (What Happens When Specs Have Gaps)
 
 A dramatic casino/game-show style illustration showing the danger of under-specified behavior.
@@ -505,7 +497,7 @@ With a magnifying glass highlighting the ABSENCE of any null handling. A detecti
 RIGHT SIDE - THE CONSEQUENCES:
 Three developers at different companies building on this library:
 - Dev A (Library v1.0) implements: throws NPE
-- Dev B (Library v2.0) implements: returns 0  
+- Dev B (Library v2.0) implements: returns 0
 - Dev C (Fork) implements: crashes
 All three say 'My implementation matches the spec!' Meanwhile, OTHER DEVELOPERS who depend on this library are shown at the bottom, frustrated—their code breaks unpredictably when switching library versions. Speech bubble: 'I upgraded the library and now my tests fail randomly!'
 
@@ -514,7 +506,7 @@ A 'well-specified' version with '@throws NullPointerException if arr is null' hi
 
 Style: Dramatic game-show/casino aesthetic with spotlights, danger colors (reds, blacks), and the tension of gambling. Should convey that leaving behavior undefined is literally gambling with API consumers' ability to write reliable code."
   />
-<aside class="notes">
+<aside className="notes">
 **The problem:**
 - Spec says nothing about null input
 - Behavior is "undefined" for null
@@ -547,10 +539,10 @@ Style: Dramatic game-show/casino aesthetic with spotlights, danger colors (reds,
 
 ```java
 /**
- * Returns the sum of the elements in the array.
- * @param arr the array to sum
- * @return the sum of the elements in the array
- * @throws NullPointerException if the array is null
+ * Calculates the sum of the elements.
+ * @param the elements
+ * @returns the sum of the elements, or 0 if arr is empty
+ * @throws NullPointerException if arr is null
  */
 public int sum(int[] arr)
 ```
@@ -564,7 +556,7 @@ public int sum(int[] arr)
   <li>Null → throws NullPointerException</li>
 </ul>
 
-<aside class="notes">
+<aside className="notes">
 **What changed:**
 - Added `@throws NullPointerException if the array is null`
 - Now callers know EXACTLY what happens for null
@@ -626,7 +618,7 @@ public Iterator<E> iterator()
 </div>
 </div>
 
-<aside class="notes">
+<aside className="notes">
 **The iterator example:**
 - Left: client might assume elements come in insertion order
 - Right: explicitly states "no particular order"
@@ -666,7 +658,7 @@ public Iterator<E> iterator()
   <li>Does it over-specify implementation details?</li>
 </ul>
 
-<aside class="notes">
+<aside className="notes">
 **The key distinction:**
 - Definitional spec: describes the result ("returns the sum")
 - Operational spec: describes the steps ("loop through and add each")
@@ -695,17 +687,19 @@ public Iterator<E> iterator()
 
 ```java
 /**
- * If arr is null, throw a NullPointerException.
- * Else:
- *     Examines each element of arr in order.
- *     If the current element equals searchTarget, return the current index.
- *     If it reaches the end without finding searchTarget, 
- *         throw NoSuchElementException.
+ * Finds the index of searchTarget in arr by iterating forward through all
+ * elements of the array until finds the value.
+ *
+ * @param arr an array of increasing values
+ * @param searchTarget the element to search for
+ * @return the index of arr that contains searchTarget
+ * @throws NullPointerException if arr is null
+ * @throws NoSuchElementException if arr does not contain searchTarget
  */
-public int search(int[] arr, int searchTarget)
+public int findIndex(int[] arr, int searchTarget)
 ```
 
-<aside class="notes">
+<aside className="notes">
 **The problem:**
 - This spec describes HOW to implement, not WHAT the method does
 - "Examines each element in order" — requires linear search
@@ -736,10 +730,11 @@ public int search(int[] arr, int searchTarget)
 
 ```java
 /**
- * Returns an index of arr that contains searchTarget.
- * @param arr the array to search
+ * Finds the index of arr that contains searchTarget.
+ *
+ * @param arr an array of increasing values
  * @param searchTarget the element to search for
- * @return an index of arr that contains searchTarget
+ * @return the index of arr that contains searchTarget
  * @throws NullPointerException if arr is null
  * @throws NoSuchElementException if arr does not contain searchTarget
  */
@@ -750,9 +745,8 @@ public int search(int[] arr, int searchTarget)
   This permits: linear search, binary search, random probing, first/last/any index...
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **What changed:**
-- "Returns AN index" not "the first index"
 - No mention of HOW to search
 - Same restrictiveness for error cases
 
@@ -781,8 +775,13 @@ public int search(int[] arr, int searchTarget)
 
 ```java
 /**
- * Returns the index of the first occurrence of searchTarget in arr.
+ * Finds the index of the first occurrence of searchTarget in arr.
+ *
+ * @param arr an array of increasing values
+ * @param searchTarget the element to search for
  * @return the smallest index i where arr[i] == searchTarget
+ * @throws NoSuchElementException if arr does not contain searchTarget
+ * @throws NullPointerException if arr is null
  * @throws NoSuchElementException if arr does not contain searchTarget
  */
 public int indexOf(int[] arr, int searchTarget)
@@ -796,7 +795,7 @@ public int indexOf(int[] arr, int searchTarget)
   The right balance depends on what callers actually need.
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **The key insight:**
 - Generality vs. restrictiveness is a tradeoff
 - The "right" balance depends on requirements
@@ -840,7 +839,7 @@ public int indexOf(int[] arr, int searchTarget)
   <li><strong>Redundant:</strong> Readers wonder what's different about each statement</li>
 </ul>
 
-<aside class="notes">
+<aside className="notes">
 **The danger:**
 - Unclear specs don't just confuse—they mislead
 - Reader thinks they understand, writes code based on wrong assumption
@@ -875,6 +874,7 @@ public int indexOf(int[] arr, int searchTarget)
  * Returns the sum of the elements in the array.
  * The sum is computed by adding each element of the array.
  * It is the total of all the elements in the array.
+ *
  * @param arr the array to sum
  * @return the sum of the elements in the array
  */
@@ -885,7 +885,7 @@ public int sum(int[] arr)
   The reader already knows what "sum" means!
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **Problems with redundancy:**
 - Longer to read = higher cognitive load
 - Repeated information suggests there might be subtle differences
@@ -917,6 +917,7 @@ public int sum(int[] arr)
 ```java
 /**
  * Computes the present value of an income stream.
+ *
  * @param income the annual income
  * @param interestRate the risk-free interest rate
  * @param years the number of years
@@ -932,13 +933,13 @@ public float presentValue(float income, float interestRate, int years)
 ```java
 /**
  * Computes the present value of an income stream.
- * The present value is the amount that, if invested at the given 
+ * The present value is the amount that, if invested at the given
  * interest rate, would grow to the total income over the given years.
  * ...
  */
 ```
 
-<aside class="notes">
+<aside className="notes">
 **The problem:**
 - "Present value" is a finance term—not everyone knows it
 - Without definition, reader must look it up or guess
@@ -972,8 +973,8 @@ public float presentValue(float income, float interestRate, int years)
 
 ## The Same Spec Principles Apply at Every Scale
 
-<Img 
-    src="/img/lectures/web/l4-spec-scales.webp" 
+<Img
+    src="/img/lectures/web/l4-spec-scales.webp"
     alt="Concept: 'The Recipe Card at Different Scales' (Same Principles, Different Kitchens)
 
 A warm, inviting three-panel illustration showing that recipe-writing principles remain constant whether you're cooking for yourself, running a restaurant, or programming a robot baker. Rendered in a cozy culinary-meets-technical style with consistent visual language across all three scales.
@@ -999,7 +1000,7 @@ BOTTOM TAGLINE:
 Style: Warm bakery aesthetic with rich browns, warm yellows, and cream colors. Each panel should feel progressively more industrial/technical while maintaining the cooking metaphor. The home kitchen is cozy and personal, the restaurant is professional but human, the robot bakery is precise and clinical. Should feel like a relatable story that makes students think: 'Oh, I've been that home cook who couldn't follow my own recipe later!'"
   />
 
-<aside class="notes">
+<aside className="notes">
 **The recipe metaphor:**
 - Everyone's written a vague recipe that worked... for them, that day
 - But try handing that recipe to someone else, or following it 6 months later
@@ -1054,6 +1055,7 @@ Style: Warm bakery aesthetic with rich browns, warm yellows, and cream colors. E
 ```java
 /**
  * Processes the given payment.
+ *
  * @param payment the payment to process
  * @throws PaymentException if the payment cannot be processed
  */
@@ -1070,7 +1072,7 @@ public void processPayment(Payment payment)
   <li>Idempotent if called twice? Timeout behavior?</li>
 </ul>
 
-<aside class="notes">
+<aside className="notes">
 **The "process" trap:**
 - "Process" is a verb that sounds specific but isn't
 - Same problem with: handle, manage, deal with, take care of
@@ -1106,8 +1108,8 @@ public void processPayment(Payment payment)
 
 ## Ambiguity Creates Specification Debt
 
-<Img 
-    src="/img/lectures/web/l4-spec-debt.webp" 
+<Img
+    src="/img/lectures/web/l4-spec-debt.webp"
     alt="Concept: 'The Hidden Decision Factory' (How Ambiguous Specs Create Unintended Consequences)
 
 An illustrated factory scene showing how ambiguous specifications lead to hidden, consequential decisions being made by implementers.
@@ -1139,7 +1141,7 @@ Style: Whimsical factory/Rube-Goldberg aesthetic with clear cause-and-effect flo
   />
 
 
-<aside class="notes">
+<aside className="notes">
 **The hidden cost:**
 - Ambiguous spec → implementation decision
 - Developer might not realize they're choosing
@@ -1174,8 +1176,8 @@ Style: Whimsical factory/Rube-Goldberg aesthetic with clear cause-and-effect flo
 
 ## Type Annotations Let Compilers Enforce Specs
 
-<Img 
-    src="/img/lectures/web/l4-type-annotations.webp" 
+<Img
+    src="/img/lectures/web/l4-type-annotations.webp"
     alt="Concept: 'The Factory Quality Control Line' (Comments vs Type Annotations)
 
 A detailed factory floor illustration in a clean industrial design style, showing two parallel assembly lines for 'Method Calls' being quality-checked before shipping to production.
@@ -1206,7 +1208,7 @@ Style: Industrial factory aesthetic with warm yellows/oranges on the chaotic lef
   Type annotations let the <strong>compiler</strong> enforce specification invariants.
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **The problem with comments:**
 - Javadoc says "arr must not be null"
 - But caller can pass null anyway
@@ -1252,7 +1254,7 @@ public int sum(@NonNull int[] arr) {
   Note: Java has many competing <code>@NonNull</code> definitions. We use <a href="https://jspecify.dev/">JSpecify</a>.
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **JSpecify:**
 - Coalition: Google, JetBrains, Microsoft, Uber, Oracle
 - Standard nullness annotations (finally!)
@@ -1301,7 +1303,7 @@ public String format(@Nullable String prefix, String value) { ... }
 // prefix can be null, value cannot
 ```
 
-<aside class="notes">
+<aside className="notes">
 **The pattern:**
 1. Add @NullMarked to package-info.java
 2. All types in that package are non-null by default
@@ -1331,15 +1333,16 @@ public String format(@Nullable String prefix, String value) { ... }
 
 /**
  * Formats a user's display name.
+ *
  * @param firstName the user's first name
  * @param middleName the user's middle name, or null if none
  * @param lastName the user's last name
- * @return formatted name like "John Q. Public"
+ * @return formatted name (such as "John Q. Public")
  */
 public String formatName(
-    String firstName,           // non-null (default)
+    String firstName,            // non-null (default)
     @Nullable String middleName, // explicitly nullable
-    String lastName             // non-null (default)
+    String lastName              // non-null (default)
 ) {
     if (middleName == null) {
         return firstName + " " + lastName;
@@ -1348,7 +1351,7 @@ public String formatName(
 }
 ```
 
-<aside class="notes">
+<aside className="notes">
 **What the annotations tell us:**
 - firstName: required, cannot be null
 - middleName: optional, might be null
@@ -1402,7 +1405,7 @@ public String formatName(
   For this course: new projects use @NullMarked. You'll see this in starter code.
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **For new code (this course):**
 - Always use @NullMarked on your packages
 - Fewer annotations, cleaner code
@@ -1450,7 +1453,7 @@ List<String> names = Objects.requireNonNull(List.of(name));
 // Checker now knows names is non-null
 ```
 
-<aside class="notes">
+<aside className="notes">
 **The problem:**
 - You call List.of() which NEVER returns null (it's documented!)
 - But the checker doesn't know—Java standard library isn't annotated
@@ -1502,7 +1505,7 @@ List<String> names = Objects.requireNonNull(List.of(name));
   <li><code>compareTo(T)</code> — natural ordering</li>
 </ul>
 
-<aside class="notes">
+<aside className="notes">
 **Why these matter:**
 - toString: debugging, logging
 - equals: comparing objects, Set membership, List.contains()
@@ -1548,14 +1551,14 @@ DimmableLight@1a2b3c4d
 
 **Overridden (helpful):**
 ```
-DimmableLight(color=2700K, 
+DimmableLight(color=2700K,
   brightness=100, on=true)
 ```
 
 </div>
 </div>
 
-<aside class="notes">
+<aside className="notes">
 **The default:**
 - Class name + "@" + hex hash code
 - Essentially useless for debugging
@@ -1568,7 +1571,7 @@ DimmableLight(color=2700K,
 
 **Always override toString:**
 - Called by println, logging, debugger
-- Good toString saves hours of debugging
+- Good toString methods save hours of debugging
 
 → **Transition:** Let's see implementation tips...
 </aside>
@@ -1596,10 +1599,10 @@ public String toString() {
   <li>Include the class name</li>
   <li>Include fields that matter for understanding the object</li>
   <li>Format for readability (not just dump all fields)</li>
-  <li>Consider what you'd want to see in a log file</li>
+  <li>Consider what you'd want to see in a stack trace or debugger</li>
 </ul>
 
-<aside class="notes">
+<aside className="notes">
 **Format considerations:**
 - Include class name (helps when logging collections)
 - Show key fields with their names
@@ -1638,7 +1641,7 @@ public String toString() {
 @Override
 public boolean equals(Object obj) {
     if (!(obj instanceof Light other)) return false;
-    return this.brightness == other.brightness 
+    return this.brightness == other.brightness
         && someVolatileState != other.someVolatileState; // Oops!
 }
 ```
@@ -1647,7 +1650,7 @@ public boolean equals(Object obj) {
   If someVolatileState changes between calls, x.equals(x) might return false!
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **Why reflexivity matters:**
 - If x.equals(x) is false, Collections break
 - list.contains(x) would return false even if x is in the list
@@ -1695,10 +1698,11 @@ public boolean equals(Object obj) {
 ```
 
 <p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
-  <code>cis.equals("hello")</code> → true, but <code>"hello".equals(cis)</code> → false!
+  If <code>cis</code> is <code>"HELLO"</code>, then<br/>
+  <code>cis.equals("hello")</code> → true,<br/> but <code>"hello".equals(cis)</code> → false!
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **The problem:**
 - CaseInsensitiveString knows about String
 - But String doesn't know about CaseInsensitiveString
@@ -1746,7 +1750,7 @@ p.equals(cp2)  // true (ignoring color)
 // Transitivity violated!
 ```
 
-<aside class="notes">
+<aside className="notes">
 **The inheritance problem:**
 - Point equals ColorPoint if coordinates match
 - But ColorPoint equals ColorPoint only if colors also match
@@ -1790,7 +1794,7 @@ p.equals(cp2)  // true (ignoring color)
   <li>The <code>instanceof</code> check handles this automatically!</li>
 </ul>
 
-<aside class="notes">
+<aside className="notes">
 **Consistency:**
 - equals() should be deterministic
 - Same inputs → same output
@@ -1820,18 +1824,18 @@ p.equals(cp2)  // true (ignoring color)
 public boolean equals(@Nullable Object obj) {
     // 1. Same reference? Return true (optimization)
     if (this == obj) return true;
-    
+
     // 2. Wrong type (or null)? Return false
     if (!(obj instanceof DimmableLight other)) return false;
-    
+
     // 3. Compare fields that define equality
-    return this.color == other.color 
-        && this.brightness == other.brightness 
+    return this.color == other.color
+        && this.brightness == other.brightness
         && this.on == other.on;
 }
 ```
 
-<aside class="notes">
+<aside className="notes">
 **The four steps:**
 1. Check if same object (== comparison)—performance optimization
 2. Check type with instanceof—returns false for null too!
@@ -1870,7 +1874,7 @@ public boolean equals(@Nullable Object obj) {
 
 </div>
 
-<aside class="notes">
+<aside className="notes">
 **Most common mistake:**
 - Using == for object fields
 - String a = "hello"; String b = new String("hello");
@@ -1895,8 +1899,8 @@ public boolean equals(@Nullable Object obj) {
 
 ## hashCode Enables O(1) Lookup in Collections
 
-<Img 
-    src="/img/lectures/web/l4-hashcode-buckets.webp" 
+<Img
+    src="/img/lectures/web/l4-hashcode-buckets.webp"
     alt="Concept: 'The Hash Table Post Office' (How hashCode and equals Work Together)
 
 A detailed post office / mail sorting facility illustration showing how HashMap finds objects in O(1) time.
@@ -1922,7 +1926,7 @@ KEY INSIGHT CALLOUT:
 'equals = slow, exact (is this the one?)'
 'BOTH are needed. hashCode narrows the search; equals confirms the match.'
 
-THE CONTRACT WARNING: 
+THE CONTRACT WARNING:
 Shows what happens when equals and hashCode disagree (red alert box):
 - Two 'equal' objects with different hashCodes → they go to different buckets → 'light2' is in bucket 7, but 'light1' (which equals light2) is in bucket 3 → search for light1 looks in bucket 3, never finds light2 → 'OBJECT DISAPPEARED!'
 A small diagram shows the failed lookup, with the object seemingly vanishing. Caption: 'If equal objects have different hashCodes, HashMap BREAKS.'
@@ -1930,7 +1934,7 @@ A small diagram shows the failed lookup, with the object seemingly vanishing. Ca
 Style: Warm, friendly postal/logistics aesthetic with clear numbering, organized bins, and helpful workers. Color-code the buckets, highlight the 'found' path in green. Should make the two-phase lookup (hash → bucket → equals → found) crystal clear. The post office metaphor works because everyone understands: ZIP code gets you to the right area, then you need the full address to find the exact house."
   />
 
-<aside class="notes">
+<aside className="notes">
 **How hash collections work:**
 - Objects sorted into "buckets" by hashCode
 - Each bucket is a small list
@@ -1969,7 +1973,7 @@ Style: Warm, friendly postal/logistics aesthetic with clear numbering, organized
   ⚠️ If you override <code>equals</code>, you <strong>must</strong> override <code>hashCode</code>!
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **The critical rule:**
 - Equal objects MUST have equal hash codes
 - Otherwise HashMap/HashSet break completely
@@ -2013,7 +2017,7 @@ public int hashCode() {
   Use the <strong>same fields</strong> as <code>equals</code>. See <em>Effective Java</em> Item 11 for details.
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **The recipe:**
 1. Start with hashCode of first field
 2. Combine: 31 * result + nextField.hashCode()
@@ -2060,7 +2064,7 @@ System.out.println(room);  // null?!?!
   light1 and light2 are <code>equals()</code>, but have different <code>hashCode()</code> → different buckets → not found!
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **What happened:**
 - light1.hashCode() → bucket 7 (for example)
 - light2.hashCode() → bucket 23 (different!)
@@ -2095,7 +2099,7 @@ System.out.println(room);  // null?!?!
 public class Student implements Comparable<Student> {
     private String name;
     private int graduationYear;
-    
+
     @Override
     public int compareTo(Student other) {
         int yearCmp = Integer.compare(this.graduationYear, other.graduationYear);
@@ -2109,7 +2113,7 @@ public class Student implements Comparable<Student> {
   Returns: negative if <code>this &lt; other</code>, zero if equal, positive if <code>this &gt; other</code>
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **When to implement Comparable:**
 - When there's an obvious natural ordering
 - Strings: alphabetical
@@ -2155,7 +2159,7 @@ public int compareTo(Student other) {
   <li>Should be consistent with <code>equals()</code>: if <code>compareTo</code> returns 0, <code>equals</code> should return true</li>
 </ul>
 
-<aside class="notes">
+<aside className="notes">
 **Multi-field comparison pattern:**
 - Compare most significant field first
 - If not equal, return the comparison result
@@ -2201,7 +2205,7 @@ public int compareTo(Student other) {
   <li><strong>Java's standard contracts</strong> (toString, equals, hashCode, compareTo) must be implemented correctly</li>
 </ol>
 
-<aside class="notes">
+<aside className="notes">
 **Key takeaways:**
 - Specs let us reason about large systems (Miller's Law, chunking)
 - Balance restrictiveness, generality, clarity
