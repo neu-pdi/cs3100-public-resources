@@ -1405,22 +1405,28 @@ Here's your cheat sheet. ArrayList for most list needs. LinkedList only for queu
 ## Primitives Need Wrapper Classes for Collections
 
 <Img
-  src="/img/lectures/web/l3-boxing.webp"
-  alt="Concept: 'The Gift Wrapping Station' (Primitive Boxing)
-Tagline: 'Boxing has costs. The == trap has victims.'
+  src="/img/lectures/web/l3-wrapping.jpg"
+  alt="Here is a detailed prompt designed for Gemini's image generation capabilities. It structures the complex visual narrative into a cohesive retro-advertising layout.
 
-A department store gift-wrapping station in retro 1960s advertising style—cheerful on the surface but revealing problems on closer inspection. Three main areas tell the story:
+Gemini Prompt:
 
-Primitives ARRIVING ON CONVEYOR: Simple, efficient items arrive on a belt: a bare 'int' (just the number 42, compact and lightweight, with a size label '4 bytes'), a plain 'boolean' (a simple toggle switch labeled 'true'), a naked 'double' (3.14159). They approach a velvet-rope entrance to the 'Generic Collections VIP Lounge' but a bouncer in a tuxedo blocks them, pointing to a sign: 'Objects Only. No Primitives Allowed. List<int> is ILLEGAL.'
+Generate a complex, vintage 1960s magazine advertisement illustration in a Technicolor print style with slightly textured paper. The overall atmosphere is cheerful on the surface but chaotic and stressful upon inspection.
 
-WRAPPING STATION (Boxing): Harried attendants frantically wrap each primitive in elaborate decorative boxes. The int 42 becomes an ornate 'Integer' gift box—but the box is visibly 4× larger than the tiny number inside (size comparison: '4 bytes → 16 bytes'). Assembly line shows: int→Integer, double→Double, boolean→Boolean. A meter displays 'Memory Usage: ×4' and 'CPU Overhead: autoboxing in progress'. Discarded wrapping material overflows bins. An attendant's thought bubble: 'A million of these per second in that loop...'
+At the very top, a large banner title reads 'THE GIFT WRAPPING STATION'. Below it, a tagline reads: 'Boxing has costs. The == trap has victims.'
 
-CENTER PANEL - THE TRAP: Two beautifully wrapped Integer boxes sit side by side, both visibly containing '128'. They look absolutely identical. A developer confidently uses '==' to compare them, expecting 'true'. Result display shows: 'false!' with shock lines radiating outward. The developer's face shows horror. Explanation callout: '== compares BOXES (object identity), not contents!' A small 'Cache Zone' area shows Integer values -128 to 127 sharing the same boxes, with annotation: 'Small values are cached—so == sometimes works by accident, making the bug even harder to find!' Code snippets show the trap: 'Integer a = 128; Integer b = 128; a == b // false!' vs 'Integer c = 1; Integer d = 1; c == d // true (cached!)'. Giant warning sign: 'ALWAYS use .equals() for wrapper comparison!'
+The image is divided into three main narrative zones with a bottom corner inset:
 
-Wrapped objects RETURNING FROM COLLECTIONS: Wrapped objects return from Collections for actual computation. An unwrapping station tears off packaging to extract primitives. More waste accumulates. Code shown: 'int sum = 0; for (Integer i : list) { sum += i; } // unbox million times!'
+LEFT ZONE - ARRIVAL: A factory conveyor belt moves simple, glowing raw items towards a fancy entrance. We see a small glowing number '42' labeled with a tiny tag 'int (4 bytes)', a simple toggle switch labeled 'boolean (true)', and a number '3.14159' labeled 'double'. They are stopped at a velvet rope by a stern bouncer character in a tuxedo. The bouncer points to a sign that reads: 'GENERIC COLLECTIONS VIP LOUNGE. Objects Only. No Primitives Allowed. List<int> is ILLEGAL.'
 
-BOTTOM CORNER: A wise engineer bypasses the entire station, using 'int[]' directly with a smile. Sign points to them: 'When you can, skip the wrapping entirely. Prefer primitives for computation.'"
-/>
+MIDDLE ZONE - WRAPPING & THE TRAP:
+
+The Wrapping Line: Harried attendants in retro department store uniforms are frantically stuffing the small primitives into massively oversized, ornate, heavy-looking gift boxes. A tiny '42' int is being put into a huge, decorated box labeled 'Integer (16 bytes)'. A wall meter with a needle in the red zone reads: 'MEMORY USAGE: ×4' and 'CPU OVERHEAD: Autoboxing in progress'. Bins are overflowing with discarded wrapping paper waste. One attendant has a thought bubble: 'A million of these per second in that loop...'
+
+The Center Trap (Focal Point): In the dead center, under a spotlight, two identical, beautifully wrapped 'Integer' gift boxes sit side-by-side on a counter. Both visibly contain the number '128' inside through a small window. A stylized developer character in a suit confidently uses a large tool labeled '==' to compare them. A dramatic, jagged comic-book explosion bubble erupts between the boxes with the text 'false!'. The developer character has a horrified expression with shock lines. A large warning sign next to them points with an arrow: 'ALWAYS use .equals() for wrapper comparison! == compares BOXES (object identity), not contents!'
+
+RIGHT ZONE - RETURN & UNWRAPPING: Wrapped object boxes return on a separate conveyor belt. An unwrapping station tears the ornate packaging apart violently to extract the small primitives inside, creating massive piles of garbage and shredded cardboard. A visual overlay of code text is near the trash pile: 'int sum = 0; for (Integer i : list) { sum += i; } // unbox million times!'
+
+BOTTOM RIGHT CORNER INSET: A smiling, wise engineer character in practical work clothes completely bypasses the entire wrapping station chaos. They are carrying a simple, neat tray labeled 'int[]' full of raw numbers. A helpful sign points to them: 'When you can, skip the wrapping entirely. Prefer primitives for computation.'"/>
 
 <aside className="notes">
 Learning Objective 3: Describe primitive wrapper types. Here's a quirk of Java's design. Generics only work with reference types—objects. But Java also has primitive types like int, double, boolean that aren't objects. You can't write List of int. So Java provides wrapper classes that box primitives into objects. The JVM automatically boxes and unboxes, but there's overhead. And there's a nasty trap with == comparison that we'll see next.
@@ -1485,10 +1491,6 @@ System.out.println(x == y);  // true ✓
 // Wrappers: == compares object identity!
 Integer a = 128, b = 128;
 System.out.println(a == b);  // false! 😱
-
-// But wait, this works...
-Integer c = 1, d = 1;
-System.out.println(c == d);  // true (but by accident!)
 ```
 
 <div className="fragment">
