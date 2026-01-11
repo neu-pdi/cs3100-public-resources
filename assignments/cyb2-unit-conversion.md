@@ -135,7 +135,7 @@ Your implementation must support three types of recipe transformations (defined 
 
 ### Service Interface: ConversionRegistry
 
-The `ConversionRegistry` interface (provided in [ConversionRegistry.java](src/main/java/app/cookyourbooks/conversion/ConversionRegistry.java)) defines the contract for the complex conversion service. You must implement it in a class called `LayeredConversionRegistry`.
+The `ConversionRegistry` interface (provided) defines the contract for the complex conversion service. You must implement it in a class called `LayeredConversionRegistry`.
 
 **Key responsibilities:**
 - Convert quantities between units using prioritized rules
