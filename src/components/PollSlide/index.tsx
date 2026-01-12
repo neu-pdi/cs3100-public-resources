@@ -115,7 +115,7 @@ export default function PollSlide({
         <div style={{ textAlign: 'center', flexShrink: 0 }}>
           <img
             src={username ? qrSrc : logoSrc}
-            alt="Poll Everywhere QR Code"
+            alt="Poll Everywhere QR Code or Logo"
             style={{ height: '30vh' }}
           />
           {username && (
