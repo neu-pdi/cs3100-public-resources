@@ -28,7 +28,7 @@ In this first assignment, you'll lay the foundation by implementing the core dom
 
 **What you'll test:** Write JUnit 5 tests for 5 classes: `ExactQuantityTest`, `FractionalQuantityTest`, `RangeQuantityTest`, `MeasuredIngredientTest`, and `VagueIngredientTest`. **Write tests as you implement each class**—don't wait until the end.
 
-**How you'll be graded:** [50 points for implementation](#821-implementation-correctness-50-points) + [50 points for test quality](#822-test-suite-quality-50-points), minus up to [30 points for code quality issues](#83-manual-grading-subtractive). **Important:** You only receive implementation points for a class if you *also* write tests that catch bugs—see [8.1 Automated Grading Overview](#81-automated-grading-overview) for the full explanation. This isn't just about points: the autograder won't tell you whether your implementation is correct or give you hints until you've written plausible tests, and TAs will follow the same policy. Write tests first to unlock feedback.
+**How you'll be graded:** [88 points for automated checks](#82-automated-grading-point-breakdown-88-points) (implementation + test quality) + [up to 12 points for reflection](#61-reflection-grading), minus up to [30 points for code quality issues](#83-manual-grading-subtractive). **Important:** You only receive implementation points for a class if you *also* write tests that catch bugs—see [8.1 Automated Grading Overview](#81-automated-grading-overview) for the full explanation. This isn't just about points: the autograder won't tell you whether your implementation is correct or give you hints until you've written plausible tests, and TAs will follow the same policy. Write tests first to unlock feedback.
 
 **Key constraints:** [No AI assistance](#3-ai-policy-for-this-assignment) for this assignment. Complete the [Reflection](#6-reflection) questions in `REFLECTION.md`.
 
@@ -59,7 +59,7 @@ This is your opportunity to demonstrate your understanding of fundamental Java c
 As we are unable to enforce this policy, we stress that this policy is a strong guideline, and will not adjust your grade if you use AI to help you with this assignment. We ask that you report any AI usage in the [Reflection](#6-reflection) section of your submission to help us improve the course and this policy.
 
 ## 4. Grading Overview
-This assignment is worth 100 points. A fully automated grading script will be used to add points to your submission, and a manual grading process will be used to deduct points for subjective issues that can not be automatically graded.
+This assignment is worth 100 points total: 88 points from automated grading (implementation correctness and test suite effectiveness), up to 12 points from reflection, minus up to 30 points for code quality issues assessed through manual grading.
 
 A grade of "zero" will be awarded for submissions that do not compile or have code formatting issues. If this is a challenge for you, please reach out to the staff for assistance - we are happy to help make sure that your IDE is configured correctly to automatically flag (and potentially fix) these issues.
 
@@ -503,7 +503,7 @@ Update the file `REFLECTION.md` in the root of your repository to include a 1-5 
 
 
 ### 6.1 Reflection Grading
-Your reflection should include 1-5 sentences for each of the questions above. Answers should be answered to the best of your ability, and reference your code submission. Up to 2 points will be deducted for each question that is omitted or answered incompletely.
+Your reflection should include 1-5 sentences for each of the questions above. Answers should be answered to the best of your ability, and reference your code submission. The reflection is worth up to 12 points and is graded additively. Points are awarded based on the completeness and thoughtfulness of your responses to each question.
 
 ## 7. Quality Requirements
 
@@ -522,13 +522,15 @@ Within the automated grading script, you will be awarded points for:
 - 50 points for implementation correctness
 - 50 points for test suite effectiveness
 
+**Total automated points: 88 points**
+
 Your implementation's correctness is evaluated by running your code against the instructor's test suite. Your test suite's effectiveness is evaluated by running your test suite against the instructor's reference implementation and a suite of buggy implementations of the same unit that have been intentionally modified to contain bugs.
 
 For each of the units that you are tasked with implementing, you will only receive marks for the implementation of that unit if you **also** have included at least one test for that unit that detects a plausible bug in the implementation of that unit **and** all of your tests pass on the reference implementation of that unit.
 
 Marks for tests are awarded per-fault (detect 2/5 faults and get 2/5 of the points for that unit), while marks for implementation are awarded "all or nothing" (get 100% of the points for that unit if your implementation is correct, 0% if any test fails). The grading script is configured to provide you with up to one hint on each submission for a bug that your test suite did not detect. It is also configured to provide you with up to one hint on each submission for a bug in your implementation that was detected by the instructor's test suite. With a maximum of 5 submissions per 24 hours, you should plan your efforts carefully.
 
-### 8.2 Automated Grading Point Breakdown (100 points)
+### 8.2 Automated Grading Point Breakdown (88 points)
 
 #### 8.2.1 Implementation Correctness (50 points)
 
@@ -558,7 +560,7 @@ Your tests are evaluated using mutation testing—we introduce small bugs into c
 **Note:** Your code must compile for any automated points to be awarded. Non-compiling submissions receive 0 points from automated grading.
 
 ### 8.3 Manual Grading (Subtractive)
-Manual grading will be *subtractive*. A maximum of 30 points can be deducted from your score by manual grading on your code and test suite. A maximum of 10 points may be deducted from your score by manual grading on your reflection.
+Manual grading will be *subtractive*. A maximum of 30 points can be deducted from your score by manual grading on your code and test suite.
 
 Manual grading reviews code quality attributes. Points will be deducted for deficiencies in the following areas:
 
@@ -575,10 +577,15 @@ Manual grading reviews code quality attributes. Points will be deducted for defi
 Your final grade is calculated as:
 
 ```
-Final Score = Automated Score − Manual Deductions
+Final Score = Automated Score + Reflection Score − Manual Deductions
 ```
 
-When you submit your assignment, the automated score will be shown. The manual deductions will only be applied after the assignment is graded by the staff.
+Where:
+- **Automated Score**: Up to 88 points from automated grading (implementation correctness + test suite effectiveness)
+- **Reflection Score**: Up to 12 points from reflection grading (additive, manually graded)
+- **Manual Deductions**: Up to 30 points deducted for code quality issues (subtractive, manually graded)
+
+When you submit your assignment, the automated score will be shown. The reflection score and manual deductions will only be applied after the assignment is graded by the staff.
 
 ## 9. Submission
 
