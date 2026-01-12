@@ -470,60 +470,39 @@ Style: Warm fairy-tale laboratory aesthetic with technical precision—think Wes
 
 <Img
     src="/img/lectures/web/l4-underspecified.webp"
-    alt="Concept: 'The Undefined Behavior Roulette Wheel' (What Happens When Specs Have Gaps)
+    alt="Concept: 'The Undefined Behavior Roulette Wheel'
 
-A dramatic casino/game-show style illustration showing the danger of under-specified behavior.
+Layout (directional words are for positioning only, not text in image):
 
-CENTER - THE ROULETTE WHEEL:
-A large spinning wheel divided into wedges, each showing a different possible outcome for 'sum(null)'. The wheel is labeled 'What happens when arr is null?' and is being spun by an ominous figure labeled 'Undefined Behavior'. The wedges include:
-- 'Throw NullPointerException' (reasonable)
-- 'Return 0' (maybe intended?)
-- 'Return -1' (huh?)
-- 'Crash the JVM' (disaster)
-- 'Hang forever' (worse)
-- 'Corrupt data silently' (technically allowed!)
-- 'Work fine... sometimes' (worst—intermittent bugs)
-A small annotation: 'All of these satisfy the spec! The spec is silent on null.'
+CENTER: A roulette wheel labeled 'What happens when arr is empty?' with wedges: 'Return 0', 'Return -1', 'Throw Exception', 'Sing Happy Birthday', 'Hang forever'. A gleeful toddler at the controls, happily spinning the wheel.
 
-LEFT SIDE - THE SPEC:
-A document showing:
-```
-/** Returns the sum of elements.
- * @param arr the array
- * @return the sum
- */
-```
-With a magnifying glass highlighting the ABSENCE of any null handling. A detective character points at the gap: 'No mention of null = UNDEFINED = anything goes!'
+LEFT: A javadoc showing '@return the sum' with no mention of empty arrays. A detective points at the gap.
 
-RIGHT SIDE - THE CONSEQUENCES:
-Three developers at different companies building on this library:
-- Dev A (Library v1.0) implements: throws NPE
-- Dev B (Library v2.0) implements: returns 0
-- Dev C (Fork) implements: crashes
-All three say 'My implementation matches the spec!' Meanwhile, OTHER DEVELOPERS who depend on this library are shown at the bottom, frustrated—their code breaks unpredictably when switching library versions. Speech bubble: 'I upgraded the library and now my tests fail randomly!'
+RIGHT: Three developers with different implementations (returns 0, throws exception, returns -1), all saying 'My implementation matches the spec!' Other developers below are frustrated: 'I upgraded the library and now my tests fail!'
 
-BOTTOM - THE FIX:
-A 'well-specified' version with '@throws NullPointerException if arr is null' highlighted in green. The roulette wheel is replaced with a single, predictable path. Caption: 'Silence in a spec = undefined behavior. Define ALL edge cases so developers using your API can rely on consistent behavior.'
+BOTTOM: A well-specified version with '@return 0 if the array is empty' highlighted in green.
 
-Style: Dramatic game-show/casino aesthetic with spotlights, danger colors (reds, blacks), and the tension of gambling. Should convey that leaving behavior undefined is literally gambling with API consumers' ability to write reliable code."
+Style: Casino/game-show aesthetic with dramatic lighting."
   />
 <aside className="notes">
 **The problem:**
-- Spec says nothing about null input
-- Behavior is "undefined" for null
-- Implementation could: throw exception, return 0, crash the JVM, launch missiles...
+- Spec says nothing about empty array input
+- Behavior is "undefined" for empty arrays
+- Implementation could: return 0, return -1, throw exception, sing Happy Birthday...
 - All would technically satisfy this spec!
 
 **Why this matters:**
-- Callers can't predict what happens with null
+- Callers can't predict what happens with empty arrays
 - Different implementations might behave differently
 - Bugs hide in undefined corners
 
 **Real-world impact:**
-- Team A writes implementation that throws NPE
-- Team B writes caller expecting return 0
+- Team A writes implementation that returns 0
+- Team B writes caller expecting an exception
 - Neither is "wrong" according to spec
 - Bug discovered in production
+
+**Note on null:** We typically don't document NPEs in Java since they're implied by the language, but empty array behavior is genuinely ambiguous and should always be specified.
 
 → **Transition:** Let's see how to fix this...
 </aside>
@@ -554,14 +533,20 @@ public int sum(int[] arr)
 
 <ul style={{fontSize: '0.8em'}}>
   <li>Valid array → returns sum</li>
+  <li>Empty array → returns 0</li>
   <li>Null → throws NullPointerException</li>
 </ul>
 
 <aside className="notes">
 **What changed:**
-- Added `@throws NullPointerException if the array is null`
-- Now callers know EXACTLY what happens for null
-- Implementations MUST throw NPE for null (not return 0, not crash)
+- Added `or 0 if arr is empty` to the @return tag
+- Now callers know EXACTLY what happens for empty arrays
+- No more ambiguity: empty returns 0 (the mathematical identity for addition)
+
+**Note on null:**
+- NPEs are often considered implicit in Java (the language throws them for you)
+- But we document them explicitly here for completeness
+- Empty array behavior is the key ambiguity that MUST be documented
 
 **The principle:**
 - Every possible input should have defined behavior

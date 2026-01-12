@@ -11,7 +11,12 @@ export interface ExtractedImage {
   /** The src path as specified in the MDX (e.g., "/img/lectures/web/l4-millers-law.png") */
   src: string;
   
-  /** The alt text / image description */
+  /** 
+   * The generation prompt for the image.
+   * Extracted from (in order of precedence):
+   * - HTML/JSX: `prompt` attribute, falling back to `alt` attribute
+   * - Markdown: title in quotes `![alt](src "title")`, falling back to alt text
+   */
   alt: string;
   
   /** The base name derived from the src (e.g., "l4-millers-law") */

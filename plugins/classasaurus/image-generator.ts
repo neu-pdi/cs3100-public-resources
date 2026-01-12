@@ -83,13 +83,17 @@ export function extractImagesFromMdx(
 
   // Helper function to process a tag and extract image if valid
   const processImageTag = (tagContent: string): void => {
-    // Extract src and alt attributes
+    // Extract src, alt, and prompt attributes
     const src = extractAttribute(tagContent, 'src');
     const alt = extractAttribute(tagContent, 'alt');
+    const prompt = extractAttribute(tagContent, 'prompt');
     
-    if (src && alt && !foundSrcs.has(src) && alt.length > 50) {
+    // Use prompt attribute if available, otherwise fall back to alt
+    const generationPrompt = prompt || alt;
+    
+    if (src && generationPrompt && !foundSrcs.has(src) && generationPrompt.length > 50) {
       foundSrcs.add(src);
-      const extracted = parseImageSrc(src, alt, 'html', findLineNumber(src));
+      const extracted = parseImageSrc(src, generationPrompt, 'html', findLineNumber(src));
       if (extracted) {
         images.push(extracted);
       }
@@ -108,16 +112,22 @@ export function extractImagesFromMdx(
     processImageTag(match[0]);
   }
 
-  // Pattern for Markdown images: ![alt](src)
-  // Note: Markdown image alt text typically doesn't span multiple lines
-  const mdImgPattern = /!\[([\s\S]*?)\]\(([^)]+)\)/g;
+  // Pattern for Markdown images: ![alt](src) or ![alt](src "title")
+  // The title (in quotes) is used as the generation prompt when present
+  // Format: ![alt text](path/to/image.png "optional prompt in title")
+  const mdImgPattern = /!\[([\s\S]*?)\]\(([^\s)]+)(?:\s+"([^"]*)")?\)/g;
   
   while ((match = mdImgPattern.exec(content)) !== null) {
     const alt = match[1];
     const src = match[2];
-    if (!foundSrcs.has(src) && alt.length > 50) {
+    const title = match[3]; // Optional title attribute (used as prompt)
+    
+    // Use title (prompt) if available, otherwise fall back to alt
+    const generationPrompt = title || alt;
+    
+    if (!foundSrcs.has(src) && generationPrompt.length > 50) {
       foundSrcs.add(src);
-      const extracted = parseImageSrc(src, alt, 'markdown', findLineNumber(src));
+      const extracted = parseImageSrc(src, generationPrompt, 'markdown', findLineNumber(src));
       if (extracted) {
         images.push(extracted);
       }
@@ -129,10 +139,14 @@ export function extractImagesFromMdx(
 
 /**
  * Parse an image src path into structured data
+ * @param src - The image source path
+ * @param prompt - The generation prompt (from prompt attr, alt text, or markdown title)
+ * @param sourceFormat - Whether from HTML/JSX tag or markdown syntax
+ * @param lineNumber - Line number in source file
  */
 function parseImageSrc(
     src: string,
-    alt: string,
+    prompt: string,
     sourceFormat: 'html' | 'markdown',
     lineNumber: number
 ): ExtractedImage | null {
@@ -158,7 +172,7 @@ function parseImageSrc(
 
     return {
         src,
-        alt,
+        alt: prompt, // Note: 'alt' field stores the generation prompt
         baseName,
         targetDir,
         sourceFormat,
