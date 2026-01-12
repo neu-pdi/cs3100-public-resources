@@ -17,13 +17,14 @@ import Img from '@site/src/components/Img';
 <Slide>
   <Img 
     src="/img/lectures/web/l5.png" 
-    alt="Concept:  'Fashionably Late' (Java's 40-Year Arrival)
+    alt="Red carpet timeline: other languages with FP features while Java arrives 40 years late"
+    prompt="Concept:  'Fashionably Late' (Java's 40-Year Arrival)
 
-The visual is a lo-fi pixel art fashion runway or awards ceremony timeline. Languages walk the red carpet in chronological order, each carrying the feature they debuted. Haskell (1980s, wearing academic robes) carries a trophy labeled 'Pattern Matching.' ML struts alongside. Scala (2004, sleek and modern) holds 'Case Classes.' Kotlin (2016, hip and casual) waves 'Data Classes.' Rust and Swift walk together with their own pattern matching trophies. C# (2020) rushes past with 'Records.' Finally, dramatically late, Java stumbles onto the carpet in 2021—disheveled, out of breath, holding the same trophies everyone else already has, with paparazzi looking bored. A velvet rope separates the 'Already Had It' section (crowded with languages from 4 decades) from the 'Finally Got It' section (just Java, alone, sweating). The carpet timeline shows years: 1980, 1990, 2000, 2010, 2020. The palette is glamorous but ironic: red carpet, golden trophies, flashbulbs—but Java's section is notably less sparkly.
-This visualizes the lecture's pointed historical commentary: 'For decades, Java developers wrote mountains of boilerplate that developers in other languages simply didn't have to write.' The lecture explicitly notes that Haskell and ML had pattern matching in the 1970s-80s, Scala had case classes in 2004, Kotlin in 2016, even C# beat Java to records in 2020. Java developers weren't writing verbose code because it was better—they were doing it because their language hadn't caught up yet. The runway metaphor captures both the inevitability (Java did eventually arrive) and the absurdity (40 years late to a party everyone else was already leaving). Tagline options: 'Better late than never. But also: late.' or 'Every other language was already at the afterparty.' or simply '2021.'
+The visual is a lo-fi pixel art fashion runway or awards ceremony timeline. Languages walk the red carpet in chronological order, each carrying the feature they debuted. Haskell (1980s, wearing academic robes) carries a trophy labeled 'Pattern Matching.' ML struts alongside. Scala (2004, sleek and modern) holds 'Case Classes.' Kotlin (2016, hip and casual) waves 'Data Classes.' Rust and Swift walk together with their own pattern matching trophies. C# (2020) rushes past with 'Records.' Finally, dramatically late, Java stumbles onto the carpet in 2021—disheveled, out of breath, holding the same trophies everyone else already has, with paparazzi looking bored. A velvet rope separates the 'Already Had It' section (crowded with languages from 4 decades) from the 'Finally Got It' section (just Java, alone, sweating). The carpet timeline shows years: 1980, 1990, 2000, 2010, 2020. The palette is glamorous but ironic: red carpet, golden trophies, flashbulbs—but Java's section is notably less sparkly.
+This visualizes the lecture's pointed historical commentary: 'For decades, Java developers wrote mountains of boilerplate that developers in other languages simply didn't have to write.' The lecture explicitly notes that Haskell and ML had pattern matching in the 1970s-80s, Scala had case classes in 2004, Kotlin in 2016, even C# beat Java to records in 2020. Java developers weren't writing verbose code because it was better—they were doing it because their language hadn't caught up yet. The runway metaphor captures both the inevitability (Java did eventually arrive) and the absurdity (40 years late to a party everyone else was already leaving). Tagline options: 'Better late than never. But also: late.' or 'Every other language was already at the afterparty.' or simply '2021.'
 "  />
 
-<aside class="notes">
+<aside className="notes">
 **Lecture overview:**
 - **Total time:** ~50 minutes
 - **Theme:** Java finally caught up—let's use it
@@ -58,7 +59,7 @@ This visualizes the lecture's pointed historical commentary: 'For decades, Jav
   ©2025 Jonathan Bell, CC-BY-SA
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **Context from L4:**
 - Students learned about specifications, contracts, equals/hashCode
 - This lecture connects those ideas to HOW we write readable code
@@ -97,7 +98,7 @@ After this lecture, you will be able to:
   <li>Apply evidence-based naming practices to maximize code clarity</li>
 </ol>
 
-<aside class="notes">
+<aside className="notes">
 **The thread:**
 - Objective 1: WHY readability matters (the goal)
 - Objective 2: The conceptual breakthrough (functions as objects)
@@ -131,7 +132,7 @@ After this lecture, you will be able to:
     }
   />
 
-<aside class="notes">
+<aside className="notes">
 **Quick review of the design process:**
 - Requirements → Design → Implementation → Validation → Operations
 - We've been working through this left-to-right
@@ -163,7 +164,8 @@ After this lecture, you will be able to:
 
 <Img 
     src="/img/lectures/web/l5-maintenance-mountain.png" 
-    alt="Concept: 'The Maintenance Mountain'
+    alt="Small development foothill dwarfed by towering maintenance mountain range"
+    prompt="Concept: 'The Maintenance Mountain'
 A dramatic landscape illustration showing the true scale of where code spends its life.
 
 THE SCENE:
@@ -203,7 +205,7 @@ Style notes: Dramatic scale contrast is key. The mountain should feel almost int
   Development takes months. Maintenance takes <strong>decades</strong> (if you are lucky).
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **The economics:**
 - Writing code: weeks or months
 - Maintaining code: years or decades
@@ -245,7 +247,7 @@ Style notes: Dramatic scale contrast is key. The mountain should feel almost int
   <strong>The bus factor:</strong> If code is only readable to its author, the project is at risk.
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **The bus factor:**
 - "What happens if the author gets hit by a bus?"
 - Or more positively: "takes a bus to a new job"
@@ -297,7 +299,7 @@ Style notes: Dramatic scale contrast is key. The mountain should feel almost int
   <strong>Goal:</strong> Maximize signal, minimize noise.
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **The distinction:**
 - Ceremony: Stuff you HAVE to write for Java
 - Intent: Stuff you WANT to express
@@ -336,7 +338,7 @@ Style notes: Dramatic scale contrast is key. The mountain should feel almost int
   <strong>What if functions were objects?</strong>
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **The three tools:**
 1. Lambdas — for behavior (sorting, filtering, transforming)
 2. Records — for data (DTOs, value objects)
@@ -385,7 +387,7 @@ DimmableLight light = new DimmableLight(name, brightness);
 lights.sort(comparison);  // Use the behavior later
 ```
 
-<aside class="notes">
+<aside className="notes">
 **The question:**
 - We store DATA in variables all the time
 - What if we could store BEHAVIOR the same way?
@@ -412,7 +414,8 @@ lights.sort(comparison);  // Use the behavior later
 
 <Img 
     src="/img/lectures/web/l5-functions-as-objects.png" 
-    alt="Concept: 'Functions as First-Class Citizens'
+    alt="Three panels showing functions being stored, passed, and returned like objects"
+    prompt="Concept: 'Functions as First-Class Citizens'
 A visual metaphor showing functions being treated like any other object, rendered in a friendly, conceptual illustration style.
 
 THREE PANELS showing the same 'function package' (a glowing box labeled 'compare by brightness') being used in different ways:
@@ -452,7 +455,7 @@ Style notes: Should feel like a children's book explanation of a sophisticated c
   <strong>Functional programming:</strong> Functions can be stored, passed, and returned like any other value.
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **The three capabilities:**
 1. **Store:** Put a function in a variable
 2. **Pass:** Give a function to another method
@@ -512,7 +515,7 @@ Comparator<Light> comp = (l1, l2) ->
   (Lisp had this in 1958. Haskell in 1990. JavaScript in 1995. Java... 2014.)
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **Historical context:**
 - Java launched in 1996 without lambdas
 - For 18 YEARS, Java developers wrote anonymous inner classes
@@ -562,7 +565,7 @@ lights.sort((l1, l2) -> Integer.compare(l1.getBrightness(), l2.getBrightness()))
 lights.sort(Comparator.comparingInt(DimmableLight::getBrightness));
 ```
 
-<aside class="notes">
+<aside className="notes">
 **The progression:**
 1. Anonymous class: All the ceremony, behavior buried
 2. Lambda: Just parameters and behavior
@@ -617,7 +620,7 @@ classDiagram
   <strong>Strategy Pattern:</strong> Define a family of algorithms, encapsulate each one, and make them interchangeable.
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **The pattern:**
 - Context has a Strategy (interface)
 - Multiple ConcreteStrategies implement the interface
@@ -678,7 +681,7 @@ Comparator<Light> comparator = userWantsBrightness
 lights.sort(comparator);
 ```
 
-<aside class="notes">
+<aside className="notes">
 **How it maps:**
 - `List.sort()` is the Context
 - `Comparator` is the Strategy interface
@@ -745,7 +748,7 @@ lights.sort(Comparator
   <strong>Recognize</strong> the Strategy Pattern. <strong>Implement</strong> it with lambdas.
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **The evolution:**
 - Same pattern, less ceremony
 - The Strategy Pattern is still there conceptually
@@ -773,7 +776,8 @@ lights.sort(Comparator
 
 <Img 
     src="/img/lectures/web/l5-iceberg.png" 
-    alt="Concept: 'The Iceberg of Intent'
+    alt="Two icebergs: pre-Java 8 intent buried under ceremony vs post-Java 8 intent visible"
+    prompt="Concept: 'The Iceberg of Intent'
 An iceberg diagram showing what you MEAN vs what Java MAKES you write.
 
 THE SCENE:
@@ -831,7 +835,7 @@ Style notes: The power of this visual is showing that the meaningful part (inten
   The anonymous class has 6 lines. Only <strong>one line</strong> expresses intent.
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **The insight:**
 - The meaningful part was always just one line
 - Anonymous class: 1 line of intent, 5 lines of ceremony
@@ -880,7 +884,7 @@ Style notes: The power of this visual is showing that the meaningful part (inten
 (DimmableLight l1, DimmableLight l2) -> Integer.compare(l1.getBrightness(), l2.getBrightness())
 ```
 
-<aside class="notes">
+<aside className="notes">
 **Reading the syntax:**
 - Parameters: What goes in
 - Arrow: Separates input from output
@@ -931,7 +935,7 @@ Style notes: The power of this visual is showing that the meaningful part (inten
 
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **Zero parameters:**
 - Empty parentheses required: `() -> ...`
 - Common with Runnable
@@ -994,7 +998,7 @@ DimmableLight::getBrightness
   <li><code>ClassName::new</code> — constructor</li>
 </ul>
 
-<aside class="notes">
+<aside className="notes">
 **When to use method references:**
 - Lambda just calls a single method
 - Method name is clear and descriptive
@@ -1040,7 +1044,7 @@ lights.sort(Comparator.comparingInt(DimmableLight::getBrightness));
   Level 3 reads like English: "Sort by comparing int: brightness"
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **The readability progression:**
 - Level 1: "There's some comparing happening... where is it?"
 - Level 2: "Compare l1 and l2 by brightness"
@@ -1089,7 +1093,7 @@ public interface Comparator<T> {
 (l1, l2) -> Integer.compare(l1.getBrightness(), l2.getBrightness())
 ```
 
-<aside class="notes">
+<aside className="notes">
 **The connection:**
 - Lambda needs a "shape" to implement
 - Functional interface provides that shape
@@ -1136,7 +1140,7 @@ Consumer<Light> turnOn = Light::turnOn;
 Supplier<Light> factory = () -> new DimmableLight("default", 100);
 ```
 
-<aside class="notes">
+<aside className="notes">
 **Why standard interfaces:**
 - Developers recognize them instantly
 - Work with Stream API
@@ -1187,7 +1191,7 @@ Supplier<Light> factory = () -> new DimmableLight("default", 100);
 lights.sort(Comparator.comparingInt(DimmableLight::getBrightness));
 ```
 
-<aside class="notes">
+<aside className="notes">
 **Why primitives matter:**
 - Boxing/unboxing has overhead
 - Creates garbage objects
@@ -1235,7 +1239,7 @@ Predicate<Light> isBright = light -> light.getBrightness() > threshold;  // ERRO
   "Effectively final" = could have `final` keyword without changing behavior.
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **Variable capture:**
 - Lambda can "see" variables from enclosing scope
 - Useful for configuration, context
@@ -1281,7 +1285,7 @@ Predicate<Light> isBright = light -> light.getBrightness() > threshold;  // ERRO
 
 </div>
 
-<aside class="notes">
+<aside className="notes">
 **The hierarchy:**
 1. Method reference (when possible)
 2. Lambda (when simple)
@@ -1324,7 +1328,7 @@ map.merge(key, newValue, (oldVal, newVal) -> oldVal + newVal);
 map.merge(key, newValue, Integer::sum);  // Which is old? Which is new?
 ```
 
-<aside class="notes">
+<aside className="notes">
 **Method references shine when:**
 - Method name is descriptive
 - Single method call
@@ -1379,7 +1383,7 @@ private boolean isEligibleForProcessing(DataItem x) {
 }
 ```
 
-<aside class="notes">
+<aside className="notes">
 **The problems with the lambda:**
 - What does this filter DO?
 - No name to describe purpose
@@ -1436,7 +1440,7 @@ public final class Point {           // final = can't extend
   All of this just to say: "I have an immutable point with x and y."
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **The ceremony:**
 - Class declaration (final for immutability)
 - Two final fields (immutable)
@@ -1491,7 +1495,7 @@ public record Point(int x, int y) {}
   Even C# got records in 2020—before Java.
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **The lateness:**
 - Scala: case classes since 2004
 - Kotlin: data classes since 2016
@@ -1539,7 +1543,7 @@ public record ColorTemperature(int kelvin) {
 }
 ```
 
-<aside class="notes">
+<aside className="notes">
 **Compact constructor:**
 - No parameter list—uses record's components
 - Runs before field assignment
@@ -1601,7 +1605,7 @@ if (!(obj instanceof DimmableLight light)) return false;
 return this.brightness == light.brightness;  // light in scope here
 ```
 
-<aside class="notes">
+<aside className="notes">
 **More lateness:**
 - Haskell: pattern matching since 1990
 - ML: pattern matching since 1973 (!)
@@ -1650,7 +1654,7 @@ return this.brightness == light.brightness;  // light in scope here
   We use automated formatters (Spotless + google-java-format). Configure once, forget forever.
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **What style guides do:**
 - Enforce consistent formatting
 - End debates about tabs vs spaces
@@ -1701,7 +1705,7 @@ orders.stream().filter(o -> o.getTotal() > o.getDiscount()).map(Order::ship);
   <strong>Naming is the foundation.</strong> Everything else builds on it.
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **The point:**
 - Syntax improvements amplify good naming
 - They can't fix bad naming
@@ -1728,7 +1732,8 @@ orders.stream().filter(o -> o.getTotal() > o.getDiscount()).map(Order::ship);
 
 <Img 
     src="/img/lectures/web/l5-archaeology.png" 
-    alt="Concept: 'The Archaeology of Code'
+    alt="Developers as archaeologists excavating code: good names as Rosetta Stone, bad names as hieroglyphics"
+    prompt="Concept: 'The Archaeology of Code'
 Future developers as archaeologists discovering and trying to understand ancient code.
 
 THE SCENE:
@@ -1783,7 +1788,7 @@ Style notes: The key insight is that your code WILL be read by people who don't 
   Your code will outlive your memory of writing it. Name accordingly.
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **The archaeology metaphor:**
 - Future maintainers ARE archaeologists
 - They're reconstructing meaning from artifacts (code)
@@ -1833,7 +1838,7 @@ Style notes: The key insight is that your code WILL be read by people who don't 
   <li><strong>Construct</strong> the name following codebase conventions</li>
 </ol>
 
-<aside class="notes">
+<aside className="notes">
 **The research:**
 - Names are primary navigation tool
 - Good names reduce cognitive load
@@ -1859,7 +1864,8 @@ Style notes: The key insight is that your code WILL be read by people who don't 
 
 <Img 
     src="/img/lectures/web/l5-naming.png" 
-    alt="Concept: 'Building a Name' (The Name Mold Method)
+    alt="Three-stage assembly line: select concepts, choose words, construct name"
+    prompt="Concept: 'Building a Name' (The Name Mold Method)
 A three-stage process visualization rendered in an assembly line or construction metaphor style. Clean, technical, showing transformation from concepts to final name.
 
 STAGE 1 - SELECT CONCEPTS:
@@ -1893,7 +1899,7 @@ Annotation: 'Consistent. Precise. Recognizable.'
 Style notes: Clean process flow, left-to-right progression. Each stage should feel like a workshop step. Color-code the stages. Make the consistency principle visually prominent—show the 'one word per concept' rule clearly."
   />
 
-<aside class="notes">
+<aside className="notes">
 **Step 1: Select concepts**
 - What is this? (color temperature)
 - When does it apply? (startup, current, target)
@@ -1938,7 +1944,7 @@ int delayMillis;             // vs delaySeconds
 double distanceMeters;       // vs distanceFeet
 ```
 
-<aside class="notes">
+<aside className="notes">
 **The disasters:**
 - All caused by unit confusion
 - All preventable with clear naming
@@ -1993,7 +1999,7 @@ int startupColorTemperatureKelvin;
   Decision depends on your codebase. If ALL temperatures are in Kelvins, including the unit adds noise.
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **The question to ask:**
 - What concepts MUST be in the name for it to be clear?
 - What concepts are OBVIOUS from context?
@@ -2050,7 +2056,7 @@ ColorTemp defaultColorTemp;
   Mixing synonyms forces readers to verify: "Do these mean the same thing?"
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **The consistency rule:**
 - Pick ONE word for each concept
 - Use it EVERYWHERE
@@ -2121,7 +2127,7 @@ for (TunableWhiteLight light : lights) {
 private final int startupColorTemperatureKelvin;
 ```
 
-<aside class="notes">
+<aside className="notes">
 **Word ordering:**
 - Pick a convention (modifier-first or modifier-last)
 - Use it consistently throughout codebase
@@ -2181,7 +2187,7 @@ class DimmableLightController {
 
 </div>
 
-<aside class="notes">
+<aside className="notes">
 **The problems with BEFORE:**
 - `ct`, `lvl`, `stat` — abbreviations hide meaning
 - `proc`, `x` — what does this DO?
@@ -2211,7 +2217,8 @@ class DimmableLightController {
 
 <Img 
     src="/img/lectures/web/l5-maze-path.png" 
-    alt="Concept: 'The Reader's Maze vs The Reader's Path'
+    alt="Split panel: tangled maze (bad code, 30 min) vs clear path (good code, 30 sec)"
+    prompt="Concept: 'The Reader's Maze vs The Reader's Path'
 Two contrasting visualizations of the cognitive journey through code.
 
 SPLIT PANEL DESIGN:
@@ -2291,7 +2298,7 @@ Style notes: The key insight is that understanding IS achievable either way—ba
   Both paths lead to understanding. One respects your reader's time.
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **The key insight:**
 - Bad code IS eventually understandable
 - It just takes 10x-100x longer
@@ -2337,7 +2344,7 @@ Style notes: The key insight is that understanding IS achievable either way—ba
   Better late than never. The tools are here. <strong>Use them.</strong>
 </p>
 
-<aside class="notes">
+<aside className="notes">
 **Key takeaways:**
 - Java was decades late to these features
 - That era is over—we have the tools now
@@ -2365,7 +2372,7 @@ Style notes: The key insight is that understanding IS achievable either way—ba
 ## Next Steps
 
 <p style={{fontSize: '0.9em', color: '#e74c3c', marginBottom: '1em'}}>
-  ⚠️ <strong>Assignment 1 due tonight!</strong>
+  ⚠️ <strong>Assignment 1 due tonight (Thursday Jan 15)!</strong>
 </p>
 
 <p style={{fontSize: '0.85em'}}>
@@ -2379,7 +2386,7 @@ Style notes: The key insight is that understanding IS achievable either way—ba
   <li><a href="https://learning.oreilly.com/library/view/the-programmers-brain/9781617298677/Text/ch08.htm">On Naming</a> (The Programmer's Brain, Ch. 8)</li>
 </ul>
 
-<aside class="notes">
+<aside className="notes">
 **Assignment 1:**
 - Due TONIGHT
 - Use lambdas for sorting (you've seen the syntax today)

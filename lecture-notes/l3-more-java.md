@@ -94,7 +94,7 @@ Today's lecture will continue to explore the role of inheritance and dynamic dis
 ## Describe the role of generics in the Collections API (10 minutes)
 The Collections API provides core data structures like Lists, Maps, and Sets. Before we go too far into discussion Collections, we should discuss a type system feature of Java called *generics*.
 
-![The Unlabeled Warehouse - When everything is Object, anything can go wrong](/img/lectures/web/l3-warehouse.webp)
+![Warehouse metaphor: unlabeled Object boxes vs type-safe color-coded sections](/img/lectures/web/l3-warehouse.webp "Concept: 'The Unlabeled Warehouse' (Type-Unsafe Storage) - Tagline: 'When everything is Object, anything can go wrong.' A sprawling warehouse rendered in industrial blueprint style. Shelves hold identical cardboard boxes, each stamped with only 'Object' in faded ink—the original type labels ('Light', 'Fan', 'Thermostat') are visible underneath but crossed out with red 'ERASED' stamps, making type erasure literal. A warehouse worker reaches confidently for Box #7, thought bubble showing 'This is where I put the DimmableLight'—but a flashback panel shows another worker rearranging boxes last week. A dropped clipboard on the floor shows a ClassCastException stack trace. Contrast panel on the right shows the same warehouse transformed: color-coded sections ('Lights Only' in yellow, 'Fans Only' in blue), a guard at the entrance checking types against a manifest labeled 'List<Light>', and a rejected Fan bouncing off with 'Compile Error!'")
 
 Generics allow us to write code that is reusable *and* type-safe, without knowing in advance what type of data we will be working with. For example, here is a basic list interface in Java that does not use generics:
 
@@ -284,7 +284,7 @@ The only difference between the two is the underlying data structure:
 
 By "resizable array", we mean that the `ArrayList` stores its elements in a contiguous block of memory, and can grow or shrink as needed. When it needs to grow, it creates a new, larger array and copies the elements over. When it needs to shrink, it creates a new, smaller array and copies the elements over.
 
-![The Growing Classroom - How ArrayList manages capacity](/img/lectures/web/l3-arraylist-classroom.png)
+![Three-panel classroom metaphor showing ArrayList resizing by doubling capacity](/img/lectures/web/l3-arraylist-classroom.png "Concept: 'The Growing Classroom' (How ArrayList Manages Capacity) - Tagline: 'When you run out of seats, you don't add one chair—you move to a room twice the size.' A warm educational illustration in storybook style showing a three-panel sequence depicting how ArrayList dynamically resizes. Panel 1: A cozy small classroom with exactly 4 chairs, all occupied, a new student peeks through the doorway. Panel 2: All students walking in a line toward a new room, following the teacher. Panel 3: A noticeably larger classroom with 8 chairs, 5 occupied and 3 empty, showing room to grow.")
 
 By "doubly-linked list", we mean that each element in the list contains a reference to the previous and next elements in the list. This allows for efficient insertion and removal of elements from the middle of the list, but at the cost of more memory usage per element.
 
@@ -295,7 +295,7 @@ When choosing between `ArrayList` and `LinkedList`, consider the following trade
 :::note Looking Ahead
 We will talk more about the tradeoffs between `ArrayList` and `LinkedList` in [Lecture 34 (Performance)](/lecture-notes/l34-performance), when we discuss runtime complexity and memory access patterns. For now, a rule of thumb: **use `ArrayList` by default**. The reasons why will become clearer once we understand how modern CPUs interact with memory.
 
-![The Speed of Finding Things - It's not how fast, it's how it scales](/img/lectures/web/l3-bigo.webp)
+![Library triptych comparing O(1), O(n), and O(n²) search algorithms](/img/lectures/web/l3-bigo.webp "Concept: 'The Speed of Finding Things' (Library Search Comparison) - Tagline: 'It's not how fast—it's how it scales.' A warm library rendered in storybook illustration style showing three search scenarios in triptych panels: Panel 1 - O(1): A calm librarian at a card catalog, instant retrieval. Panel 2 - O(n): Same librarian walking down an endless aisle, checking each spine sequentially. Panel 3 - O(n²): A frazzled, sweating librarian surrounded by towering book piles, comparing every book to every other book for duplicates.")
 :::
 
 ### Sets
@@ -362,7 +362,7 @@ So, to repeat: [Prefer primitive types to wrapper types](https://learning.oreill
 
 ## Utilize Java methods for reading input and writing output to streams (15 minutes)
 
-![The Universal Plumbing System - Data flows in, data flows out, streams make it uniform](/img/lectures/web/l3-streams.webp)
+![House cross-section showing Java I/O streams as plumbing with input/output pipes](/img/lectures/web/l3-streams.webp "Concept: 'The Universal Plumbing System' (Stream Architecture) - Tagline: 'Data flows in, data flows out—streams make it uniform.' A cozy house cross-section in architectural illustration style, showing data plumbing infrastructure. The house represents a Java program; pipes carry data. INPUT PIPES (left): FileInputStream from a filing cabinet, System.in from a keyboard, network pipe from a cloud—all converge through an InputStream junction box with a Scanner attachment. OUTPUT DRAINS (right): System.out and System.err drains to a monitor, FileOutputStream drain to a filing cabinet.")
 
 In order to do anything useful, we probably need to be able to read input from the outside world (user, file, etc.) and write output to the outside world (user, file, etc.).
 

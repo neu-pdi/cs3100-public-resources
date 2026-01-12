@@ -1639,14 +1639,14 @@ public String toString() {
 public boolean equals(Object obj) {
     if (!(obj instanceof Light other)) return false;
     return this.brightness == other.brightness 
-        && someVolatileState != other.someVolatileState; // Oops!
+        && this.color != other.color; // Oops! Using != instead of ==
 }
 ```
 
 <p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#888'}}>
   If someVolatileState changes between calls, x.equals(x) might return false!
 </p>
-
+ i
 <aside class="notes">
 **Why reflexivity matters:**
 - If x.equals(x) is false, Collections break

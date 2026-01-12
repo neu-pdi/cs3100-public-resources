@@ -27,7 +27,7 @@ There are, of course, other ways to make a program easier to understand, and the
 
 So, a good method specification is one that a developer can understand quickly and easily. Any implementation of that method that satisfies the specification should be correct (we will call this property *generality*), and any implementation that does not satisfy the specification is incorrect (we will call this property *restrictiveness*). Good specifications should also be *clear* (we will call this property *clarity*).
 
-Note that most of the framing in this section of the lecture comes from the excellent presentation by [Liskov & Gutag in Ch 9.2](https://learning.oreilly.com/library/view/program-development-in/9780768685299/ch9.html), and it may be helpful to refer back to it as needed.
+Note that much of the framing in this section comes from Liskov & Guttag, [Ch. 9.2](https://learning.oreilly.com/library/view/program-development-in/9780768685299/ch9.html); refer to it as needed.
 
 ### Restrictiveness
 When writing a method specification, we must consider all possible inputs that the method could receive. We should be *restrictive* in our specification of a method to rule out any implementations of a method that would be unacceptable to clients of that method.
@@ -133,7 +133,7 @@ Note that, of course, if it really is necessary to get the *first* occurrence of
 
 A good way to check for generality is to examine every requirement of the specification. If you can think of a case where the specification does not permit an implementation that is correct, then it is not sufficiently general.
 
-Determining the balance between generality and restrictiveness is requires a thorough understanding of the problem domain and the method's clients. For the scope of the next few weeks, we will explicitly specify the domain constraints, but once we begin to discuss requirements gathering and domain modeling, you will need to use your own judgement to balance these constraints.
+Determining the balance between generality and restrictiveness requires a thorough understanding of the problem domain and the method's clients. For the scope of the next few weeks, we will explicitly specify the domain constraints, but once we begin to discuss requirements gathering and domain modeling, you will need to use your own judgement to balance these constraints.
 
 ### Clarity
 
@@ -234,7 +234,7 @@ public int sum(@NonNull int[] arr) {
 
 With this annotation, the compiler will enforce that `arr` is not `null` when the `sum` method is called. If it is `null`, the compiler will generate an error. However, in order to automatically check for nullness, the compiler will require that we add nullness annotations to all of the parameters and fields of all classes in our program. The benefit of this is that we can catch nullness errors at compile time, rather than at runtime. When starting with a legacy codebase, this can be a lot of work. But, when you are starting with a new codebase, it is a great way to ensure that your code avoids a very common source of bugs.
 
-As is unfortunately typical for Java's community process, despite [a strong proposal to introduce a standard `@NonNull` annotation in the language](https://stackoverflow.com/a/35896657/6457585), it was rejected. So instead, you might encounter several dozen different definitions of `@NonNull` in the wild. A coallition of organizations who are frustrated by this (including Google, JetBrains, Microsoft, Uber, and even... Oracle?) have proposed a standard library of type annotations, [JSpecify](https://jspecify.dev/docs/start-here/). In this class, we will use the JSpecify annotations.
+As is unfortunately typical for Java's community process, despite [a strong proposal to introduce a standard `@NonNull` annotation in the language](https://stackoverflow.com/a/35896657/6457585), it was rejected. So instead, you might encounter several dozen different definitions of `@NonNull` in the wild. A coalition of organizations who are frustrated by this (including Google, JetBrains, Microsoft, Uber, and even... Oracle?) have proposed a standard library of type annotations, [JSpecify](https://jspecify.dev/docs/start-here/). In this class, we will use the JSpecify annotations.
 
 While nullness is the most common type annotation to find, this is an active topic of research, and some day you might also be able to specify other properties with type annotations, such as [the immutability of a type](https://dl.acm.org/doi/10.1109/ICSE.2017.52).
 
@@ -386,7 +386,7 @@ Here is a recipe for overriding `hashCode`:
 (See [Effective Java](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch3.xhtml#lev11) for more details.)
 
 ### [`Comparable.compareTo`](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Comparable.html#compareTo(java.lang.Object)) (5 minutes)
-There are many cases in a program where we might want to compare the order of two objects. For example, we might want to sort a list of objects, or find the smallest or largest object in a collection. This is common enough that Java provides a standard inferface to compare two objects, albeit one that is not required for all Objects.
+There are many cases in a program where we might want to compare the order of two objects. For example, we might want to sort a list of objects, or find the smallest or largest object in a collection. This is common enough that Java provides a standard interface to compare two objects, albeit one that is not required for all Objects.
 
 The `Comparable` interface is used to compare objects of a single type. For all classes, you should [consider implementing `Comparable`](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch3.xhtml#lev14). By implementing `Comparable`, you are allowing your class to interoperate with all of the many existing algorithms and data structures that expect this behavior. If there is an obvious natural ordering of your type, you should implement `Comparable` and use that ordering.
 
