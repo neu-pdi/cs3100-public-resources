@@ -48,7 +48,7 @@ Assignments are structured to provide a steady, manageable pace throughout the s
   - Implement `equals()` and `hashCode()` for value objects
   - Focus on immutable transformations, encapsulation, and information hiding
   - Practice making principled design decisions with documented tradeoffs
-- [**Lab 2: Java Abstraction and Data Types**](/labs/lab2-java-abstraction)
+- [**Lab 2: Polymorphism and Collections**](/labs/lab2-polymorphism-and-collections)
   - Practice with abstract classes vs interfaces
 - [**Lab 3: Readability and Modularity**](/labs/lab3-readability)
   - Refactoring exercise on provided "bad" code

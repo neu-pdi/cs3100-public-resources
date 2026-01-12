@@ -23,12 +23,16 @@ There are, of course, other ways to make a program easier to understand, and the
 
 ## Evaluate the efficacy of a given specification using the terminology of restrictiveness, generality, and clarity (15 minutes)
 
+![The Goldilocks Specification Lab](/img/lectures/web/l4-three-criteria.webp "Concept: 'The Goldilocks Specification Lab' (Finding the Just-Right Balance) - A whimsical-yet-technical laboratory scene rendered in a storybook-meets-engineering style, showing three experimental stations where specifications are being tested. STATION 1 - 'TOO RESTRICTIVE' (Left): A specification document trapped in a tiny, rigid metal cage with bars too close together. Multiple implementations try to enter—some clearly buggy (marked with X), but ALSO several perfectly good implementations (marked with ✓) that can't fit through the narrow bars. STATION 2 - 'TOO GENERAL' (Center): A specification document as a wide-open barn door with no filter at all. A parade of implementations walks through—some with ✓ checkmarks (good), but also clearly buggy ones with skull icons. STATION 3 - 'UNCLEAR' (Right): A specification document written in tiny, smudged text with contradictory arrows and question marks. Three developers stand around it, each with a different thought bubble showing completely different interpretations. CENTER - 'JUST RIGHT' (Highlighted, Glowing): A perfectly balanced specification shown as a well-designed filter/gate system. The gate is sized exactly right: buggy implementations bounce off, while ALL valid implementations pass through smoothly.")
+
 So, a good method specification is one that a developer can understand quickly and easily. Any implementation of that method that satisfies the specification should be correct (we will call this property *generality*), and any implementation that does not satisfy the specification is incorrect (we will call this property *restrictiveness*). Good specifications should also be *clear* (we will call this property *clarity*).
 
-Note that most of the framing in this section of the lecture comes from the excellent presentation by [Liskov & Gutag in Ch 9.2](https://learning.oreilly.com/library/view/program-development-in/9780768685299/ch9.html), and it may be helpful to refer back to it as needed.
+Note that much of the framing in this section comes from Liskov & Guttag, [Ch. 9.2](https://learning.oreilly.com/library/view/program-development-in/9780768685299/ch9.html); refer to it as needed.
 
 ### Restrictiveness
-When writing a method specification, we must consider all possible inputs that the method could receive. We should be *restrictive* in our specification of a method to rule out any implementations of a method that would be unnaceptable to clients of that method.
+When writing a method specification, we must consider all possible inputs that the method could receive. We should be *restrictive* in our specification of a method to rule out any implementations of a method that would be unacceptable to clients of that method.
+
+![The Undefined Behavior Roulette Wheel](/img/lectures/web/l4-underspecified.webp "Concept: 'The Undefined Behavior Roulette Wheel' (What Happens When Specs Have Gaps) - A dramatic casino/game-show style illustration showing the danger of under-specified behavior. CENTER - THE ROULETTE WHEEL: A large spinning wheel divided into wedges, each showing a different possible outcome for 'sum(null)'. The wheel is labeled 'What happens when arr is null?' and is being spun by an ominous figure labeled 'Undefined Behavior'. The wedges include: 'Throw NullPointerException' (reasonable), 'Return 0' (maybe intended?), 'Return -1' (huh?), 'Crash the JVM' (disaster), 'Hang forever' (worse), 'Corrupt data silently' (technically allowed!), 'Work fine... sometimes' (worst—intermittent bugs). A small annotation: 'All of these satisfy the spec! The spec is silent on null.'")
 
 Here is an example of a specification that is not restrictive:
 ```java
@@ -129,7 +133,7 @@ Note that, of course, if it really is necessary to get the *first* occurrence of
 
 A good way to check for generality is to examine every requirement of the specification. If you can think of a case where the specification does not permit an implementation that is correct, then it is not sufficiently general.
 
-Determining the balance between generality and restrictiveness is requires a thorough understanding of the problem domain and the method's clients. For the scope of the next few weeks, we will explicitly specify the domain constraints, but once we begin to discuss requirements gathering and domain modeling, you will need to use your own judgement to balance these constraints.
+Determining the balance between generality and restrictiveness requires a thorough understanding of the problem domain and the method's clients. For the scope of the next few weeks, we will explicitly specify the domain constraints, but once we begin to discuss requirements gathering and domain modeling, you will need to use your own judgement to balance these constraints.
 
 ### Clarity
 
@@ -194,15 +198,21 @@ Determining the balance between clarity and conciseness is a matter of good judg
 
 ### Clarity and Long-Term Consequences: When Ambiguity Creates Maintenance Burden
 
+![The Recipe Card at Different Scales](/img/lectures/web/l4-spec-scales.webp "Concept: 'The Recipe Card at Different Scales' (Same Principles, Different Kitchens) - A warm, inviting three-panel illustration showing that recipe-writing principles remain constant whether you're cooking for yourself, running a restaurant, or programming a robot baker. LEFT PANEL - 'HOME KITCHEN' (You as Implementer): A cozy home kitchen with a handwritten recipe card: 'Chocolate Chip Cookies - Mix ingredients, bake until golden.' The cookies come out perfect because YOUR context matches YOUR intent. CENTER PANEL - 'RESTAURANT KITCHEN' (Team of Humans): A bustling professional kitchen with multiple cooks at different stations, all reading the SAME recipe card. Different cooks have different thought bubbles showing their interpretations. RIGHT PANEL - 'ROBOT BAKER' (AI/Automated System): A gleaming automated bakery line with a robot arm and conveyor belt. The robot executes EXACTLY what's specified—no more, no less. THE TWIST: Shows the home cook returning to their kitchen 6 months later, following their own vague recipe... and the cookies come out wrong. Caption: 'Plot twist: Even YOUR context changes over time. Future-you is also a different implementer.'")
+
 Ambiguous specifications create hidden costs that compound over time. When a spec is unclear, different developers make different interpretation choices. These inconsistencies become bugs, user complaints, and expensive refactoring.
 
 **Example:** A grading system spec says "submissions should be processed promptly." What does "promptly" mean? One developer implements alphabetical processing; students named "Zhang" consistently wait longer than students named "Adams." Perhaps there was also a "fairness" requirement. In lecture 9, we will discuss methods to better solicit stakeholder input and requirements.
 
 **The general principle:** Unclear specifications delegate decisions to implementers who may not realize they're making consequential choices. These hidden decisions become "specification debt" - they work fine initially but create liability over time as the system scales and reaches more diverse users.
 
+![The Hidden Decision Factory](/img/lectures/web/l4-spec-debt.webp "Concept: 'The Hidden Decision Factory' (How Ambiguous Specs Create Unintended Consequences) - An illustrated factory scene showing how ambiguous specifications lead to hidden, consequential decisions being made by implementers. THE AMBIGUOUS SPEC: A vague specification document enters the factory on a conveyor belt. It reads: 'Process submissions promptly.' A magnifying glass hovers over it showing NO details about: ordering, fairness, priority, timing. THE DECISION FACTORY: Inside the factory, a developer stands at a workstation with multiple levers and buttons—each representing a DECISION the spec didn't make. THE UNINTENDED CONSEQUENCE: The factory output shows a queue of student submissions being processed. Students named 'Adams', 'Baker', 'Chen' get processed quickly. Students named 'Williams', 'Young', 'Zhang' wait much longer. Caption: 'Alphabetical ordering = systematic disadvantage for names late in alphabet. Developer didn't intend this. Spec didn't prevent it.' THE HIDDEN COST: A timeline showing: 'SPEC PHASE: Fix ambiguity for $100', 'DEV PHASE: Fix ambiguity for $1,000', 'PRODUCTION: Fix ambiguity for $100,000'.")
+
 **Cost-saving practice:** When specifying systems that affect people, ask: "Could different reasonable interpretations of this spec lead to different outcomes for different groups?" Resolving this ambiguity in the spec is far cheaper than resolving it in deployed code. Even if the decision at present time is to allow for different outcomes for different groups, a central goal of software architecture (we'll visit in lecture 19) is to try to eliminate all "too expensive to change" decisions through effective design.
 
 ## Utilize type annotations to express invariants such as non-nullness (5 minutes)
+
+![The Factory Quality Control Line](/img/lectures/web/l4-type-annotations.webp "Concept: 'The Factory Quality Control Line' (Comments vs Type Annotations) - A detailed factory floor illustration in a clean industrial design style, showing two parallel assembly lines for 'Method Calls' being quality-checked before shipping to production. LEFT LINE - 'HONOR SYSTEM QUALITY CONTROL' (Comment-Only Specs): A conveyor belt carrying method calls. A laminated sign hangs above: 'PLEASE CHECK: arr should not be null - Javadoc says so!' A tired human inspector sits on a stool, barely glancing at packages as they roll by. Behind the inspection point: CHAOS. Packages explode on contact with the 'Production' area, a NullPointerException alarm blares. RIGHT LINE - 'AUTOMATED QUALITY GATE' (Type Annotations): The same conveyor belt, but now it passes through an imposing automated scanner. The scanner display shows: '@NonNull int[] arr — SCANNING...' Valid packages get a green checkmark stamp. The 'null' package hits an invisible force field—red lights flash, the package is automatically diverted to a 'Fix Before Shipping' chute. Caption: 'Moving specs from comments (that humans ignore) to types (that compilers enforce).'")
 
 In an ideal world, programmers could express all invariants about a method using the language's type system.
 A broad research area in software engineering and programming languages: how to design a language that ergonomically allows programmers to express invariants about their code, and have the compiler enforce them.
@@ -224,7 +234,7 @@ public int sum(@NonNull int[] arr) {
 
 With this annotation, the compiler will enforce that `arr` is not `null` when the `sum` method is called. If it is `null`, the compiler will generate an error. However, in order to automatically check for nullness, the compiler will require that we add nullness annotations to all of the parameters and fields of all classes in our program. The benefit of this is that we can catch nullness errors at compile time, rather than at runtime. When starting with a legacy codebase, this can be a lot of work. But, when you are starting with a new codebase, it is a great way to ensure that your code avoids a very common source of bugs.
 
-As is unfortunately typical for Java's community process, despite [a strong proposal to introduce a standard `@NonNull` annotation in the language](https://stackoverflow.com/a/35896657/6457585), it was rejected. So instead, you might encounter several dozen different definitions of `@NonNull` in the wild. A coallition of organizations who are frustrated by this (including Google, JetBrains, Microsoft, Uber, and even... Oracle?) have proposed a standard library of type annotations, [JSpecify](https://jspecify.dev/docs/start-here/). In this class, we will use the JSpecify annotations.
+As is unfortunately typical for Java's community process, despite [a strong proposal to introduce a standard `@NonNull` annotation in the language](https://stackoverflow.com/a/35896657/6457585), it was rejected. So instead, you might encounter several dozen different definitions of `@NonNull` in the wild. A coalition of organizations who are frustrated by this (including Google, JetBrains, Microsoft, Uber, and even... Oracle?) have proposed a standard library of type annotations, [JSpecify](https://jspecify.dev/docs/start-here/). In this class, we will use the JSpecify annotations.
 
 While nullness is the most common type annotation to find, this is an active topic of research, and some day you might also be able to specify other properties with type annotations, such as [the immutability of a type](https://dl.acm.org/doi/10.1109/ICSE.2017.52).
 
@@ -254,6 +264,44 @@ public String format(@Nullable String prefix, String value) { ... }
 ```
 
 **Alternative approach for gradual migration**: If you are migrating a legacy codebase, it may be easier to assume everything is nullable by default and explicitly mark non-null types with `@NonNull`. This allows you to incrementally add annotations as you verify each type's nullability. However, for new projects, the `@NullMarked` approach is preferred because it results in fewer annotations overall (since most types are non-null in practice).
+
+### Working with Unannotated Libraries: `Objects.requireNonNull` (3 minutes)
+
+Even when your code is fully annotated with `@NullMarked`, you'll frequently call methods from libraries that aren't annotated—including parts of the Java standard library itself! The nullness checker doesn't know whether these methods can return null, so it treats them as having "unknown" nullness.
+
+For example, consider `List.of()`:
+```java
+String name = "Alice";
+List<String> names = List.of(name); // Checker doesn't know if this returns null!
+System.out.println(names.size()); // Warning: names might be null
+```
+
+Even though `List.of()` *never* returns null (it's documented to always return a non-null list), the checker can't verify this because the Java standard library isn't annotated with `@NonNull`. You have two options:
+
+1. **Check for null explicitly** (unnecessary but satisfies checker):
+```java
+List<String> names = List.of(name);
+if (names != null) {
+    System.out.println(names.size());
+}
+```
+
+2. **Use `Objects.requireNonNull`** (asserts non-null, documents your reasoning):
+```java
+List<String> names = Objects.requireNonNull(List.of(name));
+System.out.println(names.size()); // No warning—checker knows names is non-null
+```
+
+`Objects.requireNonNull` serves two purposes:
+- It tells the nullness checker "I guarantee this value is non-null"
+- It fails fast with a clear `NullPointerException` if you're wrong, rather than failing later with a confusing error
+
+**When to use it:** Use `Objects.requireNonNull` when you have domain knowledge that a value won't be null, but the checker can't verify this. Common cases include:
+- Calling standard library methods like `List.of()`, `Set.of()`, `Map.of()` that never return null
+- Using library methods whose documentation guarantees non-null returns
+- Receiving values from unannotated third-party libraries
+
+**Caution:** Don't use `Objects.requireNonNull` to silence warnings you don't understand. If you're not sure whether a value can be null, add a proper null check instead. And don't use it for methods like `Map.get()` that genuinely can return null—that's a case where you need actual null handling.
 
 
 ## Define the role of methods common to all Objects in Java 
@@ -316,6 +364,9 @@ public boolean equals(@Nullable Object obj) {
 It might be tempting to try to define two objects as equal if they have similar fields but are different types (e.g. `TunableWhiteLight` and `DimmableLight`). However, it is generally not possible to do so without breaking the symmetry or transitivity of `equals`. So, we should not do this.
 
 ### [`hashCode`](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#hashCode()) (5 minutes)
+
+![The Hash Table Post Office](/img/lectures/web/l4-hashcode-buckets.webp "Concept: 'The Hash Table Post Office' (How hashCode and equals Work Together) - A detailed post office / mail sorting facility illustration showing how HashMap finds objects in O(1) time. THE MAIL SORTING FACILITY: A bird's-eye view of a mail sorting center with numbered bins (0-15, representing hash buckets). Each bin can hold multiple packages (objects). STEP 1 - COMPUTING THE HASH: A package (DimmableLight object) arrives at the 'Hash Calculator' station—a machine that examines the object's fields and produces a number. The machine display shows: 'hashCode() → 234789234 → mod 16 → Bucket 7'. STEP 2 - FINDING THE BUCKET: Bucket 7 is highlighted, showing it contains 3 packages (objects with the same hash). STEP 3 - THE EQUALS CHECK: The postal worker compares the incoming package against each package in the bucket using equals(). KEY INSIGHT: 'hashCode = fast, approximate (which bucket?)', 'equals = slow, exact (is this the one?)', 'BOTH are needed. hashCode narrows the search; equals confirms the match.' THE CONTRACT WARNING: Shows what happens when equals and hashCode disagree—two 'equal' objects with different hashCodes go to different buckets, and one 'disappears' because the search looks in the wrong bucket.")
+
 In Python, classes that are not Hashable do not need to implement a `__hash__` method. However, in Java, **all** objects have a `hashCode` method, just like they all have an `equals` method.
 [If you override `equals`, you *must* also override `hashCode`](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch3.xhtml#lev11), which has the following contract:
 > * Whenever it is invoked on the same object more than once during an execution of a Java application, the hashCode method must consistently return the same integer, provided no information used in equals comparisons on the object is modified. This integer need not remain consistent from one execution of an application to another execution of the same application.
@@ -335,7 +386,7 @@ Here is a recipe for overriding `hashCode`:
 (See [Effective Java](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch3.xhtml#lev11) for more details.)
 
 ### [`Comparable.compareTo`](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Comparable.html#compareTo(java.lang.Object)) (5 minutes)
-There are many cases in a program where we might want to compare the order of two objects. For example, we might want to sort a list of objects, or find the smallest or largest object in a collection. This is common enough that Java provides a standard inferface to compare two objects, albeit one that is not required for all Objects.
+There are many cases in a program where we might want to compare the order of two objects. For example, we might want to sort a list of objects, or find the smallest or largest object in a collection. This is common enough that Java provides a standard interface to compare two objects, albeit one that is not required for all Objects.
 
 The `Comparable` interface is used to compare objects of a single type. For all classes, you should [consider implementing `Comparable`](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch3.xhtml#lev14). By implementing `Comparable`, you are allowing your class to interoperate with all of the many existing algorithms and data structures that expect this behavior. If there is an obvious natural ordering of your type, you should implement `Comparable` and use that ordering.
 

@@ -1,16 +1,19 @@
 // https://claude.ai/share/0e69d802-5558-466f-a0ae-b205ba4608d9
 // https://claude.ai/share/f5e21dae-870d-4038-bc8d-6233f664f394
+// https://claude.ai/share/7ed992aa-5a2a-4035-b57a-09bdb4d23f5b
 
 import React from 'react';
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import CodeBlock from '@theme/CodeBlock';
 
 interface PollSlideProps {
   choices?: string[];
   image?: string;
   code?: string;
   language?: string;
-  username: string;
+  username?: string;
   codeFormat?: boolean;
+  bottomText?: string;
 }
 
 /**
@@ -21,8 +24,9 @@ interface PollSlideProps {
  * @param image - Optional image path (relative to static folder)
  * @param code - Optional code snippet to display
  * @param language - Language for code syntax highlighting (default: "java")
- * @param username - Poll Everywhere username (e.g., "espertus")
+ * @param username - Poll Everywhere username (e.g., "espertus"); If omitted, logo is shown
  * @param codeFormat - Whether to format choices as code (default: false)
+ * @param bottomText - Optional additional text displayed below the choices
  */
 export default function PollSlide({
   choices,
@@ -30,10 +34,14 @@ export default function PollSlide({
   code,
   language = 'java',
   username,
-  codeFormat = false
+  codeFormat = false,
+  bottomText
 }: PollSlideProps) {
-  const qrSrc = useBaseUrl(`/img/lectures/pollev-qr-codes/qr-pollev-${username}.png`);
-  const pollUrl = `https://pollev.com/${username}`;
+  // All useBaseUrl calls at top level to satisfy React hooks rules
+  const qrSrc = useBaseUrl(`/img/lectures/poll-ev/qr-pollev-${username}.png`);
+  const logoSrc = useBaseUrl('/img/lectures/poll-ev/poll-ev.png');
+  const imageSrc = useBaseUrl(image || '');
+  const pollUrl = username ? `https://pollev.com/${username}` : '';
 
   // Dedent code by removing common leading whitespace
   const dedent = (str: string): string => {
@@ -74,21 +82,16 @@ export default function PollSlide({
         <div style={{ flex: 1 }}>
           {image && (
             <img
-              src={useBaseUrl(image)}
+              src={imageSrc}
               alt="Poll image"
               style={{ maxHeight: '40vh', maxWidth: '100%', marginBottom: '1em' }}
             />
           )}
 
           {code && (
-            <pre style={{
-              fontSize: '0.7em',
-              textAlign: 'left',
-              margin: 0,
-              marginBottom: choices ? '1em' : 0
-            }}>
-              <code className={`language-${language}`}>{formattedCode}</code>
-            </pre>
+            <div style={{ fontSize: '0.7em', marginBottom: choices ? '1em' : 0 }}>
+              <CodeBlock language={language}>{formattedCode}</CodeBlock>
+            </div>
           )}
 
           {choices && choices.length > 0 && (
@@ -101,24 +104,34 @@ export default function PollSlide({
               ))}
             </div>
           )}
+
+          {bottomText && (
+            <p style={{ fontSize: '0.85em', fontStyle: 'italic', marginTop: '1em' }}>
+              {bottomText}
+            </p>
+          )}
         </div>
 
         <div style={{ textAlign: 'center', flexShrink: 0 }}>
           <img
-            src={qrSrc}
-            alt="Poll Everywhere QR Code"
+            src={username ? qrSrc : logoSrc}
+            alt="Poll Everywhere QR Code or Logo"
             style={{ height: '30vh' }}
           />
-          <p style={{ fontSize: '0.8em', marginTop: '0.5em' }}>
-            Text <strong>{username}</strong> to 22333 if the<br />URL isn't working for you.
-          </p>
+          {username && (
+            <p style={{ fontSize: '0.8em', marginTop: '0.5em' }}>
+              Text <strong>{username}</strong> to 22333 if the<br />URL isn't working for you.
+            </p>
+          )}
         </div>
 
       </div>
 
-      <p style={{ textAlign: 'right', marginTop: '1em' }}>
-        <a href={pollUrl}>{pollUrl}</a>
-      </p>
+      {username && (
+        <p style={{ textAlign: 'right', marginTop: '1em' }}>
+          <a href={pollUrl}>{pollUrl}</a>
+        </p>
+      )}
     </>
   );
 }
