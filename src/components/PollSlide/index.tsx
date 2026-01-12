@@ -4,6 +4,7 @@
 
 import React from 'react';
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import CodeBlock from '@theme/CodeBlock';
 
 interface PollSlideProps {
   choices?: string[];
@@ -88,14 +89,9 @@ export default function PollSlide({
           )}
 
           {code && (
-            <pre style={{
-              fontSize: '0.7em',
-              textAlign: 'left',
-              margin: 0,
-              marginBottom: choices ? '1em' : 0
-            }}>
-              <code className={`language-${language}`}>{formattedCode}</code>
-            </pre>
+            <div style={{ fontSize: '0.7em', marginBottom: choices ? '1em' : 0 }}>
+              <CodeBlock language={language}>{formattedCode}</CodeBlock>
+            </div>
           )}
 
           {choices && choices.length > 0 && (
@@ -119,7 +115,7 @@ export default function PollSlide({
         <div style={{ textAlign: 'center', flexShrink: 0 }}>
           <img
             src={username ? qrSrc : logoSrc}
-            alt="Poll Everywhere QR Code"
+            alt="Poll Everywhere QR Code or Logo"
             style={{ height: '30vh' }}
           />
           {username && (
