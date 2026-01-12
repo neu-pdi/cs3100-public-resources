@@ -4,6 +4,7 @@
 
 import React from 'react';
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import CodeBlock from '@theme/CodeBlock';
 
 interface PollSlideProps {
   choices?: string[];
@@ -88,14 +89,9 @@ export default function PollSlide({
           )}
 
           {code && (
-            <pre style={{
-              fontSize: '0.7em',
-              textAlign: 'left',
-              margin: 0,
-              marginBottom: choices ? '1em' : 0
-            }}>
-              <code className={`language-${language}`}>{formattedCode}</code>
-            </pre>
+            <div style={{ fontSize: '0.7em', marginBottom: choices ? '1em' : 0 }}>
+              <CodeBlock language={language}>{formattedCode}</CodeBlock>
+            </div>
           )}
 
           {choices && choices.length > 0 && (
