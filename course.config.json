@@ -1387,7 +1387,7 @@
   "calendars": {
     "ics": [
       {
-        "url": "https://outlook.office365.com/owa/calendar/eeb123406a6547c1a7ba9c2bdc50f914@northeastern.edu/12bebd788664475c9817f8dff206d48416180863810052911665/calendar.ics",
+        "url": "https://app.pawtograder.com/api/calendar/500?includeCourseEvents=false",
         "name": "Office Hours",
         "type": "office_hours"
       },

@@ -3,7 +3,7 @@
 import Layout from '@theme/Layout';
 import { Box, Heading, Text, VStack, HStack, Card, Badge } from '@chakra-ui/react';
 import { useCourseConfig } from '../hooks/useCourseConfig';
-import { useWeekSchedule } from '../hooks/useCalendarEvents';
+import { useOfficeHoursWeekSchedule, useLiveOfficeHours } from '../hooks/useCalendarEvents';
 import { startOfWeek, format, parseISO, isSameDay } from 'date-fns';
 import Link from '@docusaurus/Link';
 import DocusaurusLink from '@docusaurus/Link';
@@ -25,7 +25,8 @@ export default function Hello() {
     const courseConfig = useCourseConfig();
     const today = new Date();
     const weekStart = startOfWeek(today, { weekStartsOn: 0 }); // Sunday
-    const weekEvents = useWeekSchedule(weekStart);
+    const weekEvents = useOfficeHoursWeekSchedule(weekStart);
+    const { loading, error } = useLiveOfficeHours();
 
     // Group events by date
     const eventsByDate = weekEvents.reduce((acc, event) => {
@@ -133,8 +134,27 @@ export default function Hello() {
                                 </Text>
                             </Link>
                         </HStack>
+                        <Text fontSize="sm" color="fg.muted">
+                            Office hours queues (both virtual and in-person) are managed via <Link to="https://app.pawtograder.com/course/500/office-hours">Pawtograder</Link>. 
+                        </Text>
 
-                        {sortedDates.length === 0 ? (
+                        {loading ? (
+                            <Card.Root>
+                                <Card.Body>
+                                    <Text color="fg.muted" textAlign="center">
+                                        Loading events...
+                                    </Text>
+                                </Card.Body>
+                            </Card.Root>
+                        ) : error ? (
+                            <Card.Root>
+                                <Card.Body>
+                                    <Text color="red.500" textAlign="center">
+                                        Failed to load calendar events.
+                                    </Text>
+                                </Card.Body>
+                            </Card.Root>
+                        ) : sortedDates.length === 0 ? (
                             <Card.Root>
                                 <Card.Body>
                                     <Text color="fg.muted" textAlign="center">

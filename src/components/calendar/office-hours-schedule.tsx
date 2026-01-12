@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarEvent, useWeekSchedule, useOfficeHoursSchedule } from "@/hooks/useCalendarEvents";
+import { CalendarEvent, useOfficeHoursSchedule, useOfficeHoursWeekSchedule, useLiveOfficeHours } from "@/hooks/useCalendarEvents";
 import { Box, Button, Card, Grid, Heading, HStack, Icon, Link, Text, VStack } from "@chakra-ui/react";
 import { addDays, format, isSameDay, parseISO, startOfWeek } from "date-fns";
 import { useMemo, useState } from "react";
@@ -216,9 +216,11 @@ export default function OfficeHoursSchedule({ showTitle = true }: OfficeHoursSch
     return start;
   }, [weekOffset]);
 
-  // Get all office hours events for consistent color assignment
+  // Get all office hours events for consistent color assignment (live from ICS)
   const allOfficeHoursEvents = useOfficeHoursSchedule();
-  const events = useWeekSchedule(weekStart);
+  // Get office hours for the current week (live from ICS, only office hours type)
+  const events = useOfficeHoursWeekSchedule(weekStart);
+  const { loading, error } = useLiveOfficeHours();
 
   // Get color functions from the hook (colors assigned in order, no hashing)
   const { getOfficeHoursColor } = useCalendarColorsFromEvents(allOfficeHoursEvents);
@@ -318,8 +320,18 @@ export default function OfficeHoursSchedule({ showTitle = true }: OfficeHoursSch
             })}
           </Grid>
 
-          {/* Show more button */}
-          {events.length === 0 && (
+          {/* Loading/error states */}
+          {loading && (
+            <Text fontSize="sm" color="fg.muted" textAlign="center" py={4}>
+              Loading office hours...
+            </Text>
+          )}
+          {error && (
+            <Text fontSize="sm" color="red.500" textAlign="center" py={4}>
+              Failed to load office hours calendar
+            </Text>
+          )}
+          {!loading && !error && events.length === 0 && (
             <Text fontSize="sm" color="fg.muted" textAlign="center" py={4}>
               No office hours scheduled for this week
             </Text>

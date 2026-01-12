@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { parseISO, format, startOfDay, endOfDay, startOfWeek, endOfWeek } from 'date-fns';
 import { useCourseConfig, useCourseSchedule } from './useCourseConfig';
-import type { CalendarType, CalendarEvent as PluginCalendarEvent } from '../../plugins/classasaurus/types';
+import type { CalendarType, CalendarEvent as PluginCalendarEvent, ICSCalendarConfig } from '../../plugins/classasaurus/types';
+import ICAL from 'ical.js';
 
 let eventIdCounter = 1;
 
@@ -12,6 +13,146 @@ let eventIdCounter = 1;
  */
 function generateEventId(): number {
   return eventIdCounter++;
+}
+
+/**
+ * Parse ICS calendar data and convert to CalendarEvent[] (client-side version)
+ */
+function parseICSData(icsData: string, calendarType: CalendarType, queueName?: string): PluginCalendarEvent[] {
+  const events: PluginCalendarEvent[] = [];
+  let idCounter = Date.now(); // Use timestamp to avoid conflicts with build-time IDs
+  
+  try {
+    const jcalData = ICAL.parse(icsData);
+    const comp = new ICAL.Component(jcalData);
+    const vevents = comp.getAllSubcomponents('vevent');
+    
+    for (const vevent of vevents) {
+      const event = new ICAL.Event(vevent);
+      
+      // Skip if event doesn't have start/end times
+      if (!event.startDate || !event.endDate) {
+        continue;
+      }
+      
+      const startDate = event.startDate.toJSDate();
+      const endDate = event.endDate.toJSDate();
+      
+      // Extract organizer name from ICAL event
+      let organizerName: string | undefined;
+      try {
+        const organizerProp = vevent.getFirstProperty('organizer');
+        if (organizerProp) {
+          const organizerValue = organizerProp.getFirstValue();
+          if (typeof organizerValue === 'string') {
+            // Extract CN from format like "CN=Name:mailto:email" or just "mailto:email"
+            const cnMatch = organizerValue.match(/CN=([^:]+)/);
+            organizerName = cnMatch ? cnMatch[1] : undefined;
+          } else if (organizerValue && typeof organizerValue === 'object') {
+            // Try to get CN property
+            const cn = (organizerValue as unknown as Record<string, unknown>).cn;
+            if (typeof cn === 'string') {
+              organizerName = cn;
+            }
+          }
+        }
+      } catch {
+        // Ignore errors extracting organizer
+      }
+      
+      events.push({
+        id: idCounter++,
+        uid: event.uid || `ics-live-${idCounter}`,
+        title: event.summary || 'Untitled Event',
+        start_time: startDate.toISOString(),
+        end_time: endDate.toISOString(),
+        location: event.location || undefined,
+        organizer_name: organizerName,
+        queue_name: queueName,
+        calendar_type: calendarType,
+      });
+    }
+  } catch (error) {
+    console.error('Error parsing ICS data:', error);
+  }
+  
+  return events;
+}
+
+/**
+ * Hook to fetch ICS calendar data live from client
+ */
+function useLiveICSCalendar(icsConfig: ICSCalendarConfig | null): {
+  events: PluginCalendarEvent[];
+  loading: boolean;
+  error: Error | null;
+} {
+  const [events, setEvents] = useState<PluginCalendarEvent[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  
+  useEffect(() => {
+    if (!icsConfig) {
+      setEvents([]);
+      return;
+    }
+    
+    let cancelled = false;
+    
+    async function fetchICS() {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        // Use a CORS proxy if needed - for now try direct fetch
+        const response = await fetch(icsConfig.url);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch ICS: ${response.statusText}`);
+        }
+        const icsData = await response.text();
+        
+        if (!cancelled) {
+          const parsed = parseICSData(icsData, icsConfig.type, icsConfig.queueName);
+          setEvents(parsed);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err : new Error(String(err)));
+          console.error('Error fetching ICS calendar:', err);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+    
+    fetchICS();
+    
+    return () => {
+      cancelled = true;
+    };
+  }, [icsConfig?.url, icsConfig?.type, icsConfig?.queueName]);
+  
+  return { events, loading, error };
+}
+
+/**
+ * Hook to get live office hours from ICS (fetched client-side, not cached at build time)
+ */
+export function useLiveOfficeHours(): {
+  events: PluginCalendarEvent[];
+  loading: boolean;
+  error: Error | null;
+} {
+  const config = useCourseConfig();
+  
+  // Find the office hours ICS calendar config
+  const officeHoursConfig = useMemo(() => {
+    return config?.calendars?.ics?.find(c => c.type === 'office_hours') || null;
+  }, [config]);
+  
+  return useLiveICSCalendar(officeHoursConfig);
 }
 
 /**
@@ -269,12 +410,33 @@ export function useWeekSchedule(weekStart: Date): CalendarEvent[] {
 }
 
 /**
- * Hook to get all office hours events
+ * Hook to get all office hours events (live from ICS, not cached)
  */
 export function useOfficeHoursSchedule(): CalendarEvent[] {
-  const allEvents = useAllCalendarEvents();
+  const { events } = useLiveOfficeHours();
   
   return useMemo(() => {
-    return allEvents.filter(event => event.calendar_type === 'office_hours');
-  }, [allEvents]);
+    return events.sort((a, b) => 
+      new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
+    );
+  }, [events]);
+}
+
+/**
+ * Hook to get office hours events for a specific week (live from ICS)
+ */
+export function useOfficeHoursWeekSchedule(weekStart: Date): CalendarEvent[] {
+  const officeHours = useOfficeHoursSchedule();
+  
+  return useMemo(() => {
+    const weekEnd = endOfWeek(weekStart, { weekStartsOn: 0 }); // Sunday to Saturday
+    
+    return officeHours.filter(event => {
+      const eventStart = parseISO(event.start_time);
+      const eventEnd = parseISO(event.end_time);
+      
+      // Event overlaps with week if it starts before week ends AND ends after week starts
+      return eventStart <= weekEnd && eventEnd >= weekStart;
+    });
+  }, [officeHours, weekStart]);
 }
