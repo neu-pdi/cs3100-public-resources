@@ -126,7 +126,7 @@ Your letter grade is determined by both your total points AND meeting minimum th
 
 ### Labs and Participation
 
-**Labs (50 points):** Labs are graded on the "good faith effort" standard: if you attend your lab section and make a submission that demonstrates your effort to complete the lab, you will receive full marks for it. There are 14 labs; each is worth 5 points, with the total capped at 50 points (allowing you to miss a few without penalty).
+**Labs (50 points):** Labs are graded on the "good faith effort" standard: if you attend your lab section and make a submission that demonstrates your effort to complete the lab, you will receive full marks for it. There are 14 labs; each is worth 5 points, with the total capped at 50 points (allowing you to miss a few without penalty). Labs cannot be completed outside of lab section (unless they are due during weeks that lab sections do not meet). 
 
 **Class Participation (50 points):** Engagement with course material is essential to learning, and participation is assessed through in-class live-response activities using Poll Everywhere during most lectures (approximately 34 content lectures throughout the semester). You must be physically present in lecture to complete these activities.
 
