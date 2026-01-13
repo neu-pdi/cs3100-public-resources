@@ -1,24 +1,24 @@
 #!/usr/bin/env npx ts-node
 /**
  * Generate Images CLI
- * 
- * Command-line tool to generate missing lecture slide images from MDX files.
- * Parses MDX for images with alt text, generates variations via Google Gemini API,
+ *
+ * Command-line tool to generate missing lecture slide images from MDX/MD files.
+ * Parses MDX/MD for images with alt text, generates variations via Google Gemini API,
  * and saves optimized versions for web use.
- * 
+ *
  * Usage:
  *   # Generate for single file
  *   GEMINI_API_KEY=xxx npx ts-node plugins/classasaurus/scripts/generate-images-cli.ts \
  *     lecture-slides/l4-specs-contracts.mdx
- * 
- *   # Generate for all MDX files in a directory
+ *
+ *   # Generate for all MDX/MD files in a directory
  *   GEMINI_API_KEY=xxx npx ts-node plugins/classasaurus/scripts/generate-images-cli.ts \
  *     lecture-slides/
- * 
+ *
  *   # Dry run (show what would be generated)
  *   GEMINI_API_KEY=xxx npx ts-node plugins/classasaurus/scripts/generate-images-cli.ts \
  *     --dry-run lecture-slides/l4-specs-contracts.mdx
- * 
+ *
  *   # Force regenerate (ignore cache)
  *   GEMINI_API_KEY=xxx npx ts-node plugins/classasaurus/scripts/generate-images-cli.ts \
  *     --force lecture-slides/l4-specs-contracts.mdx
@@ -40,13 +40,13 @@ import type { CliOptions, ImageGeneratorConfig, ProcessingResult } from '../imag
 
 function printHelp(): void {
   console.log(`
-Generate Images CLI - Generate lecture slide images from MDX files
+Generate Images CLI - Generate lecture slide images from MDX/MD files
 
 Usage:
   npx ts-node plugins/classasaurus/scripts/generate-images-cli.ts [options] <target>
 
 Arguments:
-  <target>              MDX file or directory containing MDX files
+  <target>              MDX/MD file or directory containing MDX/MD files
 
 Options:
   --dry-run             Show what would be generated without actually generating
@@ -133,7 +133,11 @@ function parseArgs(args: string[]): ExtendedCliOptions {
 // File Discovery
 // ============================================================================
 
-function findMdxFiles(targetPath: string, projectRoot: string): string[] {
+function isMarkdownFile(filename: string): boolean {
+  return filename.endsWith('.mdx') || filename.endsWith('.md');
+}
+
+function findMarkdownFiles(targetPath: string, projectRoot: string): string[] {
   const fullPath = path.isAbsolute(targetPath)
     ? targetPath
     : path.join(projectRoot, targetPath);
@@ -145,10 +149,10 @@ function findMdxFiles(targetPath: string, projectRoot: string): string[] {
   const stats = fs.statSync(fullPath);
 
   if (stats.isFile()) {
-    if (fullPath.endsWith('.mdx')) {
+    if (isMarkdownFile(fullPath)) {
       return [fullPath];
     }
-    throw new Error(`Target is not an MDX file: ${fullPath}`);
+    throw new Error(`Target is not an MDX/MD file: ${fullPath}`);
   }
 
   if (stats.isDirectory()) {
@@ -156,7 +160,7 @@ function findMdxFiles(targetPath: string, projectRoot: string): string[] {
     const entries = fs.readdirSync(fullPath, { withFileTypes: true });
 
     for (const entry of entries) {
-      if (entry.isFile() && entry.name.endsWith('.mdx')) {
+      if (entry.isFile() && isMarkdownFile(entry.name)) {
         files.push(path.join(fullPath, entry.name));
       }
     }
@@ -240,10 +244,10 @@ async function main(): Promise<void> {
   // Determine project root (where package.json is)
   const projectRoot = path.resolve(__dirname, '../../..');
 
-  // Find MDX files
+  // Find markdown files
   let mdxFiles: string[];
   try {
-    mdxFiles = findMdxFiles(options.target, projectRoot);
+    mdxFiles = findMarkdownFiles(options.target, projectRoot);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error(`❌ Error: ${message}`);
@@ -251,7 +255,7 @@ async function main(): Promise<void> {
   }
 
   if (mdxFiles.length === 0) {
-    console.log('⚠️  No MDX files found in the target');
+    console.log('⚠️  No MDX/MD files found in the target');
     process.exit(0);
   }
 

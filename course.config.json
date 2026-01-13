@@ -865,7 +865,7 @@
     },
     {
       "id": "lab3-mon",
-      "title": "Lab 3: Readabiltiy and Modularity",
+      "title": "Lab 3: Specification Detective",
       "dates": [
         "2026-01-19"
       ],
@@ -881,11 +881,11 @@
         "L13",
         "L14"
       ],
-      "url": "/labs/lab3-readability"
+      "url": "/labs/lab3-spec-detective"
     },
     {
       "id": "lab3-tue",
-      "title": "Lab 3: Readabiltiy and Modularity",
+      "title": "Lab 3: Specification Detective",
       "dates": [
         "2026-01-20"
       ],
@@ -894,7 +894,7 @@
         "L02",
         "L04"
       ],
-      "url": "/labs/lab3-readability"
+      "url": "/labs/lab3-spec-detective"
     },
     {
       "id": "lab4-mon",
