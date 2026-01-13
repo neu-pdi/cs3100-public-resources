@@ -69,7 +69,7 @@ import PollSlide from '@site/src/components/PollSlide';
 <Slide>
 ## How's Assignment 1 going?
 
-{/* Add username=espertus (for example) for QR code */}
+{/* Add username='espertus' (for example) for QR code */}
 <PollSlide
   choices={["Haven't looked at it", "Looked at it but haven't started", "Started it but got stuck", "Started it and doing alright", "Pretty far along", "Completed it"]}
 />
@@ -1173,7 +1173,7 @@ Let's practice choosing collections. A playlist needs order—songs play first t
 </Slide>
 
 <Slide>
-## Poll: What should be used for voter list?
+## Poll: What should be used for a voter list?
 
 <PollSlide
   choices={["ArrayList", "LinkedList/Queue", "Set", "Map", "I have no idea"]}
@@ -1508,9 +1508,6 @@ System.out.println(a == b);  // false! 😱
 ```
 
 <div className="fragment">
-<p style={{marginTop: '0.75em', fontSize: '0.9em', color: '#c00'}}>
-  <strong>Integer caches values -128 to 127</strong> — small values share objects!
-</p>
 <p style={{fontSize: '0.9em', color: '#060'}}>
   Always use <code>.equals()</code> for object comparison, or prefer primitives
 </p>
