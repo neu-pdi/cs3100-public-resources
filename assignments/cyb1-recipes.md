@@ -570,7 +570,7 @@ Manual grading reviews code quality attributes. Points will be deducted for defi
 |----------|---------------|----------|
 | **Inheritance & Polymorphism** | -10 | Inappropriate use of inheritance; code duplication instead of reuse; incorrect use of abstract classes; missing or improper @Override annotations |
 | **Encapsulation** | -6 | Non-private fields; mutable objects exposed through getters; missing `final` modifiers on fields; improper access modifiers on constructors |
-| **Documentation** | -4 | Missing or incomplete Javadoc; missing @param, @return, @throws tags |
+| **Documentation** | -4 | Missing or incomplete Javadoc for non-test classes; missing @param, @return, @throws tags |
 | **Test Quality** | -6 | Excessive trivial tests (e.g., testing simple getters); redundant tests; tests that don't verify meaningful behavior |
 | **Code Style** | -4 | Poor naming; overly complex logic; missing string trimming; improper exception messages |
 
