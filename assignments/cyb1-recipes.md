@@ -6,6 +6,8 @@ image: /img/assignments/web/a1.png
 
 ## Update Log
 
+**January 13, 2026:** Indicated that Javadoc should not be written for tests (although you don't need to remove it if you already wrote it).
+
 **January 10, 2026:** Specified that `DECIMAL_PRECISION` constant for `ExactQuantity` and `RangeQuantity` must be set to 3. This allows you to write tests that assume that the precision is 3 decimal places, rather than requiring tests to be aware of the actual precision currently set.
 
 **January 9, 2026:** Clarified that NullAway compiler checks eliminate the need to test for null parameter exceptions on `@NonNull` annotated parameters. You should NOT write tests that verify `IllegalArgumentException` is thrown when null is passed to `@NonNull` parameters—the compiler prevents this at compile-time.
@@ -450,7 +452,7 @@ Write tests to verify constructor validation for the `name` parameter (blank str
 - Use proper access modifiers: fields should be `private`, constructors `public` (except `Ingredient` and `Quantity` constructors which should be `protected`)
 - Make all fields `final` to ensure immutability (except for the `DECIMAL_PRECISION` constants which should be `public static final`)
 - Follow Java naming conventions (classes are PascalCase, methods are camelCase, constants are UPPER_SNAKE_CASE)
-- Add comprehensive Javadoc comments for all public classes, constructors, and methods
+- Add comprehensive Javadoc comments for all public classes, constructors, and methods (except in test classes)
 - Document all parameters, return values, exceptions, preconditions, and postconditions
 - Trim all string inputs in constructors to remove leading/trailing whitespace
 - Use proper encapsulation: no mutable objects should be exposed through getters
@@ -568,7 +570,7 @@ Manual grading reviews code quality attributes. Points will be deducted for defi
 |----------|---------------|----------|
 | **Inheritance & Polymorphism** | -10 | Inappropriate use of inheritance; code duplication instead of reuse; incorrect use of abstract classes; missing or improper @Override annotations |
 | **Encapsulation** | -6 | Non-private fields; mutable objects exposed through getters; missing `final` modifiers on fields; improper access modifiers on constructors |
-| **Documentation** | -4 | Missing or incomplete Javadoc; missing @param, @return, @throws tags |
+| **Documentation** | -4 | Missing or incomplete Javadoc for non-test classes; missing @param, @return, @throws tags |
 | **Test Quality** | -6 | Excessive trivial tests (e.g., testing simple getters); redundant tests; tests that don't verify meaningful behavior |
 | **Code Style** | -4 | Poor naming; overly complex logic; missing string trimming; improper exception messages |
 
