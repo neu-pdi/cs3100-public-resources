@@ -15,8 +15,8 @@ import Img from '@site/src/components/Img';
 {/* ============================================ */}
 
 <Slide>
-  <Img 
-    src="/img/lectures/web/l5.png" 
+  <Img
+    src="/img/lectures/web/l5.png"
     alt="Red carpet timeline: other languages with FP features while Java arrives 40 years late"
     prompt="Concept:  'Fashionably Late' (Java's 40-Year Arrival)
 
@@ -56,7 +56,7 @@ This visualizes the lecture's pointed historical commentary: 'For decades, Java 
 ## Lecture 5: Functional Programming and Readability
 
 <p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
-  ©2025 Jonathan Bell, CC-BY-SA
+  ©2025 Jonathan Bell & Ellen Spertus, CC-BY-SA
 </p>
 
 <aside className="notes">
@@ -162,8 +162,8 @@ After this lecture, you will be able to:
 
 ## Most Software Cost Is Maintenance, Not Development
 
-<Img 
-    src="/img/lectures/web/l5-maintenance-mountain.png" 
+<Img
+    src="/img/lectures/web/l5-maintenance-mountain.png"
     alt="Small development foothill dwarfed by towering maintenance mountain range"
     prompt="Concept: 'The Maintenance Mountain'
 A dramatic landscape illustration showing the true scale of where code spends its life.
@@ -172,7 +172,7 @@ THE SCENE:
 A vast landscape with a small foothill in the foreground and a massive mountain range dominating the background.
 
 FOREGROUND - THE DEVELOPMENT FOOTHILL:
-A modest, manageable hill labeled 'Development' with a small flag at the top reading 'Ship It!' 
+A modest, manageable hill labeled 'Development' with a small flag at the top reading 'Ship It!'
 Timeline marker: 'Weeks to Months'
 A few developers cheerfully climbing, the path is clear and well-lit.
 The code carved into this hill is fresh, clean, newly written.
@@ -268,6 +268,8 @@ Style notes: Dramatic scale contrast is key. The mountain should feel almost int
 
 </Slide>
 
+{/*
+
 <Slide>
 
 ## Readable Code Reveals Intent, Hides Ceremony
@@ -320,6 +322,9 @@ Style notes: Dramatic scale contrast is key. The mountain should feel almost int
 
 </Slide>
 
+*/}
+
+
 <Slide>
 
 ## Today: Three Tools for More Readable Java
@@ -334,14 +339,12 @@ Style notes: Dramatic scale contrast is key. The mountain should feel almost int
   (Haskell had all of this in 1990. Scala in 2004. Kotlin in 2016.)
 </p>
 
-<p style={{fontSize: '1.1em', marginTop: '1em', color: '#9370DB', textAlign: 'center'}}>
-  <strong>What if functions were objects?</strong>
-</p>
+
 
 <aside className="notes">
 **The three tools:**
 1. Lambdas — for behavior (sorting, filtering, transforming)
-2. Records — for data (DTOs, value objects)
+2. Records and Pattern Matching — for data (eliminating boilerplate)
 3. Naming — for everything (the foundation)
 
 **The historical aside:**
@@ -366,6 +369,16 @@ Style notes: Dramatic scale contrast is key. The mountain should feel almost int
 
 <Slide>
 
+## Tools For More Readable Java
+
+* **Lambdas**
+* Records and Pattern Matching
+* Good Naming
+
+</Slide>
+
+<Slide>
+
 ## What If You Could Store a Function in a Variable?
 
 <p style={{fontSize: '0.9em'}}>
@@ -383,7 +396,7 @@ DimmableLight light = new DimmableLight(name, brightness);
 </p>
 
 ```java
-??? comparison = "compare two lights by brightness";
+??? comparison = <<compare two lights by brightness>>;
 lights.sort(comparison);  // Use the behavior later
 ```
 
@@ -412,8 +425,8 @@ lights.sort(comparison);  // Use the behavior later
 
 ## Functions as Objects: Store, Pass, Return
 
-<Img 
-    src="/img/lectures/web/l5-functions-as-objects.png" 
+<Img
+    src="/img/lectures/web/l5-functions-as-objects.png"
     alt="Three panels showing functions being stored, passed, and returned like objects"
     prompt="Concept: 'Functions as First-Class Citizens'
 A visual metaphor showing functions being treated like any other object, rendered in a friendly, conceptual illustration style.
@@ -422,7 +435,7 @@ THREE PANELS showing the same 'function package' (a glowing box labeled 'compare
 
 STORE:
 Title: 'Store in a Variable'
-Visual: A function (represented as a glowing package/box with an arrow icon, labeled 'compare by brightness') being placed into a container/shelf labeled 'myComparator'. 
+Visual: A function (represented as a glowing package/box with an arrow icon, labeled 'compare by brightness') being placed into a container/shelf labeled 'myComparator'.
 Code snippet: Comparator&lt;Light&gt; myComparator = ...;
 Caption: 'Save behavior for later'
 
@@ -507,7 +520,7 @@ Comparator<Light> comp = new Comparator<Light>() {
 
 ```java
 // After Java 8: Just write the behavior
-Comparator<Light> comp = (l1, l2) -> 
+Comparator<Light> comp = (l1, l2) ->
     Integer.compare(l1.getBrightness(), l2.getBrightness());
 ```
 
@@ -543,14 +556,23 @@ Comparator<Light> comp = (l1, l2) ->
 
 <Slide>
 
-## The Same Behavior, Three Ways to Write It
+## The Same Behavior, Four Ways to Write It
 
 <p style={{fontSize: '0.85em'}}>
   Sorting lights by brightness—verbose to concise:
 </p>
 
 ```java
-// 1. Anonymous class (6 lines of ceremony)
+// 0. Named class (separate file or nested class)
+class BrightnessComparator implements Comparator<DimmableLight> {
+    @Override
+    public int compare(DimmableLight l1, DimmableLight l2) {
+        return Integer.compare(l1.getBrightness(), l2.getBrightness());
+    }
+}
+lights.sort(new BrightnessComparator());
+
+// 1. Anonymous class
 lights.sort(new Comparator<DimmableLight>() {
     @Override
     public int compare(DimmableLight l1, DimmableLight l2) {
@@ -564,9 +586,9 @@ lights.sort((l1, l2) -> Integer.compare(l1.getBrightness(), l2.getBrightness()))
 // 3. Method reference (most concise)
 lights.sort(Comparator.comparingInt(DimmableLight::getBrightness));
 ```
-
 <aside className="notes">
 **The progression:**
+0. Named Class
 1. Anonymous class: All the ceremony, behavior buried
 2. Lambda: Just parameters and behavior
 3. Method reference: Just "compare by brightness"
@@ -586,6 +608,8 @@ lights.sort(Comparator.comparingInt(DimmableLight::getBrightness));
 
 </Slide>
 
+
+{/* I consider the Strategy slides skippable. --ES */}
 <Slide>
 
 ## Aside: This Is the Strategy Pattern
@@ -596,6 +620,7 @@ lights.sort(Comparator.comparingInt(DimmableLight::getBrightness));
 
 ```mermaid
 classDiagram
+direction BT
     class Context {
         - Strategy strategy
         + setStrategy(Strategy)
@@ -603,7 +628,7 @@ classDiagram
     }
     class Strategy {
         &lt;&lt;interface&gt;&gt;
-        +execute()
+        +execute()*
     }
     class ConcreteStrategyA {
         +execute()
@@ -614,6 +639,7 @@ classDiagram
     Context o--> Strategy : uses
     ConcreteStrategyA ..|> Strategy
     ConcreteStrategyB ..|> Strategy
+    style Strategy fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
 ```
 
 <p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
@@ -652,12 +678,13 @@ classDiagram
 
 ```mermaid
 classDiagram
+direction BT
     class List {
         +sort(Comparator c)
     }
     class Comparator {
         &lt;&lt;interface&gt;&gt;
-        +compare(T o1, T o2)
+        +compare(T o1, T o2)*
     }
     class BrightnessComparator {
         +compare(Light l1, Light l2)
@@ -668,6 +695,8 @@ classDiagram
     List o--> Comparator : uses
     BrightnessComparator ..|> Comparator
     LocationComparator ..|> Comparator
+      style Comparator fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+
 ```
 
 <p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
@@ -675,8 +704,8 @@ classDiagram
 </p>
 
 ```java
-Comparator<Light> comparator = userWantsBrightness 
-    ? new BrightnessComparator() 
+Comparator<Light> comparator = userWantsBrightness
+    ? new BrightnessComparator()
     : new LocationComparator();
 lights.sort(comparator);
 ```
@@ -712,12 +741,12 @@ lights.sort(comparator);
 **Before Java 8 (Strategy classes):**
 
 ```java
-class BrightnessComparator 
+class BrightnessComparator
     implements Comparator<Light> {
   @Override
   public int compare(Light l1, Light l2) {
     return Integer.compare(
-      l1.getBrightness(), 
+      l1.getBrightness(),
       l2.getBrightness());
   }
 }
@@ -731,9 +760,9 @@ lights.sort(new BrightnessComparator());
 **After Java 8 (Lambdas):**
 
 ```java
-lights.sort((l1, l2) -> 
+lights.sort((l1, l2) ->
   Integer.compare(
-    l1.getBrightness(), 
+    l1.getBrightness(),
     l2.getBrightness()));
 
 // Or even simpler:
@@ -774,8 +803,8 @@ lights.sort(Comparator
 
 ## Intent vs Ceremony: What You Mean vs What You Write
 
-<Img 
-    src="/img/lectures/web/l5-iceberg.png" 
+<Img
+    src="/img/lectures/web/l5-iceberg.png"
     alt="Two icebergs: pre-Java 8 intent buried under ceremony vs post-Java 8 intent visible"
     prompt="Concept: 'The Iceberg of Intent'
 An iceberg diagram showing what you MEAN vs what Java MAKES you write.
@@ -915,23 +944,31 @@ Style notes: The power of this visual is showing that the meaningful part (inten
 
 <div style={{fontSize: '0.8em'}}>
 
-| Parameters | Syntax | Example |
-|------------|--------|---------|
-| Zero | `() -> expr` | `() -> System.out.println("Hi")` |
-| One | `x -> expr` | `s -> s.toUpperCase()` |
-| Multiple | `(x, y) -> expr` | `(a, b) -> a + b` |
-| Block body | `(x) -> { ... }` | `(s) -> { return s.toUpperCase(); }` |
-
+<table>
+  <thead>
+    <tr><th>Parameters</th><th>Syntax</th><th>Example</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Zero</td><td><code>() -&gt; body</code></td><td><code>() -&gt; System.out.println("Hi")</code></td></tr>
+    <tr><td>One</td><td><code>x -&gt; body</code></td><td><code>s -&gt; s.toUpperCase()</code></td></tr>
+    <tr>
+      <td>Multiple</td>
+      <td><code>(x, y) -&gt; body</code></td>
+<td><pre>(a, b) -> \{&#10;&nbsp;&nbsp;int c = a + b;&#10;&nbsp;&nbsp;return c;&#10;\}</pre></td>
+    </tr>
+  </tbody>
+</table>
 </div>
 
-<p style={{fontSize: '0.8em', marginTop: '1em'}}>
+<p style={{fontSize: '0.7em', marginTop: '1em'}}>
 
 **Rules:**
 - Types are inferred (usually omit them)
 - One parameter: parentheses optional
-- Multiple parameters: parentheses required  
-- Single expression: `return` is implicit
-- Block body: must use explicit `return`
+- Multiple parameters: parentheses required
+- The body can be a single expression or multiple expressions:
+  - Single expression: `return` is implicit
+  - Multiple expressions: block body with braces and explicit `return`
 
 </p>
 
@@ -1077,7 +1114,7 @@ lights.sort(Comparator.comparingInt(DimmableLight::getBrightness));
 @FunctionalInterface  // Optional but recommended
 public interface Comparator<T> {
     int compare(T o1, T o2);  // The ONE abstract method
-    
+
     // Other methods are OK:
     default Comparator<T> reversed() { ... }
     static <T> Comparator<T> naturalOrder() { ... }
@@ -1359,8 +1396,8 @@ map.merge(key, newValue, Integer::sum);  // Which is old? Which is new?
 
 ```java
 data.stream()
-    .filter(x -> x.getValue() > threshold && x.isActive() && 
-                 !x.getCategory().equals("excluded") && 
+    .filter(x -> x.getValue() > threshold && x.isActive() &&
+                 !x.getCategory().equals("excluded") &&
                  x.getDate().isAfter(cutoffDate))
     .collect(Collectors.toList());
 ```
@@ -1376,8 +1413,8 @@ data.stream()
 
 /** Returns true if item should be processed based on business rules. */
 private boolean isEligibleForProcessing(DataItem x) {
-    return x.getValue() > threshold 
-        && x.isActive() 
+    return x.getValue() > threshold
+        && x.isActive()
         && !x.getCategory().equals("excluded")
         && x.getDate().isAfter(cutoffDate);
 }
@@ -1403,6 +1440,20 @@ private boolean isEligibleForProcessing(DataItem x) {
 
 → **Transition:** Records are another tool for readable code...
 </aside>
+
+</Slide>
+
+<Slide>
+
+## Tools For More Readable Java
+
+* Lambdas
+* **Records and Pattern Matching**
+* Good Naming
+
+<p style={{fontSize: '1.1em', marginTop: '1em', color: '#9370DB', textAlign: 'center'}}>
+Can we reduce Java boilerplate code?
+</p>
 
 </Slide>
 
@@ -1536,7 +1587,7 @@ public record ColorTemperature(int kelvin) {
     public int toMired() {
         return 1000000 / kelvin;
     }
-    
+
     public static ColorTemperature warm() {
         return new ColorTemperature(2700);
     }
@@ -1575,7 +1626,7 @@ public record ColorTemperature(int kelvin) {
 
 ```java
 if (obj instanceof DimmableLight) {
-    DimmableLight light = 
+    DimmableLight light =
         (DimmableLight) obj;
     light.setBrightness(50);
 }
@@ -1630,6 +1681,17 @@ return this.brightness == light.brightness;  // light in scope here
 {/* ============================================ */}
 {/* ARC 6: THE FOUNDATION - NAMING */}
 {/* ============================================ */}
+
+<Slide>
+
+## Tools For More Readable Java
+
+* Lambdas
+* Records and Pattern Matching
+* **Good Naming**
+
+
+</Slide>
 
 <Slide>
 
@@ -1730,8 +1792,8 @@ orders.stream().filter(o -> o.getTotal() > o.getDiscount()).map(Order::ship);
 
 ## Future Developers Will Excavate Your Code
 
-<Img 
-    src="/img/lectures/web/l5-archaeology.png" 
+<Img
+    src="/img/lectures/web/l5-archaeology.png"
     alt="Developers as archaeologists excavating code: good names as Rosetta Stone, bad names as hieroglyphics"
     prompt="Concept: 'The Archaeology of Code'
 Future developers as archaeologists discovering and trying to understand ancient code.
@@ -1862,8 +1924,8 @@ Style notes: The key insight is that your code WILL be read by people who don't 
 
 ## The Name Mold Method: Building Good Names
 
-<Img 
-    src="/img/lectures/web/l5-naming.png" 
+<Img
+    src="/img/lectures/web/l5-naming.png"
     alt="Three-stage assembly line: select concepts, choose words, construct name"
     prompt="Concept: 'Building a Name' (The Name Mold Method)
 A three-stage process visualization rendered in an assembly line or construction metaphor style. Clean, technical, showing transformation from concepts to final name.
@@ -2044,7 +2106,7 @@ ColorTemperature defaultColorTemperature;
 **✗ Inconsistent:**
 ```java
 int getColorTemperature();
-void setCCT(int cct);
+void setCT(int ct);
 Predicate<Light> filterByWhitePoint;
 ColorTemp defaultColorTemp;
 ```
@@ -2074,7 +2136,7 @@ ColorTemp defaultColorTemp;
 
 **Common violations:**
 - Full word vs abbreviation (colorTemperature vs colorTemp)
-- Technical vs user term (CCT vs colorTemperature)
+- Technical vs user term (CT vs colorTemperature)
 - Different teams using different words
 
 → **Transition:** Now assemble the name...
@@ -2149,6 +2211,16 @@ private final int startupColorTemperatureKelvin;
 
 </Slide>
 
+
+<Slide>
+
+## Loop Variable Names (meme)
+
+<Img src="/img/lectures/web/l5-loop-variable-name.png"
+  alt="Tweet by Carla Notarboot: 'My team had a debate over what the best looping variable name is...i won"/>
+
+</Slide>
+
 <Slide>
 
 ## Naming in Practice: Before and After
@@ -2212,11 +2284,19 @@ class DimmableLightController {
 </Slide>
 
 <Slide>
+## Long Java Names (meme)
+
+<Img src="/img/lectures/web/l5-long-java-names.jpg"
+  alt ="Meme showing extremely wide monitor for Java variable names" />
+
+</Slide>
+
+<Slide>
 
 ## The Reader's Journey: Maze or Path?
 
-<Img 
-    src="/img/lectures/web/l5-maze-path.png" 
+<Img
+    src="/img/lectures/web/l5-maze-path.png"
     alt="Split panel: tangled maze (bad code, 30 min) vs clear path (good code, 30 sec)"
     prompt="Concept: 'The Reader's Maze vs The Reader's Path'
 Two contrasting visualizations of the cognitive journey through code.
