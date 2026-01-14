@@ -7,6 +7,7 @@ image: /img/lectures/web/l5.png
 import RevealJS, { Slide } from '@site/src/components/RevealJS';
 import ImageSlide from '@site/src/components/ImageSlide';
 import Img from '@site/src/components/Img';
+import PollSlide from '@site/src/components/PollSlide';
 
 <RevealJS transition="slide">
 
@@ -110,6 +111,27 @@ After this lecture, you will be able to:
 
 → **Transition:** Let's start with the most important question: why does readability matter?
 </aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* INTRODUCTORY EXERCISE */}
+{/* ============================================ */}
+
+<Slide>
+
+## Poll: Which language do you like better?
+
+<PollSlide choices={["Python", "Java", "I like them equally", "I don't know Java well enough yet to have an opinion"]}
+/>
+
+</Slide>
+
+<Slide>
+
+## Poll: How come?
+
+<PollSlide bottomText="Remember to state the language." />
 
 </Slide>
 
@@ -268,7 +290,11 @@ Style notes: Dramatic scale contrast is key. The mountain should feel almost int
 
 </Slide>
 
-{/*
+<Slide>
+
+<Img src="/img/lectures/web/l5-old-code.png" alt="Meme"/>
+
+</Slide>
 
 <Slide>
 
@@ -322,8 +348,6 @@ Style notes: Dramatic scale contrast is key. The mountain should feel almost int
 
 </Slide>
 
-*/}
-
 
 <Slide>
 
@@ -331,15 +355,16 @@ Style notes: Dramatic scale contrast is key. The mountain should feel almost int
 
 <ol style={{fontSize: '0.9em'}}>
   <li><strong>Lambdas (Java 8, 2014):</strong> Express behavior without boilerplate classes</li>
-  <li><strong>Records (Java 16, 2021):</strong> Define data classes without boilerplate methods</li>
+  <li><strong>Records and Pattern Matching (Java 16, 2021):</strong> Define data classes without boilerplate methods</li>
   <li><strong>Good naming:</strong> Make intent clear even when syntax is perfect</li>
 </ol>
 
+{/* I'm removing this because I don't want to keep saying how sucky Java is. --ES
 <p style={{fontSize: '0.8em', marginTop: '1em', color: '#888'}}>
   (Haskell had all of this in 1990. Scala in 2004. Kotlin in 2016.)
 </p>
 
-
+*/}
 
 <aside className="notes">
 **The three tools:**
@@ -987,6 +1012,8 @@ Style notes: The power of this visual is showing that the meaningful part (inten
 **Block body:**
 - Curly braces for multiple statements
 - Must use explicit `return`
+- While the table used a block body with multiple parameters,
+  it can be used with any number of parameters.
 
 **Key point:**
 - Most lambdas should be single expressions
@@ -1031,8 +1058,10 @@ DimmableLight::getBrightness
 <ul style={{fontSize: '0.8em'}}>
   <li><code>ClassName::staticMethod</code> — static method</li>
   <li><code>ClassName::instanceMethod</code> — instance method (called on parameter)</li>
+{/* I found this skippable. -- ES
   <li><code>object::instanceMethod</code> — instance method (called on specific object)</li>
   <li><code>ClassName::new</code> — constructor</li>
+*/}
 </ul>
 
 <aside className="notes">
@@ -1097,7 +1126,8 @@ lights.sort(Comparator.comparingInt(DimmableLight::getBrightness));
 - Level 2: When you need parameter names
 - Level 3: When a method reference works
 
-→ **Transition:** Lambdas need to work with interfaces...
+→ **Transition:** How did the compiler know which method in the Comparator interface
+  we wanted to implement?
 </aside>
 
 </Slide>
@@ -1200,6 +1230,7 @@ Supplier<Light> factory = () -> new DimmableLight("default", 100);
 
 </Slide>
 
+{/* I think this is skippable. --ES */}
 <Slide>
 
 ## Primitive Interfaces Avoid Boxing Overhead
@@ -1519,7 +1550,7 @@ public final class Point {           // final = can't extend
 
 <Slide>
 
-## Records (Java 16, 2021): 17 Years After Scala
+## Records (Java 16, 2021) {/*: 17 Years After Scala */}
 
 <p style={{fontSize: '0.9em'}}>
   A <strong>record</strong> is all 30 lines in one:
@@ -1540,12 +1571,14 @@ public record Point(int x, int y) {}
   <li><strong>Immutability</strong>: all fields are <code>final</code>, class is <code>final</code></li>
 </ul>
 
+{/*
+
 <p style={{fontSize: '0.75em', marginTop: '0.5em', color: '#888'}}>
   Scala had <code>case class Point(x: Int, y: Int)</code> in 2004.<br/>
   Kotlin had <code>data class Point(val x: Int, val y: Int)</code> in 2016.<br/>
   Even C# got records in 2020—before Java.
 </p>
-
+*/}
 <aside className="notes">
 **The lateness:**
 - Scala: case classes since 2004
@@ -1595,6 +1628,11 @@ public record ColorTemperature(int kelvin) {
 ```
 
 <aside className="notes">
+**Mireds**
+- Short for "micro reciprocal degree"
+- A unit of measure for color temperature
+- Pronounced MY-red (pun?)
+
 **Compact constructor:**
 - No parameter list—uses record's components
 - Runs before field assignment
@@ -1617,7 +1655,7 @@ public record ColorTemperature(int kelvin) {
 
 <Slide>
 
-## Pattern Matching (Java 16, c 2021)
+## Pattern Matching (Java 16, 2021)
 
 <div style={{display: 'flex', gap: '1em', fontSize: '0.85em'}}>
 <div style={{flex: 1}}>
@@ -1741,6 +1779,15 @@ return this.brightness == light.brightness;  // light in scope here
 </aside>
 
 </Slide>
+<Slide>
+
+## Style Guides Prevent Fights
+
+<Img src="/img/lectures/web/l5-style.png"
+ alt="Hackles cartoon in which anthropomorphic animals argue about style"/>
+
+</Slide>
+
 
 <Slide>
 
@@ -2452,7 +2499,7 @@ Style notes: The key insight is that understanding IS achievable either way—ba
 ## Next Steps
 
 <p style={{fontSize: '0.9em', color: '#e74c3c', marginBottom: '1em'}}>
-  ⚠️ <strong>Assignment 1 due tonight (Thursday Jan 15)!</strong>
+  ⚠️ <strong>Assignment 1 due tonight (Thursday, Jan 15)!</strong>
 </p>
 
 <p style={{fontSize: '0.85em'}}>
@@ -2483,6 +2530,14 @@ Style notes: The key insight is that understanding IS achievable either way—ba
 
 → **End of lecture.**
 </aside>
+
+</Slide>
+
+<Slide>
+
+## Bonus Cartoon
+
+<Img src="/img/lectures/web/l5-naming-is-hard.webp" alt="cartoon"/>
 
 </Slide>
 
