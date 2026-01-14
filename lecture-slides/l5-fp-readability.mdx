@@ -65,13 +65,7 @@ This visualizes the lecture's pointed historical commentary: 'For decades, Java 
 - This lecture connects those ideas to HOW we write readable code
 - The theme: less ceremony, more clarity
 
-**The "late arrival" narrative:**
-- Java was 40 years late to functional programming
-- Haskell, ML, Lisp had this in the 70s-80s
-- Scala (2004), Kotlin (2016), even C# (2020) beat Java
-- But better late than never—Java developers finally have these tools
-
-**Key message:** Today we learn what Java developers in 2010 wished they had. The good news: now we have it.
+**Key message:** Modern Java has powerful tools for writing readable code. Today we learn to use them effectively.
 
 → **Transition:** Here's what you'll be able to do after today...
 </aside>
@@ -325,14 +319,10 @@ Style notes: Dramatic scale contrast is key. The mountain should feel almost int
 ## Today: Three Tools for More Readable Java
 
 <ol style={{fontSize: '0.9em'}}>
-  <li><strong>Lambdas (Java 8, 2014):</strong> Express behavior without boilerplate classes</li>
-  <li><strong>Records (Java 16, 2021):</strong> Define data classes without boilerplate methods</li>
+  <li><strong>Lambdas:</strong> Express behavior without boilerplate classes</li>
+  <li><strong>Records:</strong> Define data classes without boilerplate methods</li>
   <li><strong>Good naming:</strong> Make intent clear even when syntax is perfect</li>
 </ol>
-
-<p style={{fontSize: '0.8em', marginTop: '1em', color: '#888'}}>
-  (Haskell had all of this in 1990. Scala in 2004. Kotlin in 2016.)
-</p>
 
 <p style={{fontSize: '1.1em', marginTop: '1em', color: '#9370DB', textAlign: 'center'}}>
   <strong>What if functions were objects?</strong>
@@ -343,12 +333,6 @@ Style notes: Dramatic scale contrast is key. The mountain should feel almost int
 1. Lambdas — for behavior (sorting, filtering, transforming)
 2. Records — for data (DTOs, value objects)
 3. Naming — for everything (the foundation)
-
-**The historical aside:**
-- Yes, other languages have had this for decades
-- Java developers weren't writing verbose code because it was BETTER
-- They were doing it because Java hadn't caught up yet
-- Now it has—let's learn to use what we've got
 
 **The conceptual key:**
 - Lambdas only make sense if you understand "functions as objects"
@@ -461,38 +445,31 @@ Style notes: Should feel like a children's book explanation of a sophisticated c
 2. **Pass:** Give a function to another method
 3. **Return:** Create and return a function
 
-**Historical context:**
-- This is "functional programming 101"
-- Lisp had this in 1958—66 years ago
-- Haskell, ML, Scheme: functions as values from day one
-- Java resisted this for 18 years (1996-2014)
-
-**Why Java was late:**
-- Java's designers wanted "simplicity"
-- Everything had to be an object
-- So they made you create objects to hold functions
-- Anonymous inner classes: the workaround
+**This is functional programming:**
+- Functions as first-class values
+- Can be stored, passed, and returned like any other data
+- Enables powerful abstractions
 
 **Java's approach:**
 - Functions ARE objects (functional interfaces)
-- But lambdas hide the object creation
+- Lambdas hide the object creation
 - You write behavior, Java wraps it
 
-→ **Transition:** Java 8 finally made this possible...
+→ **Transition:** Let's see how this works in Java...
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Java 8 (2014): 18 Years Late to the Party
+## Anonymous Classes vs Lambda Expressions
 
 <p style={{fontSize: '0.85em'}}>
-  Before Java 8, storing "behavior" required creating an object:
+  The traditional way to store "behavior" required creating an object:
 </p>
 
 ```java
-// Before Java 8: Create an object that holds the behavior
+// Anonymous class: Create an object that holds the behavior
 Comparator<Light> comp = new Comparator<Light>() {
     @Override
     public int compare(Light l1, Light l2) {
@@ -502,35 +479,31 @@ Comparator<Light> comp = new Comparator<Light>() {
 ```
 
 <p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
-  Java 8 (2014) <em>finally</em> added <strong>lambda expressions</strong>:
+  <strong>Lambda expressions</strong> let you write just the behavior:
 </p>
 
 ```java
-// After Java 8: Just write the behavior
-Comparator<Light> comp = (l1, l2) -> 
+// Lambda: Just write the behavior
+Comparator<Light> comp = (l1, l2) ->
     Integer.compare(l1.getBrightness(), l2.getBrightness());
 ```
 
-<p style={{fontSize: '0.75em', marginTop: '0.5em', color: '#888'}}>
-  (Lisp had this in 1958. Haskell in 1990. JavaScript in 1995. Java... 2014.)
-</p>
-
 <aside className="notes">
-**Historical context:**
-- Java launched in 1996 without lambdas
-- For 18 YEARS, Java developers wrote anonymous inner classes
-- Every other major language had lambdas long before
-- Java 8 was finally "admitted to the club"
+**The comparison:**
+- Anonymous class: 6 lines of ceremony
+- Lambda: 1 line of intent
+- Both create a Comparator object
+- Lambda lets Java infer the boilerplate
 
-**The cost of being late:**
-- Millions of lines of verbose Comparator code
-- Entire frameworks (Guava) built to work around the limitation
-- A generation of developers who never learned functional style
+**When you'll see anonymous classes:**
+- Legacy code
+- When you need multiple methods
+- When you need instance fields
 
-**But now:**
-- Java has lambdas
-- We can write what Scala developers wrote in 2004
-- Better late than never
+**Prefer lambdas:**
+- For simple, single-method implementations
+- Much more readable
+- Standard modern Java style
 
 → **Transition:** Let's see the full transformation from verbose to concise...
 </aside>
@@ -1468,7 +1441,7 @@ public final class Point {           // final = can't extend
 
 <Slide>
 
-## Records (Java 16, 2021): 17 Years After Scala
+## Records: Data Classes Without Boilerplate
 
 <p style={{fontSize: '0.9em'}}>
   A <strong>record</strong> is all 30 lines in one:
@@ -1489,29 +1462,25 @@ public record Point(int x, int y) {}
   <li><strong>Immutability</strong>: all fields are <code>final</code>, class is <code>final</code></li>
 </ul>
 
-<p style={{fontSize: '0.75em', marginTop: '0.5em', color: '#888'}}>
-  Scala had <code>case class Point(x: Int, y: Int)</code> in 2004.<br/>
-  Kotlin had <code>data class Point(val x: Int, val y: Int)</code> in 2016.<br/>
-  Even C# got records in 2020—before Java.
-</p>
-
 <aside className="notes">
-**The lateness:**
-- Scala: case classes since 2004
-- Kotlin: data classes since 2016
-- C#: records in 2020
-- Java: records in 2021 (!)
-- Java was LAST among major languages
+**What records give you:**
+- Constructor that takes all fields
+- Accessor methods (x(), y() — not getX(), getY())
+- equals() that compares all fields
+- hashCode() consistent with equals
+- toString() showing all fields
+- Immutability enforced by the compiler
 
-**What Java developers did for 25 years:**
-- Wrote 30 lines for every simple data class
-- Used Lombok (a code generation hack)
-- Envied Kotlin developers
+**When to use records:**
+- Data transfer objects (DTOs)
+- Value objects (like Point, ColorTemperature)
+- Return types when you need multiple values
+- Any class that's primarily "data"
 
-**But now:**
-- Records work
-- They're idiomatic Java
-- Use them for data classes
+**When NOT to use records:**
+- When you need mutable state
+- When you need inheritance
+- When you need to hide fields
 
 → **Transition:** Records can have validation and custom methods...
 </aside>
@@ -1566,16 +1535,16 @@ public record ColorTemperature(int kelvin) {
 
 <Slide>
 
-## Pattern Matching (Java 16, c 2021)
+## Pattern Matching for instanceof
 
 <div style={{display: 'flex', gap: '1em', fontSize: '0.85em'}}>
 <div style={{flex: 1}}>
 
-**Before:**
+**Traditional approach:**
 
 ```java
 if (obj instanceof DimmableLight) {
-    DimmableLight light = 
+    DimmableLight light =
         (DimmableLight) obj;
     light.setBrightness(50);
 }
@@ -1584,7 +1553,7 @@ if (obj instanceof DimmableLight) {
 </div>
 <div style={{flex: 1}}>
 
-**After:**
+**With pattern matching:**
 
 ```java
 if (obj instanceof DimmableLight light) {
@@ -1606,21 +1575,21 @@ return this.brightness == light.brightness;  // light in scope here
 ```
 
 <aside className="notes">
-**More lateness:**
-- Haskell: pattern matching since 1990
-- ML: pattern matching since 1973 (!)
-- Scala, Rust, Kotlin: all had it before Java
-- Java 16 (2021): finally arrives
+**The improvement:**
+- Traditional: check type, cast, use (three steps)
+- Pattern matching: check and bind in one step
+- Eliminates redundancy and potential errors
 
-**The Java pattern:**
-- Check type, then cast, then use
-- Three steps for one concept
-- Easy to forget the cast, get ClassCastException
+**Why this matters:**
+- No more forgetting the cast
+- No more ClassCastException from copy-paste errors
+- Cleaner, more readable code
 
-**Now:**
-- One step: `instanceof DimmableLight light`
-- Scoped correctly
-- Use it everywhere
+**Use it in equals():**
+- The pattern variable has smart scoping
+- In the negative case (`!instanceof`), it's NOT in scope
+- After early return, it IS in scope
+- Perfect for equals() implementation
 
 → **Transition:** Now for what syntax can't fix...
 </aside>
@@ -2328,34 +2297,28 @@ Style notes: The key insight is that understanding IS achievable either way—ba
 
 <Slide>
 
-## Summary: Java Finally Caught Up—Now Use It
+## Summary: Modern Java Tools for Readable Code
 
 <ol style={{fontSize: '0.75em'}}>
   <li><strong>Readability is the goal</strong> — code is read far more than written</li>
-  <li><strong>Functions as objects</strong> — the breakthrough that took Java 18 years to adopt</li>
-  <li><strong>Lambdas reveal intent</strong> — what Haskell had in 1990, Java got in 2014</li>
-  <li><strong>Records eliminate boilerplate</strong> — what Scala had in 2004, Java got in 2021</li>
-  <li><strong>Pattern matching reduces ceremony</strong> — what ML had in 1973, Java got in 2021</li>
+  <li><strong>Functions as objects</strong> — store, pass, and return behavior</li>
+  <li><strong>Lambdas reveal intent</strong> — express behavior without boilerplate</li>
+  <li><strong>Records eliminate boilerplate</strong> — define data classes concisely</li>
+  <li><strong>Pattern matching reduces ceremony</strong> — combine type checks and casts</li>
   <li><strong>Choose based on readability</strong> — not just conciseness</li>
   <li><strong>Naming is the foundation</strong> — syntax can't save bad names</li>
 </ol>
 
 <p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#9370DB'}}>
-  Better late than never. The tools are here. <strong>Use them.</strong>
+  Modern Java has powerful tools for readable code. <strong>Use them.</strong>
 </p>
 
 <aside className="notes">
 **Key takeaways:**
-- Java was decades late to these features
-- That era is over—we have the tools now
+- Readability matters because code is read far more than written
 - Use lambdas, records, pattern matching
 - Choose based on readability, not just brevity
 - But remember: naming is still the foundation
-
-**The privilege:**
-- Students today learn Java WITH these features
-- Previous generations had to write the verbose versions
-- You're learning the modern way from the start
 
 **Connections:**
 - A1: Use lambdas for sorting, filtering
