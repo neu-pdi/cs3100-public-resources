@@ -84,6 +84,31 @@ Retro pixel art with a cohesive color palette of teals, blues, and warm accents.
 
 </Slide>
 
+<Slide>
+
+## Announcements
+
+* In-person office hours (listed on Oakland Canvas) are held in CPM 200:
+  * Monday 3-4 (Ellen)
+  * Tuesday 5-6 (Lucia)
+  * Wednesday 2-4 (Ran)
+  * Thursday 3-4 (Ellen)
+  * Thursday 5-6 (Lucia)
+* Ellen and Lucia offer one-on-one appointments.
+* Complete the [student survey](https://form.jotform.com/260086787355165) by Friday.
+* If you are having trouble, **ask for help**!
+
+</Slide>
+
+<Slide>
+
+## How are you feeling about CS 3100?
+  <PollSlide
+    image="/img/lectures/ellen/common/pollev-smiles.png"
+    username="espertus"
+  />
+</Slide>
+
 {/* ============================================ */}
 {/* LEARNING OBJECTIVES */}
 {/* ============================================ */}
@@ -116,33 +141,6 @@ After this lecture, you will be able to:
 
 → **Transition:** Let's start with a surprising fact about human memory...
 </aside>
-
-</Slide>
-
-<Slide>
-
-## Announcements
-
-* In-person office hours (listed on Oakland Canvas) are held in CPM 200:
-  * Monday 3-4 (Ellen)
-  * Tuesday 5-6 (Lucia)
-  * Wednesday 2-4 (Ran)
-  * Thursday 3-4 (Ellen)
-  * Thursday 5-6 (Lucia)
-* Ellen and Lucia offer one-on-one appointments.
-* Complete the [student survey](https://form.jotform.com/260086787355165) by Friday.
-* If you are having trouble, **ask for help**!
-
-</Slide>
-
-<Slide>
-
-## How are you feeling about CS 3100?
-
-  <PollSlide
-    image="/img/lectures/ellen/common/pollev-smiles.png"
-    username="espertus"
-  />
 
 </Slide>
 
@@ -244,12 +242,11 @@ After this lecture, you will be able to:
 **Without spec:** 🤯
 
 ```java
-public int mystery(int[] arr) {
-    int result = 0;
+public boolean mystery(Object[] arr, Object o) {
     for (int i = 0; i < arr.length; i++) {
-        result += arr[i];
+        if (arr[i].equals(o)) return true;
     }
-    return result;
+    return false;
 }
 ```
 
@@ -262,13 +259,11 @@ public int mystery(int[] arr) {
 
 ```java
 /**
- * Calculates the sum of the elements.
- * @return the sum of the elements, or 0 if arr is empty
- * @throws NullPointerException if arr is null
+ * Returns true if this collection contains
+ * the specified element.
+ * @return true if this collection contains o
  */
-public int sum(int[] arr) {
-    // ... implementation ...
-}
+boolean contains(Object o);
 ```
 
 <p style={{fontSize: '0.7em', color: '#888'}}>Spec tells you what it does</p>
@@ -279,17 +274,18 @@ public int sum(int[] arr) {
 <aside className="notes">
 **The chunking connection:**
 - Left side: must hold the entire implementation in memory
-- Right side: one chunk—"sums the array"
+- Right side: one chunk—"checks if collection contains element"
 - The spec lets you skip the implementation details
+
+**Connection to L3:**
+- You learned Collection.contains() last lecture
+- You used it without reading ArrayList's implementation!
+- That's the power of good specifications
 
 **Real-world scale:**
 - Methods call other methods, which call other methods...
 - Without specs, understanding one method requires understanding all its dependencies
 - With specs, each method is a self-contained chunk
-
-**Good naming helps too:**
-- "mystery" vs "sum"—names are part of the specification
-- But names alone aren't enough for complex behavior
 
 → **Transition:** Let's see the real-world impact of this...
 </aside>
@@ -301,37 +297,37 @@ public int sum(int[] arr) {
 ## You Spend 10x More Time Reading Code Than Writing It
 
 <p style={{fontSize: '0.9em'}}>
-  You spend <strong>10x more time reading code</strong> than writing it.
-</p>
-
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
-  Consider understanding this call:
+  Consider understanding this call from L3:
 </p>
 
 ```java
-int index = collection.binarySearch(target);
+Map<String, List<IoTDevice>> devicesByRoom = new HashMap<>();
+devicesByRoom.get("living-room").add(new DimmableLight("lr1", 100));
 ```
 
 <div style={{display: 'flex', gap: '1em', marginTop: '0.5em', fontSize: '0.8em'}}>
 <div style={{flex: 1}}>
 
 **Without spec:**
-- Open the source file
-- Read 30 lines of implementation
-- Understand loop invariants
-- Figure out edge cases
-- **Time: 5-10 minutes**
+- Open HashMap source (2000+ lines)
+- Trace through hash buckets
+- Understand resize logic
+- **Time: 30+ minutes**
 
 </div>
 <div style={{flex: 1}}>
 
 **With spec:**
-- Read 3-line Javadoc
-- Understand behavior, errors, edge cases
+- Read Map.get() Javadoc
+- "Returns the value for this key, or null"
 - **Time: 30 seconds**
 
 </div>
 </div>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#9370DB'}}>
+  You used HashMap without reading its 2000-line implementation!
+</p>
 
 <aside className="notes">
 **The math:**
@@ -340,11 +336,10 @@ int index = collection.binarySearch(target);
 - Without specs: O(n²) effort to understand
 - With specs: O(n) effort
 
-**Industry impact:**
-- Onboarding new developers
-- Code review speed
-- Bug investigation time
-- All dramatically improved by good specs
+**Connection to L3:**
+- Students used HashMap, ArrayList, HashSet
+- Did anyone read the implementation? No!
+- They relied on the specification (Javadoc + interface contract)
 
 **The investment:**
 - Yes, writing specs takes time
@@ -495,43 +490,47 @@ Style: Warm fairy-tale laboratory aesthetic with technical precision—think Wes
 
 ## Under-Specified Behavior Allows Bugs to Hide
 
-<Img
-    src="/img/lectures/web/l4-underspecified.webp"
-    alt="Concept: 'The Undefined Behavior Roulette Wheel'
+<p style={{fontSize: '0.9em'}}>
+  Consider this spec for <code>Map.get()</code>:
+</p>
 
-Layout (directional words are for positioning only, not text in image):
+```java
+/**
+ * Returns the value associated with the specified key.
+ * @param key the key whose value is to be returned
+ * @return the value associated with key
+ */
+V get(Object key);
+```
 
-CENTER: A roulette wheel labeled 'What happens when arr is empty?' with wedges: 'Return 0', 'Return -1', 'Throw Exception', 'Sing Happy Birthday', 'Hang forever'. A gleeful toddler at the controls, happily spinning the wheel.
+<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#e74c3c'}}>
+  What happens if the key isn't in the map?
+</p>
 
-LEFT: A javadoc showing '@return the sum' with no mention of empty arrays. A detective points at the gap.
+<ul style={{fontSize: '0.8em'}} className="fragment">
+  <li>Return null?</li>
+  <li>Throw KeyNotFoundException?</li>
+  <li>Return a default value?</li>
+</ul>
 
-RIGHT: Three developers with different implementations (returns 0, throws exception, returns -1), all saying 'My implementation matches the spec!' Other developers below are frustrated: 'I upgraded the library and now my tests fail!'
-
-BOTTOM: A well-specified version with '@return 0 if the array is empty' highlighted in green.
-
-Style: Casino/game-show aesthetic with dramatic lighting."
-  />
 <aside className="notes">
 **The problem:**
-- Spec says nothing about empty array input
-- Behavior is "undefined" for empty arrays
-- Implementation could: return 0, return -1, throw exception, sing Happy Birthday...
+- Spec says nothing about missing keys
+- Behavior is "undefined" for keys not in the map
+- Implementation could: return null, throw exception, return default...
 - All would technically satisfy this spec!
 
 **Why this matters:**
-- Callers can't predict what happens with empty arrays
+- Callers can't predict what happens with missing keys
 - Different implementations might behave differently
-- Bugs hide in undefined corners
+- This is exactly the kind of ambiguity that causes bugs
 
 **Real-world impact:**
-- Team A writes implementation that returns 0
-- Team B writes caller expecting an exception
-- Neither is "wrong" according to spec
-- Bug discovered in production
+- Python's dict raises KeyError for missing keys
+- Java's Map returns null for missing keys
+- Same concept, different behavior—spec must clarify!
 
-**Note on null:** We typically don't document NPEs in Java since they're implied by the language, but empty array behavior is genuinely ambiguous and should always be specified.
-
-→ **Transition:** Let's see how to fix this...
+→ **Transition:** Let's see how Java actually specifies this...
 </aside>
 
 </Slide>
@@ -541,51 +540,45 @@ Style: Casino/game-show aesthetic with dramatic lighting."
 ## Every Input Needs Defined Behavior
 
 <p style={{fontSize: '0.85em', color: '#27ae60'}}>
-  ✓ Sufficiently restrictive:
+  ✓ The actual Map.get() specification:
 </p>
 
 ```java
 /**
- * Calculates the sum of the elements.
- * @param arr the elements
- * @return the sum of the elements, or 0 if arr is empty
- * @throws NullPointerException if arr is null
+ * Returns the value to which the specified key is mapped,
+ * or null if this map contains no mapping for the key.
+ *
+ * @param key the key whose associated value is to be returned
+ * @return the value to which the specified key is mapped,
+ *         or null if this map contains no mapping for the key
+ * @throws ClassCastException if the key is of an inappropriate type
+ * @throws NullPointerException if the key is null and this map
+ *         does not permit null keys
  */
-public int sum(int[] arr)
+V get(Object key);
 ```
 
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
-  Now <strong>every input</strong> has defined behavior:
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+  Now <strong>every input</strong> has defined behavior.
 </p>
 
-<ul style={{fontSize: '0.8em'}}>
-  <li>Valid array → returns sum</li>
-  <li>Empty array → returns 0</li>
-  <li>Null → throws NullPointerException</li>
-</ul>
-
 <aside className="notes">
-**What changed:**
-- Added `or 0 if arr is empty` to the @return tag
-- Now callers know EXACTLY what happens for empty arrays
-- No more ambiguity: empty returns 0 (the mathematical identity for addition)
-
-**Note on null:**
-- NPEs are often considered implicit in Java (the language throws them for you)
-- But we document them explicitly here for completeness
-- Empty array behavior is the key ambiguity that MUST be documented
+**What the real spec adds:**
+- "or null if this map contains no mapping for the key" — the critical edge case!
+- ClassCastException for wrong key types
+- NullPointerException if null keys aren't allowed
 
 **The principle:**
 - Every possible input should have defined behavior
 - Either: specify the result, or specify the error
 - Silence = undefined = bugs
 
-**Tip for students:**
-- When writing specs, think: "What could callers pass in?"
-- For each possibility: "What should happen?"
-- Document all of them
+**Connection to L3:**
+- This is why you could confidently write: `if (map.get(key) == null)`
+- You KNEW it wouldn't throw an exception for missing keys
+- The spec told you exactly what to expect
 
-→ **Transition:** Here's another example of restrictiveness in the Java standard library...
+→ **Transition:** Here's another example from the Collections API...
 </aside>
 
 </Slide>
@@ -648,6 +641,66 @@ public Iterator<E> iterator()
 - Sometimes that means restricting what the CALLER can assume
 - "No particular order" = caller can't rely on order
 
+→ **Transition:** Let's see what happens when you assume order that isn't guaranteed...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Assuming Unspecified Behavior Creates Flaky Tests
+
+<Img
+  src="/img/lectures/web/l4-iterator-flakiness.webp"
+  alt="Two-panel comic: tests pass on developer laptop but fail on CI server due to HashSet iteration order, with Hyrum's Law quote"
+  prompt="Concept: 'Works On My Machine' meets Hyrum's Law
+
+A simple two-panel comic in a clean, friendly illustration style.
+
+PANEL 1 - 'YOUR LAPTOP':
+A happy developer at their desk, laptop showing green checkmarks. Simple code snippet visible:
+'for (String s : myHashSet) { ... }'
+'// Order: A, B, C'
+Developer smiling with thumbs up, thought bubble: 'Tests pass!'
+Warm, comfortable colors (greens, soft blues).
+
+PANEL 2 - 'CI SERVER':
+Same code on a server rack, but now showing red X marks.
+'for (String s : myHashSet) { ... }'
+'// Order: C, A, B'
+'TEST FAILED: expected A, got C'
+Confused developer icon with thought bubble: 'But it worked on my machine?!'
+Alarming colors (reds, oranges).
+
+BOTTOM BANNER with quote:
+A small plaque or banner at the bottom with: 'Hyrum's Law: With enough users, all observable behaviors will be depended on—even the ones the spec never promised.'
+
+Style: Simple, clean, modern. Two equal panels side by side. Minimal detail, clear message. The Hyrum's Law quote should feel like a wise warning label. Should be immediately understandable at a glance."
+/>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#e74c3c'}}>
+  "Works on my machine" isn't a specification!
+</p>
+
+<aside className="notes">
+**The flakiness trap:**
+- HashSet doesn't guarantee iteration order
+- On YOUR machine, it might always be the same
+- So your tests pass locally... then fail on the CI server
+
+**Why it happens:**
+- Different JVM versions, different behavior
+- The spec says "no particular order"—believe it!
+
+**Key lesson:**
+- If the Javadoc doesn't promise it, don't rely on it
+- Test behavior, not implementation details
+
+**Foreshadowing (Hyrum's Law, L6):**
+- "With enough users, all observable behaviors will be depended on"
+- Even unspecified behavior gets relied upon—then breaks when implementations change
+- This is why information hiding matters (coming in Lecture 6)
+
 → **Transition:** But we can go too far—what if we're TOO restrictive?
 </aside>
 
@@ -700,35 +753,37 @@ public Iterator<E> iterator()
 
 ```java
 /**
- * Finds the index of searchTarget in arr by iterating forward through all
- * elements of the array until finds the value.
+ * Returns true if this set contains the specified element.
+ * Iterates through all elements using a for-each loop,
+ * comparing each element using equals().
  *
- * @param arr an array of increasing values
- * @param searchTarget the element to search for
- * @return the index of arr that contains searchTarget
- * @throws NullPointerException if arr is null
- * @throws NoSuchElementException if arr does not contain searchTarget
+ * @param o the element to search for
+ * @return true if found, false otherwise
  */
-public int findIndex(int[] arr, int searchTarget)
+boolean contains(Object o);
 ```
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#e74c3c'}}>
+  This spec requires O(n) linear search!
+</p>
 
 <aside className="notes">
 **The problem:**
 - This spec describes HOW to implement, not WHAT the method does
-- "Examines each element in order" — requires linear search
-- "Return the current index" — requires returning FIRST occurrence
+- "Iterates through all elements" — requires linear search
+- HashSet's O(1) implementation would violate this spec!
 
 **Why too restrictive:**
-- Binary search would violate this spec (doesn't examine "in order")
-- Returning ANY valid index would violate this spec
-- But both could be correct for many use cases!
+- HashSet uses hash buckets, not iteration
+- TreeSet uses binary search tree traversal
+- Both are correct implementations of Set.contains()
 
 **Operational vs. Definitional:**
 - Operational: describes steps to execute
 - Definitional: describes the result/effect
 - Specs should be definitional (what), not operational (how)
 
-→ **Transition:** Let's see the general version...
+→ **Transition:** Let's see the actual Set.contains() spec...
 </aside>
 
 </Slide>
@@ -738,42 +793,45 @@ public int findIndex(int[] arr, int searchTarget)
 ## Describe Results, Not Algorithms
 
 <p style={{fontSize: '0.85em', color: '#27ae60'}}>
-  ✓ Sufficiently general:
+  ✓ The actual Set.contains() specification:
 </p>
 
 ```java
 /**
- * Finds the index of arr that contains searchTarget.
+ * Returns true if this set contains the specified element.
+ * More formally, returns true if and only if this set contains
+ * an element e such that Objects.equals(o, e).
  *
- * @param arr an array of increasing values
- * @param searchTarget the element to search for
- * @return the index of arr that contains searchTarget
- * @throws NullPointerException if arr is null
- * @throws NoSuchElementException if arr does not contain searchTarget
+ * @param o element whose presence in this set is to be tested
+ * @return true if this set contains the specified element
+ * @throws ClassCastException if the type of o is incompatible
+ * @throws NullPointerException if o is null and this set
+ *         does not permit null elements
  */
-public int search(int[] arr, int searchTarget)
+boolean contains(Object o);
 ```
 
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
-  This permits: linear search, binary search, random probing, first/last/any index...
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+  This permits: HashSet (O(1)), TreeSet (O(log n)), LinkedHashSet...
 </p>
 
 <aside className="notes">
 **What changed:**
 - No mention of HOW to search
+- Defines the RESULT: "contains an element e such that Objects.equals(o, e)"
 - Same restrictiveness for error cases
 
 **Benefits:**
-- Implementer can choose best algorithm
-- Caller knows what to expect: a valid index, or an exception
-- Future optimization won't break the contract
+- HashSet can use hash buckets — O(1)
+- TreeSet can use binary search — O(log n)
+- Future implementations can optimize freely
 
-**Rule of thumb:**
-- Describe the result (what you get)
-- Not the algorithm (how you get it)
-- Unless the algorithm IS the requirement
+**Connection to L3:**
+- This is why we said "HashSet has O(1) contains"
+- The spec doesn't REQUIRE O(1), but it PERMITS it
+- That's the power of definitional specs
 
-→ **Transition:** But what if we really DO need the first index?
+→ **Transition:** Sometimes you DO need to be more specific...
 </aside>
 
 </Slide>
@@ -783,28 +841,43 @@ public int search(int[] arr, int searchTarget)
 ## The Right Balance Depends on What Callers Need
 
 <p style={{fontSize: '0.9em'}}>
-  Sometimes being more specific IS the right choice:
+  Compare these two List methods:
 </p>
 
+<div style={{display: 'flex', gap: '1em', fontSize: '0.75em'}}>
+<div style={{flex: 1}}>
+
+**General (contains):**
 ```java
 /**
- * Finds the index of the first occurrence of searchTarget in arr.
- *
- * @param arr an array of increasing values
- * @param searchTarget the element to search for
- * @return the smallest index i where arr[i] == searchTarget
- * @throws NoSuchElementException if arr does not contain searchTarget
- * @throws NullPointerException if arr is null
+ * Returns true if this list
+ * contains the specified element.
  */
-public int indexOf(int[] arr, int searchTarget)
+boolean contains(Object o);
 ```
 
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
-  This is <strong>more restrictive</strong> but <strong>necessarily so</strong> if callers need the first occurrence.
-</p>
+<p style={{color: '#9370DB'}}>Any implementation OK</p>
 
-<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#9370DB'}}>
-  The right balance depends on what callers actually need.
+</div>
+<div style={{flex: 1}}>
+
+**Specific (indexOf):**
+```java
+/**
+ * Returns the index of the first
+ * occurrence of the specified
+ * element, or -1 if not found.
+ */
+int indexOf(Object o);
+```
+
+<p style={{color: '#9370DB'}}>Must return FIRST index</p>
+
+</div>
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+  <code>indexOf</code> is more restrictive because callers need to know <em>which</em> occurrence.
 </p>
 
 <aside className="notes">
@@ -814,18 +887,18 @@ public int indexOf(int[] arr, int searchTarget)
 
 **When to be more specific:**
 - Callers genuinely need a specific behavior
+- indexOf() must return FIRST because callers iterate from there
 - The extra constraint enables useful assumptions
-- Example: indexOf() vs search()
 
 **When to be more general:**
 - Multiple implementations could satisfy callers
-- You want flexibility to optimize later
-- Example: Collection size vs specific data structure
+- contains() just needs yes/no—any implementation works
+- Flexibility to optimize later
 
-**The test:**
-- Ask: "Do callers need this level of detail?"
-- If yes: specify it (restrictiveness)
-- If no: leave it open (generality)
+**Connection to L3:**
+- You used both methods in L3
+- indexOf() for finding positions, contains() for membership
+- Different specs for different needs
 
 → **Transition:** Now let's look at clarity—can readers understand the spec correctly?
 </aside>
@@ -883,35 +956,33 @@ public int indexOf(int[] arr, int searchTarget)
 
 ```java
 /**
- * Returns the sum of the elements in the array.
- * The sum is computed by adding each element of the array.
- * It is the total of all the elements in the array.
- *
- * @param arr the array to sum
- * @return the sum of the elements in the array
+ * Closes this stream and releases any resources.
+ * This method closes the stream. After closing,
+ * the stream is closed and cannot be used.
+ * Closing releases resources held by the stream.
  */
-public int sum(int[] arr)
+void close() throws IOException;
 ```
 
 <p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
-  The reader already knows what "sum" means!
+  "Close closes the closed stream" — we got it the first time!
 </p>
 
 <aside className="notes">
 **Problems with redundancy:**
 - Longer to read = higher cognitive load
 - Repeated information suggests there might be subtle differences
-- Reader wonders: "Why are they explaining 'sum'? Am I missing something?"
+- Reader wonders: "Why keep saying 'close'? Is there a difference?"
 
 **Clear specs are concise:**
 - Say it once, say it well
 - Don't explain concepts the reader already knows
 - Extra words = extra chances for confusion
 
-**But wait:**
-- Sometimes redundancy HELPS
-- It depends on your audience's knowledge
-- Let's see an example where more explanation is better...
+**Connection to L3:**
+- You used close() with try-with-resources
+- The actual Closeable.close() spec is concise
+- It just says what happens, once
 
 → **Transition:** Sometimes more detail helps—when the concept isn't universally known...
 </aside>
@@ -928,51 +999,48 @@ public int sum(int[] arr)
 
 ```java
 /**
- * Computes the present value of an income stream.
- *
- * @param income the annual income
- * @param interestRate the risk-free interest rate
- * @param years the number of years
- * @return the present value of the income stream
+ * Iterates over elements in natural order.
+ * @return an iterator in natural order
  */
-public float presentValue(float income, float interestRate, int years)
+Iterator<E> iterator();
 ```
 
 <p style={{fontSize: '0.85em', color: '#27ae60', marginTop: '1em'}}>
-  ✓ Clear (provides context):
+  ✓ Clear (defines the term):
 </p>
 
 ```java
 /**
- * Computes the present value of an income stream.
- * The present value is the amount that, if invested at the given
- * interest rate, would grow to the total income over the given years.
- * ...
+ * Iterates over elements in natural order.
+ * Natural order is defined by the elements' compareTo() method,
+ * with smaller elements appearing before larger ones.
+ * @return an iterator in ascending natural order
  */
+Iterator<E> iterator();
 ```
 
 <aside className="notes">
 **The problem:**
-- "Present value" is a finance term—not everyone knows it
-- Without definition, reader must look it up or guess
+- "Natural order" is a Java term—not everyone knows it
+- Does it mean insertion order? Alphabetical? Something else?
 - Risk: reader THINKS they understand but doesn't
 
 **The fix:**
-- One sentence defining the concept
-- Now reader can verify their understanding
-- Or learn the concept if they didn't know it
+- One sentence defining "natural order"
+- Now reader knows it's based on compareTo()
 
-**Balancing act:**
-- For "sum"—definition is redundant
-- For "present value"—definition is essential
-- Know your audience!
+**Connection to L3:**
+- TreeSet iterates in "natural order"
+- LinkedHashSet iterates in "insertion order"
+- HashSet iterates in "no particular order"
+- Each spec must clarify what it means!
 
 **General principle:**
 - Define domain-specific terms
 - Don't define common programming terms
 - When in doubt, err toward clarity
 
-→ **Transition:** Now think about WHO is reading your spec. Have you ever written down a recipe?
+→ **Transition:** The same spec principles apply whether you're writing for humans or AI...
 </aside>
 
 </Slide>
@@ -1061,55 +1129,48 @@ Style: Warm bakery aesthetic with rich browns, warm yellows, and cream colors. E
 ## "Process" and "Handle" Are Not Specifications
 
 <p style={{fontSize: '0.9em'}}>
-  Consider this seemingly reasonable API:
+  Consider this IoT device manager API:
 </p>
 
 ```java
 /**
- * Processes the given payment.
+ * Handles the given device event.
  *
- * @param payment the payment to process
- * @throws PaymentException if the payment cannot be processed
+ * @param event the device event to handle
  */
-public void processPayment(Payment payment)
+public void handleEvent(DeviceEvent event)
 ```
 
 <p style={{fontSize: '0.85em', marginTop: '1em', color: '#e74c3c'}}>
-  What does "process" actually mean? Every implementer fills the gap differently.
+  What does "handle" actually mean? Every implementer fills the gap differently.
 </p>
 
 <ul style={{fontSize: '0.75em', marginTop: '0.5em'}}>
-  <li>Validate the amount? Charge the card? Send confirmation email?</li>
-  <li>What if partially successful? Retry on failure?</li>
-  <li>Idempotent if called twice? Timeout behavior?</li>
+  <li>Log it? Update device state? Notify other devices?</li>
+  <li>What if the device is offline? Retry? Queue for later?</li>
+  <li>Thread-safe? Can it be called concurrently?</li>
 </ul>
 
 <aside className="notes">
-**The "process" trap:**
-- "Process" is a verb that sounds specific but isn't
-- Same problem with: handle, manage, deal with, take care of
+**The "handle" trap:**
+- "Handle" is a verb that sounds specific but isn't
+- Same problem with: process, manage, deal with, take care of
 - These words delegate ALL decisions to the implementer
 
-**Both humans AND AI fill gaps with context:**
-- Human implementer: fills gaps with domain knowledge, past experience, assumptions about "reasonable" behavior
-- AI implementer: fills gaps with training data patterns, which might be from a completely different domain
-- BOTH might be wrong! The human's context might not match the spec writer's intent either
+**Connection to L3:**
+- If IoTDevice.identify() just said "handles identification"...
+- Would you know it prints to console? Returns a string? Logs somewhere?
+- The actual spec tells you exactly what happens
 
 **The key insight:**
 - It's not "humans right, AI wrong"
 - It's "ambiguous specs → unpredictable implementations"
-- AI just makes this visible FASTER and with DIFFERENT (often surprising) context
-- A human with wrong domain assumptions is just as dangerous—just slower
+- A human with wrong assumptions is just as dangerous—just slower
 
-**The fix preview:**
+**The fix:**
 - Define WHAT happens, not just that something happens
 - Every edge case needs explicit behavior
-- "Process" should become 5-10 specific requirements
-
-**Real examples (human AND AI):**
-- "Handle the error appropriately" → Junior dev logs and continues, senior dev halts (who's right?)
-- "Send the notification" → One team sends immediately, another batches (spec didn't say!)
-- AI just produces these mismatches in seconds instead of days
+- "Handle" should become specific: "logs to System.out", "updates device.lastSeen", etc.
 
 → **Transition:** Unclear specs have long-term costs beyond immediate confusion...
 </aside>
@@ -1595,11 +1656,12 @@ DimmableLight(color=2700K,
 ## Good toString Saves Hours of Debugging
 
 ```java
+// From the IoT device hierarchy in L3
 @Override
 public String toString() {
-    return "DimmableLight(color=" + color + "K, " +
+    return "DimmableLight(id=" + id + ", " +
            "brightness=" + brightness + ", " +
-           "on=" + on + ")";
+           "on=" + isOn() + ")";
 }
 ```
 
@@ -1611,25 +1673,26 @@ public String toString() {
   <li>Include the class name</li>
   <li>Include fields that matter for understanding the object</li>
   <li>Format for readability (not just dump all fields)</li>
-  <li>Consider what you'd want to see in a stack trace or debugger</li>
 </ul>
 
-<aside className="notes">
-**Format considerations:**
-- Include class name (helps when logging collections)
-- Show key fields with their names
-- Omit derived/computed values unless important
-- Keep it single-line for log readability (usually)
+<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
+  When you <code>System.out.println(deviceList)</code>, good toString() makes debugging easy.
+</p>
 
-**Common patterns:**
-- ClassName(field1=value1, field2=value2)
-- ClassName[field1=value1, field2=value2]
-- IDE can generate these for you
+<aside className="notes">
+**Connection to L3:**
+- When debugging collections of IoT devices, toString() is essential
+- System.out.println(lights) shows each device's state
+- Without toString(), you just see memory addresses
+
+**Format considerations:**
+- Include class name (helps when logging collections of mixed types)
+- Show key fields with their names
+- Keep it single-line for log readability
 
 **What NOT to do:**
 - Don't include passwords or sensitive data
 - Don't make it too long (logs become unreadable)
-- Don't include mutable state that changes frequently
 
 → **Transition:** Now let's look at equals—it's more complex and more critical...
 </aside>
@@ -1642,25 +1705,25 @@ public String toString() {
 ## What does this print (==)?
 
 <PollSlide
-  username='espertus'
   code={`
-    public class Student {
-        private String name;
-        private int nuid;
+    public class DimmableLight {
+        private String id;
+        private int brightness;
 
-        public Student(String name, int nuid) {
-            this.name = name;
-            this.nuid = nuid;
+        public DimmableLight(String id, int brightness) {
+            this.id = id;
+            this.brightness = brightness;
         }
 
         public static void main(String[] args) {
-            Student s1 = new Student("Alex", 1234567);
-            Student s2 = new Student("Alex", 1234567);
-            System.out.println(s1 == s2);
+            DimmableLight light1 = new DimmableLight("living-room", 100);
+            DimmableLight light2 = new DimmableLight("living-room", 100);
+            System.out.println(light1 == light2);
         }
     }
   `}
   choices={["true", "false", "I have no idea"]}
+  username="espertus"
 />
 
 </Slide>
@@ -1671,25 +1734,25 @@ public String toString() {
 ## What does this print (equals()) ?
 
 <PollSlide
-  username='espertus'
   code={`
-    public class Student {
-        private String name;
-        private int nuid;
+    public class DimmableLight {
+        private String id;
+        private int brightness;
 
-        public Student(String name, int nuid) {
-            this.name = name;
-            this.nuid = nuid;
+        public DimmableLight(String id, int brightness) {
+            this.id = id;
+            this.brightness = brightness;
         }
 
         public static void main(String[] args) {
-            Student s1 = new Student("Alex", 1234567);
-            Student s2 = new Student("Alex", 1234567);
-            System.out.println(s1.equals(s2));
+            DimmableLight light1 = new DimmableLight("living-room", 100);
+            DimmableLight light2 = new DimmableLight("living-room", 100);
+            System.out.println(light1.equals(light2));
         }
     }
   `}
   choices={["true", "false", "I have no idea"]}
+  username="espertus"
 />
 
 </Slide>
@@ -1703,15 +1766,15 @@ public String toString() {
 <div style={{flex: 1}}>
 ```mermaid
 classDiagram
-    Object <|-- Student
+    Object <|-- DimmableLight
     class Object {
         +equals(Object obj) boolean
         +hashCode() int
         +toString() String
     }
-    class Student {
-        -String name
-        -int nuid
+    class DimmableLight {
+        -String id
+        -int brightness
     }
 ```
 
@@ -1731,7 +1794,7 @@ public boolean equals(Object obj) {
 
 </div>
 
-<p style={{fontSize: '0.9em'}}>Since `Student` doesn't override `equals()`, it inherits this version—which just checks reference equality.</p>
+<p style={{fontSize: '0.9em'}}>Since <code>DimmableLight</code> doesn't override <code>equals()</code>, it inherits this version—which just checks reference equality.</p>
 
 </Slide>
 
@@ -1740,31 +1803,28 @@ public boolean equals(Object obj) {
 ## Overriding `equals()`
 
 ```java
-public class Student {
-    private String name;
-    private int nuid;
+public class DimmableLight {
+    private String id;
+    private int brightness;
 
-    public Student(String name, int nuid) {
-        this.name = name;
-        this.nuid = nuid;
-    }
+    // ... constructor ...
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof Student other)) return false;
-        return nuid == other.nuid
-            && Objects.equals(name, other.name);
+        if (!(obj instanceof DimmableLight other)) return false;
+        return brightness == other.brightness
+            && Objects.equals(id, other.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, nuid);
+        return Objects.hash(id, brightness);
     }
 }
 ```
 
-<p style={{fontSize: '0.75em', marginTop: '0.5em'}}>What's hashCode()?</p>
+<p style={{fontSize: '0.75em', marginTop: '0.5em'}}>What's hashCode()? And why do we need it?</p>
 
 </Slide>
 
@@ -1832,27 +1892,27 @@ Style: Warm, friendly postal/logistics aesthetic with clear numbering, organized
 
 ## Why override `hashCode()`?
 
-<p className="fragment">`Object`'s implementation of `hashCode()` returns a value based on the object's memory address.</p>
+<p className="fragment"><code>Object</code>'s <code>hashCode()</code> returns a value based on the object's memory address.</p>
 
 <p className="fragment">Can two different objects have the same memory address? <strong className="fragment">No.</strong></p>
 
 <div className="fragment">
 
 ```java
-// Student with equals() but NO hashCode() override
-Student s1 = new Student("Alex", 1234567); // hashCode is memory address
-Student s2 = new Student("Alex", 1234567); // hashCode is different address
+// DimmableLight with equals() but NO hashCode() override
+DimmableLight light1 = new DimmableLight("living-room", 100);
+DimmableLight light2 = new DimmableLight("living-room", 100);
 
-System.out.println(s1.equals(s2));  // true
+System.out.println(light1.equals(light2));  // true (we overrode equals)
 
-Set<Student> set = new HashSet<>();
-set.add(s1); // s1 is placed in bucket based on its memory address
-System.out.println(set.contains(s2));  // false!
+Set<DimmableLight> lights = new HashSet<>();
+lights.add(light1);
+System.out.println(lights.contains(light2));  // false!
 ```
 
 </div>
 
-<p className="fragment" style={{fontSize: '0.8em', marginTop: '0.5em'}}><strong>The problem:</strong> `s1` and `s2` are equal, but have different hash codes, so `HashSet` looks in the wrong bucket.</p>
+<p className="fragment" style={{fontSize: '0.8em', marginTop: '0.5em'}}><strong>The problem:</strong> <code>light1</code> and <code>light2</code> are equal, but have different hash codes, so <code>HashSet</code> looks in the wrong bucket.</p>
 
 </Slide>
 
@@ -1901,17 +1961,18 @@ System.out.println(set.contains(s2));  // false!
 ## Use the Same Fields in hashCode as in equals
 
 ```java
+// For DimmableLight with fields: id, brightness
 @Override
 public int hashCode() {
-    int result = Integer.hashCode(nuid);
-    result = 31 * result + Objects.hashCode(name);
+    int result = Objects.hashCode(id);
+    result = 31 * result + Integer.hashCode(brightness);
     return result;
 }
 
 // Or simply:
 @Override
 public int hashCode() {
-    return Objects.hash(name, nuid);
+    return Objects.hash(id, brightness);
 }
 ```
 
@@ -1925,11 +1986,6 @@ public int hashCode() {
 2. Combine: 31 * result + nextField.hashCode()
 3. Return result
 
-**Why 31?**
-- Prime number (reduces collisions)
-- 31 * x can be optimized to (x &lt;&lt; 5) - x
-- Traditional Java choice
-
 **The easy way:**
 - Objects.hash(field1, field2, ...) does this for you
 - Slightly slower (creates array) but correct
@@ -1938,6 +1994,11 @@ public int hashCode() {
 **Key rule:**
 - Same fields in equals → same fields in hashCode
 - If a field affects equality, it must affect hash code
+
+**Connection to L3:**
+- This is why HashSet.contains() works correctly
+- The hash code directs to the right bucket
+- equals() confirms the match
 </aside>
 
 </Slide>
@@ -2003,12 +2064,12 @@ classDiagram
         <<interface>>
         +compareTo(T o)* int
     }
-    class Student {
-        -String name
-        -int nuid
-        +compareTo(Student o) int
+    class DimmableLight {
+        -String id
+        -int brightness
+        +compareTo(DimmableLight o) int
     }
-    Comparable <|.. Student
+    Comparable <|.. DimmableLight
     style Comparable fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
 ```
 
@@ -2046,21 +2107,20 @@ public interface Comparable<T> {
 
 ```java
 /**
- * An NU student. Students are ordered first by name, then by nuid.
-*/
-public class Student implements Comparable<Student> {
-    private String name;
-    private int nuid;
+ * A dimmable light. Lights are ordered by id, then by brightness.
+ */
+public class DimmableLight implements Comparable<DimmableLight> {
+    private String id;
+    private int brightness;
 
     @Override
-    public int compareTo(Student other) {
-      int nameCompare = this.name.compareTo(other.name);
-      if (nameCompare != 0) {
-        // one name comes before another
-        return nameCompare;
-      }
-      // names were the same, so sort by nuid
-      return Integer.compare(this.nuid, other.nuid);
+    public int compareTo(DimmableLight other) {
+        int idCompare = this.id.compareTo(other.id);
+        if (idCompare != 0) {
+            return idCompare;  // different ids
+        }
+        // same id, sort by brightness
+        return Integer.compare(this.brightness, other.brightness);
     }
 }
 ```
@@ -2072,8 +2132,8 @@ public class Student implements Comparable<Student> {
 <aside className="notes">
 **When to implement Comparable:**
 - When there's an obvious natural ordering
-- Strings: alphabetical
-- Dates: chronological
+- IoT devices: by id (alphabetical)
+- Timestamps: chronological
 - Numbers: numerical
 
 **The contract:**
@@ -2081,12 +2141,12 @@ public class Student implements Comparable<Student> {
 - Transitive: if x > y and y > z, then x > z
 - Consistent with equals (recommended): x.compareTo(y) == 0 implies x.equals(y)
 
-**Benefits:**
-- Works with Arrays.sort(), Collections.sort()
-- Works with TreeSet, TreeMap
+**Connection to L3:**
+- This is what enables Collections.sort(lights)
+- And TreeSet DimmableLight to maintain order
 - One interface, universal sorting
 
-→ **Transition:** A few more implementation tips for compareTo...
+→ **Transition:** Let's summarize what we've learned...
 </aside>
 
 </Slide>
@@ -2101,42 +2161,37 @@ public class Student implements Comparable<Student> {
 ## Summary: Specifications as Contracts
 
 <ol style={{fontSize: '0.8em'}}>
-  <li><strong>Specifications enable modularity</strong> — understand methods without reading implementations (Miller's Law, chunking)</li>
+  <li><strong>Specifications enable modularity</strong> — you used HashMap without reading its 2000 lines</li>
   <li><strong>Good specs balance three criteria:</strong></li>
     <ul>
-      <li>Restrictiveness — rule out bad implementations</li>
-      <li>Generality — permit good implementations</li>
-      <li>Clarity — easy to understand correctly</li>
+      <li>Restrictiveness — Map.get() specifies null for missing keys</li>
+      <li>Generality — Set.contains() permits O(1) or O(log n) implementations</li>
+      <li>Clarity — no redundancy, domain terms defined</li>
     </ul>
-  <li><strong>Same principles scale</strong> — from <code>sum()</code> to enterprise APIs to AI prompts</li>
   <li><strong>Type annotations</strong> make specs machine-checkable (@NullMarked, @Nullable)</li>
-  <li><strong>Java's standard contracts</strong> (toString, equals, hashCode, compareTo) must be implemented correctly</li>
+  <li><strong>Object contracts</strong> (toString, equals, hashCode, compareTo) enable Collections to work</li>
 </ol>
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
+  <strong>Critical rule:</strong> Override equals → MUST override hashCode (or HashSet breaks!)
+</p>
 
 <aside className="notes">
 **Key takeaways:**
 - Specs let us reason about large systems (Miller's Law, chunking)
+- The Collections API you learned in L3 is a masterclass in good specs
 - Balance restrictiveness, generality, clarity
-- Same principles at every scale—method, API, AI prompt
 - Use type annotations when possible (compiler > comments)
-- Learn the Object method contracts by heart
 
 **Critical rules:**
 - Override equals → MUST override hashCode
 - Use same fields in both
 - equals(null) returns false, compareTo(null) throws
 
-**The AI connection (preview):**
-- When you prompt an AI to implement something, you're writing a spec
-- Vague prompts → unpredictable implementations
-- The skills from today apply directly to AI-assisted development (Lecture 13)
-
 **Connections to upcoming work:**
 - A1: Write good Javadoc for your methods
 - A1: Override equals/hashCode for domain classes
 - Lab 3: Evaluate specification quality
-- Lecture 13: AI-assisted development (specs for AI)
-- Future lectures: Requirements gathering (where specs come from)
 
 → **Transition:** Let's look at next steps.
 </aside>
