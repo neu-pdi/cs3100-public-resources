@@ -327,9 +327,8 @@ Implement `equals()` and `hashCode()` for the following classes:
 
 - **`Instruction`**: Equal if same step number, text, and referenced ingredients
 - **`Recipe`**: Equal if same title, servings, ingredients (in order), instructions (in order), and conversion rules (in order)
-- **`Quantity` subclasses** (from A1): Equal if same unit AND same amount. Note: `ExactQuantity(2, CUPS)` is NOT equal to `ExactQuantity(473.176, MILLILITERS)` even though they represent the same volume.
 
-**Note:** `ConversionRule` is a Java record and automatically generates correct `equals()` and `hashCode()`.
+**Note:** `ConversionRule` is a Java record and automatically generates correct `equals()` and `hashCode()`. The `Quantity` subclasses already have `equals()` and `hashCode()` implemented from A1.
 
 ### Design Requirements
 
