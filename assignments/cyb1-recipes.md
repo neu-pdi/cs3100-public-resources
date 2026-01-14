@@ -6,6 +6,8 @@ image: /img/assignments/web/a1.png
 
 ## Update Log
 
+**January 14, 2026:** A previous version of this handout mistakenly required implementing `equals()` and `hashCode()` for `MeasuredIngredient`. This was unintentional and is **not required** for Assignment 1. If you already implemented `equals()`/`hashCode()`, that's fine—you do not need to remove them.
+
 **January 13, 2026:** Indicated that Javadoc should not be written for tests (although you don't need to remove it if you already wrote it).
 
 **January 10, 2026:** Specified that `DECIMAL_PRECISION` constant for `ExactQuantity` and `RangeQuantity` must be set to 3. This allows you to write tests that assume that the precision is 3 decimal places, rather than requiring tests to be aware of the actual precision currently set.
@@ -414,8 +416,6 @@ Write tests to verify constructor validation for the relationship between min an
     - "1/2 cup sugar"
     - "100 g butter"
     - "3 whole eggs, room temperature"
-- `public boolean equals(Object o)` - Compares ingredients for equality based on name (case-insensitive), quantity, preparation, and notes
-- `public int hashCode()` - Returns hash code based on name (lowercase), quantity, preparation, and notes
 
 **Testing (`MeasuredIngredientTest.java`):**
 Write tests to verify constructor validation for the `name` parameter (blank strings)—you do NOT need to test null `name` or null `quantity` since NullAway prevents this at compile-time. Also test string trimming behavior and `toString()` formatting with and without preparation.
