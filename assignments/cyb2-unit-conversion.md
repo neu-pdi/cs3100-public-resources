@@ -328,7 +328,7 @@ Implement `equals()` and `hashCode()` for the following classes:
 - **`Instruction`**: Equal if same step number, text, and referenced ingredients
 - **`Recipe`**: Equal if same title, servings, ingredients (in order), instructions (in order), and conversion rules (in order)
 
-**Note:** `ConversionRule` is a Java record and automatically generates correct `equals()` and `hashCode()`. The provided A1 solution includes `equals()` and `hashCode()` for the `Quantity` subclasses.
+**Note:** `ConversionRule` is a Java record and automatically generates correct `equals()` and `hashCode()`. The provided A1 solution includes `equals()` and `hashCode()` for the `Quantity` subclasses, and we will also provide `equals()` and `hashCode()` for the Ingredient hierarchy (`Ingredient`, `MeasuredIngredient`, `VagueIngredient`) in the A2 starter code.
 
 ### Design Requirements
 
