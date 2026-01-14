@@ -8,6 +8,12 @@ image: /img/assignments/web/a1.png
 
 **January 14, 2026:** A previous version of this handout mistakenly required implementing `equals()` and `hashCode()` for `MeasuredIngredient`. This was unintentional and is **not required** for Assignment 1. If you already implemented `equals()`/`hashCode()`, that's fine—you do not need to remove them.
 
+**January 14, 2026:** Increased the submission limit from 5 to 15 submissions per 24-hour period.
+
+**January 14, 2026:** Clarified that the `Unit` enum constructor may use either default (package-private) or `private` visibility—both are acceptable and neither will result in deductions.
+
+**January 14, 2026:** Clarified that scientific notation behavior for large numbers is not specified and not tested. If your implementation uses scientific notation for very large values, that's fine, but don't write tests that depend on specific scientific notation formatting.
+
 **January 13, 2026:** Indicated that Javadoc should not be written for tests (although you don't need to remove it if you already wrote it).
 
 **January 10, 2026:** Specified that `DECIMAL_PRECISION` constant for `ExactQuantity` and `RangeQuantity` must be set to 3. This allows you to write tests that assume that the precision is 3 decimal places, rather than requiring tests to be aware of the actual precision currently set.
@@ -36,7 +42,7 @@ In this first assignment, you'll lay the foundation by implementing the core dom
 
 **Key constraints:** [No AI assistance](#3-ai-policy-for-this-assignment) for this assignment. Complete the [Reflection](#6-reflection) questions in `REFLECTION.md`.
 
-**Development strategy:** Work incrementally—implement and test one class at a time in order (units → quantities → ingredients). Submit early and often (max 5 submissions/day) to get feedback from the autograder as you progress.
+**Development strategy:** Work incrementally—implement and test one class at a time in order (units → quantities → ingredients). Submit early and often (max 15 submissions/day) to get feedback from the autograder as you progress.
 
 ## 2. Learning Outcomes
 By completing this assignment, you will demonstrate proficiency in the following skills:
@@ -73,7 +79,7 @@ You should carefully read the [Grading Rubric](#8-grading-rubric) section below 
 
 This section contains everything you need to implement the assignment. Start with [5.1 Domain Concepts](#51-domain-concepts) to understand what you're modeling. Review the [5.2 Class Design](#52-class-design) diagram to see how the pieces fit together. Then implement each class according to the contracts in [5.3 Invariants and Contracts](#53-invariants-and-contracts)—this is where you'll find constructor preconditions, method specifications, and `toString()` formatting rules. Follow the [5.4 Design Requirements](#54-design-requirements) for encapsulation and style. **For each class you implement, write its tests immediately** following the guidance in [5.5 Testing Overview](#55-testing-overview)—remember, you won't receive implementation points without effective tests.
 
-**Recommended workflow:** Work through the classes in order: (1) enums (units), (2) quantities, (3) ingredients. After implementing and testing each class (or small group of related classes), commit your work and submit to get autograder feedback. With a maximum of 5 submissions per day, this incremental approach helps you catch issues early and build confidence as you progress through the assignment.
+**Recommended workflow:** Work through the classes in order: (1) enums (units), (2) quantities, (3) ingredients. After implementing and testing each class (or small group of related classes), commit your work and submit to get autograder feedback. With a maximum of 15 submissions per day, this incremental approach helps you catch issues early and build confidence as you progress through the assignment.
 
 ### 5.1 Domain Concepts
 
@@ -256,7 +262,9 @@ An enumeration representing the physical dimension of a unit. This is a simple e
 
 An enumeration representing units of measurement for ingredients. Each enum constant must be defined with its system, dimension, singular abbreviation, and plural abbreviation.
 
-You should use your judgement to determine how to implement the enum, relying primarily on [the Java documentation](https://docs.oracle.com/javase/tutorial/java/javaOO/enum.html). 
+You should use your judgement to determine how to implement the enum, relying primarily on [the Java documentation](https://docs.oracle.com/javase/tutorial/java/javaOO/enum.html).
+
+**Note:** The enum constructor may use either default (package-private) or `private` visibility—both are acceptable and neither will result in deductions.
 
 **Values:**
 - Imperial (volume): `CUP` (IMPERIAL, VOLUME, "cup", "cups"), `TABLESPOON` (IMPERIAL, VOLUME, "tbsp", "tbsp"), `TEASPOON` (IMPERIAL, VOLUME, "tsp", "tsp"), `FLUID_OUNCE` (IMPERIAL, VOLUME, "fl oz", "fl oz")
@@ -457,6 +465,7 @@ Write tests to verify constructor validation for the `name` parameter (blank str
 - Trim all string inputs in constructors to remove leading/trailing whitespace
 - Use proper encapsulation: no mutable objects should be exposed through getters
 - When formatting decimal quantities as strings, use the `DECIMAL_PRECISION` constant to limit decimal places and simplify output (e.g., "2" not "2.0")
+- **Scientific notation:** The behavior for very large numbers (whether to use scientific notation) is not specified and not tested. If your implementation uses scientific notation for very large values, that's fine, but don't write tests that depend on specific scientific notation formatting.
 
 ### 5.5 Testing Overview
 
@@ -530,7 +539,7 @@ Your implementation's correctness is evaluated by running your code against the 
 
 For each of the units that you are tasked with implementing, you will only receive marks for the implementation of that unit if you **also** have included at least one test for that unit that detects a plausible bug in the implementation of that unit **and** all of your tests pass on the reference implementation of that unit.
 
-Marks for tests are awarded per-fault (detect 2/5 faults and get 2/5 of the points for that unit), while marks for implementation are awarded "all or nothing" (get 100% of the points for that unit if your implementation is correct, 0% if any test fails). The grading script is configured to provide you with up to one hint on each submission for a bug that your test suite did not detect. It is also configured to provide you with up to one hint on each submission for a bug in your implementation that was detected by the instructor's test suite. With a maximum of 5 submissions per 24 hours, you should plan your efforts carefully.
+Marks for tests are awarded per-fault (detect 2/5 faults and get 2/5 of the points for that unit), while marks for implementation are awarded "all or nothing" (get 100% of the points for that unit if your implementation is correct, 0% if any test fails). The grading script is configured to provide you with up to one hint on each submission for a bug that your test suite did not detect. It is also configured to provide you with up to one hint on each submission for a bug in your implementation that was detected by the instructor's test suite. With a maximum of 15 submissions per 24 hours, you should plan your efforts carefully.
 
 ### 8.2 Automated Grading Point Breakdown (88 points)
 
@@ -591,7 +600,7 @@ When you submit your assignment, the automated score will be shown. The reflecti
 
 ## 9. Submission
 
-**Strategy:** You don't need to complete everything before your first submission! Work incrementally—implement and test units first, then quantities, then ingredients. Submit after each milestone to get feedback from the autograder. You have up to 5 submissions per 24-hour period, so use them strategically to catch issues early rather than saving all submissions for the end.
+**Strategy:** You don't need to complete everything before your first submission! Work incrementally—implement and test units first, then quantities, then ingredients. Submit after each milestone to get feedback from the autograder. You have up to 15 submissions per 24-hour period, so use them strategically to catch issues early rather than saving all submissions for the end.
 
 1. **Clone the repository from Pawtograder:** Clone it to your local machine
 2. **Implement the enums:** Create the following files in `src/main/java/app/cookyourbooks/domain/`:
