@@ -351,12 +351,9 @@ Style notes: Dramatic scale contrast is key. The mountain should feel almost int
 <ol style={{fontSize: '0.9em'}}>
   <li><strong>Lambdas:</strong> Express behavior without boilerplate classes</li>
   <li><strong>Records:</strong> Define data classes without boilerplate methods</li>
+  <li><strong>Pattern matching:</strong> Eliminate boilerplate with variables</li>
   <li><strong>Good naming:</strong> Make intent clear even when syntax is perfect</li>
 </ol>
-
-<p style={{fontSize: '1.1em', marginTop: '1em', color: '#9370DB', textAlign: 'center'}}>
-  <strong>What if functions were objects?</strong>
-</p>
 
 <aside className="notes">
 **The three tools:**
@@ -374,6 +371,7 @@ Style notes: Dramatic scale contrast is key. The mountain should feel almost int
 
 </Slide>
 
+
 <Slide>
 ## The Two Hard Problems in Computer Science
 
@@ -385,9 +383,20 @@ alt="T-shirt reading: 'There are two hard things in Computer Science: cache inva
 </aside>
 </Slide>
 
+<Slide>
+
+## Tools For More Readable Java
+
+* **Lambdas**
+* Records and Pattern Matching
+* Good Naming
+
+</Slide>
+
 {/* ============================================ */}
 {/* ARC 2: FUNCTIONS AS OBJECTS */}
 {/* ============================================ */}
+
 
 <Slide>
 
@@ -557,7 +566,7 @@ Comparator<Light> comp = (l1, l2) ->
 
 <Slide>
 
-## The Same Behavior, Three Ways to Write It
+## The Same Behavior, Four Ways to Write It
 
 <p style={{fontSize: '0.85em'}}>
   Sorting lights by brightness—verbose to concise:
@@ -675,7 +684,7 @@ direction BT
 
 <Slide>
 
-## Comparator as Strategy Pattern
+## Aside: Comparator as Strategy Pattern
 
 ```mermaid
 classDiagram
@@ -734,7 +743,7 @@ lights.sort(comparator);
 
 <Slide>
 
-## Lambdas Make Strategy Pattern Trivial
+## Aside: Lambdas Make Strategy Pattern Trivial
 
 <div style={{display: 'flex', gap: '1em', fontSize: '0.75em'}}>
 <div style={{flex: 1}}>
@@ -911,7 +920,8 @@ Style notes: The power of this visual is showing that the meaningful part (inten
 </p>
 
 ```java
-(DimmableLight l1, DimmableLight l2) -> Integer.compare(l1.getBrightness(), l2.getBrightness())
+(DimmableLight l1, DimmableLight l2) -> 
+    Integer.compare(l1.getBrightness(), l2.getBrightness())
 ```
 
 <aside className="notes">
