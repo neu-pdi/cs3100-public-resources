@@ -142,7 +142,7 @@ export const staffMembers: StaffMember[] = [
     role: "ta",
     campus: "Boston",
     bio: "Third year studying Computer Science and Economics",
-    headshot: "staff-placeholder.svg"
+    headshot: "amberfriar.jpg"
   },
   {
     name: "Ran Fukazawa",
