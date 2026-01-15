@@ -138,9 +138,10 @@ export const staffMembers: StaffMember[] = [
   },
   {
     name: "Amber Friar",
+    pronouns: "She/Her",
     role: "ta",
     campus: "Boston",
-    bio: "",
+    bio: "Third year studying Computer Science and Economics",
     headshot: "staff-placeholder.svg"
   },
   {
