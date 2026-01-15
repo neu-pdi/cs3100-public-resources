@@ -130,50 +130,195 @@ After this lecture, you will be able to:
 </Slide>
 
 {/* ============================================ */}
-
-{/* ARC 1: THE READABILITY IMPERATIVE */}
+{/* BRIDGE FROM L4: COMPARETO REVIEW */}
 {/* ============================================ */}
 
 <Slide>
 
-## Where Does Readability Fit in the Design Process?
+## Review: compareTo Defines Natural Ordering
 
-  <ImageSlide
-    imageSrc="/img/software_design_process_fall_2025.png"
-    imageAlt="Software Design Process: Requirements → Design → Implementation → Validation → Operations"
-    imageHeight="50vh"
-    belowText={
-      <p style={{fontSize: '0.85em', color: '#9370DB'}}>
-      Today: Making code readable during <strong>Implementation</strong> to reduce costs in <strong>Operations</strong> and when developing new features
-      </p>
+<p style={{fontSize: '0.9em'}}>
+  Last time, we learned that <code>Comparable</code> lets a class define its <strong>natural order</strong>:
+</p>
+
+```java
+public class DimmableLight implements Comparable<DimmableLight> {
+    private String id;
+    private int brightness;
+
+    @Override
+    public int compareTo(DimmableLight other) {
+        return this.id.compareTo(other.id);  // Sort by id
     }
-  />
+}
+
+// Now we can sort!
+Collections.sort(lights);  // Uses compareTo automatically
+```
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#27ae60'}}>
+  This contract is elegant, well-specified, and has worked for decades.
+</p>
 
 <aside className="notes">
-**Quick review of the design process:**
-- Requirements → Design → Implementation → Validation → Operations
-- We've been working through this left-to-right
-- L1-L4: Specs, contracts, Object methods—all about correctness
+**Quick review from L4:**
+- `Comparable<T>` interface with one method: `compareTo(T other)`
+- Returns negative (less than), zero (equal), positive (greater than)
+- Enables `Collections.sort()`, `TreeSet`, `TreeMap`
 
-**Today's focus:**
-- We're in the Implementation phase
-- But what we do here affects EVERYTHING downstream
-- Readable code makes validation easier (code review!)
-- Readable code makes operations cheaper (maintenance!)
+**The contract is great:**
+- Well-defined specification
+- Symmetric: `sgn(x.compareTo(y)) == -sgn(y.compareTo(x))`
+- Transitive: if a > b and b > c, then a > c
+- Used throughout Java since 1.2 (1998!)
 
-**The connection:**
-- "Shift left" = find problems earlier
-- But readable code also "shifts left" understanding
-- Future readers don't have to work as hard
+**But there's a limitation coming...**
 
-**Why readability matters for the process:**
-- Bad code in implementation → expensive operations
-- Good code in implementation → sustainable systems
-
-→ **Transition:** Let's see just how much of software cost is in operations...
+→ **Transition:** But what if we need MORE than one ordering?
 </aside>
 
 </Slide>
+
+<Slide>
+
+## The Limitation: Only ONE Natural Order
+
+<p style={{fontSize: '0.9em'}}>
+  What if users want to sort lights <strong>different ways</strong>?
+</p>
+
+<ul style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+  <li>By <strong>id</strong> (alphabetically) — for inventory lists</li>
+  <li>By <strong>brightness</strong> — to find the dimmest/brightest</li>
+  <li>By <strong>location</strong> — to group by room</li>
+  <li>By <strong>power consumption</strong> — for energy reports</li>
+</ul>
+
+<p style={{fontSize: '0.9em', marginTop: '1em', color: '#e74c3c'}}>
+  <code>compareTo</code> can only define <strong>one</strong> of these!
+</p>
+
+```java
+// Which ordering should compareTo use?
+// We can only pick ONE as the "natural" order
+public int compareTo(DimmableLight other) {
+    return ???  // by id? by brightness? by location?
+}
+```
+
+<aside className="notes">
+**The problem:**
+- `compareTo` is baked into the class
+- The class author picks ONE ordering
+- But different use cases need different orderings!
+
+**Real-world examples:**
+- Files: sort by name? by date? by size? by type?
+- Students: sort by name? by ID? by GPA? by graduation year?
+- Products: sort by price? by rating? by popularity?
+
+**The question:**
+- How do we support MULTIPLE orderings?
+- Without modifying the class each time?
+- This is where `Comparator` comes in...
+
+→ **Transition:** We need a way to specify the ordering SEPARATELY from the class...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Solution: Comparator — Pass the Ordering as an Argument
+
+<p style={{fontSize: '0.9em'}}>
+  The <code>Comparator</code> interface wraps comparison logic in an object:
+</p>
+
+```java
+// Sort by brightness using an anonymous class
+Collections.sort(lights, new Comparator<DimmableLight>() {
+    @Override
+    public int compare(DimmableLight l1, DimmableLight l2) {
+        return Integer.compare(l1.getBrightness(), l2.getBrightness());
+    }
+});
+```
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#27ae60'}}>
+  Now we can sort by <strong>any</strong> field — without modifying <code>DimmableLight</code>!
+</p>
+
+<aside className="notes">
+**The Comparator solution:**
+- `Comparator<T>` interface with one method: `compare(T o1, T o2)`
+- Same return semantics as `compareTo`: negative, zero, positive
+- But it's SEPARATE from the class being compared
+
+**The flexibility:**
+- Sort by brightness? Write a brightness Comparator
+- Sort by location? Write a location Comparator
+- The class doesn't need to change!
+
+**But look at that code...**
+- 6 lines to express "compare by brightness"
+- Most of it is ceremony: `new Comparator...`, `@Override`, braces
+- The actual logic is ONE line: `Integer.compare(...)`
+
+→ **Transition:** This works, but... is it readable?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## This Works, But Is It Readable?
+
+```java
+Collections.sort(lights, new Comparator<DimmableLight>() {
+    @Override
+    public int compare(DimmableLight l1, DimmableLight l2) {
+        return Integer.compare(l1.getBrightness(), l2.getBrightness());
+    }
+});
+```
+
+<p style={{fontSize: '0.9em', marginTop: '1em'}}>
+  6 lines of code. Only <strong>one line</strong> expresses the actual intent.
+</p>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#e74c3c'}}>
+  The <strong>ceremony</strong> (boilerplate) overwhelms the <strong>intent</strong> (compare by brightness).
+</p>
+
+<p style={{fontSize: '0.9em', marginTop: '1em', color: '#9370DB'}}>
+  Can we do better? First, let's talk about why readability matters...
+</p>
+
+<aside className="notes">
+**The problem:**
+- We solved the "multiple orderings" problem
+- But the solution is VERBOSE
+- Readers have to hunt for the meaningful part
+
+**What's ceremony vs intent:**
+- Ceremony: `new Comparator<DimmableLight>() { @Override public int compare(...`
+- Intent: `l1.getBrightness()` vs `l2.getBrightness()`
+- The signal is buried in noise
+
+**The promise of this lecture:**
+- Java 8+ gives us tools to fix this
+- But first, let's understand WHY readability matters
+- Then we'll see the elegant solutions
+
+→ **Transition:** Let's talk about why readability is so important...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 1: THE READABILITY IMPERATIVE */}
+{/* ============================================ */}
 
 <Slide>
 
@@ -292,58 +437,6 @@ Style notes: Dramatic scale contrast is key. The mountain should feel almost int
 
 <Slide>
 
-## Readable Code Reveals Intent, Hides Ceremony
-
-<p style={{fontSize: '0.9em'}}>
-  When you read code, you want to see <strong>what it does</strong>, not <strong>how Java makes you say it</strong>.
-</p>
-
-<div style={{display: 'flex', gap: '1em', marginTop: '1em', fontSize: '0.8em'}}>
-<div style={{flex: 1, textAlign: 'center'}}>
-
-**Ceremony (noise):**
-- Type declarations the compiler could infer
-- Boilerplate method signatures
-- Structural requirements of the language
-
-</div>
-<div style={{flex: 1, textAlign: 'center'}}>
-
-**Intent (signal):**
-- What the code actually does
-- The business logic
-- The meaningful choices
-
-</div>
-</div>
-
-<p style={{fontSize: '0.9em', marginTop: '1em', color: '#27ae60'}}>
-  <strong>Goal:</strong> Maximize signal, minimize noise.
-</p>
-
-<aside className="notes">
-**The distinction:**
-- Ceremony: Stuff you HAVE to write for Java
-- Intent: Stuff you WANT to express
-- Readable code has high signal-to-noise ratio
-
-**Examples of ceremony:**
-- `new Comparator<DimmableLight>() { @Override public int compare(...`
-- All the boilerplate in a simple data class
-- Explicit type declarations when context is clear
-
-**Examples of intent:**
-- `l1.getBrightness() vs l2.getBrightness()`
-- The actual comparison logic
-- The meaningful part
-
-→ **Transition:** Today we'll learn three tools for reducing ceremony...
-</aside>
-
-</Slide>
-
-<Slide>
-
 ## Today: Three Tools for More Readable Java
 
 <ol style={{fontSize: '0.9em'}}>
@@ -378,44 +471,94 @@ Style notes: Dramatic scale contrast is key. The mountain should feel almost int
 
 <Slide>
 
-## What If You Could Store a Function in a Variable?
+## Wait... Why Do We Need a Whole Class for One Function?
 
 <p style={{fontSize: '0.9em'}}>
-  You can store data in variables:
+  Look at that anonymous <code>Comparator</code> again:
 </p>
 
 ```java
-int brightness = 100;
-String name = "Living Room Light";
-DimmableLight light = new DimmableLight(name, brightness);
+new Comparator<DimmableLight>() {
+    @Override
+    public int compare(DimmableLight l1, DimmableLight l2) {
+        return Integer.compare(l1.getBrightness(), l2.getBrightness());
+    }
+}
+```
+
+<p style={{fontSize: '0.9em', marginTop: '0.5em'}}>
+  We don't want a <strong>class</strong>. We just want to pass a <strong>function</strong>.
+</p>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#e74c3c'}}>
+  <em>\"Given two lights, return which one is greater.\"</em> — that's it!
+</p>
+
+<aside className="notes">
+**The absurdity:**
+- We want to express ONE thing: how to compare two lights
+- But Java forces us to create a whole class!
+- With `@Override`, method signature, braces...
+- All to wrap a single function
+
+**What we WANT to say:**
+- "Given l1 and l2, compare their brightness"
+- That's a function: two inputs → one output
+- Why can't we just write that?
+
+**The core question:**
+- What if we could treat functions like values?
+- Store them in variables, pass them to methods?
+- This is the key insight of functional programming
+
+→ **Transition:** What if functions were objects?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## What If Functions Were Just... Values?
+
+<p style={{fontSize: '0.9em'}}>
+  You can store data in variables and pass it around:
+</p>
+
+```java
+int brightness = 100;                    // Store an int
+lights.get(0).setBrightness(brightness); // Pass it to a method
 ```
 
 <p style={{fontSize: '0.9em', marginTop: '1em'}}>
-  What if you could also store <strong>behavior</strong>?
+  What if you could do the same with <strong>behavior</strong>?
 </p>
 
 ```java
 ??? comparison = <<compare two lights by brightness>>;
-lights.sort(comparison);  // Use the behavior later
+lights.sort(comparison);  // Pass behavior to a method
 ```
 
+<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#9370DB'}}>
+  This is the big idea: <strong>functions as first-class values</strong>.
+</p>
+
 <aside className="notes">
-**The question:**
+**The parallel:**
 - We store DATA in variables all the time
 - What if we could store BEHAVIOR the same way?
 - Store it, pass it, return it...
 
 **Why this is powerful:**
 - Behavior becomes flexible, swappable
-- Same code can do different things based on what behavior you pass
+- Same method (sort) can do different things based on what function you pass
 - This is the core insight of functional programming
 
-**The mystery:**
+**The question:**
 - What TYPE would this variable have?
 - How do we write "the behavior of comparing by brightness"?
-- Java 8 gave us the answer
+- Java 8 finally gave us an elegant answer
 
-→ **Transition:** Let's see what this looks like when we can actually do it...
+→ **Transition:** Let's see what this looks like...
 </aside>
 
 </Slide>
