@@ -23,7 +23,7 @@ image: /img/lectures/web/l6.png
     * Requirement: The Pawtograder platform should allow graders to annotate student submissions with feedback on the quality of the code.
 * At a high level, this may seem like a simple requirement. However, as we start to design the system, we will likely start to make choices that we will be force to make without necessarily knowing whether or not they are the best choices.
     * Brainstorm types of choices that we might make:
-        * Do annotations directly effect the score? If so, is it "positive" scoring or "negative" scoring?
+        * Do annotations directly affect the score? If so, is it "positive" scoring or "negative" scoring?
         * Is there a rubric for the annotations? If so, how detailed is the rubric? Is it structured with categories and levels?
         * Are annotations associated with part of a line, or the whole line?
         * How does the grader specify which lines to annotate?
