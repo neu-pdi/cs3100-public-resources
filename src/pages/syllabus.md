@@ -230,6 +230,19 @@ If you have a question about what is considered a violation of this policy, plea
 
 If you feel that cheating is your only option, please ask for help.
 
+### Grading Infrastructure Security
+
+Our autograder (Pawtograder) executes your code in a containerized environment alongside instructor grading scripts. By design, your code has filesystem access—this is necessary for assignments that require reading files, parsing configurations, or making network requests to external APIs. This means that, technically, you *could* write code that reads instructor test files, prints them to stdout, or exfiltrates them to an external service.
+
+**We are telling you this openly because it is not a secret.**
+
+We do not rely on preventing access to secure our grading infrastructure. Instead, we rely on detecting abuse. Every submission you make is recorded in git. Every file you submit is preserved in an immutable audit trail. We have built tooling that makes it trivial to review what code students submitted and to flag suspicious behavior—unusual file access patterns, network calls, base64-encoded payloads, and similar exfiltration attempts.
+
+**Accessing instructor test implementations, grading scripts, or other non-distributed course materials is an academic integrity violation**, regardless of how easy it is to do so. Northeastern's [Academic Integrity Policy](https://osccr.sites.northeastern.edu/academic-integrity-policy/) defines cheating as involving "unauthorized materials, information, or study aids in any academic exercise." Instructor grading materials are unambiguously unauthorized. The fact that you *can* access these files does not mean you are *authorized* to access them—an unlocked door is not an invitation to enter.
+
+Any attempt to access, exfiltrate, or reverse-engineer grading infrastructure, test suites, or other non-distributed course materials will be referred to OSCCR. The audit trail is immutable, the detection is automated, and the consequences will be severe.
+
+If you encounter a situation where you believe something is wrong with the autograder—your file isn't being detected, your tests aren't running, something seems broken—**please just ask us**. Post on the discussion board, come to office hours, or send an email. We are here to help you.
 
 ## Artificial Intelligence
 

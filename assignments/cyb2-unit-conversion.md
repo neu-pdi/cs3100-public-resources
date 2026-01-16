@@ -51,6 +51,12 @@ This assignment focuses on design decisions that require understanding tradeoffs
 
 Report any AI usage in the [Reflection](#reflection) section.
 
+### Grading Infrastructure Security
+
+Your code executes in a containerized environment with filesystem and network access. **Do not attempt to access, exfiltrate, or reverse-engineer grading infrastructure, instructor test suites, or other non-distributed course materials.** All submissions are recorded in an immutable audit trail, and we have automated tooling to detect such attempts. Violations will be referred to OSCCR. See the [syllabus](/syllabus#grading-infrastructure-security) for full details.
+
+If something seems wrong with the autograder, **ask us**—don't try to debug it yourself by inspecting the grading environment.
+
 ## Technical Specifications
 
 ### Package Organization
