@@ -13,17 +13,22 @@ Students come to CS3100 from many different paths. Some transferred from other u
 
 Consider this lab an interlude before Assignment 2: a chance to ensure everyone has the same foundation, regardless of where you started.
 
-:::info Grading: What You Need to Submit
+:::danger Checklist: Required for Credit
 
-**Due:** See the course schedule for the deadline.
+**You MUST complete ALL of the following to receive credit for this lab:**
 
-To receive credit for this lab:
+- [ ] **Open a help request** in the "Lab 3 Testing" queue on Pawtograder (Part 5)
+- [ ] **Make a discussion forum post** (Part 6)
+- [ ] **Complete `REFLECTION.md`** with thoughtful answers
+- [ ] **Push your work to GitHub** before the deadline
 
-1. **Complete all exercises** in Parts 1-5
-2. **Make a discussion forum post** (Part 6) - this is required!
-3. **Push your completed work** to GitHub, including `REFLECTION.md`
+**Due:** Oakland: during your lab session. Boston: by end of week.
 
-This lab is graded on good-faith effort. If you're engaging with the material and making progress, you'll receive full credit.
+:::
+
+:::tip About Grading
+
+The autograder will run and give you points, but **passing all autograder tests is NOT required** to receive credit for this lab. As long as you complete the checklist above with good-faith effort, you'll receive full credit. Don't stress about getting every answer perfect—focus on learning the tools.
 
 :::
 
