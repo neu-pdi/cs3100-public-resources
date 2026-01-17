@@ -981,22 +981,6 @@ Complete `REFLECTION.md` with your answers to:
 
 ---
 
-## Submission Checklist
-
-Before your final submission:
-
-- [ ] Part 1: All questions answered in `Part1Exercises.java`
-- [ ] Part 2: All questions answered in `Part2Exercises.java`, git commands practiced
-- [ ] Part 3: All questions answered in `Part3Exercises.java`, VS Code configured
-- [ ] Part 4: All questions answered in `Part4Exercises.java`, broken code fixed
-- [ ] Part 5: All questions answered in `Part5Exercises.java`
-- [ ] Part 6: Forum post made (link included in reflection)
-- [ ] `REFLECTION.md` completed with all 8 questions
-- [ ] All exercises compile: `./gradlew compileJava`
-- [ ] All changes committed and pushed to GitHub
-
----
-
 ## Quick Reference Card
 
 Print this or keep it handy!
