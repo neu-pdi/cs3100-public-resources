@@ -881,11 +881,11 @@
         "L13",
         "L14"
       ],
-      "url": "/labs/lab3-spec-detective"
+      "url": "/labs/lab3-dev-toolkit"
     },
     {
       "id": "lab3-tue",
-      "title": "Lab 3: Specification Detective",
+      "title": "Lab 3: Developer Toolkit",
       "dates": [
         "2026-01-20"
       ],
@@ -894,7 +894,7 @@
         "L02",
         "L04"
       ],
-      "url": "/labs/lab3-spec-detective"
+      "url": "/labs/lab3-dev-toolkit"
     },
     {
       "id": "lab4-mon",
@@ -1367,6 +1367,26 @@
       "message": "Due to registrar scheduling that gives different numbers of class meetings to different sections, Lab 1 lab will be completed asynchronously (on students' own time). TAs will organize workshops for troubleshooting and co-working as needed.",
       "weeks": [
         1
+      ],
+      "labSections": [
+        "L05",
+        "L06",
+        "L07",
+        "L08",
+        "L09",
+        "L10",
+        "L11",
+        "L12",
+        "L13",
+        "L14"
+      ],
+      "status": "info",
+      "date": "2026-01-07"
+    },
+    {
+      "message": "Due to registrar scheduling that gives different numbers of class meetings to different sections, Lab 3 will be completed asynchronously (on students' own time). TAs will hold extra office hours for troubleshooting and co-working as needed.",
+      "weeks": [
+        3
       ],
       "labSections": [
         "L05",

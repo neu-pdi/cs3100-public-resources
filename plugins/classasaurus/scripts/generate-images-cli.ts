@@ -52,6 +52,7 @@ Options:
   --dry-run             Show what would be generated without actually generating
   --force               Force regeneration even if cached (ignore prompt hash)
   --concurrency <n>     Maximum concurrent API requests (default: 3)
+  -n <count>            Number of variations to generate per image (default: 2)
   --verbose             Show detailed output for each image
   --debug               Debug mode: process 1 image, print full API request/response
   --help                Show this help message
@@ -80,6 +81,7 @@ Examples:
 
 interface ExtendedCliOptions extends CliOptions {
   debug: boolean;
+  variationCount: number;
 }
 
 function parseArgs(args: string[]): ExtendedCliOptions {
@@ -91,6 +93,7 @@ function parseArgs(args: string[]): ExtendedCliOptions {
     verbose: false,
     concurrency: 3,
     debug: false,
+    variationCount: 2,
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -113,6 +116,10 @@ function parseArgs(args: string[]): ExtendedCliOptions {
         break;
       case '--concurrency':
         options.concurrency = parseInt(nextArg, 10) || 3;
+        i++;
+        break;
+      case '-n':
+        options.variationCount = parseInt(nextArg, 10) || 2;
         i++;
         break;
       case '--help':
@@ -269,7 +276,7 @@ async function main(): Promise<void> {
     manifestPath: defaultConfig.manifestPath!,
     concurrency: options.concurrency,
     systemPrompt: defaultConfig.systemPrompt!,
-    variationCount: defaultConfig.variationCount!,
+    variationCount: options.variationCount,
     force: options.force,
     dryRun: options.dryRun,
   };
@@ -281,6 +288,7 @@ async function main(): Promise<void> {
   console.log(`   Target:      ${options.target}`);
   console.log(`   Files:       ${mdxFiles.length}`);
   console.log(`   Concurrency: ${config.concurrency}`);
+  console.log(`   Variations:  ${config.variationCount}`);
   if (!hasApiKey) {
     console.log(`   API Key:     ⚠️  Not set (will use cached data only)`);
   }

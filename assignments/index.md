@@ -50,7 +50,7 @@ Assignments are structured to provide a steady, manageable pace throughout the s
   - Practice making principled design decisions with documented tradeoffs
 - [**Lab 2: Polymorphism and Collections**](/labs/lab2-polymorphism-and-collections)
   - Practice with abstract classes vs interfaces
-- [**Lab 3: Specification Detective**](/labs/lab3-spec-detective)
+- [**Lab 3: Developer Toolkit**](/labs/lab3-dev-toolkit)
   - Evaluate and improve method specifications
 
 ### **Week 4: Exam Week**
