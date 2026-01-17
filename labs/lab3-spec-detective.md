@@ -3,66 +3,63 @@ sidebar_position: 3
 image: /img/labs/web/lab3.png
 ---
 
-# Lab 3: Specification Detective
+# Lab 3: Survival Skills
 
-![Concept: 'The Specification Detective Agency' (Finding Flaws Before They Become Bugs) - A lo-fi pixel art scene of a cozy detective's office at night, rendered in warm amber desk lamp tones against deep blue shadows. The color palette evokes noir mystery with a technical twist. CENTER: A detective figure (representing the student) sits at a wooden desk covered with magnifying glasses, specification documents, and sticky notes. They're examining a Javadoc comment through a large magnifying glass that reveals hidden problems—the glass shows 'null?' and 'empty list?' annotations appearing over seemingly innocent code. LEFT WALL - 'CASE FILES': Three folders labeled with the crimes: 'TOO VAGUE' (a blurry document), 'TOO RESTRICTIVE' (a document wrapped in chains), 'UNCLEAR' (a document with question marks floating off it). Each has a red 'UNSOLVED' stamp. RIGHT SIDE - 'EVIDENCE BOARD': A corkboard with specification snippets connected by red string. One snippet reads 'Returns the sum...' with an arrow pointing to a photo of a crashed program. Another shows '@Nullable' annotations circled in green as 'CLUES'. DESK ITEMS: A coffee mug reading 'I ♥ @NonNull', a notepad with the feedback form structure (one good thing, one suggestion, one question), and a rubber duck wearing a tiny detective hat. WINDOW: Through the rain-streaked window, city lights show other buildings where bugs lurk, waiting to be caught. A neon sign flickers: 'SPECS REVIEWED WHILE U WAIT'. The message: specifications are mysteries to be solved—find the gaps before your users do. Title at bottom: 'Lab 3: Specification Detective'](/img/labs/web/lab3.png)
+![Lab 3: Survival Skills - A lo-fi pixel art scene showing a student at a computer surrounded by floating tool icons: a terminal window, VS Code logo, git branching diagram, and a magnifying glass examining code. The scene has a "detective board" aesthetic with strings connecting different concepts. The color palette is warm oranges and cool blues, suggesting the transition from confusion to clarity. Small text bubbles show common error messages being decoded. Title at bottom: 'Lab 3: Survival Skills'](/img/labs/web/lab3.png)
 
-In this lab, you'll evaluate and improve method specifications, learning to identify when specs are too vague, too restrictive, or unclear. You'll also practice using nullness annotations to express invariants in code.
+Students come to CS3100 from many different paths. Some transferred from other universities. Some took CS2100 years ago. Some learned Python but not Java. Some are command-line wizards; others have never opened a terminal.
+
+**That's all fine.** But software engineering requires a baseline fluency with tools—terminals, version control, build systems, IDEs—that isn't always explicitly taught. We've assumed too much in the past, and we'd rather fill any gaps now than have tools get in the way of learning design.
+
+Consider this lab an interlude before Assignment 2: a chance to ensure everyone has the same foundation, regardless of where you started.
 
 :::info Grading: What You Need to Submit
 
-**Due:** At the end of your scheduled lab section. This is automatically enforced with a 10-minute grace period, but **push your work regularly**—don't wait until the end!
+**Due:** See the course schedule for the deadline.
 
-**Option 1: Successful Completion**
-- Complete Parts 1-3 of the lab
-- All code compiles and runs correctly
-- Push your completed work to GitHub
-- Complete the reflection in `REFLECTION.md`
+To receive credit for this lab:
 
-**Option 2: Partial Credit**
-If you're unable to complete everything:
-- Submit a `REFLECTION.md` documenting what you completed, where you got stuck, and what you tried
-- A TA will review your submission and award credit for good-faith effort
+1. **Complete all exercises** in Parts 1-5
+2. **Make a discussion forum post** (Part 6) - this is required!
+3. **Push your completed work** to GitHub, including `REFLECTION.md`
+
+This lab is graded on good-faith effort. If you're engaging with the material and making progress, you'll receive full credit.
 
 :::
 
-:::warning Attendance Matters
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
-If lab leaders observe that you are **not working on the lab** during the section, or you **leave early** AND do not successfully complete the lab, you will receive **no marks**. However: if you finish the required parts of the lab and want to work on something else, just show the lab leader that you're done, and you'll be all set!
+<Tabs>
+<TabItem value="boston" label="Boston (Asynchronous)" default>
 
-**Struggling? That's okay!** We are here to support you. Ask questions, work with your neighbors, and flag down a lab leader if you're stuck.
+**Boston students:** You'll complete this lab on your own time. That makes this the perfect opportunity to practice a crucial skill: **using office hours effectively**.
 
-:::
+If you get stuck on *anything*—a command that doesn't work, a concept that's unclear, a tool that's misbehaving—**come to office hours**. TAs are available throughout the week specifically to help with exactly these kinds of issues. Don't spend hours frustrated when a 5-minute conversation could unblock you.
 
-## Lab Facilitator Notes
+Finding and using [office hours](https://app.pawtograder.com/course/500/office-hours?view=browse&queue=514) is part of the learning in this lab.
 
-:::tip For TAs: Lab Start (5 minutes)
+</TabItem>
+<TabItem value="oakland" label="Oakland (In-Person)">
 
-**Attendance:** Take attendance using the roster in Pawtograder.
+**Oakland students:** You'll complete this lab during your scheduled lab section with TAs available to help.
 
-**Quick Check-in (2 minutes):** Ask students how Assignment 1 is going. Remind them that office hours are available if they're stuck.
+**Take advantage of having TAs in the room!** If you get stuck on *anything*—a command that doesn't work, a concept that's unclear, a tool that's misbehaving—raise your hand. Don't spend 20 minutes frustrated when a 2-minute conversation could unblock you.
 
-**Student Warm-up (3 minutes):**
-- Have students turn to a neighbor
-- Share: "What's one thing from Lectures 4-5 that you found surprising or confusing?"
-- This surfaces concepts that may need reinforcement during the lab
+Work with your neighbors. Compare notes. If someone near you figures something out, ask them to explain it.
 
-**During Part 1:** Circulate and ensure students understand the three criteria (restrictiveness, generality, clarity) before they start evaluating specs.
+</TabItem>
+</Tabs>
 
-:::
+:::tip The Case of the Missing File
 
-:::note Soft Skill Focus: Giving Specific, Actionable Feedback
+Every semester, students spend hours debugging why the autograder "can't find" their file. They check their code, rewrite their logic, question their understanding of Java—when the real culprit is something like:
 
-This lab builds on Lab 2's "asking clarifying questions" by practicing **giving specific feedback**. When students review each other's specifications, TAs will coach them to:
-- Point to a specific part of the spec
-- Explain *why* it's problematic (to them)
-- Suggest a concrete improvement
+`MeasuredIngredient.Java` instead of `MeasuredIngredient.java`
 
-**Good feedback:** "In your `scheduleAction` spec, you don't mention what happens if `actionId` already exists. Should it throw an exception or overwrite?"
+**Java is case-sensitive. File extensions matter. Details matter.**
 
-**Unhelpful feedback:** "Your specs are incomplete."
-
-See the Soft Skill Introduction section after Sync Point 1 for the student-facing framing.
+This kind of issue isn't about skill level—it's about knowing where to look. It **regularly** stumps the professors. This lab teaches you to see what's actually happening in your development environment, so you can spend your time on the interesting problems.
 
 :::
 
@@ -70,363 +67,900 @@ See the Soft Skill Introduction section after Sync Point 1 for the student-facin
 
 By the end of this lab, you will be able to:
 
-- Evaluate specifications using the criteria of restrictiveness, generality, and clarity
-- Identify under-specified behavior and explain its potential consequences
-- Write improved specifications that balance all three criteria
-- Apply JSpecify nullness annotations (`@NullMarked`, `@Nullable`) to express invariants
+- Navigate and interpret CS3100 assignment specifications effectively
+- Use Pawtograder to check your submission status and understand autograder feedback
+- Execute essential terminal commands for navigating your file system and using git
+- Configure VS Code for Java development and use its git integration
+- Run Gradle commands and interpret build/test output
+- Ask effective questions on the discussion forum
 
 ## Before You Begin
 
-**Prerequisites:** Complete Lectures 4-5 and Flashcard Sets 3-4.
+**Prerequisites:** Complete Labs 1-2. Assignment 1 experience is helpful but not required.
 
-**Clone the Lab Repository:** Clone your lab3 repository in VSCode (go to clone from GitHub, and select your neu-cs3100/lab3-... repository). The repository includes:
+**Clone the Lab Repository:** Clone your lab3 repository from Pawtograder.
 
-**Core Classes** (`net.sceneitall.iot`):
-- `IoTDevice.java`, `Light.java`, `DimmableLight.java`, `TunableWhiteLight.java` — the device hierarchy from previous labs
+:::danger Do NOT Clone Into Cloud-Synced Folders
 
-**Part 1: Specification Evaluation** (`net.sceneitall.iot.lab3.part1`):
-- `SpecificationExercises.java` — flawed specifications for you to evaluate
+**Never** put your Java projects in folders synced by OneDrive, iCloud, Dropbox, Google Drive, or similar services. These sync tools do not play nicely with Java development tools and git.
 
-**Part 2: Writing Better Specifications** (`net.sceneitall.iot.lab3.part2`):
-- `DeviceScheduler.java` — class with method stubs where you'll write specifications
+**Symptoms of this problem:**
+- Random build failures that fix themselves
+- Files mysteriously changing or disappearing
+- Git showing hundreds of unexpected modified files
+- IDE errors about locked files
 
-**Part 3: Nullness Annotations** (`net.sceneitall.iot.lab3.part3`):
-- `LightingScene.java` — class where you'll add nullness annotations
+**Where to put your projects instead:**
+- **Windows:** `C:\Users\YourName\cs3100\` (not in `Documents` if that syncs to OneDrive)
+- **Mac:** `~/cs3100/` or `~/Developer/cs3100/`
 
----
-
-## Part 1: Evaluating Specifications (15 minutes)
-
-Good specifications are restrictive enough to rule out buggy implementations, general enough to allow correct ones, and clear enough that developers understand them quickly. In this exercise, you'll evaluate specifications that fail one or more of these criteria.
-
-### Exercise 1.1: Identify Specification Flaws
-
-Open `SpecificationExercises.java`. For each method, the specification has a problem. Your task: identify whether the spec fails **restrictiveness**, **generality**, or **clarity**, and explain why.
-
-**Example A: Under-specified behavior**
-```java
-/**
- * Returns the average brightness of all lights in the list.
- * @param lights the lights to average
- * @return the average brightness
- */
-public static int averageBrightness(List<Light> lights) {
-    int sum = 0;
-    for (Light light : lights) {
-        sum += light.getBrightness();
-    }
-    return sum / lights.size();
-}
-```
-
-Questions to consider:
-- What happens if `lights` is null?
-- What happens if `lights` is empty?
-- Is this spec restrictive enough to rule out implementations that crash?
-
-**Example B: Over-specified (not general)**
-```java
-/**
- * Finds a light with the specified brightness.
- * Iterates through the list from index 0 to the end.
- * At each index, checks if the light's brightness equals the target.
- * If found, returns that light. If not found after checking all lights,
- * returns null.
- *
- * @param lights the list of lights to search
- * @param targetBrightness the brightness level to find
- * @return the light with matching brightness, or null if not found
- */
-public static Light findByBrightness(List<Light> lights, int targetBrightness)
-```
-
-Questions to consider:
-- Does it matter *which* light is returned if multiple lights have the target brightness?
-- Does the specification allow for a more efficient implementation (e.g., using a HashMap)?
-- Is this specification describing *what* the method does or *how* it does it?
-
-**Example C: Unclear specification**
-```java
-/**
- * Processes the lights appropriately based on the time of day.
- * @param lights the lights to process
- * @param hour the current hour (0-23)
- */
-public static void adjustLightsForTime(List<Light> lights, int hour)
-```
-
-Questions to consider:
-- What does "appropriately" mean?
-- What should happen at hour 0 vs hour 12 vs hour 23?
-- Could two developers implement this differently and both claim they're correct?
-
-### Exercise 1.2: Document Your Analysis
-
-In `SpecificationExercises.java`, fill in the TODO comments with your analysis. For each method, identify:
-1. Which criterion (restrictiveness, generality, or clarity) the spec fails
-2. A specific scenario where the flawed spec causes problems
-3. A brief description of how you would improve it
-
-```java
-// TODO: Example A Analysis
-// Criterion failed: _______________
-// Problem scenario: _______________
-// How to improve: _______________
-```
-
-### 🔄 Sync Point 1
-
-**Lab leaders will pause here for discussion (5 minutes):**
-- Ask groups: "Which criterion did Example A fail? What bad thing could happen?"
-- Ask groups: "Why is Example B too operational? What correct implementations does it rule out?"
-- Discuss: "The spec for Example C seems short—isn't shorter better for clarity?"
-
-**Then introduce the soft skill focus for Part 2:**
-
-> "For the rest of this lab, you'll be working with a partner. Today we're practicing *giving specific feedback*.
->
-> Vague feedback like 'this spec is confusing' doesn't help anyone improve. Instead:
-> - **Point to the specific part** of the spec
-> - **Explain *why* it's problematic** (to you)
-> - **Suggest a concrete improvement** (if you have one)
->
-> **Good example:** 'In your `scheduleAction` spec, you don't mention what happens if `actionId` already exists. Would it throw an exception or overwrite the existing action?'
->
-> **Not helpful:** 'Your specs are incomplete.'
->
-> You'll each write specs individually first, then exchange and give each other feedback using this structure."
-
-**Pair Formation:** Have students pair with someone nearby they haven't worked with yet. If odd number, form one group of three.
-
----
-
-## Part 2: Writing & Reviewing Specifications (20 minutes)
-
-Now that you can identify flawed specifications, it's time to write better ones—and practice giving specific feedback to a partner.
-
-### Exercise 2.1: Write Specifications Individually (10 minutes)
-
-Open `DeviceScheduler.java`. The class has method stubs with no documentation. Your task: write Javadoc specifications that are restrictive, general, and clear.
-
-```java
-public class DeviceScheduler {
-    private Map<String, ScheduledAction> scheduledActions;
-
-    public DeviceScheduler() {
-        this.scheduledActions = new HashMap<>();
-    }
-
-    // TODO: Write a specification for this method
-    public void scheduleAction(String actionId, IoTDevice device,
-                               int hour, Runnable action) {
-        // Implementation provided
-    }
-
-    // TODO: Write a specification for this method
-    public void cancelAction(String actionId) {
-        // Implementation provided
-    }
-
-    // TODO: Write a specification for this method
-    public List<ScheduledAction> getActionsForDevice(IoTDevice device) {
-        // Implementation provided
-    }
-
-    // TODO: Write a specification for this method
-    public int countScheduledActions() {
-        // Implementation provided
-    }
-}
-```
-
-**Guidelines for your specifications:**
-- Specify what happens for edge cases (null inputs, missing IDs, empty states)
-- Use `@param`, `@return`, and `@throws` tags appropriately
-- Be concise but complete—aim for the "Goldilocks zone"
-- Describe *what* the method does, not *how* it does it
-
-### Exercise 2.2: Exchange and Review (10 minutes)
-
-Now exchange your specifications with your partner. For each of their specifications, use the **Feedback Form** below.
-
-:::tip Feedback Form
-
-For each specification your partner wrote, provide:
-
-1. **One thing that works well** — and *why* it works
-   - Example: "Your `@throws` for null inputs is good because it tells me exactly what exception to expect."
-
-2. **One specific suggestion** — pointing to a specific gap or issue
-   - Example: "For `cancelAction`, what happens if the ID doesn't exist? Should it throw or silently do nothing?"
-
-3. **One clarifying question** — something you'd need answered to implement it
-   - Example: "In `getActionsForDevice`, is the returned list a copy or a live view of the internal data?"
+If you've already cloned to a synced folder, move your project now before continuing.
 
 :::
 
-**Process:**
-1. Read through all four of your partner's specifications
-2. Fill out the feedback form (written notes help!)
-3. Discuss your feedback with your partner—explain your reasoning
-4. Each person should revise at least one specification based on feedback received
-
-### 🔄 Sync Point 2
-
-**Lab leaders will lead discussion (5 minutes):**
-- Ask a few pairs: "What's the most useful piece of feedback you received?"
-- Ask: "Did anyone's partner catch something you completely missed?"
-- Compare different approaches: Did some specify what happens with duplicate IDs? Invalid hours?
-- Discuss: "What's the minimum a spec needs to include to be 'restrictive enough'?"
-
 ---
 
-## Part 3: Nullness Annotations (10 minutes)
+## Part 1: Reading Assignments Like a Detective (15 minutes)
 
-Specifications in comments are helpful, but they're not enforced by the compiler. Nullness annotations let you express invariants about null values directly in your code, and the compiler can catch violations.
+The most common source of lost points isn't bugs in your code—it's misunderstanding what the assignment is asking for. Let's develop some detective skills.
 
-**Continue working with your partner** for this section. You can work on the same file together (one person "drives," the other "navigates") or work in parallel and compare solutions.
+### Exercise 1.1: Anatomy of an Assignment Specification
 
-### Exercise 3.1: Add Nullness Annotations
+Open the [Assignment 1 specification](/assignments/cyb1-recipes) in another tab. Let's dissect its structure:
 
-Open `LightingScene.java`. This class represents a named collection of lights with specific settings. The package is already marked `@NullMarked`, meaning all types are assumed non-null by default.
+**Every CS3100 assignment has these key sections:**
 
-Your task: Add `@Nullable` annotations where appropriate, and use `Objects.requireNonNull` where needed.
+| Section | What It Tells You |
+|---------|-------------------|
+| **Overview** | The big picture—what you're building and why |
+| **Learning Outcomes** | Skills being assessed (hint: this is what we grade!) |
+| **Technical Specifications** | Exact requirements, method signatures, expected behavior |
+| **Invariants and Contracts** | Preconditions, postconditions, exceptions |
+| **Testing Overview** | What tests you need to write |
+| **Grading Rubric** | Exactly how points are allocated |
+
+**Your task:** In the starter code, open `exercises/Part1Exercises.java`. Answer the questions by filling in the string constants. These questions test whether you can find specific information in the Assignment 1 spec.
 
 ```java
-public class LightingScene {
-    private String name;
-    private String description;  // May be null if no description provided
-    private List<Light> lights;
+public class Part1Exercises {
+    // Question 1: According to the spec, what exception should ExactQuantity's
+    // constructor throw if the amount is not positive?
+    public static final String Q1_EXCEPTION_TYPE = ""; // Fill this in
 
-    // TODO: Which parameters can be null? Add @Nullable where appropriate
-    public LightingScene(String name, String description, List<Light> lights) {
-        this.name = name;
-        this.description = description;
-        this.lights = new ArrayList<>(lights);
-    }
+    // Question 2: What is the DECIMAL_PRECISION constant value required for
+    // ExactQuantity and RangeQuantity?
+    public static final int Q2_DECIMAL_PRECISION = 0; // Fill this in
 
-    // TODO: Can this return null? Should it?
-    public String getDescription() {
-        return description;
-    }
+    // Question 3: According to the grading rubric, how many points is
+    // FractionalQuantityTest worth?
+    public static final int Q3_FRACTIONAL_TEST_POINTS = 0; // Fill this in
 
-    // TODO: Add appropriate annotations and null handling
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    // Question 4: What annotation does the spec say eliminates the need to
+    // test for null parameter exceptions?
+    public static final String Q4_NULL_ANNOTATION = ""; // Fill this in
 
-    // TODO: This method calls List.of() which never returns null,
-    // but the nullness checker doesn't know that. How do you handle this?
-    public List<Light> getLightsCopy() {
-        return List.of(lights.toArray(new Light[0]));
-    }
+    // Question 5: In the toString() for FractionalQuantity, what format is used
+    // when whole > 0 AND numerator > 0? (Copy the exact format string from spec)
+    public static final String Q5_TOSTRING_FORMAT = ""; // Fill this in
 }
 ```
 
-**Key decisions to make:**
-- The `description` field can be null (it's optional). How do you annotate the getter and setter?
-- The `name` and `lights` parameters should never be null. The `@NullMarked` package handles this, but should you add validation?
-- The `getLightsCopy()` method calls `List.of()`, which never returns null. How do you tell the nullness checker?
+### Exercise 1.2: Reading Instructor Tests
 
-### Exercise 3.2: Verify with the Compiler
+When instructor tests are available, they're a goldmine of information about expected behavior.
 
-Run the build to check for nullness errors:
+**Open `src/test/java/exercises/SampleInstructorTest.java`** in the lab repository. This simulates the kind of tests the autograder runs.
 
-```bash
-# macOS/Linux
-./gradlew build
+Answer these questions in `exercises/Part1Exercises.java`:
 
-# Windows
-.\gradlew.bat build
+```java
+    // Question 6: Looking at the sample instructor test, what value does
+    // testExactQuantityToStringFormatting expect for 2.5 cups?
+    public static final String Q6_EXPECTED_OUTPUT = ""; // Fill this in
+
+    // Question 7: What assertion method is used to verify exceptions are thrown?
+    public static final String Q7_ASSERTION_METHOD = ""; // Fill this in
 ```
 
-If you see nullness-related warnings or errors, fix them by:
-- Adding `@Nullable` where values can legitimately be null
-- Adding null checks or `Objects.requireNonNull()` where values must not be null
+### Exercise 1.3: Using Pawtograder Effectively
 
-### 🔄 Sync Point 3 & Debrief (10 minutes)
+**Navigate to Pawtograder** and find your Assignment 1 submission (or Lab 1/2 if you haven't submitted A1).
 
-**Lab leaders will discuss nullness (5 minutes):**
-- Ask: "What did you annotate as `@Nullable`? Why?"
-- Ask: "When did you use `Objects.requireNonNull()`?"
-- Discuss the tradeoff: More annotations = more safety but also more code to maintain
+**Explore these features:**
 
-**Soft Skill Debrief (5 minutes):**
+1. **Submission History:** Click on your assignment to see all submissions. Note the timestamps and scores.
 
-With your partner, discuss:
-- "Which piece of feedback you received was most useful? Why?"
-- "What made feedback easier to give or receive?"
+2. **Autograder Output:** Expand a submission to see the detailed test results. Each failing test shows:
+   - The test name (tells you what's being tested)
+   - Expected vs. actual output (tells you what went wrong)
+   - Sometimes a hint (if configured by the instructor)
 
-Then, whole group discussion:
-- Ask a few pairs to share: "What was the most valuable feedback you gave or received today?"
-- Discuss: "How is giving feedback on specifications similar to or different from giving feedback on code?"
-- Connect to professional practice: "In code review, specific feedback like 'this edge case isn't handled' is much more actionable than 'this needs work.'"
+**Fill in `exercises/Part1Exercises.java`:**
+
+```java
+    // Question 8: In Pawtograder, what is the maximum number of submissions
+    // allowed per day for Assignment 1?
+    public static final int Q8_MAX_SUBMISSIONS = 0; // Fill this in
+
+    // Question 9: True or false: Pawtograder shows you hints about bugs your
+    // tests didn't catch (one per submission).
+    public static final boolean Q9_HINTS_AVAILABLE = false; // Fill this in
+```
+
+---
+
+## Part 2: Terminal Mastery (20 minutes)
+
+The terminal is your direct line to the computer. Mastering basic commands will save you hours of frustration.
+
+### Opening a Terminal in VS Code
+
+Before we dive into commands, let's make sure you can open a terminal properly.
+
+**Keyboard shortcut:** Press `` Ctrl+` `` (backtick, the key above Tab) or `` Cmd+` `` on Mac.
+
+You can also use the menu: **View → Terminal**
+
+:::warning Windows Users: Use Git Bash, Not PowerShell
+
+This is important! Windows has multiple terminal options, and the default (PowerShell) uses different commands than Mac/Linux. For this course, **use Git Bash** so your commands match what we teach.
+
+**To check which shell you're using:** Look at the dropdown in the terminal panel. It might say "powershell", "cmd", or "bash".
+
+**To switch to Git Bash:**
+1. Click the dropdown arrow next to the `+` button in the terminal panel
+2. Select **Git Bash**
+
+**To make Git Bash your default (recommended):**
+1. Press `Ctrl+Shift+P` to open the Command Palette
+2. Type "Terminal: Select Default Profile"
+3. Select **Git Bash**
+4. Close and reopen your terminal — it should now default to Git Bash
+
+If you don't see Git Bash as an option, you may need to install Git for Windows from [git-scm.com](https://git-scm.com/download/win).
+
+:::
+
+**Verify your terminal is working:** Type `pwd` and press Enter. You should see your current directory path. If you see an error like "'pwd' is not recognized", you're in PowerShell or CMD — switch to Git Bash.
+
+### Essential Commands Reference
+
+Here's your survival guide to terminal commands:
+
+| Command | What It Does | Example |
+|---------|-------------|---------|
+| `pwd` | **P**rint **W**orking **D**irectory - shows where you are | `pwd` → `/Users/yourname/cs3100/sp26-lab3-your-username` |
+| `ls` | **L**i**s**t files in current directory | `ls` → shows files and folders |
+| `ls -la` | List ALL files (including hidden) with details | `ls -la` → shows `.git`, permissions, dates |
+| `cd <path>` | **C**hange **D**irectory | `cd src/main/java` |
+| `cd ..` | Go up one directory level | `cd ..` → from `/src/main` to `/src` |
+| `cd ~` | Go to your home directory | `cd ~` → `/Users/yourname` |
+| `cd -` | Go to previous directory | `cd -` → back where you were |
+| `cat <file>` | Display file contents | `cat README.md` |
+| `mkdir <name>` | Make a new directory | `mkdir my-folder` |
+| `touch <file>` | Create an empty file | `touch NewFile.java` |
+| `mv <src> <dst>` | Move or rename a file | `mv Wrong.Java Correct.java` |
+| `rm <file>` | Remove a file (careful!) | `rm unwanted.txt` |
+| `clear` | Clear the terminal screen | `clear` |
+
+### Exercise 2.1: Navigation Challenge
+
+Open a terminal in VS Code (you set this up in the previous section).
+
+**Complete these tasks and record your answers:**
+
+```bash
+# 1. Print your current working directory
+pwd
+
+# 2. What is the output? Record it in Part2Exercises.java
+
+# 3. List all files including hidden ones
+ls -la
+
+# 4. You should see a .git folder. What does this indicate?
+# Record your answer in Part2Exercises.java
+
+# 5. Navigate to the src/main/java directory
+cd src/main/java
+
+# 6. Now navigate back to the project root in ONE command
+# (Hint: you can use multiple .. separated by /)
+```
+
+**Fill in `exercises/Part2Exercises.java`:**
+
+```java
+public class Part2Exercises {
+    // Question 1: What command shows your current directory?
+    public static final String Q1_PWD_COMMAND = ""; // Fill this in
+
+    // Question 2: What does the .git folder indicate about a directory?
+    public static final String Q2_GIT_FOLDER_MEANING = ""; // Fill this in
+
+    // Question 3: What command navigates up two directory levels?
+    public static final String Q3_UP_TWO_LEVELS = ""; // Fill this in
+}
+```
+
+### Exercise 2.2: Git Concepts and Commands
+
+While VS Code's git integration is convenient, understanding command-line git is essential for debugging issues. Let's start with some key concepts.
+
+#### What Is Git?
+
+Git is a **version control system** — it tracks changes to your files over time, letting you:
+- See what changed and when
+- Undo mistakes by going back to earlier versions
+- Collaborate with others without overwriting each other's work
+- Submit your work (Pawtograder pulls from your GitHub repository)
+
+#### The Three States of a File
+
+Git files exist in one of three states:
+
+```
+[Working Directory] --git add--> [Staging Area] --git commit--> [Repository]
+     (Modified)                    (Staged)                      (Committed)
+```
+
+1. **Modified (Working Directory):** You've changed the file, but git hasn't recorded the change yet
+2. **Staged (Staging Area):** You've marked the file to be included in your next commit
+3. **Committed (Repository):** The change is safely stored in your local git history
+
+**Why staging?** It lets you commit only *some* of your changes. Maybe you fixed a bug AND started a new feature — you can stage and commit just the bug fix, keeping your commits focused.
+
+#### Branches
+
+A **branch** is like a parallel universe for your code. The default branch is usually called `main`. When you work on a feature or assignment, you might be on a different branch.
+
+```
+main:     A---B---C
+               \
+feature:        D---E  (your work here)
+```
+
+For this course, you'll mostly work on whatever branch Pawtograder creates for you. Use `git branch` to see which branch you're on (the current branch has a `*` next to it).
+
+#### Essential Git Commands
+
+| Command | What It Does | When to Use |
+|---------|-------------|-------------|
+| `git status` | Shows modified/staged files | Before committing — see what changed |
+| `git add <file>` | Stage a file for commit | After modifying files you want to commit |
+| `git add .` | Stage ALL modified files | When you want to commit everything |
+| `git commit -m "msg"` | Create a commit with message | After staging, to save your changes |
+| `git push` | Upload commits to GitHub | After committing, to share/submit |
+| `git pull` | Download changes from GitHub | Before starting work, to get updates |
+| `git log --oneline` | Show commit history (compact) | To see what commits exist |
+| `git diff` | Show unstaged changes | To see what you modified |
+| `git branch` | List branches | To see what branch you're on |
+| `git clone <url>` | Download a repository | To get a repo for the first time |
+
+#### Complete the Git Challenge
+
+1. Make a small change to `exercises/Part2Exercises.java` (fill in an answer)
+2. Run each command and observe the output:
+
+```bash
+# Check the status - what does it show?
+git status
+
+# Stage your change
+git add exercises/Part2Exercises.java
+
+# Check status again - what changed?
+git status
+
+# Commit with a message
+git commit -m "Complete Part 2 exercises"
+
+# Push to GitHub
+git push
+```
+
+### Exercise 2.3: Dealing with Git Rejections
+
+One of the most frustrating git experiences is a **rejected push**. Let's understand why this happens and how to fix it.
+
+**Why pushes get rejected:**
+```
+! [rejected]        main -> main (fetch first)
+error: failed to push some refs to 'github.com:...'
+hint: Updates were rejected because the remote contains work that you do
+hint: not have locally.
+```
+
+This means someone (or you from another computer, or the autograder) pushed changes that you don't have locally.
+
+**The fix:**
+```bash
+# First, pull the remote changes
+git pull
+
+# If there are conflicts, you'll need to resolve them
+# (VS Code will highlight conflicts in files)
+
+# After resolving, commit the merge
+git add .
+git commit -m "Merge remote changes"
+
+# Now push should work
+git push
+```
+
+**Record your understanding in `Part2Exercises.java`:**
+
+```java
+    // Question 4: What command downloads changes from GitHub without merging?
+    public static final String Q4_FETCH_COMMAND = ""; // Hint: git fetch
+
+    // Question 5: What TWO commands can fix a rejected push? (separate with comma)
+    public static final String Q5_FIX_REJECTION = ""; // e.g., "git pull, git push"
+```
+
+### Exercise 2.4: Finding Your Java Version
+
+A common source of build errors is having the wrong Java version. **This course uses Java 21.** If you don't have Java 21 installed, see [Lab 1: Java Setup](/labs/lab1-java-setup) for installation instructions.
+
+```bash
+# Check your Java version
+java -version
+```
+
+You should see output like:
+```
+openjdk version "21.0.2" 2024-01-16
+...
+```
+
+The important part is that it starts with `21`. If you see a different major version (like 17, 11, or 8), you need to install Java 21.
+
+```bash
+# Check your JAVA_HOME environment variable
+# Mac/Linux/Git Bash:
+echo $JAVA_HOME
+
+# This should point to your Java 21 installation
+```
+
+**Record in `Part2Exercises.java`:**
+
+```java
+    // Question 6: What Java version is this course using? (Just the major version number)
+    public static final int Q6_JAVA_VERSION = 0; // Fill this in
+
+    // Question 7: What environment variable points to your Java installation?
+    public static final String Q7_JAVA_ENV_VAR = ""; // Fill this in
+```
+
+:::note Stuck? Get Help!
+
+If any git command gives you an unexpected error, or you're confused about what a command does, **this is a perfect office hours question**. Bring your laptop, show the TA what you tried, and they'll help you understand what's happening.
+
+**Can't make office hours?** Post your question to the **Lab 3** discussion topic on Pawtograder. Include what command you ran and what error you saw. Classmates and TAs monitor the forum and can often help quickly. You can post using your real name or your pseudonym—whichever you're comfortable with.
+
+:::
+
+---
+
+## Part 3: VS Code Deep Dive (15 minutes)
+
+VS Code is more than a text editor—it's a powerful IDE when properly configured.
+
+### Exercise 3.1: Opening Projects Correctly
+
+**The Two Most Common VS Code Mistakes:**
+
+1. **Opening a file instead of a folder:** Using `File → Open File` instead of `File → Open Folder`
+2. **Opening the wrong folder:** Opening your `cs3100` directory (which contains multiple projects) instead of the specific project folder like `sp26-lab3-yourUsername`
+
+**Why this matters:**
+- Without the folder open, VS Code can't find your `build.gradle`
+- Java extension can't understand your project structure
+- Git integration won't work
+- Autocomplete and error highlighting will be broken
+
+**Test yourself:**
+
+1. Close VS Code completely
+2. Open VS Code
+3. Go to `File → Open Folder` (NOT Open File!)
+4. Navigate to your lab3 directory and select it
+5. You should see the full project tree in the Explorer sidebar
+
+**In `exercises/Part3Exercises.java`:**
+
+```java
+public class Part3Exercises {
+    // Question 1: What VS Code menu option should you use to open a project?
+    public static final String Q1_OPEN_PROJECT = ""; // Fill this in
+
+    // Question 2: What file in your project root tells VS Code this is a Gradle project?
+    public static final String Q2_GRADLE_FILE = ""; // Fill this in
+}
+```
+
+### Exercise 3.2: Terminal Tips in VS Code
+
+You already learned to open and configure the terminal in Part 2. Here are a few more tips:
+
+**Multiple terminals:** Click the `+` icon in the terminal panel to open additional terminals. Useful when you want one terminal running `./gradlew test --continuous` while you edit code in another.
+
+**Split terminals:** Click the split icon to see two terminals side-by-side.
+
+**Terminal history:** Press the up arrow to cycle through previous commands. This saves a lot of retyping!
+
+**Record in `Part3Exercises.java`:**
+
+```java
+    // Question 3: What keyboard shortcut opens the integrated terminal?
+    public static final String Q3_TERMINAL_SHORTCUT = ""; // Fill this in
+
+    // Question 4: On Windows, what shell do we recommend for CS3100?
+    public static final String Q4_RECOMMENDED_SHELL = ""; // Fill this in
+```
+
+### Exercise 3.3: Source Control Panel
+
+VS Code's Source Control panel provides a visual interface to git.
+
+**Find the Source Control panel:** Click the branch icon in the left sidebar (or press `Ctrl+Shift+G`)
+
+**Explore these features:**
+
+1. **Changed files:** Listed under "Changes" - click to see a diff
+2. **Staging:** Click the `+` next to a file to stage it
+3. **Commit:** Type a message in the box at the top, click the checkmark
+4. **Push/Pull:** Click the `...` menu for more git operations
+5. **Branch indicator:** Bottom-left of VS Code shows your current branch
+
+**Make another change and commit using only the VS Code interface:**
+
+1. Modify `Part3Exercises.java` (fill in more answers)
+2. Go to Source Control panel
+3. Stage your changes (click the +)
+4. Enter a commit message
+5. Click the checkmark to commit
+6. Click "Sync Changes" to push
+
+**Record in `Part3Exercises.java`:**
+
+```java
+    // Question 5: What keyboard shortcut opens the Source Control panel?
+    public static final String Q5_SOURCE_CONTROL_SHORTCUT = ""; // Fill this in
+
+    // Question 6: Where in VS Code can you see your current git branch?
+    public static final String Q6_BRANCH_LOCATION = ""; // Fill this in
+```
+
+### Exercise 3.4: Useful Keyboard Shortcuts
+
+Master these shortcuts to navigate code faster:
+
+| Shortcut (Mac) | Shortcut (Windows) | Action |
+|----------------|-------------------|--------|
+| `Cmd+P` | `Ctrl+P` | Quick Open file by name |
+| `Cmd+Shift+P` | `Ctrl+Shift+P` | Command Palette |
+| `Cmd+Shift+F` | `Ctrl+Shift+F` | Search across all files |
+| `Cmd+B` | `Ctrl+B` | Toggle sidebar |
+| `Cmd+`` ` | `Ctrl+`` ` | Toggle terminal |
+| `F12` | `F12` | Go to Definition |
+| `Cmd+Click` | `Ctrl+Click` | Go to Definition (mouse) |
+| `Shift+F12` | `Shift+F12` | Find All References |
+| `Cmd+G` | `Ctrl+G` | Go to Line |
+
+**Practice:** Use `Cmd/Ctrl+P` and type "Part3" to quickly open `Part3Exercises.java`.
+
+---
+
+## Part 4: Gradle Demystified (15 minutes)
+
+Gradle is the build system that compiles your code, runs tests, and packages your application. Understanding it will save you hours of debugging.
+
+### What Is Gradle?
+
+Think of Gradle as your project's "chef":
+- **Recipes** (`build.gradle`): Instructions for how to build your project
+- **Ingredients** (dependencies): Libraries your project needs
+- **Kitchen** (Gradle daemon): The runtime that executes tasks
+- **Dishes** (outputs): Compiled classes, test reports, bundles of your app
+
+### Exercise 4.1: Essential Gradle Commands
+
+Run each command and observe what happens:
+
+```bash
+# Compile your code (but don't run tests)
+./gradlew compileJava
+
+# Run all tests
+./gradlew test
+
+# Run both compile and test (and other checks)
+./gradlew build
+
+# Clean all build outputs (useful when things are weird)
+./gradlew clean
+
+# Clean AND build (fresh start)
+./gradlew clean build
+
+# See all available tasks
+./gradlew tasks
+```
+
+**Record in `exercises/Part4Exercises.java`:**
+
+```java
+public class Part4Exercises {
+    // Question 1: What Gradle command compiles code AND runs tests?
+    public static final String Q1_BUILD_COMMAND = ""; // Fill this in
+
+    // Question 2: What Gradle command removes all previous build outputs?
+    public static final String Q2_CLEAN_COMMAND = ""; // Fill this in
+
+    // Question 3: Why use ./gradlew instead of just gradle?
+    public static final String Q3_WHY_WRAPPER = ""; // Fill this in (hint: consistency)
+}
+```
+
+### Exercise 4.2: Reading Gradle Errors
+
+Gradle errors can be intimidating, but they follow a pattern. Let's learn to decode them by creating an error ourselves.
+
+**Step 1: Break something on purpose**
+
+Open any Java file in your project (for example, `Part4Exercises.java`) and introduce a syntax error:
+- Remove a semicolon from the end of a line, or
+- Delete a closing brace `}`, or
+- Misspell a keyword like `public` → `pubic`
+
+**Step 2: Run the build**
+
+```bash
+./gradlew compileJava
+```
+
+You'll see an error! Take a moment to read it carefully.
+
+**Anatomy of a Gradle error:**
+
+1. **Task that failed:** `:compileJava` - tells you compilation failed
+2. **File and line number:** Shows exactly which file and line has the problem
+3. **Error message:** Describes what's wrong (e.g., `';' expected`)
+4. **The caret (^):** Points to exactly where the error was detected
+
+**Step 3: Record your observation**
+
+In `Part4Exercises.java`, record what you observed:
+
+```java
+    // Question 4: What syntax error did you introduce?
+    public static final String Q4_ERROR_INTRODUCED = ""; // e.g., "removed semicolon on line 5"
+
+    // Question 5: Copy the key part of the error message Gradle showed you
+    public static final String Q5_ERROR_MESSAGE = ""; // e.g., "';' expected"
+```
+
+**Step 4: Fix the error**
+
+Restore the code to its working state and run `./gradlew compileJava` again to verify it succeeds.
+
+### Exercise 4.3: Understanding Test Output
+
+Run the tests:
+```bash
+./gradlew test
+```
+
+If tests fail, Gradle generates an HTML report. Find it at:
+```
+build/reports/tests/test/index.html
+```
+
+**Open this file in your browser** (right-click in VS Code and select "Reveal in Finder/Explorer", then double-click the HTML file - if it doesn't open in a browser, right-click on it and use your operating system's interface to open it in your web browser of choice).
+
+**The test report shows:**
+- Overall pass/fail summary
+- Each test class and its tests
+- For failures: the expected vs. actual values
+- Stack traces showing exactly where the failure occurred
+
+**Record in `Part4Exercises.java`:**
+
+```java
+    // Question 4: Where does Gradle put the HTML test report?
+    public static final String Q4_TEST_REPORT_PATH = ""; // Fill this in
+
+    // Question 5: What Gradle command runs ONLY the tests (not other checks)?
+    public static final String Q5_TEST_ONLY_COMMAND = ""; // Fill this in
+```
+
+### Exercise 4.4: Targeted Test Running
+
+You don't always need to run ALL tests. Here's how to run specific tests:
+
+```bash
+# Run tests in a specific class
+./gradlew test --tests "exercises.Part1ExercisesTest"
+
+# Run a specific test method
+./gradlew test --tests "exercises.Part1ExercisesTest.testQuestion1"
+
+# Run tests matching a pattern
+./gradlew test --tests "*Part*"
+```
+
+### Exercise 4.5: Writing Tests That Catch Bugs
+
+On assignments, you don't just write code—you write tests. And Pawtograder doesn't just check if your tests pass on correct code. It checks if your tests **catch bugs**.
+
+Here's how it works: Pawtograder runs your tests against the correct implementation (they should pass), then runs them against intentionally buggy implementations (they should fail). If your tests pass on buggy code, they're not catching the bugs they're supposed to catch.
+
+**You can simulate this yourself!** This is exactly how you should verify your tests work:
+
+1. **Write your answer** (e.g., fill in `Q2_DECIMAL_PRECISION = 3` in Part1Exercises.java)
+2. **Write a test** that checks the answer
+3. **Intentionally break your answer** (e.g., change it to `Q2_DECIMAL_PRECISION = 5`)
+4. **Run your test** — it should now FAIL
+5. **Fix your answer** back to the correct value
+6. **Run your test again** — it should PASS
+
+If your test passes even when the answer is wrong, your test isn't actually testing anything useful!
+
+**Your task:** Open `src/test/java/exercises/Part1ExercisesTest.java`. You'll see a starter test file. Implement these tests:
+
+```java
+@Test
+void testDecimalPrecisionIsCorrect() {
+    // TODO: Write a test that verifies Q2_DECIMAL_PRECISION has the correct value
+    // Hint: Use assertEquals(expected, Part1Exercises.Q2_DECIMAL_PRECISION)
+}
+
+@Test
+void testExceptionTypeIsCorrect() {
+    // TODO: Write a test that verifies Q1_EXCEPTION_TYPE has the correct value
+}
+```
+
+**After writing each test:**
+1. Run `./gradlew test` — your test should PASS
+2. Change your answer in `Part1Exercises.java` to something wrong
+3. Run `./gradlew test` again — your test should now FAIL
+4. Change your answer back to the correct value
+
+If your test didn't fail when the answer was wrong, your test isn't checking what you think it's checking. Fix it!
+
+:::tip This Is How Pawtograder Grades Your Tests
+
+On assignments, Pawtograder uses "mutation testing" — it introduces small bugs into correct code and checks if your tests catch them. You earn test points by catching these bugs.
+
+**The workflow above is exactly how you can verify your tests locally before submitting.** Don't just check that tests pass — check that they fail when they should!
+
+:::
+
+:::note Build Problems? Get Help!
+
+Gradle errors can be cryptic. If you're stuck on a build error for more than 15 minutes, **bring it to office hours**. TAs have seen most common issues and can often spot the problem quickly. Come prepared with:
+- The exact error message (screenshot or copy-paste)
+- What command you ran
+- What you've already tried
+
+**Can't make office hours?** Post to the **Lab 3** discussion topic on Pawtograder with the same information. You can use your real name or your pseudonym—whichever you prefer.
+
+:::
+
+---
+
+## Part 5: Getting Help Effectively (10 minutes)
+
+Knowing how to get unstuck is as important as knowing how to code. This section teaches you to use the course's support resources effectively.
+
+### Exercise 5.1: Find the Office Hours Schedule
+
+1. Go to [Pawtograder](https://app.pawtograder.com/course/500)
+2. Find the office hours schedule for this week
+3. Identify at least two different time slots that work for your schedule
+
+**Record in `exercises/Part5Exercises.java`:**
+
+```java
+public class Part5Exercises {
+    // Question 1: How do you join the office hours queue in Pawtograder?
+    public static final String Q1_JOIN_QUEUE = ""; // Fill this in
+
+    // Question 2: What information should you include when submitting
+    // a help request to the queue?
+    public static final String Q2_HELP_REQUEST_INFO = ""; // Fill this in
+}
+```
+
+### Exercise 5.2: Anatomy of a Good Help Request
+
+When you ask for help—whether in office hours or on the forum—**how** you ask determines how quickly you'll get unstuck.
+
+**The debugging workflow from the syllabus:**
+1. What was the input/application state that caused the bug?
+2. What behavior did you expect?
+3. What behavior did you observe?
+4. What are possible hypotheses for that behavior?
+5. How have you tested those hypotheses?
+
+**Example of a poor help request:**
+> "My code doesn't work."
+
+**Example of a good help request:**
+> "I'm trying to implement `FractionalQuantity.toString()`. When I create `new FractionalQuantity(2, 1, 3, Unit.CUP)`, I expect `toString()` to return `"2 1/3 cups"` but it returns `"2 1/3 cup"` (singular instead of plural).
+>
+> I've checked the spec section 5.3.6 and it says to use `getPluralAbbreviation()` when whole > 0 and numerator > 0. I added a println and confirmed my code is hitting that branch. I think the issue might be in how I'm calling the Unit method, but I'm not sure what to check next."
+
+**Fill in `exercises/Part5Exercises.java`:**
+
+```java
+    // Question 3: According to the debugging workflow, what should you compare
+    // when describing a bug? (Two words: "_____ vs _____")
+    public static final String Q3_COMPARE_WHAT = ""; // Fill this in
+
+    // Question 4: How many steps are in the syllabus debugging workflow?
+    public static final int Q4_DEBUG_STEPS = 0; // Fill this in
+```
+
+### Exercise 5.3: Practice Asking for Help
+
+Think of something from this lab (or Assignment 1) that confused you, even briefly. Write a help request as if you were going to post it on the forum or bring it to office hours.
+
+**In `REFLECTION.md`, write a 3-5 sentence help request that includes:**
+- What you were trying to do
+- What you expected
+- What actually happened
+- What you already tried
+
+Even if you figured it out on your own, practice articulating the problem clearly. This skill will serve you throughout the semester, your studies, and throughout your career.
+
+---
+
+## Part 6: Community Engagement (10 minutes)
+
+Software development is collaborative. Learning to ask good questions and help others is a crucial skill.
+
+### Exercise 6.1: Make a Forum Post (Required!)
+
+**You MUST complete one of the following options to receive credit for this lab:**
+
+#### Option A: Ask a Question
+Post a genuine question about something from Labs 1-3 or Assignment 1. A good question includes:
+- What you're trying to do
+- What you expected to happen
+- What actually happened
+- What you've already tried
+
+#### Option B: Answer Someone's Question
+Find a question from another student and provide a helpful response. A good answer:
+- Directly addresses their question
+- Explains the "why" not just the "what"
+- Provides a concrete example or next step
+
+#### Option C: Share a Tip You Learned
+Post something useful you discovered while working on the course. For example:
+- A VS Code shortcut that saved you time
+- A git workflow that helped
+- A debugging technique that worked
+- A way to read the spec more effectively
+
+#### Option D: Post a Course-Related Meme
+Create or share a meme related to:
+- Your Assignment 1 experience
+- Common Java/git struggles
+- The `.Java` vs `.java` situation
+- Build system frustrations
+
+Post it in the `#memes` category. Humor helps us all cope!
+
+### Discussion Forum Best Practices
+
+**When asking questions:**
+
+❌ **Bad:** "My code doesn't work"
+✅ **Good:** "My `FractionalQuantity.toString()` returns '1/2 cup' but the test expects '1/2 cups'. I've checked the spec section 5.3.6 and I think singular is correct for fractions. Am I misreading this?"
+
+❌ **Bad:** "Can someone help me?"
+✅ **Good:** "I'm getting a `NullPointerException` at line 42 of MeasuredIngredient.java when I call `quantity.getUnit()`. I've verified that I'm passing a non-null Quantity to the constructor. Here's my constructor code: [code snippet]"
+
+**When answering:**
+
+❌ **Bad:** "Just use .equals()"
+✅ **Good:** "The issue is that you're using `==` to compare Strings, which checks if they're the same object in memory. Use `.equals()` instead, which compares the actual content. For example: `if (name.equals(other.name))` instead of `if (name == other.name)`"
+
+**Record your post:**
+
+In `REFLECTION.md`, include a link to your forum post or a brief description of what you posted. Sorry, we don't yet handle screenshots in submissions.
 
 ---
 
 ## Reflection
 
-Complete the `REFLECTION.md` file with your answers to:
+Complete `REFLECTION.md` with your answers to:
 
-1. **Specification Evaluation:** For one of the flawed specifications in Part 1, explain what real-world bug could occur if a developer misunderstood the spec. Be specific—describe the scenario and consequence.
+1. **Assignment Navigation:** What's one thing about reading assignment specifications that you'll do differently now?
 
-2. **Writing Specifications:** What was the hardest part of writing specifications in Part 2? Which of the three criteria (restrictiveness, generality, clarity) did you find most challenging to balance?
+2. **Terminal Skills:** Which terminal command do you think will be most useful for you going forward? Why?
 
-3. **Nullness Annotations:** In your own words, explain why `@NullMarked` with explicit `@Nullable` is preferred over marking every non-null parameter with `@NonNull`.
+3. **VS Code:** What was one VS Code feature or shortcut you didn't know about before this lab?
 
-4. **Giving Feedback:** Describe one piece of specific feedback you gave your partner. What made it specific (pointed to a particular issue, explained why, suggested improvement)? How did your partner respond?
+4. **Gradle:** In your own words, explain what `./gradlew clean build` does and when you might use it.
 
-5. **Receiving Feedback:** What's one thing your partner's feedback revealed that you hadn't considered? How did you revise your specification in response?
+5. **The .Java Incident:** Why do you think a file named `MeasuredIngredient.Java` wouldn't be recognized by the Java compiler? What does this tell you about Java and file naming?
 
----
+6. **Practice Help Request:** Write a 3-5 sentence help request for something that confused you in this lab or Assignment 1. Include: what you were trying to do, what you expected, what happened, and what you tried. (See Part 5, Exercise 5.3)
 
-## Optional Extensions
+7. **Forum Contribution:** Paste the link to your discussion forum post, or describe what you contributed.
 
-### Stretch Goal 1: Long-Term Consequences
-
-Revisit Example C from Part 1 (`adjustLightsForTime`). Write two different implementations that both satisfy the vague specification but produce very different user experiences. In `REFLECTION.md`, explain:
-- How could this ambiguity lead to bugs reported by users months after deployment?
-- How would you improve the specification to prevent this?
-
-### Stretch Goal 2: Specification for equals/hashCode
-
-The `LightingScene` class doesn't override `equals` or `hashCode`. In `REFLECTION.md`:
-1. Write a specification for what `equals` should do for `LightingScene`
-2. Should two scenes with the same lights but different names be equal? What about same name but different lights?
-3. Implement `equals` and `hashCode` based on your specification
-
-### Stretch Goal 3: Functional Interface Specification
-
-Write a specification for this functional interface and implement a method that uses it:
-
-```java
-@FunctionalInterface
-public interface LightFilter {
-    /**
-     * TODO: Write a specification for this method
-     */
-    boolean test(Light light);
-}
-```
-
-Then implement:
-```java
-public List<Light> filterLights(List<Light> lights, LightFilter filter) {
-    // TODO: Implement using the filter
-}
-```
+8. **Remaining Questions:** What's one thing you're still confused about after this lab? (This helps us improve!)
 
 ---
 
 ## Submission Checklist
 
-**Due:** By the end of your lab section (with a 10-minute grace period).
+Before your final submission:
 
-Before your final submission, ensure:
+- [ ] Part 1: All questions answered in `Part1Exercises.java`
+- [ ] Part 2: All questions answered in `Part2Exercises.java`, git commands practiced
+- [ ] Part 3: All questions answered in `Part3Exercises.java`, VS Code configured
+- [ ] Part 4: All questions answered in `Part4Exercises.java`, broken code fixed
+- [ ] Part 5: All questions answered in `Part5Exercises.java`
+- [ ] Part 6: Forum post made (link included in reflection)
+- [ ] `REFLECTION.md` completed with all 8 questions
+- [ ] All exercises compile: `./gradlew compileJava`
+- [ ] All changes committed and pushed to GitHub
 
-- [ ] Part 1: You've analyzed all three flawed specifications in `SpecificationExercises.java`
-- [ ] Part 2: You've written specifications for all four methods in `DeviceScheduler.java`
-- [ ] Part 3: You've added nullness annotations to `LightingScene.java`
-- [ ] `REFLECTION.md` is complete with all required answers
-- [ ] Your code compiles: `./gradlew build` (Windows: `.\gradlew.bat build`)
-- [ ] All changes are committed and pushed to GitHub
+---
+
+## Quick Reference Card
+
+Print this or keep it handy!
+
+### Terminal Commands
+```bash
+pwd                 # Where am I?
+ls -la              # What's here (including hidden)?
+cd <path>           # Go somewhere
+cd ..               # Go up one level
+cd ~                # Go home
+```
+
+### Git Commands
+```bash
+git status          # What's changed?
+git add .           # Stage everything
+git commit -m "msg" # Save changes locally
+git push            # Upload to GitHub
+git pull            # Download from GitHub
+```
+
+### Gradle Commands
+```bash
+./gradlew build           # Compile + test + check
+./gradlew test            # Just run tests
+./gradlew clean build     # Fresh start
+./gradlew compileJava     # Just compile
+```
+
+### VS Code Shortcuts
+| Action | Mac | Windows |
+|--------|-----|---------|
+| Quick Open | `Cmd+P` | `Ctrl+P` |
+| Command Palette | `Cmd+Shift+P` | `Ctrl+Shift+P` |
+| Toggle Terminal | `Cmd+`` ` | `Ctrl+`` ` |
+| Go to Definition | `F12` | `F12` |
+| Source Control | `Cmd+Shift+G` | `Ctrl+Shift+G` |
+
+---
+
+## Resources
+
+- [VS Code Java Guide](https://code.visualstudio.com/docs/java/java-tutorial)
+- [Git Cheat Sheet](https://education.github.com/git-cheat-sheet-education.pdf)
+- [Gradle User Manual](https://docs.gradle.org/current/userguide/userguide.html)
+- [Pawtograder Student Guide](https://docs.pawtograder.com/students/intro)
+- [Course Discussion Forum](https://app.pawtograder.com) - Use it!
