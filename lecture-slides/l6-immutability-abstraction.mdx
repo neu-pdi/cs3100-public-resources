@@ -545,6 +545,13 @@ Today's challenge: Why modules, and how to enforce their boundaries?
 
 <Slide>
 
+## "Life of a Software Engineer" by Manu Cornet
+
+<Img src="/img/lectures/web/l6-building-software.png"/>
+
+</Slide>
+<Slide>
+
 ## The Cure: Enforce Module Boundaries
 
 <p style={{fontSize: '0.9em'}}>
@@ -592,6 +599,91 @@ Today's challenge: Why modules, and how to enforce their boundaries?
 
 </Slide>
 
+<Slide>
+
+## Information Hiding Across Languages
+
+<p style={{fontSize: '0.85em'}}>
+  Not all languages enforce modularity the same way. Compare Java and Python:
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2em', marginTop: '1em', fontSize: '0.75em'}}>
+
+  <div>
+    <p><strong>Python: Convention-Based</strong></p>
+```python
+    class GradeBook:
+        def __init__(self):
+            self._grades = []  # "please don't"
+            self.__secret = [] # name-mangled
+
+    book._GradeBook__secret  # still works!
+```
+    <p style={{color: '#666', fontSize: '0.9em', marginTop: '0.5em'}}>
+      "We're all consenting adults here."
+    </p>
+  </div>
+    <div>
+    <p><strong>Java: Compiler-Enforced</strong></p>
+```java
+    public class GradeBook {
+        private List<Double> grades;
+        // Compiler error if accessed
+        // from outside the class
+    }
+```
+    <p style={{color: '#666', fontSize: '0.9em', marginTop: '0.5em'}}>
+      The language <em>prevents</em> violations (mostly—reflection exists).
+    </p>
+  </div>
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB', textAlign: 'center'}}>
+  Both communities function—different tradeoffs between <strong>enforcement</strong> and <strong>trust</strong>.
+</p>
+
+<aside className="notes">
+**Python's philosophy:**
+- Single underscore `_field`: "treat this as internal"
+- Double underscore `__field`: name mangling to `_ClassName__field`
+- But nothing actually stops you from accessing it
+
+**The tradeoff:**
+- Java: compiler catches violations immediately
+- Python: relies on social contract and code review
+- Python's view: if you bypass the underscore convention and something breaks, that's on you
+
+**Why this matters for the course:**
+- Information hiding is a *design principle*, not just a language feature
+- Java gives you tools to enforce it
+- But even Java's `private` can be bypassed with reflection (see content coupling later)
+- The principle is what matters; the language just helps you stick to it
+
+**Discussion question:**
+- Which approach do you prefer? Why?
+- What happens on a team with mixed experience levels?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Python Approach
+
+<Img src="/img/lectures/web/l6-keep-out.webp"
+  alt="Lisa Simpson standing in front of a sign reading:'KEEP OUT...OR ENTER. I'm a sign, not a cop. "/>
+
+</Slide>
+
+<Slide>
+
+## The Java Approach
+
+<Img src="/img/lectures/web/l6-you-shall-not-pass.jpg"
+  alt="Gandalf, fiercely blocking the way, with caption: 'YOU SHALL NOT PASS!'"/>
+
+</Slide>
+
 {/* ============================================ */}
 {/* ARC 4: INFORMATION HIDING */}
 {/* ============================================ */}
@@ -608,13 +700,10 @@ Today's challenge: Why modules, and how to enforce their boundaries?
   quote="With a sufficient number of users of an API, it does not matter what you promise in the contract: all observable behaviors of a system will be depended on by somebody."
   attribution="Hyrum Wright/Titus Winters"
   size="medium"
+  imageSrc="/img/lectures/web/l6-hyrum-wright.jpg"
+  imageAlt="Hyrum Wright"
 />
 
-<Img
-  src="/img/lectures/web/l7-hyrum.jpg"
-  alt="Hyrum Wright"
-  style={{maxHeight: '30vh', borderRadius: '8px', display: 'block', margin: '0 auto'}}
-/>
 
 <aside className="notes">
 **Explain Hyrum's Law:**
@@ -696,6 +785,17 @@ Today's challenge: Why modules, and how to enforce their boundaries?
 
 <Slide>
 
+## Important Terminology
+
+* **invariant**: a property that always holds
+* **precondition**: a property that must hold before an action is performed
+* **postcondition**: a property guaranteed to hold after an action is completed
+
+
+</Slide>
+
+<Slide>
+
 ## Without Information Hiding: Everything is Accessible
 
 <p style={{fontSize: '0.85em'}}>
@@ -705,7 +805,7 @@ Today's challenge: Why modules, and how to enforce their boundaries?
 ```java
 // Counter "module" — intended to only increment
 class Counter {
-    int count = 0;  // No private keyword exists!
+    int count = 0;  // count will never be negative
 
     void increment() { count++; }
     int getCount() { return count; }
@@ -802,11 +902,11 @@ c.count = -999;    // Compiler error!
   In OO design, these features enable <strong>encapsulation</strong>:
 </p>
 
-<ol style={{fontSize: '0.85em', marginTop: '1em'}}>
-  <li><strong>Access modifiers</strong> — control who can see what</li>
-  <li><strong>Immutable classes</strong> — prevent state changes after construction</li>
-  <li><strong>Sealed classes</strong> — control who can extend a type</li>
-  <li><strong>The module system</strong> — hide entire packages from library consumers</li>
+<ol style={{fontSize: '0.85em', marginTop: '1em', paddingLeft: '1.5em'}}>
+  <li style={{paddingLeft: '0.3em'}}><strong>Access modifiers</strong> — control who can see what</li>
+  <li style={{paddingLeft: '0.3em'}}><strong>Immutable classes</strong> — prevent state changes after construction</li>
+  <li style={{paddingLeft: '0.3em'}}><strong>Sealed classes</strong> — control who can extend a type</li>
+  <li style={{paddingLeft: '0.3em'}}><strong>The module system</strong> — hide entire packages from library consumers</li>
 </ol>
 
 <aside className="notes">
@@ -1063,6 +1163,194 @@ public final class PhoneNumber {
 
 → **Transition:** There's a subtle trap with reference fields...
 </aside>
+
+</Slide>
+
+<Slide>
+
+## Can you break the invariant from a client? 1
+
+```java
+/**
+ * A phone number consisting of 10 digits in the range 0-9 inclusive.
+ */
+public class PhoneNumber {
+  private final int[] digits;
+
+  public PhoneNumber(int[] digits) {
+    Objects.requireNonNull(digits);
+    if (digits.length != 10) {
+      throw new IllegalArgumentException("numbers length must be 7");
+    }
+    for (int i = 0; i < digits.length; i++) {
+      if (digits[i] < 0 || digits[i] > 9) {
+        throw new IllegalArgumentException("digits must be between 0 and 9");
+      }
+    }
+    this.digits = digits;
+  }
+}
+```
+
+<div className="fragment">
+```java
+  public static void main(String[] args) {
+    int[] digits = {5, 1, 0, 4, 3, 0, 5, 5, 5, 5};
+    PhoneNumber phoneNumber = new PhoneNumber(digits);
+    digits[0] = -20; // breaks invariant
+  }
+```
+</div>
+
+</Slide>
+
+<Slide>
+
+# Visualization 1
+
+```java
+int[] digits = {5, 1, 0, 4, 3, 0, 5, 5, 5, 5};
+PhoneNumber phoneNumber = new PhoneNumber(digits);
+```
+
+```mermaid
+flowchart LR
+    digits["digits<br/>(local variable)"]
+    field["phoneNumber.digits<br/>(private field)"]
+    array["{5,1,0,4,3,0,2,5,5,5}"]
+
+    digits --> array
+    field --> array
+
+    style array fill:#ffcccc,stroke:#c00
+```
+
+<div className="fragment">
+```java
+digits[0] = -20; // breaks invariant
+```
+
+```mermaid
+flowchart LR
+    digits["digits<br/>(local variable)"]
+    field["phoneNumber.digits<br/>(private field)"]
+    array["{-20,1,0,4,3,0,2,5,5,5}"]
+
+    digits --> array
+    field --> array
+
+    style array fill:#ffcccc,stroke:#c00
+```
+</div>
+</Slide>
+
+<Slide>
+
+## Can you break the invariant from a client? 2
+
+```java
+/**
+ * A phone number consisting of 10 digits in the range 0-9 inclusive.
+ */
+public class PhoneNumber {
+  private final int[] digits;
+
+  public PhoneNumber(int[] digits) {
+    // validation code hidden
+    this.digits = Arrays.copy(digits);
+  }
+
+  public int[] getDigits() {
+    return digits;
+  }
+}
+```
+
+<div className="fragment">
+```java
+  public static void main(String[] args) {
+    int[] digits = {5, 1, 0, 4, 3, 0, 5, 5, 5, 5};
+    PhoneNumber phoneNumber = new PhoneNumber(digits);
+    digits[0] = -20; // does not affect phoneNumber.digits
+    phoneNumber.getDigits()[0] = -20; // breaks invariant
+  }
+```
+</div>
+
+</Slide>
+
+<Slide>
+
+# Visualization 2
+
+```java
+int[] digits = {5, 1, 0, 4, 3, 0, 5, 5, 5, 5};
+PhoneNumber phoneNumber = new PhoneNumber(digits);
+```
+
+```mermaid
+flowchart LR
+    digits["digits<br/>(local variable)"]
+    field["phoneNumber.digits<br/>(private field)"]
+    array1["{5,1,0,4,3,0,2,5,5,5}"]
+    array2["{5,1,0,4,3,0,2,5,5,5}"]
+
+    digits --> array1
+    field --> array2
+
+    style array1 fill:#fff,stroke:#666
+    style array2 fill:#cfc,stroke:#090
+```
+
+<div className="fragment">
+```java
+phoneNumber.getDigits()[0] = -20
+```
+
+```mermaid
+flowchart LR
+    field["phoneNumber.digits<br/>(private field)"]
+    array2["{-20,1,0,4,3,0,2,5,5,5}"]
+
+    field --> array2
+
+    style array2 fill:#cfc,stroke:#090
+```
+</div>
+</Slide>
+
+<Slide>
+
+## Correct Implementation
+
+```java
+/**
+ * A phone number consisting of 10 digits in the range 0-9 inclusive.
+ */
+public class PhoneNumber {
+  private final int[] digits;
+
+  public PhoneNumber(int[] digits) {
+    // validation code hidden
+    this.digits = Arrays.copy(digits);
+  }
+
+  public int[] getDigits() {
+    return Arrays.copy(digits);
+  }
+}
+```
+
+<div className="fragment">
+```java
+  public static void main(String[] args) {
+    int[] digits = {5, 1, 0, 4, 3, 0, 5, 5, 5, 5};
+    PhoneNumber phoneNumber = new PhoneNumber(digits);
+    digits[0] = -20; // does not affect phoneNumber.digits
+    phoneNumber.getDigits()[0] = -20; // does not affect phoneNumber.digits
+  }
+```
+</div>
 
 </Slide>
 
