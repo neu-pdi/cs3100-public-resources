@@ -5,9 +5,9 @@ image: /img/labs/web/lab3.png
 
 # Lab 3: Survival Skills
 
-![Lab 3: Survival Skills - A lo-fi pixel art scene showing a student at a computer surrounded by floating tool icons: a terminal window, VS Code logo, git branching diagram, and a magnifying glass examining code. The scene has a "detective board" aesthetic with strings connecting different concepts. The color palette is warm oranges and cool blues, suggesting the transition from confusion to clarity. Small text bubbles show common error messages being decoded. Title at bottom: 'Lab 3: Survival Skills'](/img/labs/web/lab3.png)
+![Lab 3: Survival Skills - A bright, organized lo-fi pixel art scene of a daytime coding workspace. Afternoon sunlight streams through a window with a plant on the sill. A clean monitor displays a terminal with './gradlew build SUCCESS' in green. On the tidy desk: a neatly annotated assignment printout, colorful sticky notes reading 'git pull first!' and 'spotlessApply', a hand-drawn git branch diagram pinned to a small corkboard, and an index card showing 'Recipe.Java ✗' crossed out next to 'Recipe.java ✓' (intentional! we cross out the WRONG capitalization of the file extension). An orange cat lounges contentedly in a sunny spot nearby. A terminal cheat sheet is pinned to the wall. A second monitor shows Pawtograder with green checkmarks. A fresh cup of tea. Cheerful blues and warm yellows. The vibe is 'I've got this.' Title: 'Lab 3: Survival Skills'](/img/labs/web/lab3.png)
 
-Students come to CS3100 from many different paths. Some transferred from other universities. Some took CS2100 years ago. Some learned Python but not Java. Some are command-line wizards; others have never opened a terminal.
+Students come to CS3100 from many different paths. Some transferred from other universities. Some took CS2100, and others took CS2510. Some learned Python but not Java. Some are command-line wizards; others have never opened a terminal. We're all starting from different places, and we're all learning about where each other have come from.
 
 **That's all fine.** But software engineering requires a baseline fluency with tools—terminals, version control, build systems, IDEs—that isn't always explicitly taught. We've assumed too much in the past, and we'd rather fill any gaps now than have tools get in the way of learning design.
 
@@ -740,6 +740,87 @@ On assignments, Pawtograder uses "mutation testing" — it introduces small bugs
 
 :::
 
+### Exercise 4.6: Code Quality Tools (NullAway and Spotless)
+
+CS3100 projects include two code quality tools that run automatically when you build. These tools catch common bugs and enforce consistent formatting—but they can be confusing if you don't know what they're telling you.
+
+#### Spotless: Code Formatting
+
+Spotless automatically checks that your code follows a consistent style (indentation, spacing, line breaks, etc.). When Spotless fails, you'll see something like:
+
+```
+> Task :spotlessJavaCheck FAILED
+The following files had format violations:
+    src/main/java/exercises/Part1Exercises.java
+```
+
+**The fix is simple:** Run the auto-formatter:
+
+```bash
+./gradlew spotlessApply
+```
+
+This automatically reformats your code. Then commit the changes. That's it!
+
+**Pro tip:** Run `spotlessApply` before every commit to avoid formatting failures.
+
+#### NullAway: Null Safety
+
+NullAway helps prevent `NullPointerException` — one of the most common Java bugs. It analyzes your code to find places where you might accidentally use `null`.
+
+When NullAway fails, you'll see something like:
+
+```
+> Task :compileJava FAILED
+error: [NullAway] returning @Nullable expression from method with @NonNull return type
+    return ingredient.getName();
+           ^
+```
+
+**Common NullAway errors and fixes:**
+
+| Error | What It Means | How to Fix |
+|-------|--------------|------------|
+| `returning @Nullable expression from @NonNull method` | Your method promises to never return null, but it might | Add a null check, or change the return type to `@Nullable` |
+| `dereferencing expression that is @Nullable` | You're calling a method on something that might be null | Add a null check before using it: `if (x != null) { x.doThing(); }` |
+| `passing @Nullable parameter where @NonNull is required` | A method requires a non-null argument, but you're passing something that might be null | Check for null first, or ensure the value is never null |
+
+**Example fixes:**
+
+```java
+// ❌ NullAway error: ingredient might be null
+public String getIngredientName() {
+    return ingredient.getName();  // Error if ingredient is null!
+}
+
+// ✅ Option 1: Check for null and provide a default
+public String getIngredientName() {
+    if (ingredient == null) {
+        return "Unknown";
+    }
+    return ingredient.getName();
+}
+
+// ✅ Option 2: Assert non-null with Objects.requireNonNull
+// Use this when null would be a bug (e.g., in a constructor)
+public Recipe(String name, Ingredient ingredient) {
+    this.name = Objects.requireNonNull(name, "name cannot be null");
+    this.ingredient = Objects.requireNonNull(ingredient, "ingredient cannot be null");
+}
+```
+
+`Objects.requireNonNull()` tells NullAway "I guarantee this isn't null" and throws a helpful `NullPointerException` with your message if it ever is. Use it in constructors and at method entry points where null would be a programming error, not a normal case to handle.
+
+**Record in `Part4Exercises.java`:**
+
+```java
+    // Question 8: What Gradle command auto-fixes formatting issues?
+    public static final String Q8_FORMAT_COMMAND = ""; // Fill this in
+
+    // Question 9: What common Java exception does NullAway help prevent?
+    public static final String Q9_NULLAWAY_PREVENTS = ""; // Fill this in
+```
+
 :::note Build Problems? Get Help!
 
 Gradle errors can be cryptic. If you're stuck on a build error for more than 15 minutes, **bring it to office hours**. TAs have seen most common issues and can often spot the problem quickly. Come prepared with:
@@ -963,4 +1044,4 @@ git pull            # Download from GitHub
 - [Git Cheat Sheet](https://education.github.com/git-cheat-sheet-education.pdf)
 - [Gradle User Manual](https://docs.gradle.org/current/userguide/userguide.html)
 - [Pawtograder Student Guide](https://docs.pawtograder.com/students/intro)
-- [Course Discussion Forum](https://app.pawtograder.com) - Use it!
+- [Course Discussion Forum](https://app.pawtograder.com/course/500/discussion) - Use it!
