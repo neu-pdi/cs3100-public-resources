@@ -247,6 +247,7 @@ Here's your survival guide to terminal commands:
 | `mv <src> <dst>` | Move or rename a file | `mv Wrong.Java Correct.java` |
 | `rm <file>` | Remove a file (careful!) | `rm unwanted.txt` |
 | `clear` | Clear the terminal screen | `clear` |
+|`git branch`| Make a copy of the main branch to work on features separately without affecting the main code
 
 ### Exercise 2.1: Navigation Challenge
 
@@ -326,6 +327,7 @@ feature:        D---E  (your work here)
 ```
 
 For this course, you'll mostly work on whatever branch Pawtograder creates for you. Use `git branch` to see which branch you're on (the current branch has a `*` next to it).
+For more information on creating branches please see https://www.geeksforgeeks.org/git/introduction-to-git-branch/
 
 #### Essential Git Commands
 
@@ -491,6 +493,7 @@ public class Part3Exercises {
 You already learned to open and configure the terminal in Part 2. Here are a few more tips:
 
 **Multiple terminals:** Click the `+` icon in the terminal panel to open additional terminals. Useful when you want one terminal running `./gradlew test --continuous` while you edit code in another.
+https://code.visualstudio.com/docs/terminal/basics
 
 **Split terminals:** Click the split icon to see two terminals side-by-side.
 
