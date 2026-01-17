@@ -56,7 +56,7 @@ export default async function pluginClassasaurus(
     }
     
     /**
-     * Generate COURSE.md content with course summary, lecture TOC, and assignments
+     * Generate COURSE.md content with course summary, lecture TOC, labs, lecture slides, and assignments
      * Returns the markdown string
      */
     async function generateCourseMarkdownContent(
@@ -67,6 +67,8 @@ export default async function pluginClassasaurus(
         const config = schedule.config;
         const baseUrlNormalized = baseUrl.replace(/\/$/, '');
         const lectureNotesDir = path.join(siteDir, 'lecture-notes');
+        const labsDir = path.join(siteDir, 'labs');
+        const lectureSlidesDir = path.join(siteDir, 'lecture-slides');
         const overviewPath = path.join(siteDir, 'assignments', 'cyb-overview.md');
         
         // Add frontmatter to disable sidebar
@@ -182,6 +184,108 @@ sidebar: false
             if (headings.length > 0) {
                 for (const heading of headings) {
                     courseMarkdown += `- ${heading.text}\n`;
+                }
+                courseMarkdown += '\n';
+            }
+        }
+
+        // Generate labs table of contents
+        if (fs.existsSync(labsDir)) {
+            const labFiles: Array<{ id: string; title: string }> = [];
+            const files = fs.readdirSync(labsDir);
+
+            for (const file of files) {
+                if (file.endsWith('.md') || file.endsWith('.mdx')) {
+                    const labId = file.replace(/\.(md|mdx)$/, '');
+                    // Skip index, changelog, and other non-lab files
+                    if (labId === 'index' || labId.startsWith('CHANGELOG') || !labId.startsWith('lab')) continue;
+
+                    const filePath = path.join(labsDir, file);
+                    const content = fs.readFileSync(filePath, 'utf-8');
+
+                    // Extract title from frontmatter or first heading
+                    let title = labId;
+                    const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+                    if (frontmatterMatch) {
+                        const frontmatter = frontmatterMatch[1];
+                        const titleMatch = frontmatter.match(/^title:\s*(.+)$/m);
+                        if (titleMatch) {
+                            title = titleMatch[1].trim().replace(/^["']|["']$/g, '');
+                        }
+                    }
+                    if (title === labId) {
+                        // Try to get from first heading
+                        const headingMatch = content.match(/^#\s+(.+)$/m);
+                        if (headingMatch) {
+                            title = headingMatch[1].trim();
+                        }
+                    }
+
+                    labFiles.push({ id: labId, title });
+                }
+            }
+
+            // Sort labs by ID (handling numeric sorting)
+            labFiles.sort((a, b) => {
+                return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
+            });
+
+            if (labFiles.length > 0) {
+                courseMarkdown += `# Labs\n\n`;
+                for (const lab of labFiles) {
+                    const labUrl = `${baseUrlNormalized}/labs/${lab.id}`;
+                    courseMarkdown += `- [${lab.title}](${labUrl})\n`;
+                }
+                courseMarkdown += '\n';
+            }
+        }
+
+        // Generate lecture slides table of contents
+        if (fs.existsSync(lectureSlidesDir)) {
+            const slideFiles: Array<{ id: string; title: string }> = [];
+            const files = fs.readdirSync(lectureSlidesDir);
+
+            for (const file of files) {
+                if (file.endsWith('.md') || file.endsWith('.mdx')) {
+                    const slideId = file.replace(/\.(md|mdx)$/, '');
+                    // Skip index files
+                    if (slideId === 'index') continue;
+
+                    const filePath = path.join(lectureSlidesDir, file);
+                    const content = fs.readFileSync(filePath, 'utf-8');
+
+                    // Extract title from frontmatter or first heading
+                    let title = slideId;
+                    const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+                    if (frontmatterMatch) {
+                        const frontmatter = frontmatterMatch[1];
+                        const titleMatch = frontmatter.match(/^title:\s*(.+)$/m);
+                        if (titleMatch) {
+                            title = titleMatch[1].trim().replace(/^["']|["']$/g, '');
+                        }
+                    }
+                    if (title === slideId) {
+                        // Try to get from first heading
+                        const headingMatch = content.match(/^#\s+(.+)$/m);
+                        if (headingMatch) {
+                            title = headingMatch[1].trim();
+                        }
+                    }
+
+                    slideFiles.push({ id: slideId, title });
+                }
+            }
+
+            // Sort slides by ID (handling numeric sorting)
+            slideFiles.sort((a, b) => {
+                return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
+            });
+
+            if (slideFiles.length > 0) {
+                courseMarkdown += `# Lecture Slides\n\n`;
+                for (const slide of slideFiles) {
+                    const slideUrl = `${baseUrlNormalized}/lecture-slides/${slide.id}`;
+                    courseMarkdown += `- [${slide.title}](${slideUrl})\n`;
                 }
                 courseMarkdown += '\n';
             }
@@ -475,16 +579,24 @@ sidebar: false
                 console.log(`👀 Watching for changes: ${configPath}`);
             }
             
-            // Watch lecture-notes and assignments directories for COURSE.md regeneration
+            // Watch lecture-notes, assignments, labs, and lecture-slides directories for overview.md regeneration
             const lectureNotesDir = path.join(context.siteDir, 'lecture-notes');
             const assignmentsDir = path.join(context.siteDir, 'assignments');
+            const labsDir = path.join(context.siteDir, 'labs');
+            const lectureSlidesDir = path.join(context.siteDir, 'lecture-slides');
             if (fs.existsSync(lectureNotesDir)) {
                 pathsToWatch.push(lectureNotesDir);
             }
             if (fs.existsSync(assignmentsDir)) {
                 pathsToWatch.push(assignmentsDir);
             }
-            
+            if (fs.existsSync(labsDir)) {
+                pathsToWatch.push(labsDir);
+            }
+            if (fs.existsSync(lectureSlidesDir)) {
+                pathsToWatch.push(lectureSlidesDir);
+            }
+
             return pathsToWatch;
         },
         
