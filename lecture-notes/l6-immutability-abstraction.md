@@ -72,7 +72,7 @@ Today, we will focus on a low-level aspect of changeability: **information hidin
 ## Describe the role of information hiding and immutability in enabling effective modularity (5 minutes)
 * Today's principle is: **information hiding**.
 * Why do we need information hiding?
-  * Even if you have a good design that separates concerns into modules, some other developer might innevitably come along and find other ways to use your module in a way that was not anticipated.
+  * Even if you have a good design that separates concerns into modules, some other developer might inevitably come along and find other ways to use your module in a way that was not anticipated.
   * See [Hyrum's Law](https://www.hyrumslaw.com): "With a sufficient number of users of an API, it does not matter what you promise in the contract: all observable behaviors of a system will be depended on by somebody."
     * See also [XKCD #1172](https://xkcd.com/1172/)
     * See also [Red Light, Green Light](https://www.cartalk.com/radio/puzzler/red-light-green-light)

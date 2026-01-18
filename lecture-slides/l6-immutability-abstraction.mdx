@@ -1180,7 +1180,7 @@ public class PhoneNumber {
   public PhoneNumber(int[] digits) {
     Objects.requireNonNull(digits);
     if (digits.length != 10) {
-      throw new IllegalArgumentException("numbers length must be 7");
+      throw new IllegalArgumentException("numbers length must be 10");
     }
     for (int i = 0; i < digits.length; i++) {
       if (digits[i] < 0 || digits[i] > 9) {
@@ -1257,7 +1257,7 @@ public class PhoneNumber {
 
   public PhoneNumber(int[] digits) {
     // validation code hidden
-    this.digits = Arrays.copy(digits); // make a defensive copy
+    this.digits = Arrays.copyOf(digits); // make a defensive copy
   }
 
   public int[] getDigits() {
@@ -1340,11 +1340,11 @@ public class PhoneNumber {
         throw new IllegalArgumentException("digits must be between 0 and 9");
       }
     }
-    this.digits = Arrays.copy(digits); // make a defensive copy
+    this.digits = Arrays.copyOf(digits); // make a defensive copy
   }
 
   public int[] getDigits() {
-    return Arrays.copy(digits); // make a defensive copy
+    return Arrays.copyOf(digits); // make a defensive copy
   }
 }
 ```
