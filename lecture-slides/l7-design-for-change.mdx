@@ -1,0 +1,1251 @@
+---
+sidebar_position: 7
+title: "Changeability II: Coupling and Cohesion"
+image: /img/lectures/web/l7.png
+---
+
+import RevealJS, { Slide } from '@site/src/components/RevealJS';
+import Img from '@site/src/components/Img';
+import PollSlide from '@site/src/components/PollSlide';
+
+<RevealJS transition="slide">
+
+{/* ============================================ */}
+{/* COVER IMAGE */}
+{/* ============================================ */}
+
+<Slide>
+  <Img
+    src="/img/lectures/web/l7.png"
+    prompt="Concept: 'Coupling and Cohesion' (Program Design & Implementation). A pixel art educational illustration showing software modules as interconnected buildings or machines. On the left, a chaotic tangle of wires and pipes connects multiple buildings representing high coupling - changes to one building cause ripple effects everywhere. On the right, clean, well-organized buildings with minimal, clear connections represent low coupling and high cohesion. Each building on the right has a clear single purpose labeled (e.g., 'Email Service', 'Submission Handler', 'Grade Calculator'). The tagline reads 'Minimize Dependencies. Maximize Focus.' in a retro pixel art style with teals, blues, and warm accents."
+  alt='A pixel art illustration showing the contrast between high coupling (left side with tangled connections between buildings) and low coupling with high cohesion (right side with clean, organized buildings each with a single clear purpose). The image illustrates how good software design minimizes dependencies between modules while maximizing the focus of each module.'
+/>
+
+<aside className="notes">
+**Lecture overview:**
+- **Total time:** ~55 minutes
+- **Prerequisites:** Students understand Java basics, design patterns from L5-L6
+- **Connects to:** Assignment 2 (designing changeable systems), Lab 4 (refactoring)
+
+**Structure:**
+- Analyzing changeability with coupling and cohesion (~10 min)
+- Types of coupling: data, stamp, control, common, content (~20 min)
+- Types of cohesion: coincidental through functional (~15 min)
+- Strategy pattern through the lens of coupling/cohesion (~10 min)
+
+**Key theme:** Good software design minimizes coupling between modules and maximizes cohesion within modules, making code easier to change.
+
+→ **Transition:** Let's start with the learning objectives...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* TITLE SLIDE */}
+{/* ============================================ */}
+
+<Slide>
+
+# CS 3100: Program Design and Implementation II
+
+## Lecture 7: Changeability II — Coupling and Cohesion
+
+<p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
+  ©2025 Jonathan Bell, CC-BY-SA
+</p>
+
+<aside className="notes">
+**Context from L6:**
+- Students learned about designing for change
+- Requirements evolve, and software must adapt
+- This lecture gives vocabulary for analyzing changeability
+
+**Key theme:** Coupling and cohesion are the fundamental metrics for evaluating how easy code will be to modify.
+
+→ **Transition:** Here's what you'll be able to do after today...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* LEARNING OBJECTIVES */}
+{/* ============================================ */}
+
+<Slide>
+
+## Learning Objectives
+
+<p style={{fontSize: '0.85em', textAlign: 'left'}}>
+After this lecture, you will be able to:
+</p>
+
+<ol style={{fontSize: '0.75em', textAlign: 'left'}}>
+  <li>Analyze the changeability of a software module for some hypothetical change using the language of coupling and cohesion</li>
+  <li>Define and recognize cases of data coupling, stamp coupling, control coupling, common coupling, and content coupling</li>
+  <li>Define and recognize cases of coincidental, logical, temporal, procedural, communication, sequential, and functional cohesion</li>
+  <li>Use the vocabulary of coupling and cohesion to review the Strategy pattern</li>
+</ol>
+
+<aside className="notes">
+**Time allocation:**
+- Objective 1: Coupling and cohesion overview (~10 min)
+- Objective 2: Five types of coupling (~20 min)
+- Objective 3: Seven types of cohesion (~15 min)
+- Objective 4: Strategy pattern revisited (~10 min)
+
+**Why this matters:** These concepts help students evaluate their own designs and recognize code smells that indicate poor modularity.
+
+→ **Transition:** Let's review what coupling and cohesion mean...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 1: COUPLING AND COHESION OVERVIEW */}
+{/* ============================================ */}
+
+<Slide>
+
+## Coupling and Cohesion Measure How Easy Code is to Change
+
+<p style={{fontSize: '0.9em', marginTop: '1em'}}>
+  You should recall these terms from CS 2100:
+</p>
+
+<ul style={{fontSize: '0.85em', marginTop: '1em'}}>
+  <li><strong>Coupling:</strong> How much a module is affected by changes in <em>other</em> modules</li>
+  <li><strong>Cohesion:</strong> How much a module is related to its <em>own</em> responsibilities</li>
+</ul>
+
+<p style={{fontSize: '0.85em', marginTop: '1.5em', color: '#9370DB'}}>
+  These terms apply at any scale: methods, classes, or entire systems.
+</p>
+
+<aside className="notes">
+**The key insight:**
+- Coupling is about *external* dependencies
+- Cohesion is about *internal* organization
+- Both affect how easy it is to change code
+
+**Design goal:**
+- **Low coupling:** Changes stay localized
+- **High cohesion:** Each module has a clear, focused purpose
+
+**Scale reminder:**
+- We can compare individual methods
+- We can compare entire classes
+- We can compare whole subsystems
+
+→ **Transition:** Let's see why coupling matters for changeability...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## High Coupling Creates a Ripple Effect of Changes
+
+<Img
+  src="/img/lectures/web/l7-ripple-effect.webp"
+  prompt="An illustration showing the 'ripple effect' of high coupling in software. A central module (represented as a gear or building block) is being modified by a small wrench icon. Red shockwave rings emanate outward from it, hitting 4-5 surrounding modules which start cracking, showing warning symbols, or turning red. Dominoes falling in a chain reaction could be shown in the background. Text callouts point to each affected module saying things like 'Also needs change!', 'Broken!', 'Must update!'. The overall feeling should be chaos spreading from a single point."
+  alt="Illustration showing the ripple effect of high coupling - one module being changed causes red shockwaves that break multiple surrounding modules, like dominoes falling in a chain reaction."
+/>
+
+<ul style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+  <li>Changes to B may require changes to A</li>
+  <li>You must understand more code to make any change</li>
+  <li>Higher risk of introducing bugs</li>
+  <li>More likely to conflict with other developers</li>
+</ul>
+
+<p style={{fontSize: '0.9em', marginTop: '0.5em'}}>
+  <strong>Goal:</strong> Minimize coupling to isolate changes.
+</p>
+
+<aside className="notes">
+**The ripple effect:**
+- Change one thing, break three others
+- This is the nightmare scenario in large codebases
+- High coupling creates a "house of cards"
+
+**Team impact:**
+- Multiple developers touching the same files
+- Merge conflicts become common
+- Code review becomes harder
+
+**The fix:**
+- Design explicit boundaries between modules
+- Limit what one module knows about another
+- Use interfaces and abstraction
+
+→ **Transition:** Even with low coupling, there's another problem...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Low Cohesion Creates a "Junk Drawer" of Unrelated Code
+
+<Img
+  src="/img/lectures/web/l7-junk-drawer.webp"
+  prompt="An illustration of a 'junk drawer' representing low cohesion in software. An open drawer or toolbox contains a chaotic mix of completely unrelated items: a hammer, a banana, car keys, a book, a sock, a calculator, a pizza slice, a wrench, headphones, and a rubber duck. A confused developer character stands next to it with question marks above their head and a speech bubble saying 'Where does the new spatula go?!' A label on the drawer reads 'UtilityClass.java'. The items should look haphazardly thrown together with no organization."
+  alt="Illustration of a junk drawer labeled 'UtilityClass.java' containing random unrelated items (hammer, banana, keys, book, sock, pizza) with a confused developer asking 'Where does the new spatula go?!' - illustrating low cohesion where unrelated things are grouped together."
+/>
+
+<ul style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+  <li>The code appears unorganized</li>
+  <li>Methods seem unrelated to each other</li>
+  <li>The module's "responsibility" is unclear</li>
+</ul>
+
+<p style={{fontSize: '0.9em', marginTop: '0.5em'}}>
+  <strong>Goal:</strong> Each module should have a single, clear purpose.
+</p>
+
+<aside className="notes">
+**The "junk drawer" problem:**
+- A class with 50 unrelated methods
+- Hard to find anything
+- Hard to know where new code belongs
+
+**Why it matters:**
+- You can't understand the module without reading everything
+- No mental "chunk" to hold
+- Changes might accidentally affect unrelated code
+
+**The fix:**
+- Group related functionality together
+- Split modules that do too much
+- Each module should have a clear "job"
+
+→ **Transition:** Let's see an example of good vs. bad design...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Good Design: Clear Responsibilities with Minimal Dependencies
+
+<p style={{fontSize: '0.85em'}}>
+  Requirement: Allow graders to annotate student submissions with feedback.
+</p>
+
+```mermaid
+classDiagram
+    class Submission {
+        +Student student
+        +Assignment assignment
+        +File[] code
+        +FeedbackItem[] feedbackList
+        +void addFeedback(String comment, int points, int lineNumber, NotificationService notifier)
+        +FeedbackItem[] getAllFeedback()
+    }
+
+    class FeedbackItem {
+        +String comment
+        +int points
+        +int lineNumber
+    }
+
+    class NotificationService {
+        <<interface>>
+        +void notify(Student student, String message)
+    }
+
+    Student --o Submission
+    Assignment --o Submission
+    FeedbackItem --o Submission
+```
+
+<aside className="notes">
+**This design:**
+- `Submission` is coupled to `Student`, `Assignment`, `FeedbackItem`
+- Each class has a clear responsibility
+- `NotificationService` is an interface (loose coupling)
+
+**Key observations:**
+- Coupling is unavoidable—modules must communicate
+- The question is: how *much* and *what kind* of coupling?
+
+→ **Transition:** Let's see a more coupled design...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Bad Design: Circular Dependencies and Mixed Responsibilities
+
+```mermaid
+classDiagram
+    class Submission {
+        +Student student
+        +Feedback[] feedbackList
+        +void addFeedback(Feedback feedback)
+        +String getStudentEmail()
+        +String getStudentName()
+        +String getAssignmentName()
+    }
+
+    class Feedback {
+        +Submission submission
+        +String comment
+        +int points
+        +void save()
+        +void sendNotification()
+    }
+
+    Submission --o Student
+    Submission --o Feedback
+    Student --o Submission
+    Assignment --o Submission
+    Feedback --o Submission
+```
+
+<aside className="notes">
+**Problems with this design:**
+
+1. **Back-edges everywhere:**
+   - `Student` knows about `Submission`
+   - `Feedback` knows about `Submission`
+   - Circular dependencies
+
+2. **Responsibility confusion:**
+   - `Feedback` saves itself AND sends notifications?
+   - `Submission` exposes student info directly?
+
+3. **Change impact:**
+   - Change submission entry → modify Student AND Assignment
+   - Change notifications → modify Feedback class
+   - Change student info representation → modify Submission AND callers
+
+→ **Transition:** Now let's be more precise about types of coupling...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 2: TYPES OF COUPLING */}
+{/* ============================================ */}
+
+<Slide>
+
+## Coupling Exists on a Spectrum from Safe to Dangerous
+
+<Img
+  src="/img/lectures/web/l7-coupling-spectrum.webp"
+  prompt="An illustration showing a horizontal spectrum/thermometer of coupling types from least harmful to most harmful. On the left (green/cool colors) is 'Data Coupling' shown as two modules exchanging simple labeled boxes (primitives). Moving right through yellow to orange: 'Stamp Coupling' shows modules passing a complex object/package, 'Control Coupling' shows a module with a big switch/lever controlling another. On the right (red/hot colors): 'Common Coupling' shows multiple modules all connected to a central shared database/globe, and 'Content Coupling' shows one module reaching inside another with a crowbar, bypassing a locked door. The spectrum has a gradient background from green to red. Labels underneath: 'SAFE' on left, 'DANGER' on right."
+  alt="A spectrum showing five types of coupling from safe (green) to dangerous (red): Data Coupling (passing simple boxes), Stamp Coupling (passing complex packages), Control Coupling (switches controlling flow), Common Coupling (modules sharing a central database), and Content Coupling (crowbar breaking into another module's internals)."
+/>
+
+<aside className="notes">
+**The five types (from safe to dangerous):**
+1. **Data coupling** — passing primitive/standard types
+2. **Stamp coupling** — passing custom data structures
+3. **Control coupling** — passing flags that control flow
+4. **Common coupling** — sharing global data
+5. **Content coupling** — bypassing interfaces entirely
+
+**The spectrum:**
+- Some coupling is unavoidable and fine
+- The goal is to stay on the "green" end
+- Red coupling is a code smell
+
+**Key principle:**
+- More information shared = more coupling
+- More control transferred = more coupling
+- Bypassing interfaces = worst coupling
+
+→ **Transition:** Let's examine each type...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Data Coupling: Pass Only What You Need
+
+<p style={{fontSize: '0.9em'}}>
+  Modules share only <strong>primitive types</strong> or <strong>standard library types</strong>.
+</p>
+
+```java
+class EmailService {
+    void sendNotification(String toEmail, String studentName, String assignmentName) {
+        // Only receives exactly what it needs - no unused data
+        String body = "Hi " + studentName + ", you received feedback on " + assignmentName;
+        send(toEmail, "New Feedback", body);
+    }
+}
+```
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#4CAF50'}}>
+  ✓ Types are unlikely to change (String, int, ArrayList, etc.)
+</p>
+
+<aside className="notes">
+**Why this is good:**
+- `String`, `int`, `ArrayList` won't change
+- EmailService only knows what it needs
+- No dependency on our custom types
+
+**The tradeoff:**
+- Sometimes leads to many parameters
+- But this is explicit about what's needed
+
+→ **Transition:** What if we need to pass custom objects?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Stamp Coupling: Passing Entire Objects Creates Hidden Dependencies
+
+<div style={{display: 'flex', gap: '1em', alignItems: 'flex-start'}}>
+<div style={{flex: 1}}>
+
+<Img
+  src="/img/lectures/web/l7-stamp-coupling.webp"
+  prompt="An illustration showing stamp coupling as a postal/rubber stamp metaphor. On the left, a 'Sender' module holds a giant rubber stamp that creates a full complex document with many fields (name, email, address, phone, SSN, etc.). On the right, a 'Receiver' module looks at this stamped document but only highlights/circles 2-3 fields it actually needs, while the rest are grayed out or crossed out. The receiver has a thought bubble saying 'I only needed the email...' A large envelope or package between them shows the full 'Submission' object being passed. The stamp leaves an imprint of the entire structure even though only part is used."
+  alt="Illustration showing stamp coupling: a sender module stamps a complete complex document (Submission object with many fields), but the receiver module only needs 2-3 fields, thinking 'I only needed the email...' - illustrating how stamp coupling passes more data than necessary."
+/>
+
+</div>
+<div style={{flex: 1.2}}>
+
+```java
+class EmailService {
+    void sendNotification(Submission submission) {
+        // Only uses 3 fields but receives entire complex structure
+        String toEmail = submission.student.email;        // ✓ Used
+        String name = submission.student.name;            // ✓ Used
+        String assignmentName = submission.assignment.name; // ✓ Used
+        String body = "Hi " + name + ", you received feedback on " + assignmentName;
+        send(toEmail, "New Feedback", body);
+    }
+}
+```
+
+</div>
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#8BC34A'}}>
+  ⚠ Now EmailService depends on the Submission structure.
+</p>
+
+<aside className="notes">
+**The problem:**
+- EmailService is now coupled to `Submission`
+- If `Submission` changes, EmailService might break
+- EmailService has access to data it doesn't need
+
+**Why "stamp"?**
+- Like a rubber stamp—you get the whole thing
+- Even if you only need part of it
+
+**Mitigation:**
+- Use well-designed interfaces
+- Only expose what's truly needed
+
+→ **Transition:** What about passing control flags?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Control Coupling: Flags That Control Flow Violate Single Responsibility
+
+<Img
+  src="/img/lectures/web/l7-control-coupling.webp"
+  prompt="An illustration showing control coupling as a puppet master metaphor. A 'Caller' module is shown as a puppet master holding strings attached to a 'Method' module below, which is depicted as a marionette puppet. The caller holds a big switch/lever labeled 'DeliveryType' with options EMAIL, SMS, PUSH, IN_APP. The marionette method has multiple internal pathways/doors inside it, and depending on which lever position is selected, different internal doors light up. The method puppet looks confused with multiple personalities trying to do different jobs. A speech bubble from the method says 'Am I an email sender? SMS sender? Push sender? I don't know who I am!'"
+  alt="Illustration showing control coupling as a puppet master: a Caller module controls a Method marionette with a DeliveryType switch (EMAIL, SMS, PUSH, IN_APP). The confused method puppet has multiple internal pathways and says 'Am I an email sender? SMS sender? I don't know who I am!' - illustrating how control flags make methods do too many things."
+/>
+
+<p style={{fontSize: '0.85em'}}>
+  A parameter controls the <strong>flow of execution</strong> inside the method.
+</p>
+
+```java
+public void sendNotification(User destination, String message, DeliveryType type) {
+    if (type == DeliveryType.EMAIL) {
+        // Send email
+    } else if (type == DeliveryType.SMS) {
+        // Send SMS
+    } else if (type == DeliveryType.PUSH) {
+        // Send push notification
+    } else if (type == DeliveryType.IN_APP) {
+        // Send in-app notification
+    } else if (type == DeliveryType.CANVAS) {
+        // Send Canvas notification
+    }
+}
+```
+
+<aside className="notes">
+**Why this is problematic:**
+- The caller decides *how* the method works internally
+- Adding a new type requires modifying this method
+- Violates Single Responsibility Principle
+
+**The smell:**
+- Giant switch/if-else on a type parameter
+- Method is doing too many different things
+
+→ **Transition:** How can we fix this?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Fix Control Coupling with Separate Methods or Strategy Pattern
+
+<p style={{fontSize: '0.9em'}}>
+  Instead of one method with a flag, use separate methods:
+</p>
+
+```java
+public void sendPushNotification(User destination, String message);
+public void sendInAppNotification(User destination, String message);
+public void sendCanvasNotification(User destination, String message);
+public void sendEmailNotification(User destination, String message);
+public void sendSmsNotification(User destination, String message);
+```
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+  <strong>Or even better:</strong> Use the Strategy pattern (we'll revisit this later).
+</p>
+
+<aside className="notes">
+**Benefits:**
+- Each method has a single responsibility
+- Adding a new notification type = new method
+- No risk of breaking existing notifications
+
+**Tradeoff:**
+- More methods to maintain
+- But each one is simpler and focused
+
+**Strategy pattern preview:**
+- Each notification type becomes a separate class
+- Even better separation of concerns
+
+→ **Transition:** Now for more dangerous coupling types...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Common Coupling: Global State Creates Invisible Dependencies
+
+<p style={{fontSize: '0.9em'}}>
+  Multiple modules share a <strong>common data structure</strong> (often global).
+</p>
+
+```java
+class Assignment {
+    // A global map that stores all assignments and their submissions.
+    public static Map<Assignment, List<Submission>> submissions = new HashMap<>();
+    // ...
+}
+
+class NotificationService {
+    public static void sendGradeReleaseNotifications(Assignment assignment) {
+        List<Submission> submissions = Assignment.submissions.get(assignment);
+        for (Submission submission : submissions) {
+            submission.sendNotification(submission.student,
+                "Your grade has been released!", DeliveryType.EMAIL);
+        }
+    }
+}
+```
+
+<aside className="notes">
+**Why this is harmful:**
+
+1. **Over-sharing:** NotificationService can access ALL submissions
+2. **No contract:** No explicit interface between modules
+3. **Hard to debug:** Who modified the global state?
+
+**The hidden dependencies:**
+- Change the map structure → break NotificationService
+- No compiler warning—just runtime bugs
+
+→ **Transition:** There's one type even worse...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Content Coupling: Bypassing Interfaces Breaks Encapsulation
+
+<p style={{fontSize: '0.9em'}}>
+  A module <strong>bypasses the interface</strong> and directly accesses internals.
+</p>
+
+```java
+class Assignment {
+    private List<Submission> submissions = new ArrayList<>();
+
+    public void addSubmission(Submission submission) {
+        submissions.add(submission);
+    }
+
+    public List<Submission> getSubmissions() {
+        return new ArrayList<>(submissions); // Returns a copy
+    }
+}
+```
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+  But a "clever" developer bypasses this with reflection...
+</p>
+
+<aside className="notes">
+**The design intent:**
+- Submissions can only be added, not removed
+- `getSubmissions()` returns a copy (defensive)
+- The invariant: submissions list only grows
+
+**But what if someone needs to replace a submission?**
+- The "right" answer: add a method to Assignment
+- The "wrong" answer: use reflection to bypass the interface
+
+→ **Transition:** Let's see the reflection hack...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Reflection is Content Coupling: Invisible, Fragile Dependencies
+
+<Img
+  src="/img/lectures/web/l7-content-coupling.webp"
+  prompt="An illustration showing content coupling as a burglary/break-in scene. A module labeled 'SubmissionReplacementService' is depicted as a burglar character wearing a ski mask and holding a crowbar. It's breaking into another module labeled 'Assignment' which is shown as a secure vault or safe with a 'PRIVATE' sign and a padlock. The burglar is using 'reflection' (shown as a magical glowing crowbar or skeleton key labeled 'setAccessible(true)'). Inside the vault, private data (the submissions list) is visible. Warning signs and red alarm lights flash. A 'Find Usages' search tool character stands nearby looking confused with a speech bubble saying 'I can't see this dependency!' The scene conveys sneaky, illegitimate access."
+  alt="Illustration showing content coupling as a burglary: a 'SubmissionReplacementService' burglar uses a magical 'setAccessible(true)' crowbar to break into an 'Assignment' vault marked PRIVATE. A 'Find Usages' character nearby says 'I can't see this dependency!' - illustrating how reflection bypasses interfaces and creates invisible dependencies."
+/>
+
+```java
+class SubmissionReplacementService {
+    public static void replaceSubmission(Assignment assignment,
+                                         Submission oldSub,
+                                         Submission newSub) {
+        // Use reflection to access the private submissions field
+        Field submissionsField = Assignment.class.getDeclaredField("submissions");
+        submissionsField.setAccessible(true);
+        List<Submission> submissions = (List<Submission>) submissionsField.get(assignment);
+        submissions.remove(oldSub);
+        submissions.add(newSub);
+    }
+}
+```
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#f44336'}}>
+  ✗ Ignores the interface<br/>
+  ✗ Changes to Assignment will silently break this<br/>
+  ✗ "Find usages" won't find this dependency!
+</p>
+
+<aside className="notes">
+**Why this is "pathological":**
+- Completely bypasses the public API
+- Violates the class's invariants
+- Invisible to normal analysis tools
+
+**Debugging nightmare:**
+- "I never call remove(), why are submissions disappearing?"
+- Good luck finding this with grep
+
+**Also happens in large systems:**
+- Module B directly accesses Module A's database
+- Bypasses the API that Module A provides
+- Same problem at a larger scale
+
+→ **Transition:** Now let's look at cohesion...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 3: TYPES OF COHESION */}
+{/* ============================================ */}
+
+<Slide>
+
+## Cohesion is a Ladder: Aim for the Top
+
+<Img
+  src="/img/lectures/web/l7-cohesion-ladder.webp"
+  prompt="An illustration showing a vertical ladder or staircase of cohesion types, from worst at the bottom to best at the top. Each rung/step is labeled and illustrated:
+Bottom (red, muddy): 'Coincidental' - a junk drawer with completely random unrelated items (banana, sock, wrench, book)
+Step 2 (orange): 'Logical' - a toolbox labeled 'Tools' with three distinct sections showing electrical tools (wire stripper, multimeter), plumbing tools (pipe wrench, plunger), and carpentry tools (hammer, saw). Red X marks between sections indicate 'Can't swap!' - you can't use a pipe wrench for electrical work. They're grouped because they're all 'tools' but they serve completely different purposes and are NOT interchangeable.
+Step 3 (yellow): 'Temporal' - a clock/alarm showing things that happen at the same time (startup tasks)
+Step 4 (yellow-green): 'Procedural' - numbered steps 1-2-3-4 in a workflow
+Step 5 (light green): 'Communicational' - multiple hands all touching the same data object
+Step 6 (green): 'Sequential' - a pipeline/assembly line where output flows to next input
+Top (bright green, golden): 'Functional' - a single focused worker with one clear job, a gold star, and a banner saying 'One Job, Done Well!'
+A character is shown climbing the ladder from bottom to top, with an arrow indicating 'AIM FOR THE TOP'. The background gradient goes from murky red at bottom to bright green at top."
+  alt="Illustration showing cohesion as a ladder to climb: from bottom (red) Coincidental (junk drawer) through Logical (toolbox with electrical, plumbing, carpentry tools - same category but NOT interchangeable, marked with 'Can't swap!' between sections), Temporal, Procedural, Communicational, Sequential, up to the top (green) Functional (one focused worker with 'One Job, Done Well!' banner). An arrow says 'AIM FOR THE TOP' as a character climbs upward."
+/>
+
+<aside className="notes">
+**The seven types (from worst to best):**
+1. **Coincidental** — parts are together by accident
+2. **Logical** — parts do similar things (e.g., all formatters)
+3. **Temporal** — parts execute at the same time
+4. **Procedural** — parts follow a procedure together
+5. **Communicational** — parts operate on the same data
+6. **Sequential** — output of one is input to another
+7. **Functional** — all parts contribute to a single task
+
+**The goal:** Maximize cohesion (aim for green)
+
+**Key insight:**
+- Lower cohesion = harder to understand the module's purpose
+- Higher cohesion = clearer mental model
+
+**Real-world examples coming up for each type...**
+
+→ **Transition:** Let's start with the worst...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Coincidental Cohesion: "Utility" Classes are Code Smell
+
+<p style={{fontSize: '0.9em'}}>
+  Parts are grouped together <strong>by accident</strong>—no real relationship.
+</p>
+
+```java
+class Utility {
+    public static String formatNameForSorting(String firstName, String lastName) {
+        return String.format("%s, %s", lastName, firstName);
+    }
+    public static String formatDueDate(Date dueDate) {
+        return String.format(Locale.getDefault(), "Due on %tB %<te, %<tY", dueDate);
+    }
+    public static String celsiusToFahrenheit(double celsius) {
+        return String.format("%.2f°F", celsius * 9 / 5 + 32);
+    }
+    public static boolean isInstructorForStudent(Instructor instructor, Student student) {
+        return instructor.getStudents().contains(student);
+    }
+}
+```
+
+<aside className="notes">
+**The "junk drawer" class:**
+- Name formatting, date formatting, temperature, authorization
+- No unifying theme at all
+- "Utility" is often a red flag
+
+**Why it's harmful:**
+- Where do you look for temperature conversion?
+- Where does new string formatting code go?
+- The class will grow without bound
+
+→ **Transition:** A slight improvement...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Logical Cohesion: Same Category ≠ Same Responsibility
+
+<p style={{fontSize: '0.9em'}}>
+  Parts perform <strong>logically similar</strong> tasks.
+</p>
+
+```java
+class Formatter {
+    public static String formatNameForSorting(String firstName, String lastName) {
+        return String.format("%s, %s", lastName, firstName);
+    }
+    public static String formatNameForDisplay(String firstName, String lastName) {
+        return String.format("%s %s", firstName, lastName);
+    }
+    public static String formatDueDate(Date dueDate) {
+        return String.format(Locale.getDefault(), "Due on %tB %<te, %<tY", dueDate);
+    }
+}
+```
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#FF9800'}}>
+  Better: All methods format something. But name formatting and date formatting are still unrelated.
+</p>
+
+<aside className="notes">
+**The improvement:**
+- At least there's a theme: "formatting"
+- You know where to look for formatting code
+
+**Still problematic:**
+- `formatDueDate` has nothing to do with names
+- Different parts of the codebase use different methods
+- Only weakly related
+
+→ **Transition:** Time-based grouping...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Temporal Cohesion: "Runs Together" is Weak Justification
+
+<p style={{fontSize: '0.9em'}}>
+  Parts are grouped because they execute at the <strong>same time</strong>.
+</p>
+
+```java
+class SystemLifecycle {
+    public static void initialize() {
+        createSubmissionService();
+        createRegradeService();
+        setupDatabase();
+        setupWebServer();
+        setupEmailService();
+        setupCanvasService();
+    }
+
+    private static void createSubmissionService() { /* ... */ }
+    private static void createRegradeService() { /* ... */ }
+    private static void setupDatabase() { /* ... */ }
+    private static void setupWebServer() { /* ... */ }
+    private static void setupEmailService() { /* ... */ }
+    private static void setupCanvasService() { /* ... */ }
+}
+```
+
+<aside className="notes">
+**Common examples:**
+- Startup/initialization code
+- Shutdown/cleanup code
+- "Before each test" setup
+
+**The problem:**
+- The methods do completely different things
+- They're only related by *when* they run
+- Changes to email setup don't affect database setup
+
+**When it's acceptable:**
+- Sometimes temporal grouping is necessary
+- But be aware it's weak cohesion
+
+→ **Transition:** Procedure-based grouping...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Procedural Cohesion: Steps in a Workflow Belong Together
+
+<p style={{fontSize: '0.9em'}}>
+  Parts follow a <strong>procedure</strong> together (they're related steps).
+</p>
+
+```java
+class SubmissionService {
+    public void processSubmission(Submission submission) {
+        TestResult testResult = runTests(submission);
+        LintResult lintResult = lintSubmission(submission);
+        GradingResult gradeResult = gradeSubmission(submission, testResult, lintResult);
+        saveSubmission(submission, gradeResult);
+    }
+
+    private TestResult runTests(Submission submission) { /* ... */ }
+    private LintResult lintSubmission(Submission submission) { /* ... */ }
+    private GradingResult gradeSubmission(Submission sub, TestResult t, LintResult l) { /* ... */ }
+    private void saveSubmission(Submission submission, GradingResult gradeResult) { /* ... */ }
+}
+```
+
+<aside className="notes">
+**Why it's better:**
+- Methods are steps in a process
+- There's a clear workflow
+- Temporal relationship + ordered steps
+
+**Still has issues:**
+- Testing, linting, grading are different concerns
+- Could each be their own module
+- But at least they're clearly related
+
+→ **Transition:** Data-based grouping...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Communicational Cohesion: Operating on Shared Data Creates Relatedness
+
+<p style={{fontSize: '0.9em'}}>
+  Parts operate on the <strong>same data</strong>.
+</p>
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+  The `SubmissionService` example also shows communicational cohesion:
+</p>
+
+<ul style={{fontSize: '0.85em'}}>
+  <li>All methods operate on `Submission` objects</li>
+  <li>Data flows through the process</li>
+  <li>Methods share a common domain concept</li>
+</ul>
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#8BC34A'}}>
+  This is getting stronger—the methods are clearly related by their data.
+</p>
+
+<aside className="notes">
+**Key distinction from procedural:**
+- Procedural: related by workflow order
+- Communicational: related by shared data
+
+**Often overlap:**
+- Most procedural cohesion also has communicational aspects
+- The more types of cohesion, the better
+
+→ **Transition:** Sequential relationships...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Sequential Cohesion: Pipelines Have Clear Data Flow
+
+<p style={{fontSize: '0.9em'}}>
+  The <strong>output of one part</strong> is the <strong>input to another</strong>.
+</p>
+
+```java
+public void processSubmission(Submission submission) {
+    TestResult testResult = runTests(submission);        // Output: testResult
+    LintResult lintResult = lintSubmission(submission);  // Output: lintResult
+    GradingResult gradeResult = gradeSubmission(         // Input: testResult, lintResult
+        submission, testResult, lintResult);             // Output: gradeResult
+    saveSubmission(submission, gradeResult);             // Input: gradeResult
+}
+```
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+  <strong>Key:</strong> `gradeSubmission` <em>must</em> be called after `runTests` and `lintSubmission`.
+</p>
+
+<aside className="notes">
+**Pipeline pattern:**
+- Each step transforms data
+- Order is determined by data dependencies
+- Clear flow through the process
+
+**Why it's strong:**
+- You can trace the data flow
+- Dependencies are explicit
+- Each method has a clear role in the chain
+
+→ **Transition:** The strongest form...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Functional Cohesion: One Module, One Job, Done Well
+
+<p style={{fontSize: '0.9em'}}>
+  All parts contribute to a <strong>single, well-defined task</strong>.
+</p>
+
+```mermaid
+classDiagram
+    class Pawtograder {
+        +SubmissionService submissionProcessor
+        +EmailService emailService
+        +CanvasService canvasService
+        +GitHubService gitHubService
+        +DiscussionService discussionService
+    }
+    class SubmissionService {
+        +processSubmission(Submission submission)
+    }
+    class EmailService {
+        +sendEmail(String to, String subject, String body)
+    }
+    class CanvasService {
+        +submitGrade(Student student, Assignment assignment, double grade)
+    }
+```
+
+<aside className="notes">
+**Each service has one job:**
+- `SubmissionService`: process submissions
+- `EmailService`: send emails
+- `CanvasService`: sync grades to Canvas
+
+**Why this is ideal:**
+- Clear mental model for each module
+- Easy to understand, test, and modify
+- Changes are localized to one service
+
+**The test:**
+- Can you describe the module's purpose in one sentence?
+- If yes, you likely have functional cohesion
+
+→ **Transition:** Let's apply this to the Strategy pattern...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 4: STRATEGY PATTERN REVISITED */}
+{/* ============================================ */}
+
+<Slide>
+
+## Strategy Pattern Reduces Coupling and Increases Cohesion
+
+<p style={{fontSize: '0.9em'}}>
+  Recall the Strategy pattern from Lecture 5: different algorithms used interchangeably.
+</p>
+
+```mermaid
+classDiagram
+    class Strategy {
+        +execute()
+    }
+    class ConcreteStrategyA {
+        +execute()
+    }
+    class ConcreteStrategyB {
+        +execute()
+    }
+    Strategy <|-- ConcreteStrategyA
+    Strategy <|-- ConcreteStrategyB
+```
+
+<aside className="notes">
+**Quick review:**
+- Strategy defines an interface
+- Concrete strategies implement it
+- Client can use any strategy interchangeably
+
+**Today's lens:**
+- How does this affect coupling?
+- How does this affect cohesion?
+
+→ **Transition:** Let's see a concrete example...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Strategy Pattern: Each Language Gets Its Own Focused Class
+
+```mermaid
+classDiagram
+    class SubmissionService {
+        +processSubmission(Submission submission)
+    }
+    class BuildStrategy {
+        +build(Submission submission)
+        +lint(Submission submission)
+        +test(Submission submission)
+    }
+    class JavaBuildStrategy {
+        +build(Submission submission)
+        +lint(Submission submission)
+        +test(Submission submission)
+    }
+    class PythonBuildStrategy {
+        +build(Submission submission)
+        +lint(Submission submission)
+        +test(Submission submission)
+    }
+    BuildStrategy <|-- JavaBuildStrategy
+    BuildStrategy <|-- PythonBuildStrategy
+    SubmissionService *-- BuildStrategy
+```
+
+<aside className="notes">
+**The design:**
+- `SubmissionService` doesn't know Java vs Python
+- It only knows `BuildStrategy` interface
+- Each language has its own strategy class
+
+**Adding TypeScript:**
+- Create `TypeScriptBuildStrategy`
+- No changes to `SubmissionService`
+- Clean extension point
+
+→ **Transition:** Compare to the alternative...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Without Strategy: One Class Does Too Much
+
+```mermaid
+classDiagram
+    class SubmissionService {
+        +processSubmission(Submission submission)
+        -buildJavaSubmission(Submission submission)
+        -lintJavaSubmission(Submission submission)
+        -testJavaSubmission(Submission submission)
+        -buildPythonSubmission(Submission submission)
+        -lintPythonSubmission(Submission submission)
+        -testPythonSubmission(Submission submission)
+    }
+```
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#f44336'}}>
+  ✗ All language logic in one class<br/>
+  ✗ Adding TypeScript means modifying SubmissionService<br/>
+  ✗ Java and Python code might accidentally interact
+</p>
+
+<aside className="notes">
+**Coupling problems:**
+- High coupling between unrelated language handlers
+- Changes to Java handling might affect Python
+- No clear boundary between concerns
+
+**Cohesion problems:**
+- `SubmissionService` does too much
+- Low cohesion—multiple unrelated responsibilities
+- Hard to understand what the class "is about"
+
+→ **Transition:** Let's summarize the benefits...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Strategy Pattern Enables Extension Without Modification
+
+<Img
+  src="/img/lectures/web/l7-strategy-comparison.webp"
+  prompt="A split-screen comparison illustration showing 'Without Strategy' vs 'With Strategy' pattern for handling multiple programming languages.
+
+LEFT SIDE - 'Without Strategy' (red tinted, chaotic):
+A single large overloaded robot/machine labeled 'SubmissionService' trying to juggle multiple tasks at once. It has Java, Python, and TypeScript logos all crammed inside its body, with gears grinding against each other and sparks flying. The robot looks stressed and overheating. When a new 'TypeScript' task arrives (shown as a package), the entire robot needs to be opened up and modified (shown with warning tape and construction signs). Speech bubble: 'I do EVERYTHING and I'm falling apart!'
+
+RIGHT SIDE - 'With Strategy' (green tinted, organized):
+A clean coordinator robot labeled 'SubmissionService' that simply holds a 'BuildStrategy' interface plug. Below it are three separate, happy specialist robots: 'JavaStrategy', 'PythonStrategy', and 'TypeScriptStrategy', each with their respective language logo and doing one job well. They all connect via the same standard interface plug. When a new 'RustStrategy' robot arrives, it simply plugs in without any modification to the coordinator. Speech bubble from coordinator: 'I just delegate!' Speech bubbles from specialists: 'One job, done well!'
+
+CENTER: A versus symbol or arrow showing the transformation."
+  alt="Split-screen comparison: Left shows 'Without Strategy' - one overloaded robot trying to handle Java, Python, TypeScript all at once, overheating and stressed. Right shows 'With Strategy' - a clean coordinator robot delegating to separate specialist robots (JavaStrategy, PythonStrategy, TypeScriptStrategy) each doing one job well, easily adding new RustStrategy."
+/>
+
+<table style={{fontSize: '0.7em', width: '100%'}}>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Without Strategy</th>
+<th>With Strategy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Coupling</strong></td>
+<td>Java/Python code coupled in same class</td>
+<td>Each strategy isolated; only interface shared</td>
+</tr>
+<tr>
+<td><strong>Cohesion</strong></td>
+<td>Low—class does many unrelated things</td>
+<td>High—each class has one job</td>
+</tr>
+<tr>
+<td><strong>Adding languages</strong></td>
+<td>Modify SubmissionService</td>
+<td>Add new strategy class</td>
+</tr>
+<tr>
+<td><strong>Testing</strong></td>
+<td>Must test all paths together</td>
+<td>Test each strategy in isolation</td>
+</tr>
+</tbody>
+</table>
+
+<aside className="notes">
+**The pattern enforces good design:**
+- Compiler enforces the interface boundary
+- Can't accidentally access internals of other strategies
+- Each strategy is functionally cohesive
+
+**Key insight:**
+- Design patterns often exist to reduce coupling
+- And increase cohesion
+- They encode best practices in reusable structures
+
+→ **Transition:** Let's wrap up...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* KEY TAKEAWAYS */}
+{/* ============================================ */}
+
+<Slide>
+
+## Key Takeaways
+
+<Img
+  src="/img/lectures/web/l7-takeaways.webp"
+  prompt="A summary illustration with two side-by-side panels representing the key design goals:
+
+LEFT PANEL - 'LOW COUPLING' with a green checkmark:
+Two modules (shown as buildings or boxes) with only a single thin, clean wire connecting them. One module is being modified (wrench icon) and the other remains completely unaffected (happy face, green glow). Text: 'Changes Stay Localized'. A small icon shows a single domino standing alone - not falling.
+
+RIGHT PANEL - 'HIGH COHESION' with a green checkmark:
+A single module (building or box) with a clear label 'EmailService' and inside it, all the gears/components are neatly organized and clearly related - all email-related icons (envelope, @ symbol, send button). The module has a confident, focused expression. Text: 'Clear Single Purpose'. A small banner says 'One Job!'
+
+BOTTOM CENTER:
+A golden rule badge/ribbon that says 'Minimize Dependencies. Maximize Focus.' with small icons of the coupling spectrum (green to red) and cohesion ladder."
+  alt="Summary showing two key goals: Left panel 'LOW COUPLING' shows two modules with minimal connection where changes to one don't affect the other. Right panel 'HIGH COHESION' shows a focused 'EmailService' module with all related components neatly organized inside. Bottom banner: 'Minimize Dependencies. Maximize Focus.'"
+/>
+
+<ul style={{fontSize: '0.8em'}}>
+  <li><strong>Low coupling</strong> = changes stay localized</li>
+  <li><strong>High cohesion</strong> = modules have clear purposes</li>
+  <li>Prefer <strong>data coupling</strong> over stamp, control, common, or content</li>
+  <li>Aim for <strong>functional cohesion</strong> where each module does one thing</li>
+</ul>
+
+<aside className="notes">
+**For assignments:**
+- Think about coupling when designing classes
+- Think about cohesion when organizing methods
+- These concepts apply at every scale
+
+**For code reviews:**
+- "This is stamp coupling—do we need the whole object?"
+- "This class has coincidental cohesion—can we split it?"
+- Shared vocabulary makes feedback clearer
+
+→ **Questions?**
+</aside>
+
+</Slide>
+
+</RevealJS>
