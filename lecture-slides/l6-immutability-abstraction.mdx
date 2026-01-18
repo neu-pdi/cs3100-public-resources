@@ -1257,7 +1257,7 @@ public class PhoneNumber {
 
   public PhoneNumber(int[] digits) {
     // validation code hidden
-    this.digits = Arrays.copy(digits);
+    this.digits = Arrays.copy(digits); // make a defensive copy
   }
 
   public int[] getDigits() {
@@ -1331,74 +1331,26 @@ public class PhoneNumber {
   private final int[] digits;
 
   public PhoneNumber(int[] digits) {
-    // validation code hidden
-    this.digits = Arrays.copy(digits);
+    Objects.requireNonNull(digits);
+    if (digits.length != 10) {
+      throw new IllegalArgumentException("numbers length must be 7");
+    }
+    for (int i = 0; i < digits.length; i++) {
+      if (digits[i] < 0 || digits[i] > 9) {
+        throw new IllegalArgumentException("digits must be between 0 and 9");
+      }
+    }
+    this.digits = Arrays.copy(digits); // make a defensive copy
   }
 
   public int[] getDigits() {
-    return Arrays.copy(digits);
+    return Arrays.copy(digits); // make a defensive copy
   }
 }
 ```
 
-<div className="fragment">
-```java
-  public static void main(String[] args) {
-    int[] digits = {5, 1, 0, 4, 3, 0, 5, 5, 5, 5};
-    PhoneNumber phoneNumber = new PhoneNumber(digits);
-    digits[0] = -20; // does not affect phoneNumber.digits
-    phoneNumber.getDigits()[0] = -20; // does not affect phoneNumber.digits
-  }
-```
-</div>
-
 </Slide>
 
-<Slide>
-
-## Reference Fields Can Leak Mutability
-
-<div style={{display: 'flex', gap: '1em', alignItems: 'flex-start'}}>
-<div style={{flex: 1}}>
-
-```java
-public final class PhoneNumber {
-    private final short[] number;  // Reference!
-
-    public PhoneNumber(short[] number) {
-        this.number = number;  // Stores reference!
-    }
-
-    public short[] getNumber() {
-        return number;  // Returns reference!
-    }
-}
-```
-
-```java
-short[] number = {1, 2, 3};
-PhoneNumber pn = new PhoneNumber(number);
-number[0] = 9;  // pn is now {9, 2, 3}!
-```
-
-</div>
-</div>
-
-<aside className="notes">
-**The trap:**
-- Arrays (and objects) are reference types
-- Storing the reference means storing the *same* array
-- Caller can still modify it
-- `final` only prevents reassigning the reference, not mutating the contents
-
-**The same issue in getNumber():**
-- Returning the internal array exposes it
-- Caller can modify our internal state
-
-→ **Transition:** How do we fix this?
-</aside>
-
-</Slide>
 
 <Slide>
 
@@ -1448,16 +1400,48 @@ public final class PhoneNumber {
 </Slide>
 
 <Slide>
+ ## Can a Client Break the Invariant?
 
-## Recipe for Immutability
+ <PollSlide
+  choices = {["yes, both fields are vulnerable", "yes, name is vulnerable", "yes, entranceYear is vulnerable",  "no, it's safe", "I don't know"]}
+  code={`
+  /**
+   * A Northeastern student whose entrance year is no earlier than
+   * NU's founding and no later than the current year.
+   */
+  public class NortheasternStudent {
+    private static final int FOUNDING_YEAR = 1898;
+    private String name;
+    private int entranceYear;
 
-<ol style={{fontSize: '0.85em'}}>
+    public NortheasternStudent(String name, int entranceYear) {
+      this.name = name;
+      if (entranceYear < FOUNDING_YEAR || entranceYear > Year.now().getValue()) {
+        this.entranceYear = entranceYear;
+      }
+    }
+  }
+  `}
+ />
+
+
+</Slide>
+
+<Slide>
+
+## Recipe for Safety
+
+<ul style={{fontSize: '0.85em'}}>
   <li>Do not provide any <strong>mutators</strong> (methods that change state)</li>
   <li>Make the class <code>final</code> to prevent subclasses</li>
   <li>Make all fields <code>final</code></li>
   <li>Make all fields <code>private</code></li>
-  <li>For reference fields, make <strong>defensive copies</strong> in constructors and getters</li>
-</ol>
+  <li>For reference fields, make <strong>defensive copies</strong> of <strong>mutable objects</strong> in constructors and getters</li>
+  <ul>
+    <li> Copies are automatically made with primitive assignment (`this.year = year;`)</li>
+    <li> There's no need to make copies of immutable object types, such as `String`</li>
+  </ul>
+</ul>
 
 <p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB'}}>
   Even without a specific invariant to protect, prefer immutability. It makes code easier to understand and maintain.
@@ -1485,6 +1469,20 @@ public final class PhoneNumber {
 {/* ============================================ */}
 {/* SEALED CLASSES */}
 {/* ============================================ */}
+
+<Slide>
+
+## Uncontrolled Subtyping
+
+<Img src="/img/lectures/web/l6-uncontrolled-subtyping.jpg" alt="In the left panel, three devices subtype IoTDevice: DimmableLight, Thermostat, and MaliciousDevice. In the right panel, all are admitted into a trusting method, provideAccess(List<IoTDevice>)"
+prompt="Create a two-panel illustration for a computer science lecture slide about 'uncontrolled subtyping' in object-oriented programming.
+Left panel - 'The Type Hierarchy':
+Show a family tree structure. At the top is a friendly parent figure labeled 'IoTDevice'. Below it, connected by clear inheritance lines, are three children: a warm, friendly lightbulb labeled 'DimmableLight', a trustworthy thermostat labeled 'Thermostat', and a sinister spiky red-eyed robot labeled 'MaliciousDevice'. All three connect upward to the same parent—the malicious one got in because the parent couldn't control who its children would be.
+Right panel - 'The Trusting Method':
+Show a friendly office worker, security guard, or butler at a door labeled 'sendCommandToAll(List<IoTDevice>)'. They're cheerfully waving through a line of devices—the nice lightbulb, the friendly thermostat, and (uh oh!) the malicious robot, who is poorly disguised with a fake smile but still clearly sinister underneath. All of the devices are heading toward the entrance. The worker can't refuse entry because everyone in line has valid 'IoTDevice' credentials. Perhaps the malicious device is hiding something behind its back or has a thought bubble showing evil plans.
+The connection between panels: because the type hierarchy allows anyone in (left), the method that trusts that type has no way to refuse the imposter (right).
+Saturday morning cartoon aesthetic—playful but the danger should be clear. Horizontal orientation, clean composition suitable for a presentation slide. No code or text other than the labels mentioned." />
+</Slide>
 
 <Slide>
 
@@ -1538,6 +1536,8 @@ public class MaliciousDevice extends IoTDevice {
 
 </Slide>
 
+
+
 <Slide>
 
 ## Sealed Classes: Controlled Inheritance
@@ -1554,10 +1554,10 @@ public sealed class IoTDevice
 ```
 
 <Img
-  src="/img/lectures/web/l6-sealed-vip.webp"
+  src="/img/lectures/web/l6-sealed-vip.jpg"
   prompt="A bouncer at a velvet rope with a VIP list. The list shows three names checked off: 'DimmableLight', 'SwitchedLight', 'Thermostat'. A fourth person labeled 'RandomSubclass' is being turned away with a red X. The door behind says 'IoTDevice Club - Members Only'. Nightclub/exclusive party metaphor for sealed classes."
   alt="Bouncer with VIP list representing sealed class permits clause"
-  style={{maxHeight: '35vh'}}
+
 />
 
 <aside className="notes">
