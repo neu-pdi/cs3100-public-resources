@@ -100,6 +100,36 @@ After this lecture, you will be able to:
 
 </Slide>
 
+<Slide>
+
+## Poll: What are the pillars of OOP?
+
+<PollSlide choices={["Abstraction", "Encapsulation", "Inheritance", "Litigation", "Marble", "Polymorphism", "Polyphemus"] } />
+
+</Slide>
+
+<Slide>
+
+## The Four Pillars of OOP
+
+  <Img src="/img/lectures/web/l7-pillars-of-oop.png"
+    prompt="Create an illustration for a computer science lecture slide showing the four pillars of object-oriented programming.
+
+Show a Greek or Roman temple structure with four distinct pillars supporting a roof labeled 'Object-Oriented Programming' or 'OOP'. Each pillar is labeled with one of the four principles:
+
+1. **Encapsulation** - perhaps depicted with a locked box, a wrapped package, or a protective shell icon on or near the pillar
+2. **Abstraction** - perhaps depicted with a simplified shape, a blueprint, or a cloud hiding details
+3. **Inheritance** - perhaps depicted with a family tree, parent-child figures, or an arrow pointing down through generations
+4. **Polymorphism** - perhaps depicted with a shape-shifter, multiple forms, or one interface with many implementations (like one plug fitting different outlets)
+
+The temple should feel sturdy and foundational—these are the principles that support everything else in OOP. The overall mood is educational and approachable, not intimidating.
+
+Clean, modern illustration style with a hint of classical architecture. Horizontal orientation suitable for a presentation slide. No code. Labels should be clear and readable."
+  alt="The four pillars of OOP: Abstraction, Encapsulation, Inheritance, and Polymorphism" />
+
+</Slide>
+
+
 {/* ============================================ */}
 {/* ARC 1: COUPLING AND COHESION OVERVIEW */}
 {/* ============================================ */}
@@ -362,7 +392,7 @@ What's wrong with this?
 **The five types (from safe to dangerous):**
 1. **Data coupling** — passing primitive/standard types
 2. **Stamp coupling** — passing custom data structures
-3. **Control coupling** — passing flags that control flow
+3. **Control coupling** — passing arguments that control flow
 4. **Common coupling** — sharing global data
 5. **Content coupling** — bypassing interfaces entirely
 
@@ -469,20 +499,22 @@ class EmailService {
 - Use well-designed interfaces
 - Only expose what's truly needed
 
-→ **Transition:** What about passing control flags?
+→ **Transition:** What about passing control arguments?
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Control Coupling: Flags That Control Flow Violate Single Responsibility
+## Control Coupling: Parameters That Control Flow Violate Single Responsibility
 
+{/* Eliminate picture so content fits on slide.
 <Img
   src="/img/lectures/web/l7-control-coupling.webp"
   prompt="An illustration showing control coupling as a puppet master metaphor. A 'Caller' module is shown as a puppet master holding strings attached to a 'Method' module below, which is depicted as a marionette puppet. The caller holds a big switch/lever labeled 'DeliveryType' with options EMAIL, SMS, PUSH, IN_APP. The marionette method has multiple internal pathways/doors inside it, and depending on which lever position is selected, different internal doors light up. The method puppet looks confused with multiple personalities trying to do different jobs. A speech bubble from the method says 'Am I an email sender? SMS sender? Push sender? I don't know who I am!'"
   alt="Illustration showing control coupling as a puppet master: a Caller module controls a Method marionette with a DeliveryType switch (EMAIL, SMS, PUSH, IN_APP). The confused method puppet has multiple internal pathways and says 'Am I an email sender? SMS sender? I don't know who I am!' - illustrating how control flags make methods do too many things."
 />
+*/}
 
 <p style={{fontSize: '0.85em'}}>
   A parameter controls the <strong>flow of execution</strong> inside the method.
@@ -524,7 +556,7 @@ public void sendNotification(User destination, String message, DeliveryType type
 ## Fix Control Coupling (1) with Separate Methods
 
 <p style={{fontSize: '0.9em'}}>
-  Instead of one method with a flag, use separate methods:
+  Instead of one method with a control argument, use separate methods:
 </p>
 
 ```java
@@ -535,7 +567,7 @@ public void sendEmailNotification(User destination, String message);
 public void sendSmsNotification(User destination, String message);
 ```
 
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+<p style={{fontSize: '0.7em', marginTop: '0em'}}>
   <strong>Or even better:</strong> Use the Strategy pattern (we'll revisit this later).
 </p>
 
@@ -662,28 +694,7 @@ class NotificationService {
 </Slide>
 
 
-<Slide>
 
-## The Secret Truth: Reflection Bypasses Enforcement
- <Img src="/img/lectures/web/l7-secret-truth-reflection.jpg"
-    prompt="
-Create a two-panel horizontal illustration for a computer science lecture slide revealing that Java's privacy enforcement can be bypassed through reflection.
-
-**Left panel - 'What we told you last lecture':**
-
-Show a split scene comparing Python and Java's approaches to information hiding. On one side, the Python scene: a friendly 'Keep Out (Or Enter. I'm a sign, not a cop)' sign in front of an open door—the honor system. On the other side, the Java scene: a stern compiler guard or bouncer at a locked gate marked 'private', looking official and secure. This panel should feel reassuring—Java protects your code!
-
-**Right panel - 'The secret truth about Java':**
-
-Same Java security checkpoint, but now the guard is either accepting a bribe labeled 'setAccessible(true)', winking at a VIP with a badge labeled 'Reflection API', or there is a person-sized hole cut in the fence next to the guarded gate. The intruder is an ordinary person or generic developer figure, not an anthropomorphized concept. The guard might be looking the other way, shrugging, or holding cash.
-
-The overall message: Java's 'private' is enforced, but reflection is the escape hatch. It is harder than Python's approach, but not impossible.
-
-Saturday morning cartoon aesthetic. Horizontal orientation, clean composition suitable for a presentation slide. No code or text other than the labels mentioned."
-  alt="Two-panel comic. Left panel titled 'What we told you last lecture' shows Python as an open door with a friendly 'Keep Out (Or Enter. I'm a sign, not a cop)' sign, while Java has an armored guard at a locked gate marked 'Private'. Right panel titled 'The secret truth about Java' shows the same Java gate, but now someone bribes the guard with a bag labeled 'setAccessible(true)', another person flashes a 'VIP Reflection API' badge, and a third sneaks through a hole in the wall."
- />
-
-</Slide>
 
 <Slide>
 
@@ -723,6 +734,29 @@ class Assignment {
 
 → **Transition:** Let's see the reflection hack...
 </aside>
+
+</Slide>
+
+<Slide>
+
+## The Secret Truth: Reflection Bypasses Enforcement
+ <Img src="/img/lectures/web/l7-secret-truth-reflection.jpg"
+    prompt="
+Create a two-panel horizontal illustration for a computer science lecture slide revealing that Java's privacy enforcement can be bypassed through reflection.
+
+**Left panel - 'What we told you last lecture':**
+
+Show a split scene comparing Python and Java's approaches to information hiding. On one side, the Python scene: a friendly 'Keep Out (Or Enter. I'm a sign, not a cop)' sign in front of an open door—the honor system. On the other side, the Java scene: a stern compiler guard or bouncer at a locked gate marked 'private', looking official and secure. This panel should feel reassuring—Java protects your code!
+
+**Right panel - 'The secret truth about Java':**
+
+Same Java security checkpoint, but now the guard is either accepting a bribe labeled 'setAccessible(true)', winking at a VIP with a badge labeled 'Reflection API', or there is a person-sized hole cut in the fence next to the guarded gate. The intruder is an ordinary person or generic developer figure, not an anthropomorphized concept. The guard might be looking the other way, shrugging, or holding cash.
+
+The overall message: Java's 'private' is enforced, but reflection is the escape hatch. It is harder than Python's approach, but not impossible.
+
+Saturday morning cartoon aesthetic. Horizontal orientation, clean composition suitable for a presentation slide. No code or text other than the labels mentioned."
+  alt="Two-panel comic. Left panel titled 'What we told you last lecture' shows Python as an open door with a friendly 'Keep Out (Or Enter. I'm a sign, not a cop)' sign, while Java has an armored guard at a locked gate marked 'Private'. Right panel titled 'The secret truth about Java' shows the same Java gate, but now someone bribes the guard with a bag labeled 'setAccessible(true)', another person flashes a 'VIP Reflection API' badge, and a third sneaks through a hole in the wall."
+ />
 
 </Slide>
 
@@ -780,6 +814,31 @@ class SubmissionReplacementService {
 
 <Slide>
 
+## Why Does Java Provide Reflection?
+
+Definition: The ability to inspect code/objects running in the same JVM
+
+Legitimate uses:
+* Serialization (writing out objects for storage/transmission)
+* Deserialization (converting back to objects)
+* Test frameworks
+* Debuggers
+
+</Slide>
+
+<Slide>
+
+## Java Reflection (meme)
+
+<Img src="/img/lectures/web/l7-reflection-meme.webp"
+  alt="Meme with heading 'Me after learning reflection in Java'.
+  Astronaut 1 (viewing Earth): 'Wait, even the classes are objects?'
+  Astrounaut 2 (pointing gun): 'Always has been'"/>
+
+</Slide>
+
+<Slide>
+
 ## Coupling Summary
 
 <p style={{fontSize: '0.75em', marginTop: '0.5em'}}>
@@ -791,6 +850,97 @@ class SubmissionReplacementService {
 </p>
 
 </Slide>
+
+<Slide>
+
+## Poll: What type of coupling is this? 1
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', alignItems: 'start'}}>
+
+<div>
+```java
+class PermissionChecker {
+  boolean canAccess(User u, Resource r,
+       String type) {
+    if (type.equals("READ")) {
+      return u.hasReadPermission(r);
+    } else if (type.equals("WRITE")) {
+      return u.hasWritePermission(r);
+    } else if (type.equals("DELETE")) {
+      return u.hasDeletePermission(r);
+    } else if (type.equals("ADMIN")) {
+      return u.isAdmin();
+    }
+    return false;
+  }
+}
+```
+
+</div>
+
+<div style={{fontSize: '0.6em'}}>
+
+**A.** data coupling (standard data type)
+
+**B.** stamp coupling (user-defined data type)
+
+**C.** control coupling (parameter controls execution)
+
+**D.** common coupling (access to shared class)
+
+**E.** content coupling (reflection)
+
+</div>
+
+</div>
+
+</Slide>
+
+<Slide>
+
+## Poll: What type of coupling is this? 2
+
+```java
+void processOrder(Order order) {
+  String customerName = order.customer.name;
+  String customerEmail = order.customer.email;
+  String productName = order.items.get(0).product.name;
+    // process using only these three values
+}
+```
+
+<div style={{fontSize: '0.6em'}}>
+
+**A.** data coupling (standard data type)
+
+**B.** stamp coupling (user-defined data type)
+
+**C.** control coupling (parameter controls execution)
+
+**D.** common coupling (access to shared class)
+
+**E.** content coupling (reflection)
+
+</div>
+
+</Slide>
+
+<Slide>
+
+## Poll: How can coupling be reduced?
+
+<PollSlide code={`
+class OrderProcessor {
+    void processOrder(Order order) {
+        String customerName = order.customer.name;
+        String customerEmail = order.customer.email;
+        String productName = order.items.get(0).product.name;
+        // process using only these three values
+    }
+`} />
+
+</Slide>
+
 
 {/* ============================================ */}
 {/* ARC 3: TYPES OF COHESION */}
@@ -818,7 +968,7 @@ A character is shown climbing the ladder from bottom to top, with an arrow indic
 **The seven types (from worst to best):**
 1. **Coincidental** — parts are together by accident
 2. **Logical** — parts do similar things (e.g., all formatters)
-3. **Temporal** — parts execute at the same time
+3. **Temporal** — parts are executed at the same time
 4. **Procedural** — parts follow a procedure together
 5. **Communicational** — parts operate on the same data
 6. **Sequential** — output of one is input to another
@@ -841,7 +991,7 @@ A character is shown climbing the ladder from bottom to top, with an arrow indic
 
 ## Coincidental Cohesion: "Utility" Classes are Code Smell
 
-<p style={{fontSize: '0.9em'}}>
+<p style={{fontSize: '0.7em'}}>
   Parts are grouped together <strong>by accident</strong>—no real relationship.
 </p>
 
@@ -882,7 +1032,7 @@ class Utility {
 
 ## Logical Cohesion: Same Category ≠ Same Responsibility
 
-<p style={{fontSize: '0.9em'}}>
+<p style={{fontSize: '0.7em'}}>
   Parts perform <strong>logically similar</strong> tasks.
 </p>
 
@@ -900,7 +1050,7 @@ class Formatter {
 }
 ```
 
-<p style={{fontSize: '0.85em', marginTop: '1em', color: '#FF9800'}}>
+<p style={{fontSize: '0.7em', marginTop: '1em', color: '#FF9800'}}>
   Better: All methods format something. But name formatting and date formatting are still unrelated.
 </p>
 
@@ -923,8 +1073,8 @@ class Formatter {
 
 ## Temporal Cohesion: "Runs Together" is Weak Justification
 
-<p style={{fontSize: '0.9em'}}>
-  Parts are grouped because they execute at the <strong>same time</strong>.
+<p style={{fontSize: '0.7em'}}>
+  Parts are grouped because they are executed at the <strong>same time</strong>.
 </p>
 
 ```java
@@ -971,7 +1121,7 @@ class SystemLifecycle {
 
 ## Procedural Cohesion: Steps in a Workflow Belong Together
 
-<p style={{fontSize: '0.9em'}}>
+<p style={{fontSize: '0.7em'}}>
   Parts follow a <strong>procedure</strong> together (they're related steps).
 </p>
 
@@ -1011,23 +1161,25 @@ class SubmissionService {
 
 ## Communicational Cohesion: Operating on Shared Data Creates Relatedness
 
-<p style={{fontSize: '0.9em'}}>
+<div style={{fontSize:'0.7em'}}>
+<p>
   Parts operate on the <strong>same data</strong>.
 </p>
 
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+<p >
   The `SubmissionService` example also shows communicational cohesion:
 </p>
 
-<ul style={{fontSize: '0.85em'}}>
+<ul>
   <li>All methods operate on `Submission` objects</li>
   <li>Data flows through the process</li>
   <li>Methods share a common domain concept</li>
 </ul>
 
-<p style={{fontSize: '0.85em', marginTop: '1em', color: '#8BC34A'}}>
+<p style={{marginTop: '1em', color: '#8BC34A'}}>
   This is getting stronger—the methods are clearly related by their data.
 </p>
+</div>
 
 <aside className="notes">
 **Key distinction from procedural:**
@@ -1184,6 +1336,7 @@ classDiagram
 classDiagram
     direction TB
     class SubmissionService {
+        -BuildStrategy buildStrategy
         +processSubmission(Submission submission)
     }
     class BuildStrategy {
@@ -1331,6 +1484,35 @@ CENTER: A versus symbol or arrow showing the transformation."
 - They encode best practices in reusable structures
 
 → **Transition:** Let's wrap up...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## What's the difference between polymorphism and Strategy?
+
+**Polymorphism** is the mechanism—calling a method on an abstract type, where the concrete runtime type determines which implementation runs.
+
+**Strategy** is a design pattern that *uses* polymorphism to make algorithms interchangeable
+by holding a reference to the concrete subtype.
+
+
+<aside className="notes">
+**Common confusion:** Students sometimes use these terms interchangeably.
+
+**The distinction:**
+- Polymorphism is a language feature (method dispatch based on runtime type)
+- Strategy is an architectural choice (encapsulate algorithms behind an interface)
+
+**Other patterns using polymorphism:**
+- Template Method: superclass skeleton, subclass steps
+- State: behavior changes based on internal state
+- Command: encapsulate requests as objects
+- Decorator: wrap objects to add behavior
+
+**When people say "use polymorphism instead of switch":**
+They usually mean Strategy specifically, but the underlying mechanism is polymorphism.
 </aside>
 
 </Slide>
