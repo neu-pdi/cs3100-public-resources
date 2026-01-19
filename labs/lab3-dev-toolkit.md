@@ -247,7 +247,6 @@ Here's your survival guide to terminal commands:
 | `mv <src> <dst>` | Move or rename a file | `mv Wrong.Java Correct.java` |
 | `rm <file>` | Remove a file (careful!) | `rm unwanted.txt` |
 | `clear` | Clear the terminal screen | `clear` |
-|`git branch`| Make a copy of the main branch to work on features separately without affecting the main code
 
 ### Exercise 2.1: Navigation Challenge
 
@@ -295,7 +294,7 @@ While VS Code's git integration is convenient, understanding command-line git is
 
 #### What Is Git?
 
-Git is a **version control system** — it tracks changes to your files over time, letting you:
+Git is a version control system — it tracks changes to your files over time, letting you:
 - See what changed and when
 - Undo mistakes by going back to earlier versions
 - Collaborate with others without overwriting each other's work
@@ -318,7 +317,7 @@ Git files exist in one of three states:
 
 #### Branches
 
-A **branch** is like a parallel universe for your code. The default branch is usually called `main`. When you work on a feature or assignment, you might be on a different branch.
+A **branch** is like a parallel universe for your code. The default branch is usually called `main`.
 
 ```
 main:     A---B---C
@@ -326,8 +325,9 @@ main:     A---B---C
 feature:        D---E  (your work here)
 ```
 
-For this course, you'll mostly work on whatever branch Pawtograder creates for you. Use `git branch` to see which branch you're on (the current branch has a `*` next to it).
-For more information on creating branches please see https://www.geeksforgeeks.org/git/introduction-to-git-branch/
+For this course, you'll mostly work on this default `main` branch. When you push commits to this `main` branch in this class, the latest commit will automatically be submitted for grading. If you want to push your code to GitHub *without* creating a submission, create and work on a separate branch. Use `git branch` to see which branch you're on (the current branch has a `*` next to it).
+
+We'll return to discuss branching in greater detail when we get closer to the group project. In the meantime, for more information on creating branches please see [Geeks for Geeks on Git Branching](https://www.geeksforgeeks.org/git/introduction-to-git-branch/)
 
 #### Essential Git Commands
 
@@ -410,6 +410,7 @@ git push
 
 A common source of build errors is having the wrong Java version. **This course uses Java 21.** If you don't have Java 21 installed, see [Lab 1: Java Setup](/labs/lab1-java-setup) for installation instructions.
 
+Try running this command in your terminal:
 ```bash
 # Check your Java version
 java -version
@@ -464,9 +465,9 @@ VS Code is more than a text editor—it's a powerful IDE when properly configure
 
 **Why this matters:**
 - Without the folder open, VS Code can't find your `build.gradle`
-- Java extension can't understand your project structure
-- Git integration won't work
-- Autocomplete and error highlighting will be broken
+- Java extension can't understand your project structure, so it can't provide features like:
+    - Git integration
+    - Autocomplete and error highlighting
 
 **Test yourself:**
 
@@ -493,7 +494,7 @@ public class Part3Exercises {
 You already learned to open and configure the terminal in Part 2. Here are a few more tips:
 
 **Multiple terminals:** Click the `+` icon in the terminal panel to open additional terminals. Useful when you want one terminal running `./gradlew test --continuous` while you edit code in another.
-https://code.visualstudio.com/docs/terminal/basics
+See [VS Code Terminal Basics](https://code.visualstudio.com/docs/terminal/basics) for more.
 
 **Split terminals:** Click the split icon to see two terminals side-by-side.
 
@@ -569,10 +570,10 @@ Gradle is the build system that compiles your code, runs tests, and packages you
 ### What Is Gradle?
 
 Think of Gradle as your project's "chef":
-- **Recipes** (`build.gradle`): Instructions for how to build your project
-- **Ingredients** (dependencies): Libraries your project needs
-- **Kitchen** (Gradle daemon): The runtime that executes tasks
-- **Dishes** (outputs): Compiled classes, test reports, bundles of your app
+- Recipes (`build.gradle`): Instructions for how to build your project
+- Ingredients (dependencies): Libraries your project needs
+- Kitchen (Gradle daemon): The runtime that executes tasks
+- Dishes (outputs): Compiled classes, test reports, bundles of your app
 
 ### Exercise 4.1: Essential Gradle Commands
 
@@ -683,10 +684,10 @@ Execution failed for task ':test'.
 **Record in `Part4Exercises.java`:**
 
 ```java
-    // Question 4: Where does Gradle put the HTML test report?
+    // Question 6: Where does Gradle put the HTML test report?
     public static final String Q4_TEST_REPORT_PATH = ""; // Fill this in
 
-    // Question 5: What Gradle command runs ONLY the tests (not other checks)?
+    // Question 7: What Gradle command runs ONLY the tests (not other checks)?
     public static final String Q5_TEST_ONLY_COMMAND = ""; // Fill this in
 ```
 
@@ -775,7 +776,7 @@ The following files had format violations:
 
 This automatically reformats your code. Then commit the changes. That's it!
 
-**Pro tip:** Run `spotlessApply` before every commit to avoid formatting failures.
+**Pro tip:** Run `spotlessApply` before every commit to avoid formatting failures. The handout repository *should* automatically configure VSCode to run this on every save for you too - if it doesn't, feel free to drop in to office hours or post on the forum for troubleshooting help - this can be a very helpful feature!
 
 #### NullAway: Null Safety
 
@@ -879,9 +880,15 @@ When you're stuck on an assignment, knowing exactly how to join office hours cou
 
 ## Part 6: Community Engagement (10 minutes)
 
-Software development is collaborative. Learning to ask good questions and help others is a crucial skill.
+Software development is collaborative. Learning to ask good questions and help others is a crucial skill. This class has over 400 students, and the discussion forum is a great place to connect.
 
 ### Exercise 6.1: Make a Forum Post (Required!)
+
+:::warning This Exercise is Mandatory
+
+You **must** complete this exercise to receive credit for this lab.
+
+:::
 
 **You MUST complete one of the following options to receive credit for this lab:**
 
@@ -928,6 +935,20 @@ Post it in the `#memes` category. Humor helps us all cope!
 
 ❌ **Bad:** "Just use .equals()"
 ✅ **Good:** "The issue is that you're using `==` to compare Strings, which checks if they're the same object in memory. Use `.equals()` instead, which compares the actual content. For example: `if (name.equals(other.name))` instead of `if (name == other.name)`"
+
+### Show Appreciation with Likes
+
+The discussion forum has a **karma system**. When someone posts a helpful answer, a useful tip, or a great meme—give it a like!
+
+- **Post karma**: Earned when your original posts get likes
+- **Reply karma**: Earned when your answers and comments get likes
+
+Liking posts helps in several ways:
+- It signals to others which answers are reliable
+- It encourages helpful community members to keep contributing
+- It helps TAs identify students who are actively helping their peers
+
+**Compete for bragging rights!** The students with the most karma are recognized as top contributors. See if you can climb the leaderboard by posting thoughtful questions, helpful answers, and quality tips. Your anonymous pseudonym earns karma separately from your real name account - feel free to participate with either or both!
 
 **Record your post:**
 
