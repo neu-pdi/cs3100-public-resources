@@ -1091,6 +1091,7 @@ public void processSubmission(Submission submission) {
 
 ```mermaid
 classDiagram
+  direction BT
     class Pawtograder {
         +SubmissionService submissionProcessor
         +EmailService emailService
@@ -1107,6 +1108,10 @@ classDiagram
     class CanvasService {
         +submitGrade(Student student, Assignment assignment, double grade)
     }
+
+    SubmissionService --o Pawtograder
+    EmailService --o Pawtograder
+    CanvasService --o Pawtograder
 ```
 
 <aside className="notes">
@@ -1177,10 +1182,12 @@ classDiagram
 
 ```mermaid
 classDiagram
+    direction TB
     class SubmissionService {
         +processSubmission(Submission submission)
     }
     class BuildStrategy {
+        <<interface>>
         +build(Submission submission)
         +lint(Submission submission)
         +test(Submission submission)
@@ -1197,7 +1204,8 @@ classDiagram
     }
     BuildStrategy <|-- JavaBuildStrategy
     BuildStrategy <|-- PythonBuildStrategy
-    SubmissionService *-- BuildStrategy
+    SubmissionService o-- BuildStrategy
+    style BuildStrategy fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
 ```
 
 <aside className="notes">
@@ -1273,6 +1281,12 @@ CENTER: A versus symbol or arrow showing the transformation."
   alt="Split-screen comparison: Left shows 'Without Strategy' - one overloaded robot trying to handle Java, Python, TypeScript all at once, overheating and stressed. Right shows 'With Strategy' - a clean coordinator robot delegating to separate specialist robots (JavaStrategy, PythonStrategy, TypeScriptStrategy) each doing one job well, easily adding new RustStrategy."
 />
 
+</Slide>
+
+<Slide>
+
+## Benefits of Strategy Pattern
+
 <table style={{fontSize: '0.7em', width: '100%'}}>
 <thead>
 <tr>
@@ -1327,7 +1341,7 @@ CENTER: A versus symbol or arrow showing the transformation."
 
 <Slide>
 
-## Key Takeaways
+## Key Takeaways (image)
 
 <Img
   src="/img/lectures/web/l7-takeaways.webp"
@@ -1343,6 +1357,12 @@ BOTTOM CENTER:
 A golden rule badge/ribbon that says 'Minimize Dependencies. Maximize Focus.' with small icons of the coupling spectrum (green to red) and cohesion ladder."
   alt="Summary showing two key goals: Left panel 'LOW COUPLING' shows two modules with minimal connection where changes to one don't affect the other. Right panel 'HIGH COHESION' shows a focused 'EmailService' module with all related components neatly organized inside. Bottom banner: 'Minimize Dependencies. Maximize Focus.'"
 />
+
+</Slide>
+
+<Slide>
+
+## Key Takeaways
 
 <ul style={{fontSize: '0.8em'}}>
   <li><strong>Low coupling</strong> = changes stay localized</li>
