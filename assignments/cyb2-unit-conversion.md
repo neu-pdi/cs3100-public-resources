@@ -124,9 +124,11 @@ Your implementation must support three types of recipe transformations (defined 
 
 2. **Scale to ingredient target**: Scale a recipe as defined above, but choosing a scaling factor such that a specific ingredient reaches a target amount.
    - Example: Recipe has "2 cups flour". Scaling to "500g flour" requires:
-     - Converting 500g → cups using a density conversion rule
-     - Calculating the scale factor (targetCups / 2)
+     - Converting the ingredient's current quantity (2 cups) to the target unit (grams) using a density conversion rule: 2 cups × 125 g/cup = 250g
+     - Calculating the scale factor: 500g / 250g = 2.0
      - Scaling the entire recipe by that factor
+   - The target ingredient ends up in the target unit (grams in the example above)
+   - Other ingredients that can be converted to the target unit should also be converted to the target unit as well
    - Must handle cross-dimension conversions (cups ↔ grams) when conversion rules exist
    - Must use recipe-specific conversion rules at `RECIPE` priority
 
@@ -385,7 +387,7 @@ We provide **sample tests** for `Instruction` (only `toString()` tests are inclu
    - Implement `canConvert()` — check units match and ingredient matches (case-insensitive)
    - Hold off on `convert()` until you make a conscious design decision about how to implement it
 
-**Run tests as you go:** `./gradlew test --tests "ConversionRuleTest"` to verify your `ConversionRule` implementation. We provide complete tests for `ConversionRule`—the autograder runs these to verify your implementation. 
+**Run tests as you go:** `./gradlew test --tests "ConversionRuleTest"` to verify your `ConversionRule` implementation. We provide complete tests for `ConversionRule`—the autograder runs these to verify your implementation.
 
 #### Phase 3: Design Your Transformation API
 
@@ -463,7 +465,7 @@ You must enhance tests in the following files:
 1. **`RecipeTest.java`** - Enhance the starter tests for the `scale()`, `scaleToTarget()`, and `convert()` methods. **Graded for fault-finding (20 points).** Your tests should verify:
    - Scaling by factor works correctly for `MeasuredIngredient`s
    - `VagueIngredient`s remain unchanged when scaling or converting
-   - Servings are scaled appropriately 
+   - Servings are scaled appropriately
    - `IngredientRef`s in instructions are updated
    - `scaleToTarget()` finds the correct ingredient and calculates the right factor
    - `convert()` converts all `MeasuredIngredient` quantities to the target unit
@@ -473,7 +475,7 @@ You must enhance tests in the following files:
 2. **`ConversionRegistryTest.java`** - Enhance the starter tests for the `ConversionRegistry` **interface**. **Graded for fault-finding (20 points).** Your tests must use only the `ConversionRegistry` interface methods—do not test implementation-specific details of `LayeredConversionRegistry`. Your tests should cover:
    - `convert(Quantity, Unit)` — generic conversions without ingredient context
    - `convert(Quantity, Unit, String)` — ingredient-specific conversions
-   
+
    For both methods, verify priority ordering (HOUSE > RECIPE > STANDARD), specificity handling (ingredient-specific > generic at same priority), correct conversion mechanics, and exception handling.
 
 As on assignment 1, we will grade your test cases based on their ability to find faults in our own implementations. Your tests must **not** depend on any of your own implementation details. The tests must utilize only the public APIs as provided in the assignment handout.
