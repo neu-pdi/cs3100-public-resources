@@ -114,7 +114,7 @@ After this lecture, you will be able to:
 
 <ul style={{fontSize: '0.85em', marginTop: '1em'}}>
   <li><strong>Coupling:</strong> How much a module is affected by changes in <em>other</em> modules</li>
-  <li><strong>Cohesion:</strong> How much a module is related to its <em>own</em> responsibilities</li>
+  <li><strong>Cohesion:</strong> How closely related the elements <em>internal</em> to a module are</li>
 </ul>
 
 <p style={{fontSize: '0.85em', marginTop: '1.5em', color: '#9370DB'}}>
@@ -188,7 +188,7 @@ After this lecture, you will be able to:
 ## Low Cohesion Creates a "Junk Drawer" of Unrelated Code
 
 <Img
-  src="/img/lectures/web/l7-junk-drawer.webp"
+  src="/img/lectures/web/l7-junk-drawer.jpg"
   prompt="An illustration of a 'junk drawer' representing low cohesion in software. An open drawer or toolbox contains a chaotic mix of completely unrelated items: a hammer, a banana, car keys, a book, a sock, a calculator, a pizza slice, a wrench, headphones, and a rubber duck. A confused developer character stands next to it with question marks above their head and a speech bubble saying 'Where does the new spatula go?!' A label on the drawer reads 'UtilityClass.java'. The items should look haphazardly thrown together with no organization."
   alt="Illustration of a junk drawer labeled 'UtilityClass.java' containing random unrelated items (hammer, banana, keys, book, sock, pizza) with a confused developer asking 'Where does the new spatula go?!' - illustrating low cohesion where unrelated things are grouped together."
 />
@@ -251,12 +251,13 @@ classDiagram
 
     class NotificationService {
         <<interface>>
-        +void notify(Student student, String message)
+        +void notify(Student student, String message)*
     }
 
     Student --o Submission
     Assignment --o Submission
     FeedbackItem --o Submission
+    style NotificationService fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
 ```
 
 <aside className="notes">
@@ -278,6 +279,9 @@ classDiagram
 
 ## Bad Design: Circular Dependencies and Mixed Responsibilities
 
+<div style={{display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '1.5em', marginTop: '0.5em'}}>
+
+<div>
 ```mermaid
 classDiagram
     class Submission {
@@ -303,6 +307,16 @@ classDiagram
     Assignment --o Submission
     Feedback --o Submission
 ```
+
+</div>
+
+<div style={{fontSize: '0.8em'}}>
+
+What's wrong with this?
+
+</div>
+
+</div>
 
 <aside className="notes">
 **Problems with this design:**
@@ -340,6 +354,10 @@ classDiagram
   alt="A spectrum showing five types of coupling from safe (green) to dangerous (red): Data Coupling (passing simple boxes), Stamp Coupling (passing complex packages), Control Coupling (switches controlling flow), Common Coupling (modules sharing a central database), and Content Coupling (crowbar breaking into another module's internals)."
 />
 
+<p style={{fontSize: '0.7em'}}>
+  Let's look more closely at each of these...
+</p>
+
 <aside className="notes">
 **The five types (from safe to dangerous):**
 1. **Data coupling** — passing primitive/standard types
@@ -375,7 +393,8 @@ classDiagram
 class EmailService {
     void sendNotification(String toEmail, String studentName, String assignmentName) {
         // Only receives exactly what it needs - no unused data
-        String body = "Hi " + studentName + ", you received feedback on " + assignmentName;
+        String body = "Hi " + studentName + ", you received feedback on "
+            + assignmentName;
         send(toEmail, "New Feedback", body);
     }
 }
@@ -433,7 +452,7 @@ class EmailService {
 </div>
 
 <p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#8BC34A'}}>
-  ⚠ Now EmailService depends on the Submission structure.
+  ⚠ EmailService depends on the Submission structure.
 </p>
 
 <aside className="notes">
@@ -502,7 +521,7 @@ public void sendNotification(User destination, String message, DeliveryType type
 
 <Slide>
 
-## Fix Control Coupling with Separate Methods or Strategy Pattern
+## Fix Control Coupling (1) with Separate Methods
 
 <p style={{fontSize: '0.9em'}}>
   Instead of one method with a flag, use separate methods:
@@ -541,6 +560,70 @@ public void sendSmsNotification(User destination, String message);
 
 <Slide>
 
+## Fix Control Coupling (2) with the Strategy Pattern
+
+```mermaid
+classDiagram
+    class NotificationSender {
+        <<interface>>
+        +send(User destination, String message)*
+    }
+    class EmailSender {
+        +send(User destination, String message)
+    }
+    class SmsSender {
+        +send(User destination, String message)
+    }
+    class PushSender {
+        +send(User destination, String message)
+    }
+
+    NotificationSender <|.. EmailSender
+    NotificationSender <|.. SmsSender
+    NotificationSender <|.. PushSender
+
+    style NotificationSender fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+```java
+interface NotificationSender {
+    void send(User destination, String message);
+}
+
+class EmailSender implements NotificationSender {
+    @Override
+    public void send(User destination, String message) {
+        // Send email
+    }
+}
+```
+
+```java
+void notifyUser(User user, String message,
+                NotificationSender sender) {
+    sender.send(user, message);
+}
+```
+
+
+<aside className="notes">
+**Key insight:** The branching still exists somewhere—at object construction time—but the rest of your code just works with the interface.
+
+**Adding a new notification type:**
+- Create a new class implementing NotificationSender
+- No existing code changes
+
+**Compare to the other approaches:**
+- Flag parameter: modify the if/else chain
+- Separate methods: modify every call site that dispatches
+
+This is the Open-Closed Principle: open for extension, closed for modification.
+</aside>
+
+</Slide>
+
+<Slide>
+
 ## Common Coupling: Global State Creates Invisible Dependencies
 
 <p style={{fontSize: '0.9em'}}>
@@ -557,10 +640,7 @@ class Assignment {
 class NotificationService {
     public static void sendGradeReleaseNotifications(Assignment assignment) {
         List<Submission> submissions = Assignment.submissions.get(assignment);
-        for (Submission submission : submissions) {
-            submission.sendNotification(submission.student,
-                "Your grade has been released!", DeliveryType.EMAIL);
-        }
+        ...
     }
 }
 ```
@@ -581,13 +661,37 @@ class NotificationService {
 
 </Slide>
 
+
 <Slide>
 
-## Content Coupling: Bypassing Interfaces Breaks Encapsulation
+## The Secret Truth: Reflection Bypasses Enforcement
+ <Img src="/img/lectures/web/l7-secret-truth-reflection.jpg"
+    prompt="
+Create a two-panel horizontal illustration for a computer science lecture slide revealing that Java's privacy enforcement can be bypassed through reflection.
 
-<p style={{fontSize: '0.9em'}}>
-  A module <strong>bypasses the interface</strong> and directly accesses internals.
-</p>
+**Left panel - 'What we told you last lecture':**
+
+Show a split scene comparing Python and Java's approaches to information hiding. On one side, the Python scene: a friendly 'Keep Out (Or Enter. I'm a sign, not a cop)' sign in front of an open door—the honor system. On the other side, the Java scene: a stern compiler guard or bouncer at a locked gate marked 'private', looking official and secure. This panel should feel reassuring—Java protects your code!
+
+**Right panel - 'The secret truth about Java':**
+
+Same Java security checkpoint, but now the guard is either accepting a bribe labeled 'setAccessible(true)', winking at a VIP with a badge labeled 'Reflection API', or there is a person-sized hole cut in the fence next to the guarded gate. The intruder is an ordinary person or generic developer figure, not an anthropomorphized concept. The guard might be looking the other way, shrugging, or holding cash.
+
+The overall message: Java's 'private' is enforced, but reflection is the escape hatch. It is harder than Python's approach, but not impossible.
+
+Saturday morning cartoon aesthetic. Horizontal orientation, clean composition suitable for a presentation slide. No code or text other than the labels mentioned."
+  alt="Two-panel comic. Left panel titled 'What we told you last lecture' shows Python as an open door with a friendly 'Keep Out (Or Enter. I'm a sign, not a cop)' sign, while Java has an armored guard at a locked gate marked 'Private'. Right panel titled 'The secret truth about Java' shows the same Java gate, but now someone bribes the guard with a bag labeled 'setAccessible(true)', another person flashes a 'VIP Reflection API' badge, and a third sneaks through a hole in the wall."
+ />
+
+</Slide>
+
+<Slide>
+
+## Content Coupling Breaks Encapsulation
+
+<p style={{fontSize: '0.85em'}}>
+  The use of the `private` keyword and defensive copying _should_ protect our data.
+  </p>
 
 ```java
 class Assignment {
@@ -604,7 +708,7 @@ class Assignment {
 ```
 
 <p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
-  But a "clever" developer bypasses this with reflection...
+  This can be subverted!
 </p>
 
 <aside className="notes">
@@ -624,13 +728,14 @@ class Assignment {
 
 <Slide>
 
-## Reflection is Content Coupling: Invisible, Fragile Dependencies
-
+## Example of Content Coupling Using Reflection
+ {/* Removing because the slide is too tall.
 <Img
   src="/img/lectures/web/l7-content-coupling.webp"
   prompt="An illustration showing content coupling as a burglary/break-in scene. A module labeled 'SubmissionReplacementService' is depicted as a burglar character wearing a ski mask and holding a crowbar. It's breaking into another module labeled 'Assignment' which is shown as a secure vault or safe with a 'PRIVATE' sign and a padlock. The burglar is using 'reflection' (shown as a magical glowing crowbar or skeleton key labeled 'setAccessible(true)'). Inside the vault, private data (the submissions list) is visible. Warning signs and red alarm lights flash. A 'Find Usages' search tool character stands nearby looking confused with a speech bubble saying 'I can't see this dependency!' The scene conveys sneaky, illegitimate access."
   alt="Illustration showing content coupling as a burglary: a 'SubmissionReplacementService' burglar uses a magical 'setAccessible(true)' crowbar to break into an 'Assignment' vault marked PRIVATE. A 'Find Usages' character nearby says 'I can't see this dependency!' - illustrating how reflection bypasses interfaces and creates invisible dependencies."
 />
+*/}
 
 ```java
 class SubmissionReplacementService {
@@ -647,7 +752,7 @@ class SubmissionReplacementService {
 }
 ```
 
-<p style={{fontSize: '0.85em', marginTop: '1em', color: '#f44336'}}>
+<p style={{fontSize: '0.85em',  color: '#f44336'}}>
   ✗ Ignores the interface<br/>
   ✗ Changes to Assignment will silently break this<br/>
   ✗ "Find usages" won't find this dependency!
@@ -670,6 +775,20 @@ class SubmissionReplacementService {
 
 → **Transition:** Now let's look at cohesion...
 </aside>
+
+</Slide>
+
+<Slide>
+
+## Coupling Summary
+
+<p style={{fontSize: '0.75em', marginTop: '0.5em'}}>
+* **Data coupling** shares common types, such as `String`
+* **Stamp coupling** shares user-defined types that might change
+* **Control Coupling** happens when a parameter to a method controls the flow of execution
+* **Common Coupling** involves multiple modules sharing a common data structure without proper encapsulation
+* **Control Coupling** violates encapsulation
+</p>
 
 </Slide>
 
