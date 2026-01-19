@@ -73,10 +73,10 @@ src/main/java/app/cookyourbooks/
 │   ├── Unit.java                  # FROM A1 - fully implemented
 │   ├── UnitSystem.java            # FROM A1 - fully implemented
 │   ├── UnitDimension.java         # FROM A1 - fully implemented
-│   ├── Ingredient.java            # STUB - implement this
-│   ├── MeasuredIngredient.java    # STUB - implement this
-│   ├── VagueIngredient.java       # STUB - implement this
-│   ├── IngredientRef.java         # STUB - implement this (record)
+│   ├── Ingredient.java            # PROVIDED - fully implemented
+│   ├── MeasuredIngredient.java    # PROVIDED - fully implemented
+│   ├── VagueIngredient.java       # PROVIDED - fully implemented
+│   ├── IngredientRef.java         # PROVIDED - mostly complete (record)
 │   ├── Instruction.java           # STUB - implement this
 │   └── Recipe.java                # STUB - implement this
 ├── conversion/      # Unit conversion logic
@@ -276,7 +276,7 @@ classDiagram
     IngredientRef --> Ingredient
     IngredientRef --> Quantity
 
-    note for Recipe "Recipe transformation methods use the ConversionRegistry service.\nscale, scaleToTarget, and convert methods are provided."
+    note for Recipe "Recipe transformation methods use the ConversionRegistry service."
 
     style Unit fill:#e0e0e0,stroke:#999
     style Quantity fill:#e0e0e0,stroke:#999
@@ -289,7 +289,7 @@ classDiagram
 
 #### Key Design Decisions
 
-The `Recipe` class provides transformation methods (`scale()`, `scaleToTarget()`, `convert()`) that demonstrate important design principles. As you implement the supporting classes and study this code, consider:
+The `Recipe` class defines transformation methods (`scale()`, `scaleToTarget()`, `convert()`) that you must implement. As you implement these methods and the supporting classes, consider these design principles:
 
 1. **Transformation API Design:**
    - Why are transformation methods on `Recipe` rather than in a separate service class?
@@ -313,7 +313,7 @@ The `Recipe` class provides transformation methods (`scale()`, `scaleToTarget()`
    - How do you maintain immutability while enabling rule additions?
    - How do you handle the "first added takes precedence" requirement at each priority level?
 
-4. **Immutability:**
+5. **Immutability:**
    - How do the transformation methods ensure full immutability?
    - How do they create new recipes, ingredients, instructions, and ingredient refs?
    - Why is defensive copying important throughout?
@@ -334,7 +334,7 @@ Implement `equals()` and `hashCode()` for the following classes:
 - **`Instruction`**: Equal if same step number, text, and referenced ingredients
 - **`Recipe`**: Equal if same title, servings, ingredients (in order), instructions (in order), and conversion rules (in order)
 
-**Note:** `ConversionRule` is a Java record and automatically generates correct `equals()` and `hashCode()`. The provided A1 solution includes `equals()` and `hashCode()` for the `Quantity` subclasses, and we will also provide `equals()` and `hashCode()` for the Ingredient hierarchy (`Ingredient`, `MeasuredIngredient`, `VagueIngredient`) in the A2 starter code.
+**Note:** `ConversionRule` is a Java record and automatically generates correct `equals()` and `hashCode()`. The provided A1 solution includes `equals()` and `hashCode()` for the `Quantity` subclasses. The Ingredient hierarchy (`Ingredient`, `MeasuredIngredient`, `VagueIngredient`) is fully provided in the A2 starter code, including `equals()` and `hashCode()`.
 
 ### Design Requirements
 
@@ -362,20 +362,17 @@ Implement `equals()` and `hashCode()` for the following classes:
 
 ### Suggested Implementation Order
 
-The starter code provides stubs for all classes that compile but throw `UnsupportedOperationException`. This allows you to implement incrementally while keeping the project in a compilable state. The `Recipe` transformation methods (`scale()`, `scaleToTarget()`, `convert()`) are already provided.
+The starter code provides stubs for all classes that compile but throw `UnsupportedOperationException`. This allows you to implement incrementally while keeping the project in a compilable state. The `Recipe` transformation method signatures (`scale()`, `scaleToTarget()`, `convert()`) are defined in the stub—you must implement them.
 
 #### Phase 1: Foundation Classes (Model Layer)
 
 Complete these first—they have no dependencies on other A2 classes:
 
-1. `Ingredient` (abstract class)
-2. `MeasuredIngredient` (extends `Ingredient`)
-3. `VagueIngredient` (extends `Ingredient`)
-4. `IngredientRef` (record) — *Already mostly complete*
-5. `Instruction`
-6. `Recipe` (basic getters and `equals`/`hashCode` only—no transformation methods yet - you might want to think about these some more, as noted in step 3)
+1. `IngredientRef` (record) — *Already mostly complete*
+2. `Instruction`
+3. `Recipe` (basic getters and `equals`/`hashCode` only—no transformation methods yet - think about transformation API design as described in Phase 3)
 
-We provide tests for these classes, and you should not feel the need to add more unless you really want to—unit testing domain classes is not the goal of this assignment. The autograder does not have any additional tests for these classes beyond what we provide.
+We provide **sample tests** for `Instruction` (only `toString()` tests are included in the handout). The autograder runs additional comprehensive tests for `Instruction` and `IngredientRef` that are not included in the handout. You are welcome to add your own tests for these classes if you find them helpful, but they are not graded. For `Recipe`, we provide starter tests including a few for scaling and conversion (see Testing Requirements below).
 
 **Run tests as you go:** `./gradlew test --tests "InstructionTest"` and `./gradlew test --tests "RecipeTest"` to check your progress on the foundation classes.
 
@@ -383,18 +380,18 @@ We provide tests for these classes, and you should not feel the need to add more
 
 **Autograder note:** For this and the remaining tasks on this assignment, the autograder is configured not to provide feedback on your implementation until you provide a plausible test suite for that functionality (as you experienced with Assignment 1).
 
-7. **`ConversionRule`** (record)
+4. **`ConversionRule`** (record)
    - Implement compact constructor validation (factor > 0, nulls)
    - Implement `canConvert()` — check units match and ingredient matches (case-insensitive)
    - Hold off on `convert()` until you make a conscious design decision about how to implement it
 
-**Run tests as you go:** `./gradlew test --tests "ConversionRuleTest"` to verify your `ConversionRule` implementation. 
+**Run tests as you go:** `./gradlew test --tests "ConversionRuleTest"` to verify your `ConversionRule` implementation. We provide complete tests for `ConversionRule`—the autograder runs these to verify your implementation. 
 
 #### Phase 3: Design Your Transformation API
 
 Now that you understand the domain from implementing the foundation classes and `ConversionRule`, **design how recipe transformations will work:**
 
-8. **Plan Your Approach**
+5. **Plan Your Approach**
    - Review the three required transformation types (see [Recipe Transformations](#recipe-transformations))
    - Decide: Where do transformation methods go? What are their signatures?
    - Consider: What helper methods might be needed?
@@ -404,39 +401,40 @@ Now that you understand the domain from implementing the foundation classes and 
 
 Implement and test **scaling separately from unit conversion**—you can earn credit for scaling even if conversion isn't working:
 
-9. **Implement and test scaling by Multiplier**
+6. **Implement and test scaling by Multiplier**
     - Scale all `MeasuredIngredient` quantities by a factor
     - `VagueIngredient`s remain unchanged
     - Servings (if present) should also scale
     - Ingredient references in instructions must also be transformed
-    - **Write tests in `RecipeTest.java`** for scaling behavior
+    - **Enhance the starter tests in `RecipeTest.java`** for scaling behavior
 
 #### Phase 5: Implement Conversion
 
-10. **`LayeredConversionRegistry`** (implements `ConversionRegistry`)
+7. **`LayeredConversionRegistry`** (implements `ConversionRegistry`)
     - Start with `withRule()` and `withRules()` to build the rule collection
     - Then implement `convert()` methods with priority ordering
     - Test through the `ConversionRegistry` interface (priority ordering, specificity, exceptions)
 
-**Run tests as you go:** `./gradlew test --tests "LayeredConversionRegistryTest"` to verify your registry implementation handles priority ordering, ingredient-specific rules, and edge cases correctly.
+**Write and run tests as you go:** `./gradlew test --tests "ConversionRegistryTest"` to verify your registry implementation handles priority ordering, ingredient-specific rules, and edge cases correctly. We provide a few tests for `ConversionRegistry` in the handout, and you must enhance these tests as you go. The handout has a hint of the first test you'll need to write in order to unlock feedback on your implementation.
 
-11. **Implement Scaling to Ingredient Target**
+8. **Implement Scaling to Ingredient Target**
     - Calculate the scale factor needed for a target ingredient to reach a specific amount
     - Handle edge cases: ingredient not found, ingredient appears multiple times
     - This requires using the `ConversionRegistry` to convert between units when needed
-    - **Add tests in `RecipeTest.java`** for target scaling
+    - **Enhance the starter tests in `RecipeTest.java`** for target scaling
 
-12. **Implement Recipe Unit Conversion**
+9. **Implement Recipe Unit Conversion**
     - Convert all `MeasuredIngredient` quantities to a target unit
     - Must delegate to `ConversionRegistry.convert()` for each ingredient
     - Recipe-specific conversion rules should be used at `RECIPE` priority
     - Throw `UnsupportedConversionException` if any conversion fails
-    - **Write tests in `ConversionRegistryTest.java`** for conversion behavior, priority ordering, and error handling
+    - **Enhance the starter tests in `RecipeTest.java`** for recipe unit conversion behavior
 
 #### Already Provided (No Implementation Needed)
 
 The following are fully implemented in the starter code:
 
+- `Ingredient`, `MeasuredIngredient`, `VagueIngredient` — Complete Ingredient hierarchy
 - `ConversionRulePriority` — Enum with `HOUSE`, `RECIPE`, `STANDARD`
 - `StandardConversions` — Pre-computed conversion rules for all within-dimension unit pairs
 - **`UnsupportedConversionException`** — Checked exception with static factory methods
@@ -449,22 +447,20 @@ Focus on testing **behavior and requirements**, not specific method signatures.
 
 #### Provided Test Files
 
-We provide comprehensive tests for the foundation classes and conversion components. **Run these tests as you implement each class to verify your progress:**
+We provide starter tests for the foundation classes and conversion components. **Run these tests as you implement each class to verify your progress:**
 
-- `ConversionRuleTest.java` — tests `ConversionRule` record (constructor validation, `canConvert()`, `convert()`, equality)
-- `InstructionTest.java` — tests `Instruction` class (construction, validation, immutability, `toString()`, equality)
-- `RecipeTest.java` — tests `Recipe` class (construction, validation, getters, immutability, equality; does NOT include scaling or conversion tests)
-- `LayeredConversionRegistryTest.java` — tests `LayeredConversionRegistry` (priority ordering, ingredient-specific rules, immutability, edge cases)
+- `ConversionRuleTest.java` — **complete tests** for `ConversionRule` record (constructor validation, `canConvert()`, `convert()`, equality). The autograder runs these same tests.
+- `InstructionTest.java` — **sample tests** for `Instruction` class (only `toString()` tests are included). The autograder runs additional comprehensive tests not included in the handout. You are welcome to add your own tests for these classes if you find them helpful, but they are not graded.
+- `RecipeTest.java` — **starter tests** for `Recipe` class, including a few tests for `scale()`, `scaleToTarget()`, and `convert()`. You must enhance these tests.
+- `ConversionRegistryTest.java` — **starter tests** for the `ConversionRegistry` interface. You must enhance these tests.
 
 Run individual tests with `./gradlew test --tests "TestClassName"` or **run all provided tests** with `./gradlew test`.
 
-These tests verify the core behavior specified in this handout. Passing all provided tests is a strong indicator that your foundation classes are correctly implemented.
-
 #### Required Test Files
 
-You must write tests in the following files:
+You must enhance tests in the following files:
 
-1. **`RecipeTest.java`** - Add tests for the `scale()`, `scaleToTarget()`, and `convert()` methods. **Graded for fault-finding (20 points).** Your tests should verify:
+1. **`RecipeTest.java`** - Enhance the starter tests for the `scale()`, `scaleToTarget()`, and `convert()` methods. **Graded for fault-finding (20 points).** Your tests should verify:
    - Scaling by factor works correctly for `MeasuredIngredient`s
    - `VagueIngredient`s remain unchanged when scaling or converting
    - Servings are scaled appropriately 
@@ -474,7 +470,7 @@ You must write tests in the following files:
    - Recipe-specific conversion rules are used at `RECIPE` priority
    - Edge cases like ingredient not found, unsupported conversions
 
-2. **`ConversionRegistryTest.java`** - Write tests for the `ConversionRegistry` service interface. **Graded for fault-finding (20 points).** Your tests should cover:
+2. **`ConversionRegistryTest.java`** - Enhance the starter tests for the `ConversionRegistry` **interface**. **Graded for fault-finding (20 points).** Your tests must use only the `ConversionRegistry` interface methods—do not test implementation-specific details of `LayeredConversionRegistry`. Your tests should cover:
    - `convert(Quantity, Unit)` — generic conversions without ingredient context
    - `convert(Quantity, Unit, String)` — ingredient-specific conversions
    
@@ -516,10 +512,9 @@ Your submission should demonstrate:
 
 #### Model Layer Foundation (10 points)
 
-- `Ingredient`, `MeasuredIngredient`, `VagueIngredient` (4 points)
-- `IngredientRef` (1 point)
-- `Instruction` (3 points)
-- `Recipe` basic functionality (2 points) — constructor, getters, equals/hashCode, immutability
+- `IngredientRef` (2 points)
+- `Instruction` (4 points)
+- `Recipe` basic functionality (4 points) — constructor, getters, equals/hashCode, immutability
 
 #### Conversion Components (16 points)
 
@@ -584,6 +579,6 @@ Note: Students who pass all automated tests and write good reflections earn 100 
 
 ## Submission
 
-Submit via Pawtograder (via GitHub). As with assignment 1, there is a limit of 5 submissions per-day.
+Submit via Pawtograder (via GitHub). As with assignment 1, there is a limit of 15 submissions per-24-hour period. Submissions that receive a score of "0" will not count towards your limit.
 
 Good luck! Remember: understanding the design decisions in the provided code and articulating tradeoffs in your reflection are necessary to receive full marks - not just passing the tests.
