@@ -685,10 +685,10 @@ Execution failed for task ':test'.
 
 ```java
     // Question 6: Where does Gradle put the HTML test report?
-    public static final String Q4_TEST_REPORT_PATH = ""; // Fill this in
+    public static final String Q6_TEST_REPORT_PATH = ""; // Fill this in
 
     // Question 7: What Gradle command runs ONLY the tests (not other checks)?
-    public static final String Q5_TEST_ONLY_COMMAND = ""; // Fill this in
+    public static final String Q7_TEST_ONLY_COMMAND = ""; // Fill this in
 ```
 
 ### Exercise 4.4: Targeted Test Running
