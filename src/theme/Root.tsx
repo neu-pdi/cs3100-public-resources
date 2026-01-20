@@ -12,6 +12,76 @@ function getDocusaurusThemeStorageKey(): string {
   return `theme${SiteStorage.namespace}`;
 }
 
+/**
+ * Helper to check if an error is the benign scrollWidth error.
+ */
+const isScrollWidthError = (error: Error | null): boolean => {
+  return !!(
+    error?.message?.includes('scrollWidth') &&
+    (error?.message?.includes('null') || error?.message?.includes('undefined'))
+  );
+};
+
+/**
+ * Error Boundary to suppress the benign "scrollWidth" error during hot reload.
+ * 
+ * This error occurs when Reveal.js or Docusaurus's useCodeWordWrap hook tries 
+ * to access a ref's scrollWidth during React's reconciliation/hot reload. The 
+ * ref is momentarily null, causing the destructuring to fail.
+ * 
+ * The error is transient - the component recovers on the next render - so we
+ * simply reset the error boundary state to allow re-rendering.
+ * 
+ * Non-scrollWidth errors are re-thrown in render() to propagate to the next
+ * error boundary or cause a proper error state.
+ */
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+}
+
+class ScrollWidthErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  ErrorBoundaryState
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    // Capture all errors - we'll decide what to do in render()
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
+    if (isScrollWidthError(error)) {
+      // Silently suppress - this is a known benign error during hot reload
+      // Schedule a reset to allow the component to re-render
+      setTimeout(() => {
+        this.setState({ hasError: false, error: null });
+      }, 0);
+    }
+    // Note: We don't log or handle non-scrollWidth errors here because
+    // they will be re-thrown in render() to propagate properly
+  }
+
+  render(): React.ReactNode {
+    if (this.state.hasError && this.state.error) {
+      if (isScrollWidthError(this.state.error)) {
+        // For scrollWidth errors, just render children anyway
+        // The error is transient and will resolve on next hot reload tick
+        return this.props.children;
+      }
+      
+      // For non-scrollWidth errors, re-throw to propagate to the next boundary
+      throw this.state.error;
+    }
+
+    return this.props.children;
+  }
+}
+
 const system = createSystem(defaultConfig, {
   preflight: false, // CRITICAL: Disable Chakra's CSS reset which was blocking text selection
 })
@@ -77,12 +147,14 @@ function ChakraColorModeSync({ children }) {
 
 export default function Root({ children }) {
   return (
-    <ChakraProvider value={system}>
-      <ColorModeProvider storageKey={getDocusaurusThemeStorageKey()}>
-        <ChakraColorModeSync>
-          {children}
-        </ChakraColorModeSync>
-      </ColorModeProvider>
-    </ChakraProvider>
+    <ScrollWidthErrorBoundary>
+      <ChakraProvider value={system}>
+        <ColorModeProvider storageKey={getDocusaurusThemeStorageKey()}>
+          <ChakraColorModeSync>
+            {children}
+          </ChakraColorModeSync>
+        </ColorModeProvider>
+      </ChakraProvider>
+    </ScrollWidthErrorBoundary>
   );
 }
