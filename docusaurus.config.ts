@@ -8,6 +8,10 @@ import path from 'path';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 const baseUrl = process.env.BASE_URL || '/cs3100-public-resources/';
 const config: Config = {
+  // Client modules that run on every page load
+  clientModules: [
+    require.resolve('./src/clientModules/suppressScrollWidthError.ts'),
+  ],
   title: 'NEU CS 3100 Public Resources',
   tagline: 'Resources for CS 3100 (Public)',
   favicon: 'img/favicon.ico',

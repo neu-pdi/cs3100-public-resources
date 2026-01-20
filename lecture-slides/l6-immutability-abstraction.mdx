@@ -80,6 +80,13 @@ import PollSlide from '@site/src/components/PollSlide';
 <p style={{fontSize: '0.7em', textAlign: 'left'}}>
 This slide is totally anonymous. Feel free to use incognito mode.
 </p>
+
+<aside className="notes">
+**Purpose:** Quick check-in on student motivations
+- Discuss results briefly
+- All of these are valid goals!
+</aside>
+
 </Slide>
 
 <Slide>
@@ -87,6 +94,15 @@ This slide is totally anonymous. Feel free to use incognito mode.
 ## Poll: What should you do if you are having trouble with an assignment?
 <PollSlide choices={["Give up", "Keep grinding away", "Go to office hours", "Ask a friend for help",
 "View Pawtograder posts", "Ask AI for help with your problem", "Ask AI how to download the autograder code"]} />
+
+<aside className="notes">
+**Discussion points:**
+- Office hours and Pawtograder are great resources
+- AI can help understand concepts, but not to bypass learning
+- The last option is an academic integrity violation
+
+→ **Transition:** Now let's look at today's learning objectives...
+</aside>
 
 </Slide>
 
@@ -232,38 +248,7 @@ After this lecture, you will be able to:
 - But DO structure code so that likely changes are easy
 - This takes judgment and experience
 
-→ **Transition:** What kinds of changes might we need to anticipate?
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Types of Unknowns
-
-| Type | Examples | Course Topics |
-|------|----------|---------------|
-| **Technical** | Scale? Change databases? Add features? | Modularity, interfaces, design patterns |
-| **Economic** | Hosting costs? Business model changes? | Architecture, dependencies, vendor lock-in |
-| **Social** | New user groups? Changing values? | Requirements, domain modeling, stakeholder analysis |
-| **Environmental** | Energy costs? Efficiency regulations? | Performance, resource management |
-
-<p style={{fontSize: '0.8em', marginTop: '1em', textAlign: 'center'}}>
-  For now, we focus on <strong>technical</strong> unknowns. Other dimensions resurface later.
-</p>
-
-<aside className="notes">
-**Preview of the course:**
-- Today: Technical changeability (information hiding, modularity)
-- Later: Economic (architecture, vendor lock-in)
-- Later: Social (user-centered design, accessibility)
-- Later: Environmental (performance, sustainability)
-
-**Today's focus:**
-- How do we structure code so that technical changes are easy?
-- Answer: Modularity and information hiding
-
-→ **Transition:** Let's define what we mean by modularity...
+→ **Transition:** How do we achieve changeability? Through modularity...
 </aside>
 
 </Slide>
@@ -276,14 +261,19 @@ After this lecture, you will be able to:
 
 ## What is Modularity?
 
-<div style={{display: 'flex', gap: '1.5em', alignItems: 'center'}}>
-<div style={{flex: 1}}>
-
 <p style={{fontSize: '0.95em'}}>
   The core idea: design systems as <strong>relatively independent modules</strong>.
 </p>
-
 <p style={{fontSize: '0.8em', marginTop: '0.5em'}}><strong>A module is a self-contained unit of code:</strong></p>
+
+<div style={{overflow: 'hidden'}}>
+<Img
+  src="/img/lectures/web/l6-modules-lego.webp"
+  prompt="Software modularity illustrated with LEGO bricks. Show three different LEGO brick shapes (a 2x4 brick, a 2x2 brick, and a 1x4 brick) in different colors (red, blue, yellow). The key concept: each brick has the SAME standard stud pattern on top (the interface) but different internal structures. One brick is shown in cross-section revealing complex internal gears and mechanisms, while its external studs remain standard LEGO connectors. Label the studs as 'Interface (same for all)' and the internal gears as 'Implementation (hidden, can vary)'. Clean technical diagram style."
+  alt="LEGO bricks with same interface (studs) but different hidden implementations"
+  style={{float: 'right', maxWidth: '40%', marginLeft: '1.5em', marginBottom: '1em'}}
+/>
+
 <ul style={{fontSize: '0.75em'}}>
   <li>Has a <strong>well-defined interface</strong> that specifies behavior</li>
   <li>Implementation is <strong>hidden</strong> and can be independently compiled</li>
@@ -294,15 +284,6 @@ After this lecture, you will be able to:
   A module could be a class, a package, or even a whole program.
 </p>
 
-</div>
-<div style={{flex: 1}}>
-<Img
-  src="/img/lectures/web/l6-modules-lego.webp"
-  prompt="Software modularity illustrated with LEGO bricks. Show three different LEGO brick shapes (a 2x4 brick, a 2x2 brick, and a 1x4 brick) in different colors (red, blue, yellow). The key concept: each brick has the SAME standard stud pattern on top (the interface) but different internal structures. One brick is shown in cross-section revealing complex internal gears and mechanisms, while its external studs remain standard LEGO connectors. Label the studs as 'Interface (same for all)' and the internal gears as 'Implementation (hidden, can vary)'. Clean technical diagram style."
-  alt="LEGO bricks with same interface (studs) but different hidden implementations"
-  style={{maxHeight: '40vh'}}
-/>
-</div>
 </div>
 
 <aside className="notes">
@@ -317,69 +298,7 @@ After this lecture, you will be able to:
 - Interfaces hide implementations
 - Changes don't ripple across boundaries
 
-→ **Transition:** But what makes a good interface? We already know the answer...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Good Specs Enable Modularity
-
-<p style={{fontSize: '0.9em'}}>
-  Remember <strong>Set.contains()</strong> from L4? A good spec describes <strong>what</strong>, not <strong>how</strong>.
-</p>
-
-<div style={{display: 'flex', gap: '1em', marginTop: '0.5em'}}>
-<div style={{flex: 1}}>
-
-**Definitional spec (good):**
-```java
-/**
- * Returns true if this set contains
- * an element e such that
- * Objects.equals(o, e).
- */
-boolean contains(Object o);
-```
-
-<p style={{fontSize: '0.75em', color: '#27ae60'}}>Permits HashSet (O(1)), TreeSet (O(log n)), LinkedHashSet...</p>
-
-</div>
-<div style={{flex: 1}}>
-
-**Operational spec (bad):**
-```java
-/**
- * Iterates through all elements
- * using a for-each loop,
- * comparing each with equals().
- */
-boolean contains(Object o);
-```
-
-<p style={{fontSize: '0.75em', color: '#e74c3c'}}>Forces O(n) linear search!</p>
-
-</div>
-</div>
-
-<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#9370DB'}}>
-  The spec IS the module boundary. Over-constrain it, and you lose changeability.
-</p>
-
-<aside className="notes">
-**Connection to L4:**
-- We learned specs should be definitional, not operational
-- Now we see WHY: operational specs prevent implementation changes
-- The spec IS the module boundary
-
-**The vending machine from L4:**
-- Same interface (buttons, coin slot, item tray)
-- Different implementations (gravity, pneumatic, hamster-powered)
-- Spec says "insert money, press button, get item"
-- Doesn't say HOW the item gets dispensed
-
-→ **Transition:** But what IS a module, exactly?
+→ **Transition:** This applies at every scale...
 </aside>
 
 </Slide>
@@ -520,266 +439,23 @@ Today's challenge: Why modules, and how to enforce their boundaries?
 
 <Slide>
 
-## Symptoms of a Big Ball of Mud
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', marginTop: '1em', fontSize: '0.8em'}}>
-  <div>
-    <p><strong>🕸️ Everything touches everything</strong></p>
-    <p style={{color: '#666', fontSize: '0.9em'}}>Change one file, break ten others. No clear boundaries between concerns.</p>
-  </div>
-  <div>
-    <p><strong>😱 Fear of change</strong></p>
-    <p style={{color: '#666', fontSize: '0.9em'}}>"Don't touch that code—nobody knows how it works anymore."</p>
-  </div>
-  <div>
-    <p><strong>🔄 Duplicate code everywhere</strong></p>
-    <p style={{color: '#666', fontSize: '0.9em'}}>Safer to copy-paste than risk calling shared code that might change.</p>
-  </div>
-  <div>
-    <p><strong>📚 Tribal knowledge required</strong></p>
-    <p style={{color: '#666', fontSize: '0.9em'}}>Only the original author understands it. Onboarding takes months.</p>
-  </div>
-</div>
-
-<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB', textAlign: 'center'}}>
-  The root cause: modules that <strong>should</strong> be independent aren't actually independent.
-</p>
-
-<aside className="notes">
-**Ask students:**
-- Have you ever worked on code where you were afraid to make changes?
-- Have you seen code that "only Alice understands"?
-- These are symptoms of poor modularity
-
-**The vicious cycle:**
-- Bad structure makes changes hard
-- So people take shortcuts
-- Shortcuts make structure worse
-- Eventually: Big Ball of Mud
-
-**Breaking the cycle:**
-- Design for change from the start
-- Enforce boundaries with language features
-- That's what information hiding gives us
-
-→ **Transition:** How do we prevent this?
-</aside>
-
-</Slide>
-
-<Slide>
-
 ## "Life of a Software Engineer" by Manu Cornet
 
 <Img src="/img/lectures/web/l6-building-software.png"/>
 
-</Slide>
-<Slide>
-
-## The Cure: Enforce Module Boundaries
-
-<p style={{fontSize: '0.9em'}}>
-  Good intentions aren't enough. We need <strong>enforcement</strong>.
-</p>
-
-<div style={{display: 'flex', gap: '1.5em', marginTop: '1em'}}>
-<div style={{flex: 1, fontSize: '0.8em'}}>
-
-**Without enforcement:**
-- "Please don't use this internal method"
-- "This field is for internal use only"
-- "Don't depend on this behavior"
-
-<p style={{color: '#e74c3c', marginTop: '0.5em'}}>Developers will do it anyway. Deadlines happen.</p>
-
-</div>
-<div style={{flex: 1, fontSize: '0.8em'}}>
-
-**With enforcement:**
-- `private` — compiler rejects access
-- `final` — compiler rejects modification
-- `sealed` — compiler rejects subclasses
-- Modules — compiler rejects unexported packages
-
-<p style={{color: '#27ae60', marginTop: '0.5em'}}>The compiler is your boundary guard.</p>
-
-</div>
-</div>
-
 <aside className="notes">
-**The key insight:**
-- Documentation and conventions don't scale
-- "Please don't" becomes "someone did"
-- Language-level enforcement is the only reliable protection
+**The comic:**
+- Software grows organically, often chaotically
+- Without discipline, we end up with the Big Ball of Mud
+- The cure: enforce boundaries with language features
 
-**Preview of what's coming:**
-- Access modifiers (private, public, etc.)
-- Immutability (final fields, final classes)
-- Sealed classes (controlled inheritance)
-- Module system (package-level hiding)
-
-→ **Transition:** Let's see how this plays out at scale...
+→ **Transition:** Let's look at how information hiding evolved as a concept...
 </aside>
 
 </Slide>
-
-<Slide>
-
-## Information Hiding Across Languages
-
-<p style={{fontSize: '0.85em'}}>
-  Not all languages enforce modularity the same way. Compare Java and Python:
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2em', marginTop: '1em', fontSize: '0.75em'}}>
-
-  <div>
-    <p><strong>Python: Convention-Based</strong></p>
-```python
-    class GradeBook:
-        def __init__(self):
-            self._grades = []  # "please don't"
-            self.__secret = [] # name-mangled
-
-    book._GradeBook__secret  # still works!
-```
-    <p style={{color: '#666', fontSize: '0.9em', marginTop: '0.5em'}}>
-      "We're all consenting adults here."
-    </p>
-  </div>
-    <div>
-    <p><strong>Java: Compiler-Enforced</strong></p>
-```java
-    public class GradeBook {
-        private List<Double> grades;
-        // Compiler error if accessed
-        // from outside the class
-    }
-```
-    <p style={{color: '#666', fontSize: '0.9em', marginTop: '0.5em'}}>
-      The language <em>prevents</em> violations (mostly—reflection exists).
-    </p>
-  </div>
-</div>
-
-<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB', textAlign: 'center'}}>
-  Both communities function—different tradeoffs between <strong>enforcement</strong> and <strong>trust</strong>.
-</p>
-
-<aside className="notes">
-**Python's philosophy:**
-- Single underscore `_field`: "treat this as internal"
-- Double underscore `__field`: name mangling to `_ClassName__field`
-- But nothing actually stops you from accessing it
-
-**The tradeoff:**
-- Java: compiler catches violations immediately
-- Python: relies on social contract and code review
-- Python's view: if you bypass the underscore convention and something breaks, that's on you
-
-**Why this matters for the course:**
-- Information hiding is a *design principle*, not just a language feature
-- Java gives you tools to enforce it
-- But even Java's `private` can be bypassed with reflection (see content coupling later)
-- The principle is what matters; the language just helps you stick to it
-
-**Discussion question:**
-- Which approach do you prefer? Why?
-- What happens on a team with mixed experience levels?
-</aside>
-
-</Slide>
-
-<Slide>
-
-## The Python Approach
-
-<Img src="/img/lectures/web/l6-keep-out.webp"
-  alt="Lisa Simpson standing in front of a sign reading:'KEEP OUT...OR ENTER. I'm a sign, not a cop. "/>
-
-</Slide>
-
-<Slide>
-
-## The Java Approach
-
-<Img src="/img/lectures/web/l6-you-shall-not-pass.jpg"
-  alt="Gandalf, fiercely blocking the way, with caption: 'YOU SHALL NOT PASS!'"/>
-
-</Slide>
-
 {/* ============================================ */}
 {/* ARC 4: INFORMATION HIDING */}
 {/* ============================================ */}
-
-<Slide>
-
-## Information Hiding: The Key to True Modularity
-
-<p style={{fontSize: '0.95em', marginTop: '0.5em'}}>
-  Even with good design, developers will find unintended ways to use your module...
-</p>
-
-<QuoteSlide
-  quote="With a sufficient number of users of an API, it does not matter what you promise in the contract: all observable behaviors of a system will be depended on by somebody."
-  attribution="Hyrum Wright/Titus Winters"
-  size="medium"
-  imageSrc="/img/lectures/web/l6-hyrum-wright.jpg"
-  imageAlt="Hyrum Wright"
-/>
-
-
-<aside className="notes">
-**Explain Hyrum's Law:**
-- Named after Hyrum Wright at Google
-- If behavior is observable, someone will depend on it
-- Even bugs become "features" that people rely on
-
-**The solution:**
-- Information hiding = make internal behaviors *unobservable*
-- If users can't see it, they can't depend on it
-- Then you're free to change it
-
-→ **Transition:** XKCD illustrates this perfectly...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Information Hiding (XKCD)
-
-<img
-  src="https://imgs.xkcd.com/comics/workflow.png"
-  alt="XKCD 1172: A user complains that a bug fix broke their workflow because they relied on the bug"
-  style={{width: 'auto', display: 'block', margin: '0 auto'}}
-/>
-
-<p style={{fontSize: '0.7em', textAlign: 'center', color: '#666', marginTop: '0.5em'}}>
-  <a href="https://xkcd.com/1172/">XKCD 1172</a> — "Every change breaks someone's workflow"
-</p>
-
-<aside className="notes">
-**The comic:**
-- Developer fixes a bug
-- User complains: "You broke my workflow!"
-- User was RELYING on the bug behavior
-
-**This is Hyrum's Law in action:**
-- The bug wasn't in the spec
-- But it was observable
-- So someone depended on it
-- Now fixing it is a "breaking change"
-
-**The lesson:**
-- Observable behavior becomes de facto API
-- Even unintended behavior
-- Information hiding prevents this by making internals unobservable
-
-→ **Transition:** Where did this idea come from?
-</aside>
-
-</Slide>
 
 <Slide>
 
@@ -802,7 +478,7 @@ Today's challenge: Why modules, and how to enforce their boundaries?
 - Parnas was arguing for something languages didn't support
 - His paper became foundational for OO design
 
-→ **Transition:** Let's see what code looked like without language-enforced information hiding...
+→ **Transition:** Before we see examples, let's define some key terms...
 </aside>
 
 </Slide>
@@ -815,6 +491,14 @@ Today's challenge: Why modules, and how to enforce their boundaries?
 * **precondition**: a property that must hold before an action is performed
 * **postcondition**: a property guaranteed to hold after an action is completed
 
+<aside className="notes">
+**Quick definitions:**
+- These terms come from Design by Contract (Bertrand Meyer)
+- Invariants are what information hiding protects
+- Without enforcement, clients can violate invariants directly
+
+→ **Transition:** Let's see what happens without information hiding...
+</aside>
 
 </Slide>
 
@@ -860,58 +544,179 @@ c.count = c.count * 2;  // Or this!
 - Parnas argued we NEED language support for hiding
 - "Please don't touch this field" doesn't scale
 
-**Why this matters for changeability:**
-- What if Counter needs to log every change?
-- What if we need to notify listeners?
-- Can't do it—clients bypass the methods entirely
-
-→ **Transition:** Modern languages solved this...
+→ **Transition:** How do other languages handle this?
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Modern Languages Enforce Information Hiding
+## The Python Approach
 
-<p style={{fontSize: '0.85em'}}>
-  Java gives us: access modifiers, <code>final</code>, sealed classes, and modules — all <strong>language-level</strong> enforcement.
+<Img src="/img/lectures/web/l6-keep-out.webp"
+  alt="Lisa Simpson standing in front of a sign reading:'KEEP OUT...OR ENTER. I'm a sign, not a cop. "/>
+
+<aside className="notes">
+**Python's philosophy:**
+- Single underscore `_field`: "treat this as internal"
+- Double underscore `__field`: name mangling to `_ClassName__field`
+- But nothing actually stops you from accessing it
+- "We're all consenting adults here"
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Java Approach
+
+<Img src="/img/lectures/web/l6-you-shall-not-pass.jpg"
+  alt="Gandalf, fiercely blocking the way, with caption: 'YOU SHALL NOT PASS!'"/>
+
+<aside className="notes">
+**Java's philosophy:**
+- The compiler enforces the rules
+- No "consenting adults" exception
+- If it's private, you cannot access it (without reflection)
+
+→ **Transition:** Let's compare the two approaches side-by-side...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Information Hiding: Python vs Java
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2em', marginTop: '1em', fontSize: '0.75em'}}>
+
+  <div>
+    <p><strong>Python: Convention-Based</strong></p>
+```python
+    class GradeBook:
+        def __init__(self):
+            self._grades = []  # "please don't"
+            self.__secret = [] # name-mangled
+
+    book._GradeBook__secret  # still works!
+```
+    <p style={{color: '#666', fontSize: '0.9em', marginTop: '0.5em'}}>
+      "We're all consenting adults here."
+    </p>
+  </div>
+    <div>
+    <p><strong>Java: Compiler-Enforced</strong></p>
+```java
+    public class GradeBook {
+        private List<Double> grades;
+        // Compiler error if accessed
+        // from outside the class
+    }
+```
+    <p style={{color: '#666', fontSize: '0.9em', marginTop: '0.5em'}}>
+      The language <em>prevents</em> violations.
+    </p>
+  </div>
+</div>
+
+<aside className="notes">
+**The tradeoff:**
+- Java: compiler catches violations immediately
+- Python: relies on social contract and code review
+- Python's view: if you bypass the underscore convention and something breaks, that's on you
+
+**Discussion question:**
+- Which approach do you prefer? Why?
+- What happens on a team with mixed experience levels?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Cure: Language-Enforced Boundaries
+
+<p style={{fontSize: '0.9em', marginTop: '1em'}}>
+  This course focuses on Java's approach. Why?
 </p>
 
-```java
-class Counter {
-    private int count = 0;  // Now enforced by compiler!
+<ul style={{fontSize: '0.85em', marginTop: '1em'}}>
+  <li><strong>Conventions don't scale</strong> — "please don't" becomes "someone did"</li>
+  <li><strong>Deadlines happen</strong> — under pressure, developers take shortcuts</li>
+  <li><strong>Teams change</strong> — new members don't know the unwritten rules</li>
+</ul>
 
-    public void increment() { count++; }
-    public int getCount() { return count; }
-}
-```
+<p style={{fontSize: '0.9em', marginTop: '1em'}}>
+  Java's enforcement tools: <code>private</code>, <code>final</code>, <code>sealed</code>, modules
+</p>
 
-```java
-Counter c = new Counter();
-c.increment();     // OK
-c.count = -999;    // Compiler error!
-```
-
-<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#27ae60'}}>
-  Now the module controls its own state. Invariants are enforceable.
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#27ae60', textAlign: 'center'}}>
+  The compiler is your boundary guard. Invariants become enforceable.
 </p>
 
 <aside className="notes">
-**What changed:**
-- `private` makes the field invisible outside the class
-- Compiler ENFORCES the hiding—not just documentation
-- Module author has control over their own state
-
-**Benefits:**
-- Can add logging in increment() — all changes go through it
+**Benefits of enforcement:**
+- Can add logging — all changes go through methods
 - Can add validation — reject invalid states
 - Can change internal representation — clients don't know or care
 
-**The key insight:**
-- Information hiding isn't just "good practice"
-- It's what makes modularity REAL
-- Without enforcement, "modules" are just suggestions
+→ **Transition:** But even with enforcement, there's a catch...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Hyrum's Law: Why Information Hiding Matters
+
+<p style={{fontSize: '0.95em', marginTop: '0.5em'}}>
+  Even with good design, developers will find unintended ways to use your module...
+</p>
+
+<QuoteSlide
+  quote="With a sufficient number of users of an API, it does not matter what you promise in the contract: all observable behaviors of a system will be depended on by somebody."
+  attribution="Hyrum Wright"
+  size="medium"
+  imageSrc="/img/lectures/web/l6-hyrum-wright.jpg"
+  imageAlt="Hyrum Wright"
+/>
+
+<aside className="notes">
+**Explain Hyrum's Law:**
+- Named after Hyrum Wright at Google
+- If behavior is observable, someone will depend on it
+- Even bugs become "features" that people rely on
+
+**The solution:**
+- Information hiding = make internal behaviors *unobservable*
+- If users can't see it, they can't depend on it
+- Then you're free to change it
+
+→ **Transition:** XKCD illustrates this perfectly...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Hyrum's Law in Action (XKCD)
+
+<img
+  src="https://imgs.xkcd.com/comics/workflow.png"
+  alt="XKCD 1172: A user complains that a bug fix broke their workflow because they relied on the bug"
+  style={{width: 'auto', display: 'block', margin: '0 auto'}}
+/>
+
+<p style={{fontSize: '0.7em', textAlign: 'center', color: '#666', marginTop: '0.5em'}}>
+  <a href="https://xkcd.com/1172/">XKCD 1172</a> — "Every change breaks someone's workflow"
+</p>
+
+<aside className="notes">
+**This is Hyrum's Law in action:**
+- Developer fixes a bug
+- User was RELYING on the bug behavior
+- Observable behavior becomes de facto API
+- Information hiding prevents this by making internals unobservable
 
 → **Transition:** Let's look at all the Java features for information hiding...
 </aside>
@@ -1013,81 +818,7 @@ c.count = -999;    // Compiler error!
 3. Protected (needed for inheritance)
 4. Public (only for genuine API)
 
-→ **Transition:** Why is this especially important for fields?
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Why Make Fields Private?
-
-<div style={{display: 'flex', gap: '1em'}}>
-<div style={{flex: 1}}>
-
-**Public field:** 😬
-
-```java
-/**
- * Counter increments monotonically.
- */
-public class Counter {
-    public int count;  // BAD
-
-    public void increment() {
-        count++;
-    }
-}
-```
-
-```java
-Counter c = new Counter();
-c.increment(); // count = 1
-c.count = 0;   // Surprise!
-```
-
-</div>
-<div style={{flex: 1}}>
-
-**Private field:** ✅
-
-```java
-/**
- * Counter increments monotonically.
- */
-public class Counter {
-    private int count;  // GOOD
-
-    public int getCount() {
-        return count;
-    }
-
-    public void increment() {
-        count++;
-    }
-}
-```
-
-</div>
-</div>
-
-<aside className="notes">
-**The invariant:**
-- The spec says count increments monotonically
-- But with a public field, anyone can set it to anything!
-- The class can't enforce its own invariants
-
-**With private fields:**
-- The only way to modify count is through increment()
-- The class controls all access
-- Invariants are preserved
-
-**Even without explicit invariants:**
-- Private fields let you change implementation later
-- Add validation, logging, lazy initialization...
-- All without changing the API
-
-→ **Transition:** Now let's talk about preventing change entirely...
+→ **Transition:** Access modifiers control *who* can access. But what about controlling *whether* something can change?
 </aside>
 
 </Slide>
@@ -1226,11 +957,21 @@ public class PhoneNumber {
 ```
 </div>
 
+<aside className="notes">
+**Ask the class:** Can you break the invariant?
+- The field is `private final` — looks safe!
+- But wait... arrays are reference types
+- The constructor stores the SAME array, not a copy
+- Client still has a reference to the internal array
+
+→ **Transition:** Let's visualize what's happening in memory...
+</aside>
+
 </Slide>
 
 <Slide>
 
-# Visualization 1
+## Shared References Let Clients Break Invariants
 
 ```java
 int[] digits = {5, 1, 0, 4, 3, 0, 5, 5, 5, 5};
@@ -1241,7 +982,7 @@ PhoneNumber phoneNumber = new PhoneNumber(digits);
 flowchart LR
     digits["digits<br/>(local variable)"]
     field["phoneNumber.digits<br/>(private field)"]
-    array["{5,1,0,4,3,0,2,5,5,5}"]
+    array["{5,1,0,4,3,0,5,5,5,5}"]
 
     digits --> array
     field --> array
@@ -1258,7 +999,7 @@ digits[0] = -20; // breaks invariant
 flowchart LR
     digits["digits<br/>(local variable)"]
     field["phoneNumber.digits<br/>(private field)"]
-    array["{-20,1,0,4,3,0,2,5,5,5}"]
+    array["{-20,1,0,4,3,0,5,5,5,5}"]
 
     digits --> array
     field --> array
@@ -1266,6 +1007,16 @@ flowchart LR
     style array fill:#ffcccc,stroke:#c00
 ```
 </div>
+
+<aside className="notes">
+**Walk through the diagram:**
+- Both `digits` (local) and `phoneNumber.digits` (field) point to the SAME array
+- Mutating through either reference changes the shared data
+- The `private final` doesn't help — we're not reassigning the field, we're mutating the array contents
+
+→ **Transition:** Can we fix it with a defensive copy in the constructor?
+</aside>
+
 </Slide>
 
 <Slide>
@@ -1301,11 +1052,20 @@ public class PhoneNumber {
 ```
 </div>
 
+<aside className="notes">
+**Progress:**
+- Constructor now clones the array — input is safe!
+- But `getDigits()` returns the actual internal array
+- Client can mutate through the returned reference
+
+→ **Transition:** Let's visualize this partial fix...
+</aside>
+
 </Slide>
 
 <Slide>
 
-# Visualization 2
+## Defensive Copy Protects Input—But Getter Still Leaks
 
 ```java
 int[] digits = {5, 1, 0, 4, 3, 0, 5, 5, 5, 5};
@@ -1341,6 +1101,17 @@ flowchart LR
     style array2 fill:#cfc,stroke:#090
 ```
 </div>
+
+<aside className="notes">
+**Walk through the diagram:**
+- Now there are TWO arrays — the defensive copy worked for input
+- Green array is the internal state (protected from input mutation)
+- But `getDigits()` returns the internal array directly
+- Client can mutate through the returned reference
+
+→ **Transition:** The fix: defensive copy on the way OUT too...
+</aside>
+
 </Slide>
 
 <Slide>
@@ -1373,6 +1144,17 @@ public class PhoneNumber {
 }
 ```
 
+<aside className="notes">
+**The complete solution:**
+- Clone on the way IN (constructor)
+- Clone on the way OUT (getter)
+- Now no external reference can reach the internal array
+
+**Key insight:** `private final` alone isn't enough for reference types!
+
+→ **Transition:** Let's generalize this pattern...
+</aside>
+
 </Slide>
 
 
@@ -1403,6 +1185,10 @@ public final class PhoneNumber {
 }
 ```
 
+<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
+  "But isn't copying slow?" — Choose safety. Hardware gets faster; bugs from aliased references don't fix themselves.
+</p>
+
 <aside className="notes">
 **Effective Java Item 50:**
 - "Make defensive copies when needed"
@@ -1417,6 +1203,14 @@ public final class PhoneNumber {
 - `List.of()` returns an immutable list
 - `Collections.unmodifiableList()` wraps existing list
 - Prefer immutable types over defensive copying when possible
+
+**The performance vs safety tradeoff:**
+- Yes, copying costs memory and CPU cycles
+- Wisdom from generations of developers: **choose safety**
+- By the time performance matters, we'll have more memory, faster CPUs
+- But we'll also have MORE CODE to maintain!
+- Remember Moore's Law and the software crisis: hardware improves exponentially, but code complexity grows too
+- A bug from aliased references costs far more than a few extra copies
 
 → **Transition:** Let's summarize the recipe...
 </aside>
@@ -1450,6 +1244,15 @@ public final class PhoneNumber {
   `}
  />
 
+<aside className="notes">
+**Answer:** No, it's safe!
+- `String` is immutable — no defensive copy needed
+- `int` is a primitive — copied by value automatically
+- Fields are `private` — no external access
+- The only issue: fields aren't `final`, so the class itself could mutate them (but clients can't)
+
+→ **Transition:** Let's summarize the recipe for making classes safe...
+</aside>
 
 </Slide>
 
@@ -1508,6 +1311,16 @@ Right panel - 'The Trusting Method':
 Show a friendly office worker, security guard, or butler at a door labeled 'sendCommandToAll(List<IoTDevice>)'. They're cheerfully waving through a line of devices—the nice lightbulb, the friendly thermostat, and (uh oh!) the malicious robot, who is poorly disguised with a fake smile but still clearly sinister underneath. All of the devices are heading toward the entrance. The worker can't refuse entry because everyone in line has valid 'IoTDevice' credentials. Perhaps the malicious device is hiding something behind its back or has a thought bubble showing evil plans.
 The connection between panels: because the type hierarchy allows anyone in (left), the method that trusts that type has no way to refuse the imposter (right).
 Saturday morning cartoon aesthetic—playful but the danger should be clear. Horizontal orientation, clean composition suitable for a presentation slide. No code or text other than the labels mentioned." />
+
+<aside className="notes">
+**The visual:**
+- Left: Type hierarchy where anyone can extend IoTDevice
+- Right: A trusting method that accepts all IoTDevices
+- Problem: MaliciousDevice gets in because it IS-A IoTDevice
+
+→ **Transition:** Let's see this in code...
+</aside>
+
 </Slide>
 
 <Slide>
