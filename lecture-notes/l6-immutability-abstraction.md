@@ -13,7 +13,7 @@ image: /img/lectures/web/l6.png
 ![Systematic Program Design and Implementation Process, including the steps of requirements gathering, design, implementation, validation, and operations](/img/software_design_process_fall_2025.png)
 
 
-* We haven't yet gone into significant detail on the "requirements gathering" step. 
+* We haven't yet gone into significant detail on the "requirements gathering" step.
 * When considering the total cost of software, it is important to consider how much effort it will take to truly get the software to meet the needs of the customer.
 * Put another way: the majority of the cost of software is not in the initial development, but in the maintenance and evolution of the software. This insight—that maintainability is central to software economics—is also why we'll later call it technical sustainability: the ability of a system to continue providing value as it evolves over time.
 
@@ -52,7 +52,7 @@ Today, we will focus on a low-level aspect of changeability: **information hidin
 
 ## Describe the relevance of modularity to changeability (5 minutes)
 
-* The core idea to information hiding is that we should design our system so that it is broken into "modules" that are relatively independent. 
+* The core idea to information hiding is that we should design our system so that it is broken into "modules" that are relatively independent.
 * What is a module?
     * A module is a self-contained unit of code. More specifically:
         * Each module should have a well-defined interface that specifies the behavior of the module. That specification should be restrictive, general and clear ([Lecture 4](./l4-specs-contracts.md))
@@ -72,9 +72,10 @@ Today, we will focus on a low-level aspect of changeability: **information hidin
 ## Describe the role of information hiding and immutability in enabling effective modularity (5 minutes)
 * Today's principle is: **information hiding**.
 * Why do we need information hiding?
-  * Even if you have a good design that separates concerns into modules, some other developer might innevitably come along and find other ways to use your module in a way that was not anticipated. 
+  * Even if you have a good design that separates concerns into modules, some other developer might inevitably come along and find other ways to use your module in a way that was not anticipated.
   * See [Hyrum's Law](https://www.hyrumslaw.com): "With a sufficient number of users of an API, it does not matter what you promise in the contract: all observable behaviors of a system will be depended on by somebody."
     * See also [XKCD #1172](https://xkcd.com/1172/)
+    * See also [Red Light, Green Light](https://www.cartalk.com/radio/puzzler/red-light-green-light)
   * So, insofar as a programming language can support information hiding, it is important to use it in order to ensure that our modules are used as anticipated.
 * When information hiding was first proposed in the 1970s ([by a software engineering researcher named David Parnas](https://dl.acm.org/doi/10.1145/361598.361623)), there was little support for it from programming languages. As a designer, you could organize your code into modules, but there was very limited support to enforce that organization, or to prevent other parts of the code from accessing the implementation details of a module. Modern languages have built-in support for information hiding.
 * We have already seen a core approach to achieve information hiding: creating *interfaces* that specify the behavior of a module without regard to its implementation.
@@ -82,7 +83,7 @@ Today, we will focus on a low-level aspect of changeability: **information hidin
    * Changing *how* the interface is implemented can be done without affecting the code that uses the interface.
 * We will now look at some other Java language features that help us achieve information hiding and immutability. In the context of object oriented design, these features are collectively known as enabling *encapsulation*.
 
-## Be able to apply Java language features to achieve information hiding and immutability 
+## Be able to apply Java language features to achieve information hiding and immutability
 
 ### Access modifiers (7 minutes)
 
@@ -94,7 +95,7 @@ Today, we will focus on a low-level aspect of changeability: **information hidin
   * `private`: The class, method, or field is accessible only from within the class.
 * The rule of thumb is that we should [minimize accessibility of classes and members](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch4.xhtml#lev15)
 
-* You should think carefully before declaring a class or member `public`. Everything that is `public` is part of your module's interface. 
+* You should think carefully before declaring a class or member `public`. Everything that is `public` is part of your module's interface.
 
 * Note that if you begin your module design by enumerating the public interfaces (that specify the behavior of a module) and the classes that represent your data, you will naturally minimize the accessibility of the classes and members when it comes time to implement them.
 
@@ -105,7 +106,7 @@ Today, we will focus on a low-level aspect of changeability: **information hidin
 As a simple example, consider this class:
 ```java
 /**
- * A simple counter that can be incremented. 
+ * A simple counter that can be incremented.
  * The count is always non-negative, and increments monotonically.
  */
 public class Counter {
@@ -128,13 +129,13 @@ c.increment(); // count is now 1
 c.count = 0; // count is now 0 (surprise!)
 ```
 
-Notice that, considering the specification of the `Counter` class, the assignment to `c.count` is a violation of the class's invariants. 
+Notice that, considering the specification of the `Counter` class, the assignment to `c.count` is a violation of the class's invariants.
 
 By contrast, a `Counter` using a private field would have prevented the assignment to `c.count` by enforcing the invariant that the count is always monotonically increasing.
 
 ```java
 /**
- * A simple counter that can be incremented. 
+ * A simple counter that can be incremented.
  * The count is always non-negative, and increments monotonically.
  */
 public class Counter {
@@ -154,7 +155,7 @@ Even if you do not have an invariant in mind that you want to enforce, it is sti
 
 ### Immutable objects and fields (10 minutes)
 
-Immutable classes are those whose instances cannot be changed after they are created. Immutable classes are simpler to reason about, as their behavior can be determined by their constructor and public methods. This is particularly important for classes that are passed between modules, as it provides a strong guarantee that the behavior of an object won't be changed by another module. When you design a class, you should [Minimize Mutability](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch4.xhtml#lev17): make it immutable by default, only making it mutable if there is a good reason to.  
+Immutable classes are those whose instances cannot be changed after they are created. Immutable classes are simpler to reason about, as their behavior can be determined by their constructor and public methods. This is particularly important for classes that are passed between modules, as it provides a strong guarantee that the behavior of an object won't be changed by another module. When you design a class, you should [Minimize Mutability](https://learning.oreilly.com/library/view/effective-java-3rd/9780134686097/ch4.xhtml#lev17): make it immutable by default, only making it mutable if there is a good reason to.
 
 For example, consider a class for storing a [North American Dialing Plan phone number](https://en.wikipedia.org/wiki/North_American_Numbering_Plan) (e.g. a phone number that uses the country code `+1` and is followed by a 3 digit area code, 3 digit central office code and a 4 digit number). When we contstruct an instance of the class, that instance will represent a specific phone number, and as such, we should ensure that the instance cannot be changed.
 
@@ -293,7 +294,7 @@ module com.pawtograder.grading {
     // These packages are our public API - consumers can use them
     exports com.pawtograder.grading.api;
     exports com.pawtograder.grading.model;
-    
+
     // com.pawtograder.grading.impl is NOT exported
     // Classes there can be public (for internal use) but invisible to consumers
 }

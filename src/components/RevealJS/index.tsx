@@ -17,6 +17,36 @@ import 'reveal.js/dist/theme/moon.css';
 import { useColorMode } from '../ui/color-mode';
 import styles from './styles.module.css';
 
+/**
+ * Helper to check if an error is the benign scrollWidth error from Reveal.js
+ * This error occurs during hot reload when Reveal tries to access dimensions
+ * of elements that are momentarily null during React reconciliation.
+ */
+const isScrollWidthError = (error: unknown): boolean => {
+  if (error instanceof Error) {
+    return error.message.includes('scrollWidth') && 
+           (error.message.includes('null') || error.message.includes('undefined'));
+  }
+  return false;
+};
+
+/**
+ * Safely call a Reveal.js API method, suppressing the transient scrollWidth error
+ * that occurs during hot reload.
+ */
+const safeRevealCall = <T,>(fn: () => T, fallback?: T): T | undefined => {
+  try {
+    return fn();
+  } catch (error) {
+    if (isScrollWidthError(error)) {
+      // Silently suppress - this is a known benign error during hot reload
+      return fallback;
+    }
+    // Re-throw other errors
+    throw error;
+  }
+};
+
 // Detect if we're in PDF export mode via URL query parameter
 const isPrintPDFMode = (): boolean => {
   if (typeof window === 'undefined') return false;
@@ -256,7 +286,7 @@ export default function RevealJS({
         // Wait for Mermaid to render (it's async)
         setTimeout(() => {
           if (revealInstance && typeof revealInstance.layout === 'function') {
-            revealInstance.layout();
+            safeRevealCall(() => revealInstance.layout());
           }
         }, 200);
       }
@@ -274,7 +304,7 @@ export default function RevealJS({
         if (revealInstance) {
           setTimeout(() => {
             if (revealInstance && typeof revealInstance.layout === 'function') {
-              revealInstance.layout();
+              safeRevealCall(() => revealInstance.layout());
             }
           }, 300);
         }
@@ -284,7 +314,8 @@ export default function RevealJS({
 
   // Scale overflowing slide content to fit within slide bounds
   const scaleOverflowingContent = (revealInstance: Reveal.Api) => {
-    const config = revealInstance.getConfig();
+    const config = safeRevealCall(() => revealInstance.getConfig());
+    if (!config) return; // Suppress if Reveal is in a bad state during hot reload
     const configuredHeight = (config as any).height || 700;
     const configuredWidth = (config as any).width || 960;
     
@@ -315,7 +346,7 @@ export default function RevealJS({
 
   // Sync RevealJS slide changes with Docusaurus TOC
   const syncTOCWithSlide = (revealInstance: Reveal.Api) => {
-    const currentSlide = revealInstance.getCurrentSlide();
+    const currentSlide = safeRevealCall(() => revealInstance.getCurrentSlide());
     if (!currentSlide) return;
 
     // Find the heading in the current slide (prefer h2, then h1, then others)
@@ -373,7 +404,7 @@ export default function RevealJS({
 
     // Destroy fullscreen instance if it exists
     if (fullscreenRevealInstanceRef.current) {
-      fullscreenRevealInstanceRef.current.destroy();
+      safeRevealCall(() => fullscreenRevealInstanceRef.current?.destroy());
       fullscreenRevealInstanceRef.current = null;
     }
 
@@ -471,7 +502,7 @@ export default function RevealJS({
     return () => {
       clearTimeout(timer);
       if (revealInstanceRef.current && !isFullscreen) {
-        revealInstanceRef.current.destroy();
+        safeRevealCall(() => revealInstanceRef.current?.destroy());
         revealInstanceRef.current = null;
       }
     };
@@ -489,12 +520,12 @@ export default function RevealJS({
     const handleResize = () => {
       // Just call layout() - Reveal will scale fixed native dimensions to fit container
       if (revealInstanceRef.current && !isFullscreen) {
-        revealInstanceRef.current.layout();
+        safeRevealCall(() => revealInstanceRef.current!.layout());
       }
       if (fullscreenRevealInstanceRef.current && isFullscreen) {
         // For fullscreen mode, just call layout() - Reveal will scale the fixed 20:13 dimensions
         // to fit the viewport while maintaining aspect ratio and centering
-        fullscreenRevealInstanceRef.current.layout();
+        safeRevealCall(() => fullscreenRevealInstanceRef.current!.layout());
       }
     };
 
@@ -562,7 +593,7 @@ export default function RevealJS({
 
     // Destroy normal instance if it exists
     if (revealInstanceRef.current) {
-      revealInstanceRef.current.destroy();
+      safeRevealCall(() => revealInstanceRef.current?.destroy());
       revealInstanceRef.current = null;
     }
 
@@ -642,7 +673,7 @@ export default function RevealJS({
     return () => {
       clearTimeout(timer);
       if (fullscreenRevealInstanceRef.current && isFullscreen) {
-        fullscreenRevealInstanceRef.current.destroy();
+        safeRevealCall(() => fullscreenRevealInstanceRef.current?.destroy());
         fullscreenRevealInstanceRef.current = null;
       }
     };
@@ -658,11 +689,11 @@ export default function RevealJS({
 
     // Destroy other instances
     if (revealInstanceRef.current) {
-      revealInstanceRef.current.destroy();
+      safeRevealCall(() => revealInstanceRef.current?.destroy());
       revealInstanceRef.current = null;
     }
     if (fullscreenRevealInstanceRef.current) {
-      fullscreenRevealInstanceRef.current.destroy();
+      safeRevealCall(() => fullscreenRevealInstanceRef.current?.destroy());
       fullscreenRevealInstanceRef.current = null;
     }
 
@@ -755,13 +786,13 @@ export default function RevealJS({
       }
       
       // Force layout recalculation for print
-      reveal.layout();
+      safeRevealCall(() => reveal.layout());
     }, 100);
 
     return () => {
       clearTimeout(timer);
       if (printRevealInstanceRef.current) {
-        printRevealInstanceRef.current.destroy();
+        safeRevealCall(() => printRevealInstanceRef.current?.destroy());
         printRevealInstanceRef.current = null;
       }
       // Clean up print classes

@@ -95,9 +95,9 @@ export default function PollSlide({
           )}
 
           {choices && choices.length > 0 && (
-            <div style={{ fontSize: '1.0em' }}>
+            <div style={{ fontSize: '0.75em' }}>
               {choices.map((choice, index) => (
-                <p key={index} style={{ margin: '0.5em 0' }}>
+                <p key={index} style={{ margin: '0.4em 0' }}>
                   <strong>{letters[index]}.</strong>{' '}
                   {codeFormat ? <code>{choice}</code> : choice}
                 </p>
