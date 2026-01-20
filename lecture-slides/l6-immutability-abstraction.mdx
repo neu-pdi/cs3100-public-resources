@@ -1442,7 +1442,7 @@ public final class PhoneNumber {
       this.name = name;
       if (entranceYear < FOUNDING_YEAR || entranceYear > Year.now().getValue()) {
         throw new IllegalArgumentException("entranceYear " + entranceYear +
-            "is out of range " + FOUNDING_YEAR + "..." + Year.now().getValue());
+            " is out of range " + FOUNDING_YEAR + "..." + Year.now().getValue());
       }
       this.entranceYear = entranceYear;
     }
