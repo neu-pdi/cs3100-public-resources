@@ -905,7 +905,7 @@ void processOrder(Order order) {
   String customerName = order.customer.name;
   String customerEmail = order.customer.email;
   String productName = order.items.get(0).product.name;
-    // process using only these three values
+  // process using only these three values
 }
 ```
 
@@ -927,9 +927,9 @@ void processOrder(Order order) {
 
 <Slide>
 
-## Poll: How can coupling be reduced?
+## Discussion: How can coupling be reduced?
 
-<PollSlide code={`
+```java
 class OrderProcessor {
     void processOrder(Order order) {
         String customerName = order.customer.name;
@@ -938,7 +938,7 @@ class OrderProcessor {
         // process using only these three values
     }
 }
-`} />
+```
 </Slide>
 
 
@@ -1355,8 +1355,8 @@ classDiagram
         +lint(Submission submission)
         +test(Submission submission)
     }
-    BuildStrategy <|-- JavaBuildStrategy
-    BuildStrategy <|-- PythonBuildStrategy
+    BuildStrategy <|.. JavaBuildStrategy
+    BuildStrategy <|.. PythonBuildStrategy
     SubmissionService o-- BuildStrategy
     style BuildStrategy fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
 ```
