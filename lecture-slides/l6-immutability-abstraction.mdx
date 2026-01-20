@@ -1281,7 +1281,7 @@ public class PhoneNumber {
 
   public PhoneNumber(int[] digits) {
     // validation code hidden
-    this.digits = Arrays.copyOf(digits); // make a defensive copy
+    this.digits = digits.clone(); // make a defensive copy
   }
 
   public int[] getDigits() {
@@ -1364,11 +1364,11 @@ public class PhoneNumber {
         throw new IllegalArgumentException("digits must be between 0 and 9");
       }
     }
-    this.digits = Arrays.copyOf(digits); // make a defensive copy
+    this.digits = digits.clone(); // make a defensive copy
   }
 
   public int[] getDigits() {
-    return Arrays.copyOf(digits); // make a defensive copy
+    return digits.clone(); // make a defensive copy
   }
 }
 ```
@@ -1441,8 +1441,10 @@ public final class PhoneNumber {
     public NortheasternStudent(String name, int entranceYear) {
       this.name = name;
       if (entranceYear < FOUNDING_YEAR || entranceYear > Year.now().getValue()) {
-        this.entranceYear = entranceYear;
+        throw new IllegalArgumentException("entranceYear " + entranceYear +
+            "is out of range " + FOUNDING_YEAR + "..." + Year.now().getValue());
       }
+      this.entranceYear = entranceYear;
     }
   }
   `}
