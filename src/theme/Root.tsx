@@ -13,14 +13,27 @@ function getDocusaurusThemeStorageKey(): string {
 }
 
 /**
+ * Helper to check if an error is the benign scrollWidth error.
+ */
+const isScrollWidthError = (error: Error | null): boolean => {
+  return !!(
+    error?.message?.includes('scrollWidth') &&
+    (error?.message?.includes('null') || error?.message?.includes('undefined'))
+  );
+};
+
+/**
  * Error Boundary to suppress the benign "scrollWidth" error during hot reload.
  * 
- * This error occurs when Docusaurus's useCodeWordWrap hook tries to access
- * a code block's ref during React's reconciliation/hot reload. The ref is
- * momentarily null, causing the destructuring to fail.
+ * This error occurs when Reveal.js or Docusaurus's useCodeWordWrap hook tries 
+ * to access a ref's scrollWidth during React's reconciliation/hot reload. The 
+ * ref is momentarily null, causing the destructuring to fail.
  * 
  * The error is transient - the component recovers on the next render - so we
  * simply reset the error boundary state to allow re-rendering.
+ * 
+ * Non-scrollWidth errors are re-thrown in render() to propagate to the next
+ * error boundary or cause a proper error state.
  */
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -37,65 +50,32 @@ class ScrollWidthErrorBoundary extends React.Component<
   }
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    // Check if this is the scrollWidth error we want to suppress
-    const isScrollWidthError = 
-      error?.message?.includes('scrollWidth') &&
-      (error?.message?.includes('null') || error?.message?.includes('undefined'));
-    
-    if (isScrollWidthError) {
-      // Return state that will trigger immediate recovery
-      return { hasError: true, error };
-    }
-    
-    // For other errors, let them propagate (or handle differently)
+    // Capture all errors - we'll decide what to do in render()
     return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
-    const isScrollWidthError = 
-      error?.message?.includes('scrollWidth') &&
-      (error?.message?.includes('null') || error?.message?.includes('undefined'));
-    
-    if (isScrollWidthError) {
+    if (isScrollWidthError(error)) {
       // Silently suppress - this is a known benign error during hot reload
       // Schedule a reset to allow the component to re-render
       setTimeout(() => {
         this.setState({ hasError: false, error: null });
       }, 0);
-    } else {
-      // Log other errors normally
-      console.error('Error caught by boundary:', error, errorInfo);
     }
-  }
-
-  componentDidUpdate(_prevProps: { children: React.ReactNode }, prevState: ErrorBoundaryState): void {
-    // If we just caught a scrollWidth error, immediately try to recover
-    if (this.state.hasError && this.state.error) {
-      const isScrollWidthError = 
-        this.state.error?.message?.includes('scrollWidth') &&
-        (this.state.error?.message?.includes('null') || this.state.error?.message?.includes('undefined'));
-      
-      if (isScrollWidthError && prevState.hasError) {
-        // Already scheduled reset in componentDidCatch
-      }
-    }
+    // Note: We don't log or handle non-scrollWidth errors here because
+    // they will be re-thrown in render() to propagate properly
   }
 
   render(): React.ReactNode {
-    if (this.state.hasError) {
-      const isScrollWidthError = 
-        this.state.error?.message?.includes('scrollWidth') &&
-        (this.state.error?.message?.includes('null') || this.state.error?.message?.includes('undefined'));
-      
-      if (isScrollWidthError) {
+    if (this.state.hasError && this.state.error) {
+      if (isScrollWidthError(this.state.error)) {
         // For scrollWidth errors, just render children anyway
         // The error is transient and will resolve on next hot reload tick
         return this.props.children;
       }
       
-      // For other errors, you might want to show a fallback UI
-      // For now, still try to render children
-      return this.props.children;
+      // For non-scrollWidth errors, re-throw to propagate to the next boundary
+      throw this.state.error;
     }
 
     return this.props.children;
