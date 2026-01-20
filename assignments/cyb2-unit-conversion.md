@@ -5,12 +5,6 @@ image: /img/assignments/web/a2.png
 ---
 
 
-:::warning Preliminary Content
-
-This assignment is preliminary content and is subject to change until the release date of the assignment.
-
-:::
-
 ## Overview
 
 In this assignment, you'll expand the CookYourBooks domain model by implementing **unit conversion**, **recipe scaling**, and the core **recipe structure**. Building on Assignment 1's `Quantity` and `Ingredient` hierarchies, you'll create a flexible conversion system that supports standard metric/imperial conversions, ingredient-specific density conversions (like "1 cup flour = 125 grams"), and custom "house" overrides.
@@ -172,7 +166,7 @@ You must implement the following classes. Classes from A1 are shown in gray for 
 classDiagram
     direction TB
 
-    %% A1 classes (context) - now in app.cookyourbooks.model
+    %% A1 classes (context - shown in gray via CSS) - now in app.cookyourbooks.model
     class Unit {
         <<enumeration>>
         +getSystem() UnitSystem
@@ -279,10 +273,6 @@ classDiagram
     IngredientRef --> Quantity
 
     note for Recipe "Recipe transformation methods use the ConversionRegistry service."
-
-    style Unit fill:#e0e0e0,stroke:#999
-    style Quantity fill:#e0e0e0,stroke:#999
-    style Ingredient fill:#e0e0e0,stroke:#999
 ```
 
 ### Implementation Details

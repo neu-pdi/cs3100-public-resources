@@ -259,6 +259,9 @@ const config: Config = {
     colorMode: {
       respectPrefersColorScheme: true,
     },
+    mermaid: {
+      theme: { light: 'default', dark: 'dark' },
+    },
     prism: {
       additionalLanguages: ['java'],
       theme: prismThemes.github,

@@ -613,3 +613,44 @@ html.reveal-fullscreen #reveal-fullscreen-portal .reveal .backgrounds {
 .reveal.has-black .slides section.processOverview .keyInsight {
   background: rgba(59, 130, 246, 0.2) !important;
 }
+
+/* ===================================
+   Mermaid Diagram Styling for Markdown Pages
+   ===================================
+
+   Styles for Mermaid class diagrams with dark mode support.
+   
+   Mermaid generates predictable IDs for class diagram nodes:
+   classId-ClassName-N (e.g., classId-Unit-0, classId-Quantity-1)
+   
+   We target specific "context" classes (Unit, Quantity, Ingredient from A1)
+   to show them grayed out, indicating they're provided/not to be implemented.
+*/
+
+/* Light mode: Gray out A1 context classes */
+.docusaurus-mermaid-container [id^="classId-Unit-"] path,
+.docusaurus-mermaid-container [id^="classId-Quantity-"] path,
+.docusaurus-mermaid-container [id^="classId-Ingredient-"] path {
+  fill: #e0e0e0 !important;
+  stroke: #999 !important;
+}
+
+.docusaurus-mermaid-container [id^="classId-Unit-"] text,
+.docusaurus-mermaid-container [id^="classId-Quantity-"] text,
+.docusaurus-mermaid-container [id^="classId-Ingredient-"] text {
+  fill: #666 !important;
+}
+
+/* Dark mode: Gray out A1 context classes with darker colors */
+[data-theme='dark'] .docusaurus-mermaid-container [id^="classId-Unit-"] path,
+[data-theme='dark'] .docusaurus-mermaid-container [id^="classId-Quantity-"] path,
+[data-theme='dark'] .docusaurus-mermaid-container [id^="classId-Ingredient-"] path {
+  fill: #4a4a4a !important;
+  stroke: #777 !important;
+}
+
+[data-theme='dark'] .docusaurus-mermaid-container [id^="classId-Unit-"] text,
+[data-theme='dark'] .docusaurus-mermaid-container [id^="classId-Quantity-"] text,
+[data-theme='dark'] .docusaurus-mermaid-container [id^="classId-Ingredient-"] text {
+  fill: #bbb !important;
+}
