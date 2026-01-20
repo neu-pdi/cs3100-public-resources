@@ -1241,7 +1241,7 @@ PhoneNumber phoneNumber = new PhoneNumber(digits);
 flowchart LR
     digits["digits<br/>(local variable)"]
     field["phoneNumber.digits<br/>(private field)"]
-    array["{5,1,0,4,3,0,2,5,5,5}"]
+    array["{5,1,0,4,3,0,5,5,5,5}"]
 
     digits --> array
     field --> array
@@ -1258,7 +1258,7 @@ digits[0] = -20; // breaks invariant
 flowchart LR
     digits["digits<br/>(local variable)"]
     field["phoneNumber.digits<br/>(private field)"]
-    array["{-20,1,0,4,3,0,2,5,5,5}"]
+    array["{-20,1,0,4,3,0,5,5,5,5}"]
 
     digits --> array
     field --> array
@@ -1316,8 +1316,8 @@ PhoneNumber phoneNumber = new PhoneNumber(digits);
 flowchart LR
     digits["digits<br/>(local variable)"]
     field["phoneNumber.digits<br/>(private field)"]
-    array1["{5,1,0,4,3,0,2,5,5,5}"]
-    array2["{5,1,0,4,3,0,2,5,5,5}"]
+    array1["{5,1,0,4,3,0,5,5,5,5}"]
+    array2["{5,1,0,4,3,0,5,5,5,5}"]
 
     digits --> array1
     field --> array2
@@ -1334,7 +1334,7 @@ phoneNumber.getDigits()[0] = -20
 ```mermaid
 flowchart LR
     field["phoneNumber.digits<br/>(private field)"]
-    array2["{-20,1,0,4,3,0,2,5,5,5}"]
+    array2["{-20,1,0,4,3,0,5,5,5,5}"]
 
     field --> array2
 
