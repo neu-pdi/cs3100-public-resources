@@ -515,15 +515,15 @@ public class SmartBulb implements Switchable, Dimmable, ColorAdjustable {
 </p>
 
 <Img
-  src="/img/lectures/web/l8-dependency-inversion.webp"
-  prompt="An illustration showing Dependency Inversion Principle using a power adapter metaphor.
+  src="/img/lectures/web/l8-dep-inversion.webp"
+  prompt="An illustration showing Dependency Inversion Principle using a power cord metaphor.
 
-LEFT SIDE (Bad - 'Direct Dependency'): A laptop (labeled 'PawtograderSystem') with its power cord hardwired directly into a specific wall outlet labeled 'MySQL'. The cord is permanently attached with welds/solder directly into the terminals of the outlet. A thought bubble from the laptop: 'I can ONLY work with MySQL!' If you want to use a different database, you'd have to cut the cord.
+LEFT SIDE (Bad - 'Direct Dependency'): A laptop with its power cord's bare wires shoved directly into a hole in the wall - no outlet, no plug, just exposed copper wire jammed into drywall. The wall has 'MySQL' written on it. Sparks fly. Thought bubble: 'I can ONLY work with this wall!'
 
-RIGHT SIDE (Good - 'Depend on Abstraction'): The same laptop, but now it has a standard power plug (labeled 'Database interface'). Below are multiple adapters/outlets: 'MySQL', 'PostgreSQL', 'MongoDB', all with the same standard socket. The laptop can plug into any of them. Thought bubble: 'I work with any Database!'
+RIGHT SIDE (Good - 'Depend on Abstraction'): The same laptop with a standard power plug (labeled 'Database'). Multiple standard wall outlets below labeled 'MySQL', 'PostgreSQL', 'MongoDB'. The laptop can plug into any of them. Thought bubble: 'I work with any outlet!'
 
-The message: high-level modules should depend on interfaces, not concrete implementations."
-  alt="Left: Laptop hardwired directly to MySQL outlet - can only work with MySQL. Right: Laptop with standard 'Database interface' plug can connect to MySQL, PostgreSQL, or MongoDB adapters. Message: depend on abstractions, not concretions."
+The contrast: direct wiring = can't change, standard plug = swap freely."
+  alt="Left: Laptop with bare wires jammed directly into wall labeled MySQL - sparks flying. Right: Laptop with standard plug can connect to any of several outlets (MySQL, PostgreSQL, MongoDB)."
 />
 
 <aside className="notes">
@@ -642,32 +642,6 @@ public interface Database {
 
 </Slide>
 
-<Slide>
-
-## Poll: Which SOLID principle is violated?
-
-<PollSlide
-  code={`
-public interface Repository {
-    void save(Object entity);
-    Object findById(long id);
-    List<Object> findAll();
-    void delete(long id);
-    void createBackup();      // ???
-    void sendEmailReport();   // ???
-    void generatePDF();       // ???
-}
-  `}
-  choices={[
-    "Single Responsibility Principle",
-    "Open/Closed Principle",
-    "Liskov Substitution Principle",
-    "Interface Segregation Principle",
-    "Dependency Inversion Principle"
-  ]}
-/>
-
-</Slide>
 
 {/* ============================================ */}
 {/* ARC 2: COMPOSITION OVER INHERITANCE */}
@@ -677,19 +651,7 @@ public interface Repository {
 
 ## Inheritance Creates Tight Coupling That Composition Avoids
 
-<Img
-  src="/img/lectures/web/l8-composition-inheritance.webp"
-  prompt="A side-by-side comparison illustration showing Composition vs Inheritance.
-
-LEFT SIDE (Inheritance - labeled 'IS-A'): A family tree structure where a child class is tightly bound to its parent. The parent class is shown as a large figure with the child physically attached/growing from it like a conjoined twin. Any change to the parent (shown with a hammer/modification) causes cracks to appear in the child too. The connection is rigid and permanent. Label: 'Tight Coupling - Changes Propagate'
-
-RIGHT SIDE (Composition - labeled 'HAS-A'): Separate, independent objects connected by flexible cables or plugs. The main object 'has' references to helper objects, each in their own box. You can unplug one helper and plug in a different one without affecting the others. Label: 'Loose Coupling - Swap Freely'
-
-The contrast shows why composition is generally more flexible than inheritance."
-  alt="Left: Inheritance shown as parent-child physically connected; changes to parent crack the child. Right: Composition shown as separate objects connected by flexible plugs - can swap helpers freely without affecting others."
-/>
-
-<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+<p style={{fontSize: '1.1em', marginTop: '1em'}}>
   <em>Effective Java Item 18:</em> "Favor composition over inheritance"
 </p>
 
@@ -766,7 +728,7 @@ System.out.println(s.getAddCount()); // Prints 6, not 3!
 ```
 
 <Img
-  src="/img/lectures/web/l8-fragile-base.webp"
+  src="/img/lectures/web/l8-fragile-base-rube-goldberg.webp"
   prompt="An illustration showing the fragile base class problem as a Rube Goldberg machine gone wrong.
 
 Show the flow: addAll() is called (a ball drops), which increments counter by 3 (counter shows 3). Then unexpectedly, addAll internally calls add() three times (shown as the ball bouncing through hidden mechanisms inside the HashSet black box). Each add() call increments the counter again (counter shows 4, 5, 6).
@@ -851,34 +813,51 @@ public class InstrumentedSet<E> implements Set<E> {
 
 ## Composition Keeps Method Calls Inside the Wrapped Object
 
-<Img
-  src="/img/lectures/web/l8-inheritance-vs-composition-detail.webp"
-  prompt="A detailed comparison showing the call flow in inheritance vs composition for the InstrumentedSet example.
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5em', fontSize: '0.6em'}}>
 
-LEFT SIDE (Inheritance - PROBLEMATIC):
-Show a vertical call stack:
-1. Client calls addAll(['A','B','C'])
-2. InstrumentedHashSet.addAll() runs, count += 3
-3. Calls super.addAll()
-4. HashSet.addAll() internally calls this.add('A')
-5. Which goes to InstrumentedHashSet.add(), count++
-6. Repeat for 'B' and 'C'
-Final count: 6 (WRONG!)
-Show the 'this' pointer bouncing back up to the subclass unexpectedly.
+<div>
 
-RIGHT SIDE (Composition - CORRECT):
-Show a vertical call stack:
-1. Client calls addAll(['A','B','C'])
-2. InstrumentedSet.addAll() runs, count += 3
-3. Calls s.addAll() on the WRAPPED set
-4. HashSet.addAll() internally calls this.add('A')
-5. But 'this' is the HashSet, not InstrumentedSet!
-6. Our add() is never called by the wrapped set
-Final count: 3 (CORRECT!)
+**Inheritance: count = 6 ❌**
 
-Use arrows and different colors to show the call flow clearly."
-  alt="Left: Inheritance call flow shows addAll incrementing count, then super.addAll calls back to overridden add() 3 more times - count becomes 6. Right: Composition call flow shows addAll incrementing count, then s.addAll stays inside wrapped HashSet - count stays 3."
-/>
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant I as InstrumentedHashSet
+    participant H as HashSet
+
+    C->>I: addAll(A,B,C)
+    Note over I: count += 3
+    I->>H: super.addAll()
+    H->>I: this.add(A)
+    Note over I: count++❗
+    H->>I: this.add(B)
+    Note over I: count++❗
+    H->>I: this.add(C)
+    Note over I: count++❗
+```
+
+</div>
+
+<div>
+
+**Composition: count = 3 ✓**
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant I as InstrumentedSet
+    participant H as HashSet
+
+    C->>I: addAll(A,B,C)
+    Note over I: count += 3
+    I->>H: s.addAll()
+    Note over H: add(A), add(B), add(C)
+    H-->>I: done
+```
+
+</div>
+
+</div>
 
 <aside className="notes">
 **The key insight:**
@@ -1090,38 +1069,54 @@ classDiagram
 
 ## Java I/O Streams Stack Decorators for Flexible Combinations
 
-<p style={{fontSize: '0.85em'}}>
-  The Java I/O streams API extensively uses the Decorator pattern:
-</p>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5em', fontSize: '0.65em'}}>
+
+<div>
+
+**Wrapping streams:**
 
 ```java
-// Start with base functionality
-InputStream fileStream = new FileInputStream("data.txt");
+// Base: read bytes from file
+InputStream file = new FileInputStream("data.txt");
 
-// Add buffering (decorator #1)
-InputStream bufferedStream = new BufferedInputStream(fileStream);
+// Decorator #1: add buffering
+InputStream buf = new BufferedInputStream(file);
 
-// Add ability to read primitives (decorator #2)
-DataInputStream dataStream = new DataInputStream(bufferedStream);
+// Decorator #2: add primitive reading
+DataInputStream data = new DataInputStream(buf);
 
-// Now we can read int, double, etc. with buffering!
-int value = dataStream.readInt();
+int value = data.readInt();
 ```
 
-<Img
-  src="/img/lectures/web/l8-decorator-io.webp"
-  prompt="An illustration showing Java I/O streams as a series of nested wrappers, like Russian nesting dolls or layered gift wrapping.
+</div>
 
-Show three concentric layers:
-- INNERMOST: A simple file icon labeled 'FileInputStream' - 'Reads bytes from file'
-- MIDDLE LAYER: A buffer/cache icon wrapping around it, labeled 'BufferedInputStream' - 'Adds buffering for efficiency'
-- OUTERMOST: A calculator/data type icon wrapping around that, labeled 'DataInputStream' - 'Adds readInt(), readDouble(), etc.'
+<div>
 
-Arrows show data flowing from the file, through each layer, to the application. Each layer adds its enhancement without knowing about the others.
+**Call delegation:**
 
-Alternative visualization: A factory assembly line where raw bytes enter, get buffered at station 1, get parsed into primitives at station 2, and emerge as usable data."
-  alt="Russian nesting doll visualization: FileInputStream (innermost, reads bytes) wrapped by BufferedInputStream (middle, adds buffering) wrapped by DataInputStream (outermost, adds readInt/readDouble). Data flows through each layer."
-/>
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant D as DataInputStream
+    participant B as BufferedInputStream
+    participant F as FileInputStream
+
+    C->>D: readInt()
+    Note over D: Need 4 bytes
+    D->>B: read(buffer, 0, 4)
+    Note over B: Check buffer
+    B->>F: read(buffer, 0, 8192)
+    Note over F: Read from disk
+    F-->>B: bytes from file
+    Note over B: Cache in buffer
+    B-->>D: 4 bytes
+    Note over D: Convert to int
+    D-->>C: int value
+```
+
+</div>
+
+</div>
 
 <aside className="notes">
 **Why this design is powerful:**
@@ -1523,28 +1518,6 @@ public abstract class AbstractLight implements Light {
 
 <Slide>
 
-## Key Takeaways (image)
-
-<Img
-  src="/img/lectures/web/l8-takeaways.webp"
-  prompt="A summary illustration with four key takeaways arranged in quadrants:
-
-TOP LEFT - 'SOLID Principles': Five interlocking gears labeled S, O, L, I, D working together smoothly. Caption: 'Guidelines for changeable design'
-
-TOP RIGHT - 'Composition over Inheritance': A flexible modular construction vs a rigid family tree. Caption: 'Favor HAS-A over IS-A'
-
-BOTTOM LEFT - 'Safe Inheritance': A blueprint/documentation with checkmarks next to 'Document', 'Design', 'Or make final'. Caption: 'Design for it or prohibit it'
-
-BOTTOM RIGHT - 'Decorator Pattern': Nested wrapper layers adding capabilities. Caption: 'Add behavior without modifying'
-
-CENTER: A badge or seal saying 'Design for Change' with all four concepts contributing to it."
-  alt="Four quadrants summarizing lecture: SOLID Principles (five interlocking gears), Composition over Inheritance (modular vs rigid tree), Safe Inheritance (documented blueprint), Decorator Pattern (nested wrappers). Center badge: 'Design for Change'."
-/>
-
-</Slide>
-
-<Slide>
-
 ## Key Takeaways
 
 <ul style={{fontSize: '0.8em'}}>
@@ -1565,7 +1538,6 @@ CENTER: A badge or seal saying 'Design for Change' with all four concepts contri
 - These same principles scale to entire systems
 - Architecture lectures will revisit these ideas at a larger scale
 
-→ **Questions?**
 </aside>
 
 </Slide>
