@@ -15,7 +15,7 @@
 /* ===================================
    FOUC Prevention (Flash of Unstyled Content)
    ===================================
-   
+
    Hide slides until RevealJS is initialized to prevent
    all slides from being visible and stacked on top of each other
    during the brief initialization period.
@@ -34,7 +34,7 @@
 /* ===================================
    Slide Content Alignment & Padding
    ===================================
-   
+
    Default slide content alignment is top with horizontal padding.
    Individual slides can override with their own styling.
 */
@@ -61,7 +61,7 @@
 /* ===================================
    Slide Title Auto-Fit
    ===================================
-   
+
    Slide titles (h2) shrink to fit on one line rather than wrap.
    Uses CSS scale transform based on container width.
 */
@@ -73,7 +73,7 @@
   width: fit-content !important;
   max-width: 100% !important;
   /* Use a smaller base size that scales with slide width */
-  font-size: clamp(1.2em, 4.5cqi, 1.8em) !important;
+  font-size: clamp(1.0em, 4.5cqi, 1.8em) !important;
 }
 
 /* Main title (h1) on title slides - also prevent wrapping */
@@ -93,10 +93,10 @@
 /* ===================================
    Code Block Styling for RevealJS
    ===================================
-   
+
    By default, code blocks scale to fit rather than scroll.
    This ensures code is visible all at once during presentations.
-   
+
    Add class "scrollable" to a code block's parent to enable scrolling.
 */
 
@@ -280,16 +280,16 @@
 /* ===================================
    Mermaid Diagram CSS Isolation Fix
    ===================================
-   
+
    This fixes CSS conflicts between Reveal.JS and MermaidJS diagrams.
-   
-   Problem: Reveal.JS applies aggressive CSS overrides (especially 
+
+   Problem: Reveal.JS applies aggressive CSS overrides (especially
    display: flex !important on styled divs) that conflict with Mermaid's
    rendering of diagrams using foreignObject elements.
-   
+
    Solution: Surgically override the specific Reveal.JS rules that conflict
    with Mermaid's rendering, without breaking SVG transforms.
-   
+
    See MERMAID_CSS_ANALYSIS.md for full details.
 */
 
@@ -321,7 +321,7 @@
 /* ===================================
    Mermaid Color Scheme for RevealJS
    ===================================
-   
+
    Custom colors that adapt to light/dark themes.
    These override Mermaid's default theme colors.
 */
@@ -429,16 +429,16 @@
 /* ===================================
    React-Chrono Timeline CSS Isolation Fix
    ===================================
-   
+
    This fixes CSS conflicts between Reveal.JS and react-chrono timelines.
-   
-   Problem: Reveal.JS applies aggressive CSS overrides (especially 
+
+   Problem: Reveal.JS applies aggressive CSS overrides (especially
    display: flex !important on styled divs) that conflict with react-chrono's
    horizontal timeline layout and card rendering.
-   
+
    Solution: Override Reveal.JS rules that conflict with react-chrono's
    layout system, ensuring proper display of timeline elements.
-   
+
    Note: react-chrono v3 uses "timeline-*" class names, not "react-chrono-*"
 */
 
@@ -565,7 +565,7 @@
 /* ===================================
    Hide react-chrono overlays on non-active slides
    ===================================
-   
+
    React-chrono creates overlays (menus, dialogs) via React portals
    that escape the shadow DOM. This CSS ensures they're hidden when
    the timeline is not on the current slide.
@@ -617,12 +617,12 @@
 /* ===================================
    PDF Export / Print Mode Styles
    ===================================
-   
+
    When ?print-pdf is in the URL, Reveal.js enters print mode.
    These styles hide Docusaurus UI and optimize for PDF output.
 */
 
-/* Print mode wrapper - shows all slides vertically 
+/* Print mode wrapper - shows all slides vertically
    CRITICAL: Use absolute positioning (not fixed) so content flows for printing.
    Fixed positioning clips content to viewport when printing. */
 .revealWrapper.printMode {
@@ -658,7 +658,7 @@
   display: none !important;
 }
 
-/* Ensure body/html allow scrolling in print mode (screen) 
+/* Ensure body/html allow scrolling in print mode (screen)
    and overflow visible for print (so all slides print) */
 :global(.reveal-print-mode) {
   overflow: visible !important;
@@ -773,7 +773,7 @@
 /* ===================================
    @media print Rules for PDF Export
    ===================================
-   
+
    These rules apply when the browser prints the page.
    Reveal.js adds .reveal-print and .print-pdf classes.
 */
@@ -782,20 +782,20 @@
   /* ===================================
      Print Mode - Critical Fixes for PDF Export
      ===================================
-     
-     When printing with ?print-pdf, Reveal.js creates .pdf-page 
+
+     When printing with ?print-pdf, Reveal.js creates .pdf-page
      elements that must be properly styled for multi-page output.
-     
+
      CRITICAL: Use :global() for all selectors because CSS modules
      hash class names and won't match otherwise.
   */
-  
+
   /* Page settings for landscape slides */
   @page {
     size: letter landscape;
     margin: 0;
   }
-  
+
   /* Reset html/body for print - MUST have height auto and overflow visible */
   :global(html),
   :global(body) {
