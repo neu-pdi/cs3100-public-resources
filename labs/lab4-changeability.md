@@ -5,6 +5,8 @@ image: /img/labs/web/lab4.png
 
 # Lab 4: Changeability and Functional Programming
 
+![Lo-fi pixel art showing three side-by-side panels, each depicting the same smart home notification scenario implemented differently. Left panel: A tangled mess of wires and if/else branches on a whiteboard labeled 'MUD' with a stressed developer. Middle panel: Clean organized boxes connected by arrows labeled 'STRATEGY' with interface/class diagrams on a corkboard. Right panel: A sleek minimalist desk with lambda symbols (λ) floating above a laptop, labeled 'FUNCTIONAL'. At the bottom, two developers sit together at a table between the panels, pointing at the options and discussing (speech bubbles with '?' and thought bubbles), representing the collaborative decision-making aspect. Title: 'Lab 4: Changeability and Functional Programming'. Warm evening lighting, cozy atmosphere.](/img/labs/web/lab4.png)
+
 In this lab, you'll analyze and compare the changeability of different programming styles in Java. You'll work with three versions of the same feature—implemented as a "big ball of mud," using the Strategy pattern with classes, and using lambdas—to understand how design choices affect code changeability.
 
 :::info Grading: What You Need to Submit
@@ -278,7 +280,7 @@ Now you'll practice writing lambdas by implementing device filters for SceneItAl
 
 Open `part2/DeviceFilterExercises.java`. You'll implement several device filters using lambdas.
 
-**Warm-up: Filter available devices**
+#### Warm-up: Filter available devices
 
 ```java
 /**
@@ -293,7 +295,7 @@ public static Predicate<IoTDevice> availableDevices() {
 }
 ```
 
-**Filter by device type**
+#### Filter by device type
 
 ```java
 /**
@@ -308,7 +310,7 @@ public static Predicate<IoTDevice> lightsOnly() {
 }
 ```
 
-**Filter dimmable lights by brightness threshold**
+#### Filter dimmable lights by brightness threshold
 
 ```java
 /**
@@ -422,7 +424,7 @@ Before analyzing specific scenarios, let's think about *categories* of changes t
 
 Now analyze specific scenarios. For each, consider: **Could we have anticipated this category of change?**
 
-**Scenario A: Add SMS Notifications**
+#### Scenario A: Add SMS Notifications
 
 The product team wants to add SMS as a notification channel for users who don't use the app.
 
@@ -430,7 +432,7 @@ The product team wants to add SMS as a notification channel for users who don't 
 
 *Which implementation is easiest to change? Why?*
 
-**Scenario B: Add Notification Logging**
+#### Scenario B: Add Notification Logging
 
 Security audit requires logging all notifications (who was notified, when, what message).
 
@@ -438,7 +440,7 @@ Security audit requires logging all notifications (who was notified, when, what 
 
 *Which implementation is easiest to change? Why? (Hint: Think about the Decorator pattern from Lecture 8)*
 
-**Scenario C: Quick Prototype for User Testing**
+#### Scenario C: Quick Prototype for User Testing
 
 You need to quickly prototype a new "weekend mode" notification strategy for user testing. It doesn't need to be production-quality yet.
 
@@ -446,7 +448,7 @@ You need to quickly prototype a new "weekend mode" notification strategy for use
 
 *Which implementation is easiest to change? Does "production-quality" vs "prototype" affect your answer?*
 
-**Scenario D: The Surprise Requirement**
+#### Scenario D: The Surprise Requirement
 
 Legal informs you that notifications to EU users must go through a different service for GDPR compliance. This affects *all* notification channels.
 
