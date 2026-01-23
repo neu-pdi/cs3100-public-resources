@@ -231,11 +231,12 @@ export const staffMembers: StaffMember[] = [
     headshot: "samuel-schumacher.jpg"
   },
   {
-    name: "Afrah Fathima Shahabuddin",
+    name: "Afrah Fathima",
+    pronouns: "she/her",
     role: "ta",
     campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg"
+    bio: "Second-year MS student in Computer Science, specializing in AI and software engineering.",
+    headshot: "afrah-fathima.jpg"
   },
   {
     name: "Lucia Sun",
