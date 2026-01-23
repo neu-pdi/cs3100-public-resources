@@ -160,10 +160,11 @@ export const staffMembers: StaffMember[] = [
   },
   {
     name: "Zainab Imadulla",
+    pronouns: "she/her",
     role: "ta",
     campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg"
+    bio: "Third year Computer Science major, concentrating in AI.",
+    headshot: "zainab-imadulla.png"
   },
   {
     name: "Pratham Mehta",
