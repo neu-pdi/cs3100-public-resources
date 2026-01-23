@@ -86,10 +86,11 @@ export const staffMembers: StaffMember[] = [
   // Teaching Assistants
   {
     name: "Dhairya Bhatia",
+    pronouns: "he/him",
     role: "ta",
     campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg"
+    bio: "MS student in Computer Science.",
+    headshot: "dhairya-bhatia.jpeg"
   },
   {
     name: "Lauren Brissette",
