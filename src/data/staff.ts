@@ -154,10 +154,11 @@ export const staffMembers: StaffMember[] = [
   },
   {
     name: "Carmen Gray",
+    pronouns: "she/her",
     role: "ta",
     campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg"
+    bio: "Fourth-year environmental engineering major with a minor in computer science who enjoys figure skating, reading, and hiking in her free time.",
+    headshot: "carmen-gray.jpg"
   },
   {
     name: "Zainab Imadulla",
