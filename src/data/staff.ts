@@ -223,10 +223,11 @@ export const staffMembers: StaffMember[] = [
   },
   {
     name: "Samuel Schumacher",
+    pronouns: "he/him",
     role: "ta",
     campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg"
+    bio: "Fourth-year CS student with a concentration in software.",
+    headshot: "samuel-schumacher.jpg"
   },
   {
     name: "Afrah Fathima Shahabuddin",
