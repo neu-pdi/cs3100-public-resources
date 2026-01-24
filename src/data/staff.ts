@@ -86,10 +86,11 @@ export const staffMembers: StaffMember[] = [
   // Teaching Assistants
   {
     name: "Dhairya Bhatia",
+    pronouns: "he/him",
     role: "ta",
     campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg"
+    bio: "MS student in Computer Science.",
+    headshot: "dhairya-bhatia.jpeg"
   },
   {
     name: "Lauren Brissette",
@@ -138,7 +139,7 @@ export const staffMembers: StaffMember[] = [
   },
   {
     name: "Amber Friar",
-    pronouns: "She/Her",
+    pronouns: "she/her",
     role: "ta",
     campus: "Boston",
     bio: "Third year studying Computer Science and Economics",
@@ -153,17 +154,19 @@ export const staffMembers: StaffMember[] = [
   },
   {
     name: "Carmen Gray",
+    pronouns: "she/her",
     role: "ta",
     campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg"
+    bio: "Fourth-year environmental engineering major with a minor in computer science who enjoys figure skating, reading, and hiking in her free time.",
+    headshot: "carmen-gray.jpg"
   },
   {
     name: "Zainab Imadulla",
+    pronouns: "she/her",
     role: "ta",
     campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg"
+    bio: "Third year Computer Science major, concentrating in AI.",
+    headshot: "zainab-imadulla.png"
   },
   {
     name: "Pratham Mehta",
@@ -223,17 +226,19 @@ export const staffMembers: StaffMember[] = [
   },
   {
     name: "Samuel Schumacher",
+    pronouns: "he/him",
     role: "ta",
     campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg"
+    bio: "Fourth-year CS student with a concentration in software.",
+    headshot: "samuel-schumacher.jpg"
   },
   {
-    name: "Afrah Fathima Shahabuddin",
+    name: "Afrah Fathima",
+    pronouns: "she/her",
     role: "ta",
     campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg"
+    bio: "Second-year MS student in Computer Science, specializing in AI and software engineering.",
+    headshot: "afrah-fathima.jpg"
   },
   {
     name: "Lucia Sun",
