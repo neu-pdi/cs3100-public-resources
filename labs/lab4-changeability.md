@@ -65,6 +65,7 @@ Read this to students:
 **Pair Formation (3 minutes):**
 - Have students pair up with someone they haven't worked with recently
 - If odd number, form one group of three
+- **Step 1:** Introduce yourself to your partner. Ask how they are connecting with the class so far. You will note your partner's name in `REFLECTION.md`.
 
 :::
 
@@ -491,6 +492,10 @@ You're building a notification system for SceneItAll that will need to support 1
 ## Reflection
 
 You should have been writing in `REFLECTION.md` throughout the lab. Before submitting, make sure you've answered all of these questions:
+
+### Partner Introduction
+
+**Partner's Name:** Record your partner's name here.
 
 ### Part 1 Analysis
 
