@@ -311,6 +311,20 @@ public static Predicate<IoTDevice> lightsOnly() {
 }
 ```
 
+#### Filter by critical device
+
+```java
+/**
+   * Returns a predicate that tests if a device is a critical device.
+   *
+   * @return a predicate that returns true if the device is critical
+   */
+  public static Predicate<IoTDevice> criticalDevices() {
+    // TODO: Return a lambda that checks if a device is critical
+    return null;
+  }
+```
+
 #### Filter dimmable lights by brightness threshold
 
 ```java
