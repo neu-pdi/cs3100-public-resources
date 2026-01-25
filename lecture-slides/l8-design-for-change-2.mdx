@@ -7,6 +7,7 @@ image: /img/lectures/web/l8.png
 import RevealJS, { Slide } from '@site/src/components/RevealJS';
 import Img from '@site/src/components/Img';
 import PollSlide from '@site/src/components/PollSlide';
+import SolidPrinciple from "@site/src/components/SolidPrinciple"
 
 <RevealJS transition="slide">
 
@@ -163,6 +164,7 @@ public class SubmissionService {
 }
 ```
 
+<SolidPrinciple principle="S" />
 <aside className="notes">
 **The problem:**
 - Five different responsibilities in one class
@@ -204,7 +206,7 @@ public class SubmissionProcessor {
 <p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#4CAF50'}}>
   ✓ Each class has one job. Changes to linting don't touch testing or grading code.
 </p>
-
+<SolidPrinciple principle="S" />
 <aside className="notes">
 **Benefits:**
 - Each class has a single, focused responsibility
@@ -223,6 +225,25 @@ public class SubmissionProcessor {
 
 <Slide>
 
+## Can you create a subtype without modifying existing code?
+
+<PollSlide code={`
+public interface IoTDevice {
+    void identify();
+    boolean isAvailable();
+}
+
+public class Light implements IoTDevice {
+    // ... implementation ...
+}`}
+  choices={["Yes, for both types", "Only for IoTDevice", "Only for Light", "Not for either"]}
+/>
+<SolidPrinciple principle="O" />
+</Slide>
+
+
+<Slide>
+
 ## Good Modules Can Be Extended Without Being Modified
 
 <p style={{fontSize: '0.9em', fontWeight: 'bold', color: '#9370DB'}}>
@@ -234,7 +255,7 @@ public class SubmissionProcessor {
   prompt="A split illustration showing the Open/Closed Principle. On the left side (labeled 'OPEN for Extension'), a building/module with a clearly marked 'Extension Port' or plug socket where new modules can be added. A new module is being plugged in without any tools or construction. On the right side (labeled 'CLOSED for Modification'), the same building's internal structure is shown behind a glass wall or vault door with a 'Do Not Modify' sign - you can see inside but can't change it. The overall message: you can add new behavior by extending, but you shouldn't need to modify existing code. Clean, architectural illustration style."
   alt="Split illustration: Left side shows a building labeled 'OPEN for Extension' with a clear extension port where new modules plug in easily. Right side shows the same building's internals behind glass labeled 'CLOSED for Modification' with a Do Not Modify sign - visible but protected."
 />
-
+<SolidPrinciple principle="O" />
 <aside className="notes">
 **The goal:**
 - Add new behavior without touching existing code
@@ -249,12 +270,13 @@ public class SubmissionProcessor {
 
 </Slide>
 
+
 <Slide>
 
 ## Interfaces Enable Extension Without Modification
 
 ```java
-// Existing interface - CLOSED for modification
+// Existing interface - OPEN for extension, CLOSED for modification
 public interface IoTDevice {
     void identify();
     boolean isAvailable();
@@ -264,7 +286,9 @@ public interface IoTDevice {
 public class Light implements IoTDevice {
     // ... implementation ...
 }
-
+```
+<div className="fragment">
+```java
 // OPEN for extension - add new device types freely!
 public class SmartThermostat implements IoTDevice {
     @Override
@@ -281,6 +305,8 @@ public class SmartThermostat implements IoTDevice {
 <p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#4CAF50'}}>
   Adding `SmartThermostat` doesn't require changing `IoTDevice` or `Light`.
 </p>
+</div>
+<SolidPrinciple principle="O" />
 
 <aside className="notes">
 **Key insight:**
@@ -299,10 +325,19 @@ public class SmartThermostat implements IoTDevice {
 
 <Slide>
 
+## Poll: Which can be subtypes of Mammal?
+
+<PollSlide choices={["Bird", "Fish", "Person", "Plant", "Cat"]}
+/>
+<SolidPrinciple principle="L" />
+</Slide>
+
+<Slide>
+
 ## Subclasses Must Be Substitutable for Their Parent Classes
 
 <p style={{fontSize: '0.9em', fontWeight: 'bold', color: '#9370DB'}}>
-  Liskov Substitution Principle: "Objects of a superclass should be replaceable with objects of its subclasses without breaking the application."
+  Liskov Substitution Principle: Objects of a supertype should be replaceable with objects of its subtypes without breaking the application.
 </p>
 
 <Img
@@ -310,10 +345,13 @@ public class SmartThermostat implements IoTDevice {
   alt="Liskov Substitution Principle illustrated as socket compatibility testing - DimmableLight plugs in and works, BrokenLight's pins fit but produces smoke instead of light"
 />
 
+<SolidPrinciple principle="L" />
+
 <aside className="notes">
 **We introduced this in Lecture 2:**
 - Behavioral subtyping
-- Subclasses must honor the contract of the parent
+- Subtypes must honor the contract of the parent
+- The supertype can be a class or an interface
 
 **Why it matters:**
 - Code written for the supertype should work with any subtype
@@ -336,18 +374,18 @@ public class SmartThermostat implements IoTDevice {
 
 ```java
 public class DimmableLight extends Light {
-    private int brightness = 100;
+  private int brightness = 100;
 
-    @Override
-    public void turnOn() {
-        super.turnOn();
-        // Contract honored: light turns on
-        // Just adds dimming capability
-    }
+  @Override
+  public void turnOn() {
+    // Honor contract by turning on light
+    super.turnOn();
+    // Can also add dimming capability
+  }
 
-    public void setBrightness(int b) {
-        this.brightness = b;
-    }
+  public void setBrightness(int b) {
+    this.brightness = b;
+  }
 }
 ```
 
@@ -359,13 +397,12 @@ public class DimmableLight extends Light {
 
 ```java
 public class BrokenLight extends Light {
-    @Override
-    public void turnOn() {
-        throw new UnsupportedOperationException(
-            "This light is broken!");
-        // Contract violated!
-        // A Light should turn on
-    }
+  @Override
+  public void turnOn() {
+    // Does not honor contract!
+    throw new UnsupportedOperationException(
+      "This light can't be turned on!");
+  }
 }
 ```
 
@@ -376,6 +413,8 @@ public class BrokenLight extends Light {
 <p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#FF9800'}}>
   Code that calls `light.turnOn()` shouldn't need to check if it's a `BrokenLight` first.
 </p>
+
+<SolidPrinciple principle="L" />
 
 <aside className="notes">
 **The test:**
@@ -391,6 +430,58 @@ public class BrokenLight extends Light {
 </aside>
 
 </Slide>
+<Slide>
+
+## Poll: What type of interface(s) to prefer?
+
+<div style={{display: 'flex', gap: '2em', fontSize: '0.7em'}}>
+<div style={{flex: 1}}>
+
+**A: One large interface**
+```java
+public interface SmartDevice {
+    void turnOn();
+    void turnOff();
+    void setBrightness(int level);
+    void setColorTemperature(int temp);
+    void setFanSpeed(int speed);
+}
+```
+
+</div>
+<div style={{flex: 1}}>
+
+**B: Many small interfaces**
+```java
+public interface Switchable {
+    void turnOn();
+    void turnOff();
+}
+
+public interface Dimmable {
+    void setBrightness(int level);
+}
+
+public interface ColorAdjustable {
+    void setColorTemperature(int temp);
+}
+```
+
+</div>
+</div>
+<SolidPrinciple principle="I" />
+
+<aside className="notes">
+Give students a moment to vote before revealing that B demonstrates the Interface Segregation Principle.
+
+**Discussion points:**
+- What if you have a simple fan that can only turn on/off?
+- With A, you'd have to implement methods you don't need
+- With B, just implement `Switchable`
+</aside>
+
+</Slide>
+
 
 <Slide>
 
@@ -411,6 +502,8 @@ RIGHT SIDE (Good - labeled 'Segregated Interfaces'): Three small, focused tools:
 The contrast shows how segregated interfaces let each class implement only relevant methods."
   alt="Left side shows a giant Swiss Army knife 'SmartDevice' interface with too many methods, overwhelming a simple Fan. Right side shows three focused interfaces (Switchable, Dimmable, ColorAdjustable) - SimpleFan implements only Switchable, SmartBulb implements all three."
 />
+
+<SolidPrinciple principle="I" />
 
 <aside className="notes">
 **This is SRP for interfaces:**
@@ -456,6 +549,8 @@ public interface ColorAdjustable {
 }
 ```
 
+<SolidPrinciple principle="I" />
+
 <aside className="notes">
 **The improvement:**
 - Each interface has one focused purpose
@@ -495,6 +590,8 @@ public class SmartBulb implements Switchable, Dimmable, ColorAdjustable {
   ✓ Each class implements exactly the interfaces it needs—no more, no less.
 </p>
 
+<SolidPrinciple principle="I" />
+
 <aside className="notes">
 **Benefits:**
 - Clear what each device supports
@@ -508,6 +605,62 @@ public class SmartBulb implements Switchable, Dimmable, ColorAdjustable {
 
 <Slide>
 
+## Poll: Which dependency is better?
+
+<div style={{display: 'flex', gap: '2em', fontSize: '0.65em'}}>
+<div style={{flex: 1}}>
+
+**A: Dependency on concrete type**
+
+```java
+public class UserRepository {
+    private MySQL database;
+
+    public UserRepository(MySQL database) {
+        this.database = database;
+    }
+}
+```
+
+</div>
+<div style={{flex: 1}}>
+
+**B: Dependency on abstract type**
+
+```java
+public class UserRepository {
+    private Database database;
+
+    public UserRepository(Database database) {
+        this.database = database;
+    }
+}
+```
+
+</div>
+</div>
+
+<div style={{display: 'flex', justifyContent: 'center', fontSize: '0.65em'}}>
+
+```mermaid
+classDiagram
+    class Database {
+        <<interface>>
+    }
+    Database <|.. MySQL
+    Database <|.. PostgreSQL
+    Database <|.. MongoDB
+    style Database fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+</div>
+
+<SolidPrinciple principle="D" />
+
+</Slide>
+
+<Slide>
+
 ## High-Level Modules Should Not Depend on Low-Level Details
 
 <p style={{fontSize: '0.9em', fontWeight: 'bold', color: '#9370DB'}}>
@@ -515,16 +668,16 @@ public class SmartBulb implements Switchable, Dimmable, ColorAdjustable {
 </p>
 
 <Img
-  src="/img/lectures/web/l8-dep-inversion.webp"
+  src="/img/lectures/web/l8-dep-inversion.jpg"
   prompt="An illustration showing Dependency Inversion Principle using a power cord metaphor.
 
-LEFT SIDE (Bad - 'Direct Dependency'): A laptop with its power cord's bare wires shoved directly into a hole in the wall - no outlet, no plug, just exposed copper wire jammed into drywall. The wall has 'MySQL' written on it. Sparks fly. Thought bubble: 'I can ONLY work with this wall!'
+LEFT SIDE (Bad - 'Direct Dependency'): A laptop with a power cord coming out of it. The plug is directly soldered into a power source labeled 'MySQL'. Sparks fly. Thought bubble: 'I can ONLY work with this power source!'
 
-RIGHT SIDE (Good - 'Depend on Abstraction'): The same laptop with a standard power plug (labeled 'Database'). Multiple standard wall outlets below labeled 'MySQL', 'PostgreSQL', 'MongoDB'. The laptop can plug into any of them. Thought bubble: 'I work with any outlet!'
-
-The contrast: direct wiring = can't change, standard plug = swap freely."
-  alt="Left: Laptop with bare wires jammed directly into wall labeled MySQL - sparks flying. Right: Laptop with standard plug can connect to any of several outlets (MySQL, PostgreSQL, MongoDB)."
+RIGHT SIDE (Good - 'Depend on Abstraction'): The same laptop with a power cord coming out of it. The plug (labeled 'Database') is connected to one of many wall sockets labeled 'MySQL', 'PostgreSQL', 'MongoDB'. The laptop can plug into any of them. Thought bubble: 'I work with any outlet!'"
+  alt="Left: Laptop with bare wires solderd to power source labeled MySQL - sparks flying. Right: Laptop with standard plug can connect to any of several outlets (MySQL, PostgreSQL, MongoDB)."
 />
+
+<SolidPrinciple principle="D" />
 
 <aside className="notes">
 **The inversion:**
@@ -595,6 +748,8 @@ public interface Database {
     void save(Submission submission);
 }
 ```
+
+<SolidPrinciple principle="D" />
 
 <aside className="notes">
 **Benefits:**
