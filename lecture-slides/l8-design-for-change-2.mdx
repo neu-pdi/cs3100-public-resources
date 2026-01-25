@@ -830,8 +830,8 @@ public interface Database {
 
 ## Subclasses Depend on Superclass Implementation Details
 
-<p style={{fontSize: '0.85em'}}>
-  Imagine we want a `Set` that counts how many elements have been added:
+<p style={{fontSize: '0.7em'}}>
+  Imagine we want a `Set` that counts how many times its `add()` method was called.:
 </p>
 
 ```java
@@ -841,7 +841,7 @@ public class InstrumentedHashSet<E> extends HashSet<E> {
     @Override
     public boolean add(E e) {
         addCount++;
-        return super.add(e);
+        return super.add(e); // return true if added
     }
 
     @Override
@@ -854,7 +854,7 @@ public class InstrumentedHashSet<E> extends HashSet<E> {
 }
 ```
 
-<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+<p style={{fontSize: '0.7em', marginTop: '0.5em'}}>
   What does `getAddCount()` return after `s.addAll(Arrays.asList("A", "B", "C"))`?
 </p>
 
@@ -1157,6 +1157,32 @@ public final class SubmissionValidator {
 
 </Slide>
 
+<Slide>
+
+## Design Patterns
+
+<div style={{display: 'flex', gap: '2em', alignItems: 'center'}}>
+<div style={{flex: 2}}>
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+Popularized in a 1994 book _Design Patterns: Elements of Reusable Object-Oriented Software_
+
+**Strategy**: swap algorithms at runtime via a common interface
+
+**Decorator**: wrap objects to dynamically add behavior
+
+**Template Method**: enable subclasses to customize algorithm steps
+</p>
+</div>
+<div style={{flex: 1}}>
+
+<Img src="/img/lectures/web/l8-design-patterns-book-cover.jpg"
+  alt="Book cover: Design Patterns: Elements of Reusable Object-Oriented Software" />
+
+</div>
+</div>
+
+</Slide>
+
 {/* ============================================ */}
 {/* ARC 4: DECORATOR PATTERN */}
 {/* ============================================ */}
@@ -1173,7 +1199,7 @@ public final class SubmissionValidator {
 classDiagram
     class Component {
         <<interface>>
-        +operation()
+        +operation()*
     }
 
     class ConcreteComponent {
@@ -1196,11 +1222,13 @@ classDiagram
         +addedState
     }
 
-    Component <|-- ConcreteComponent
-    Component <|-- Decorator
+    Component <|.. ConcreteComponent
+    Component <|.. Decorator
     Decorator <|-- ConcreteDecoratorA
     Decorator <|-- ConcreteDecoratorB
     Decorator o-- Component
+
+style Component fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
 ```
 
 <aside className="notes">
@@ -1291,6 +1319,59 @@ sequenceDiagram
 
 <Slide>
 
+## A Visual Decorator Example
+
+<div style={{display: 'flex', gap: '2em', alignItems: 'center'}}>
+<div>
+```mermaid
+classDiagram
+    class VisualComponent {
+        <<interface>>
+        draw()*
+    }
+    class TextView {
+        draw()
+    }
+    class Decorator {
+        <<interface>>
+        draw()*
+    }
+    class ScrollDecorator {
+        scrollPosition
+        draw()
+        scrollTo()
+    }
+    class BorderDecorator {
+        borderWidth
+        draw()
+        crawRoder()
+    }
+
+    VisualComponent <|-- TextView
+    VisualComponent <|-- Decorator
+    VisualComponent <--o Decorator : component
+    Decorator <|-- ScrollDecorator
+    Decorator <|-- BorderDecorator
+
+    style VisualComponent fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style Decorator fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    ```
+    </div>
+    <div>
+
+<Img src="/img/lectures/web/l8-reader-overlays-stretched.png"/>
+
+</div>
+</div>
+
+<p style={{fontSize: '0.6em'}}>
+  Source: https://www.cs.unc.edu/~stotts/GOF/hires/pat4dfso.htm
+</p>
+
+</Slide>
+
+<Slide>
+
 ## Decorators Avoid the Class Explosion Problem
 
 <Img
@@ -1347,16 +1428,15 @@ Much simpler! A happy developer."
 
 <Slide>
 
-## Decorators Support All Four SOLID Principles
+## Decorators Support Good Design Principles
 
-<ul style={{fontSize: '0.85em'}}>
-  <li><strong>Add responsibilities dynamically:</strong> Stack decorators at runtime</li>
+<ul style={{fontSize: '0.7em'}}>
   <li><strong>Single Responsibility Principle:</strong> Each decorator does one thing</li>
   <li><strong>Open/Closed Principle:</strong> Add new decorators without modifying existing code</li>
   <li><strong>Avoid class explosion:</strong> Compose instead of creating subclasses for every combination</li>
 </ul>
 
-<p style={{fontSize: '0.85em', marginTop: '1.5em', fontWeight: 'bold'}}>
+<p style={{fontSize: '0.7em', marginTop: '1', fontWeight: 'bold'}}>
   Example combinations without new classes:
 </p>
 
@@ -1633,18 +1713,27 @@ public abstract class AbstractLight implements Light {
 
 <Slide>
 
-## Choose Inheritance Only When It Clearly Fits
+## When to Use Inheritance
 
 <div style={{fontSize: '0.75em'}}>
 
-**USE inheritance when:**
 1. There's a genuine **"is-a" relationship** fundamental to the domain
 2. You **control both base and subclasses** (or trust the base class designer)
 3. The base class is **explicitly designed for inheritance** with clear documentation
 4. You're implementing a **well-established pattern** like Template Method
 5. You need to share code between **closely related classes**
+</div>
 
-**AVOID inheritance when:**
+<aside className="notes">
+**The key question:**
+- Is this truly an "is-a" relationship?
+- Or am I just trying to reuse some code?
+</aside>
+</Slide>
+
+<Slide>
+<div style={{fontSize: '0.75em'}}>
+## When to Avoid Inheritance
 1. You're trying to **reuse code** but there's no natural "is-a" relationship
 2. The base class **wasn't designed for inheritance**
 3. You want to **modify behavior** of existing classes (use Decorator)
@@ -1654,9 +1743,6 @@ public abstract class AbstractLight implements Light {
 </div>
 
 <aside className="notes">
-**The key question:**
-- Is this truly an "is-a" relationship?
-- Or am I just trying to reuse some code?
 
 **If just reusing code:**
 - Composition is almost always better
