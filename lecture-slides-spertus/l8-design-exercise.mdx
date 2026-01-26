@@ -40,8 +40,8 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 <aside className="notes">
 - Ellen designed and implemented the sprite system.
-- Sprites are 2D images used in video games.
-- The moving game elements, such as cars, are sprites.
+- Sprites are 2D images used in video games, such as Frogger (shown).
+- The moving game elements, such as cars and the frog, are sprites.
 </aside>
 
 </Slide>
@@ -76,26 +76,27 @@ classDiagram
 </div>
 <div style={{flex: 1}}>
 
-<Img src="/img/lectures/web/l8ex-imagesprite-blocks.png" />
+<Img src="/img/lectures/web/l8ex-imagesprite-blocks.png"
+  alt="Blocks showing ImageSprite method calls and a cute graphic of a mole"
+/>
 
 </div>
 </div>
 <aside className="notes">
+- Ellen implemented ImageSprite before other types of sprites.
 - Properties are shown in the class diagram.
 - xLeft and yTop refer to the top-level corner of the image.
 - Properties heading, interval, and speed have to do with movement
 - Right side shows App Inventor method blocks
 - Point out the moveTo() method
-- (The mole diagram was created by Yun Miao when she was a Mills student. She now works at Google.)
+- The mole diagram was created by Yun Miao when she was a Mills student. She now is a Google engineer.
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Ball
-
-
+## Think, Pair, Share: Ball
 
 <div style={{display: 'flex', gap: '2em', alignItems: 'center'}}>
 <div style={{flex: 1}}>
@@ -173,6 +174,9 @@ classDiagram
     Sprite <|.. Ball
     ```
 
+<p className="fragment">
+What's wrong with this?
+</p>
 
 <aside className="notes">
 - This was Ellen's solution.
@@ -184,7 +188,7 @@ classDiagram
 
 <Slide>
 
-## The Overflow Article (part 1)
+## My Most Embarrassing Mistakes as a Programmer
 
 <Img src="/img/lectures/web/l8ex-overflow-blog-post.png"
   alt="Screenshot of post in the Stack Overflow blog entitled 'My Most Embarrassing Mistakes as a Programmer (so far)`.
@@ -211,7 +215,9 @@ corner of where the image was placed on the enclosing canvas.
 </p>
 
 <div style={{textAlign: 'center'}}>
-  <Img src="/img/lectures/web/l8ex-imagesprite-placement.png" width={300} />
+  <Img src="/img/lectures/web/l8ex-imagesprite-placement.png" width={300}
+    alt="Image showing (x,y) at the top-left corner of a cute mole graphic"
+   />
   <p style={{marginTop: '.25em', fontSize: '0.7em'}}>
     <em>The image sprite's x- and y-coordinates specify its upper left corner. This is a reasonable design decision.</em>
   </p>
@@ -229,7 +235,9 @@ specify the upper-left corner of the bounding box containing the ball.
 </p>
 
 <div style={{textAlign: 'center'}}>
-  <Img src="/img/lectures/web/l8ex-ball-placement.png" width={300} />
+  <Img src="/img/lectures/web/l8ex-ball-placement.png" width={300}
+   alt="Image showing (x,y) at the top-left corner of a circle"
+ />
   <p style={{marginTop: '.25em', fontSize: '0.7em'}}>
     <em>The ball’s x- and y-coordinates specify the upper left corner of its bounding box. This is a terrible design decision.</em>
   </p>
@@ -246,7 +254,8 @@ everywhere else circles are specified.
 </p>
 
 <div style={{textAlign: 'center'}}>
-  <Img src="/img/lectures/web/l8ex-ball-placement.png" width={300} />
+  <Img src="/img/lectures/web/l8ex-right-ball-placement.png" width={300}
+   alt="Image showing (x,y) at the corner of a circle"/>
   <p style={{marginTop: '.25em', fontSize: '0.7em'}}>
     <em>The ball’s x- and y-coordinates specify its center. This is the right design decision.</em>
   </p>
@@ -280,7 +289,7 @@ Users will be right to wonder why on earth the origin would ever be anywhere but
 </p>
 
 <p className="fragment">
-Answer: Ten years ago, one programmer was lazy and didn't create the obvious API.
+Answer: Back in 2009, one programmer was lazy and didn't create the obvious API.
 </p>
 
 </div>
@@ -341,7 +350,6 @@ pushed some code to production instead of testing.'
 Panel 3: 'You what?' 'I'm sorry...I...I'm new to this...I won't do it again...I...I...'
 Panel 4: Celebratory teammates say 'Finally! Welcome to the club!'"
 />
-
 
 </Slide>
 
