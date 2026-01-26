@@ -66,11 +66,11 @@
 /* ===================================
    FOUC Prevention (Flash of Unstyled Content)
    ===================================
-   
+
    Before RevealJS initializes, all slides are rendered in the DOM
    and would be visible/stacked on top of each other. This CSS
    hides the slides container until RevealJS takes over.
-   
+
    RevealJS adds .present class to the current slide after init.
    We detect this and reveal the slides container.
 */
@@ -161,7 +161,7 @@
 }
 
 /* Note: Removed overly broad "div[style] { display: flex }" rule that was
-   forcing all styled divs to flex row. Multi-column layouts should use 
+   forcing all styled divs to flex row. Multi-column layouts should use
    display: grid with gridTemplateColumns, or explicitly set display: flex. */
 
 /* Ensure code blocks in RevealJS slides use full width */
@@ -619,10 +619,10 @@ html.reveal-fullscreen #reveal-fullscreen-portal .reveal .backgrounds {
    ===================================
 
    Styles for Mermaid class diagrams with dark mode support.
-   
+
    Mermaid generates predictable IDs for class diagram nodes:
    classId-ClassName-N (e.g., classId-Unit-0, classId-Quantity-1)
-   
+
    We target specific "context" classes (Unit, Quantity, Ingredient from A1)
    to show them grayed out, indicating they're provided/not to be implemented.
 */
@@ -653,4 +653,9 @@ html.reveal-fullscreen #reveal-fullscreen-portal .reveal .backgrounds {
 [data-theme='dark'] .docusaurus-mermaid-container [id^="classId-Quantity-"] text,
 [data-theme='dark'] .docusaurus-mermaid-container [id^="classId-Ingredient-"] text {
   fill: #bbb !important;
+}
+
+/* Improve spacing in ordered lists. */
+.reveal ol li {
+  padding-left: 0.5em;
 }
