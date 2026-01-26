@@ -841,7 +841,7 @@ public interface Database {
 ## Subclasses Depend on Superclass Implementation Details
 
 <p style={{fontSize: '0.7em'}}>
-  Imagine we want a `Set` that counts how many times its `add()` method is called:
+  Imagine we want a `Set` that counts how many items are passed to `add()` and `addAll()`:
 </p>
 
 ```java
@@ -973,6 +973,38 @@ public class InstrumentedSet<E> implements Set<E> {
 </aside>
 
 </Slide>
+
+<Slide>
+## HashSet Class Hierarchy
+
+```mermaid
+classDiagram
+    class AbstractCollectionE["AbstractCollection&lt;E&gt;"] {
+        <<abstract>>
+        +add(E e)
+        +addAll(Collection c)
+    }
+    
+    class AbstractSetE["AbstractSet&lt;E&gt;"] {
+        <<abstract>>
+    }
+    
+    class HashSetE["HashSet&lt;E&gt;"] {
+    }
+    
+    class InstrumentedSetE["InstrumentedSet&lt;E&gt;"] {
+        -int addCount
+        +getAddCount() int
+        +add(E e) boolean
+        +addAll(Collection c) boolean
+    }
+
+    AbstractCollectionE <|-- AbstractSetE
+    AbstractSetE <|-- HashSetE
+    HashSetE <|-- InstrumentedSetE
+```
+</Slide>
+
 
 <Slide>
 
@@ -1257,6 +1289,81 @@ style Component fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
 </aside>
 
 </Slide>
+
+<Slide>
+
+## Java InputStream
+
+```mermaid
+classDiagram
+    class InputStream {
+        <<abstract>>
+        +read()*
+        +close()*
+        +available()*
+    }
+    
+    class FileInputStream {
+        +FileInputStream(String name)
+        +FileInputStream(File file)
+        +read()
+        +close()
+        +available()
+    }
+    
+    class ByteArrayInputStream {
+        +ByteArrayInputStream(byte[] buf)
+        +read()
+        +close()
+        +available()
+    }
+    
+    class FilterInputStream {
+        <<abstract>>
+        -InputStream in
+        #FilterInputStream(InputStream in)
+        +read()
+        +close()
+        +available()
+    }
+    
+    class BufferedInputStream {
+        -byte[] buf
+        +BufferedInputStream(InputStream in)
+        +BufferedInputStream(InputStream in, int size)
+        +read()
+        +close()
+        +mark()
+        +reset()
+    }
+    
+    class DataInputStream {
+        +DataInputStream(InputStream in)
+        +readInt()
+        +readDouble()
+        +readUTF()
+        +read()
+    }
+    
+    class PushbackInputStream {
+        -byte[] buf
+        +PushbackInputStream(InputStream in)
+        +PushbackInputStream(InputStream in, int size)
+        +unread()
+        +read()
+    }
+
+    InputStream <|-- FileInputStream
+    InputStream <|-- ByteArrayInputStream
+    InputStream <|-- FilterInputStream
+    FilterInputStream <|-- BufferedInputStream
+    FilterInputStream <|-- DataInputStream
+    FilterInputStream <|-- PushbackInputStream
+    FilterInputStream o-- InputStream : wraps
+```
+
+</Slide>
+
 
 <Slide>
 
