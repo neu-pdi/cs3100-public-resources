@@ -1343,7 +1343,8 @@ classDiagram
         draw()
     }
     class Decorator {
-        <<interface>>
+        <<abstract>>
+        -component: VisualComponent
         draw()*
     }
     class ScrollDecorator {
@@ -1364,8 +1365,7 @@ classDiagram
     Decorator <|-- BorderDecorator
 
     style VisualComponent fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
-    style Decorator fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
-    ```
+        ```
     </div>
     <div>
 
