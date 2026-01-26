@@ -674,7 +674,7 @@ classDiagram
 LEFT SIDE (Bad - 'Direct Dependency'): A laptop with a power cord coming out of it. The plug is directly soldered into a power source labeled 'MySQL'. Sparks fly. Thought bubble: 'I can ONLY work with this power source!'
 
 RIGHT SIDE (Good - 'Depend on Abstraction'): The same laptop with a power cord coming out of it. The plug (labeled 'Database') is connected to one of many wall sockets labeled 'MySQL', 'PostgreSQL', 'MongoDB'. The laptop can plug into any of them. Thought bubble: 'I work with any outlet!'"
-  alt="Left: Laptop with bare wires solderd to power source labeled MySQL - sparks flying. Right: Laptop with standard plug can connect to any of several outlets (MySQL, PostgreSQL, MongoDB)."
+  alt="Left: Laptop with bare wires soldered to power source labeled MySQL - sparks flying. Right: Laptop with standard plug can connect to any of several outlets (MySQL, PostgreSQL, MongoDB)."
 />
 
 <SolidPrinciple principle="D" />
@@ -831,7 +831,7 @@ public interface Database {
 ## Subclasses Depend on Superclass Implementation Details
 
 <p style={{fontSize: '0.7em'}}>
-  Imagine we want a `Set` that counts how many times its `add()` method was called.:
+  Imagine we want a `Set` that counts how many times its `add()` method is called:
 </p>
 
 ```java
@@ -1344,7 +1344,7 @@ classDiagram
     class BorderDecorator {
         borderWidth
         draw()
-        crawRoder()
+        drawBorder()
     }
 
     VisualComponent <|-- TextView
@@ -1365,7 +1365,7 @@ classDiagram
 </div>
 
 <p style={{fontSize: '0.6em'}}>
-  Source: https://www.cs.unc.edu/~stotts/GOF/hires/pat4dfso.htm
+  Source: <em>Design Patterns</em> (1995) by Gamma et al., chapter 4
 </p>
 
 </Slide>
@@ -1436,7 +1436,7 @@ Much simpler! A happy developer."
   <li><strong>Avoid class explosion:</strong> Compose instead of creating subclasses for every combination</li>
 </ul>
 
-<p style={{fontSize: '0.7em', marginTop: '1', fontWeight: 'bold'}}>
+<p style={{fontSize: '0.7em', marginTop: '1em', fontWeight: 'bold'}}>
   Example combinations without new classes:
 </p>
 
