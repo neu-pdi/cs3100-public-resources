@@ -74,8 +74,70 @@ import SolidPrinciple from "@site/src/components/SolidPrinciple"
 ## Poll: Have you read any <em>Effective Java</em>?
 
 <PollSlide
+  username="espertus"
   choices={["Never heard of it", "Not yet", "I've found it online", "I've skimmed parts", "I've read 1 or 2 items", "I've read many items"]}
 />
+
+</Slide>
+
+<Slide>
+
+## Announcements
+
+
+<p style={{fontSize: '0.65em', marginTop: '0em', color: '#888'}}>
+
+* The practice quiz has been posted on the [shared Canvas site](https://northeastern.instructure.com/courses/239399), as [announced](https://northeastern.instructure.com/courses/239399/discussion_topics/3082634).
+
+* The real quiz is on February 2 (next Monday). 
+  * It is closed-note and on paper.
+  * Bring something to write with.
+  * It covers material through today's lecture and Lab 3.
+  * No electronics (including headphones) are allowed.
+
+* There will be an exercise in class on Wednesday requiring a writing implement. 
+* It's a good idea to always bring pen and paper to class.
+</p>
+
+</Slide>
+
+<Slide>
+
+## A Second Look at Stamp Coupling
+
+<div style={{display: 'flex', gap: '1em', alignItems: 'flex-start'}}>
+
+```java
+class EmailService {
+    void sendNotification(Submission submission) {
+        // Only uses 3 fields but receives entire complex structure
+        String toEmail = submission.student.email;        // ✓ Used
+        String name = submission.student.name;            // ✓ Used
+        String assignmentName = submission.assignment.name; // ✓ Used
+        String body = "Hi " + name + ", you received feedback on " + assignmentName;
+        send(toEmail, "New Feedback", body);
+    }
+}
+```
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#8BC34A'}}>
+  ⚠ EmailService depends on the Submission structure.
+</p>
+
+<p style={{fontSize: '0.65em', marginTop: '0em', color: '#888'}}>
+* Passing a user-defined type isn't bad. 
+
+* It's bad that the type isn't well encapsulated.
+
+* Just be aware that there is coupling.
+</p>
+
+<aside className="notes">
+- A previous lecture implied passing a user-defined type is bad.
+- Ellen disagrees.
+</aside>
 
 </Slide>
 
@@ -247,6 +309,7 @@ public class Light implements IoTDevice {
     // ... implementation ...
 }`}
   choices={["Yes, for both types", "Only for IoTDevice", "Only for Light", "Not for either"]}
+  username="espertus"
 />
 <SolidPrinciple principle="O" />
 </Slide>
@@ -338,6 +401,7 @@ public class SmartThermostat implements IoTDevice {
 ## Poll: Which can be subtypes of Mammal?
 
 <PollSlide choices={["Bird", "Fish", "Person", "Plant", "Cat"]}
+  username="espertus"
 />
 <SolidPrinciple principle="L" />
 </Slide>
@@ -1363,7 +1427,6 @@ classDiagram
 ```
 
 </Slide>
-
 
 <Slide>
 
