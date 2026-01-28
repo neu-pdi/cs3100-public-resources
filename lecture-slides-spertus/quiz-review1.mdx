@@ -406,8 +406,6 @@ In CookYourBooks, `ExactQuantity`, `FractionalQuantity`, and `RangeQuantity` all
 
 ```mermaid
 classDiagram
-
-
     class Quantity {
         <<abstract>>
         double toDecimal()*
@@ -463,6 +461,129 @@ The compiler verifies that `ExactQuantity` is assignable to `Quantity`. <br/>Thi
     "No type checking occurs"
   ]}
   correct={1}
+/>
+
+</Slide>
+
+<Slide>
+
+## Question 4: Abstract Classes
+
+Why is `Quantity` declared as an `abstract class` rather than a regular class?
+
+<QuizSlide
+  answers={[
+    "Abstract classes use less memory",
+    "It has abstract methods like toDecimal() that subclasses must implement, and it should not be instantiated directly",
+    "Java requires all parent classes to be abstract",
+    "It makes the class immutable"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+### A Closer Look at Quantity
+
+```mermaid
+classDiagram
+    class Quantity {
+        <<abstract>>
+        -Unit unit
+        #Quantity(Unit unit)
+        +Unit getUnit()
+        +double toDecimal()*
+        +String toString()
+    }
+
+    class ExactQuantity {
+        double toDecimal()
+    }
+
+    class FractionalQuantity {
+        double toDecimal()
+    }
+
+    class RangeQuantity {
+        double toDecimal()
+    }
+
+    Quantity <|-- ExactQuantity
+    Quantity <|-- FractionalQuantity
+    Quantity <|-- RangeQuantity
+    ```
+
+```
+public abstract class Quantity {
+  public Quantity(Unit unit) { ... }
+
+  public abstract double toDecimal();
+
+  @Override public toString() { ... }
+}
+```
+</Slide>
+
+<Slide>
+
+### Abstract vs Concrete Classes
+
+<table style={{ fontSize: '0.85em' }}>
+  <thead>
+    <tr>
+      <th></th>
+      <th style={{ textAlign: 'center' }}>Abstract Class</th>
+      <th style={{ textAlign: 'center' }}>Concrete Class</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr className="fragment">
+      <td>Can contain concrete methods</td>
+      <td><div style={{ textAlign: 'center' }}>✓</div></td>
+      <td><div style={{ textAlign: 'center' }}>✓</div></td>
+    </tr>
+    <tr className="fragment">
+      <td>Can contain abstract methods</td>
+      <td><div style={{ textAlign: 'center' }}>✓</div></td>
+      <td><div style={{ textAlign: 'center' }}>✗</div></td>
+    </tr>
+    <tr className="fragment">
+      <td>Can be instantiated</td>
+      <td><div style={{ textAlign: 'center' }}>✗</div></td>
+      <td><div style={{ textAlign: 'center' }}>✓</div></td>
+    </tr>
+    <tr className="fragment">
+      <td>Can be extended</td>
+      <td><div style={{ textAlign: 'center' }}>✓</div></td>
+      <td><div style={{ textAlign: 'center' }}>✓</div></td>
+    </tr>
+  </tbody>
+</table>
+
+</Slide>
+
+<Slide>
+### Question 4 Answer
+
+Why is `Quantity` declared as an `abstract class` rather than a regular class?
+
+<QuizSlide
+  correct={1}
+  answers={[
+    "Abstract classes use less memory",
+    "It has abstract methods like toDecimal() that subclasses must implement, and it should not be instantiated directly",
+    "Java requires all parent classes to be abstract",
+    "It makes the class immutable"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+### Abstract Classes (meme)
+
+<Img src="/img/lectures/web/qr1-abstract-class-meme.webp"
+    alt="A meme from Family Guy showing Noah on the ark looking confused at two mixed-up animal pairs. A penguin stands with an elephant labeled 'Abstract Classes' while another elephant stands with a penguin labeled 'Interfaces'. A third label reads 'Inheritance'. Noah gestures in confusion with the caption 'What the hell is this?'"
 />
 
 </Slide>
