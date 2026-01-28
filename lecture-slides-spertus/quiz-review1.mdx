@@ -588,4 +588,287 @@ Why is `Quantity` declared as an `abstract class` rather than a regular class?
 
 </Slide>
 
+{/* Question 5 is partly done on my home computer and will need to be merged. */}
+
+<Slide>
+
+### Question 6 Raw Types
+
+If CookYourBooks stored ingredients in a `List` without generics, what problem (if any) would occur in compiling or running the following code?
+```java
+List ingredients = new ArrayList();
+ingredients.add(new MeasuredIngredient("flour", ...));
+ingredients.add("A pinch of salt");
+```
+
+<QuizSlide
+  answers={[
+    "Nothing; this is a fine practice",
+    "Without generics, the compiler can't prevent adding wrong types, leading to potential ClassCastException at runtime",
+    "The program runs slower",
+    "ArrayList doesn't work without generics"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+### Raw Types vs Generics
+
+<div style={{ display: 'flex', gap: '2em', fontSize: '0.65em' }}>
+
+<div>
+
+**Raw Types (avoid)**
+```java
+List ingredients = new ArrayList();
+ingredients.add(new MeasuredIngredient("flour", ...));
+ingredients.add("A pinch of salt"); // Compiles!
+
+// Later...
+for (Object item : ingredients) {
+    Ingredient ingred = (Ingredient) item;
+    // ClassCastException on the String!
+    System.out.println(ingred.getPreparation());
+}
+```
+Error happens at run-time! 🤬
+
+</div>
+
+<div className="fragment">
+
+**With Generics (preferred)**
+```java
+List<MeasuredIngredient> ingredients = new ArrayList<>();
+ingredients.add(new MeasuredIngredient("flour", ...));
+ingredients.add("A pinch of salt"); // Compile error!
+
+// Later...
+for (Ingredient ingred: ingredients) {
+    // No cast needed, type is guaranteed
+    System.out.println(ingred.getPreparation());
+}
+```
+
+No run-time errors! 🙂
+
+</div>
+
+</div>
+
+</Slide>
+
+
+<Slide>
+
+### Question 6 Answer
+
+If CookYourBooks stored ingredients in a `List` without generics, what problem (if any) would occur in compiling or running the following code?
+```java
+List ingredients = new ArrayList();
+ingredients.add(new MeasuredIngredient("flour", ...));
+ingredients.add("A pinch of salt");
+```
+
+<QuizSlide
+  correct={1}
+  answers={[
+    "Nothing; this is a fine practice",
+    "Without generics, the compiler can't prevent adding wrong types, leading to potential ClassCastException at runtime",
+    "The program runs slower",
+    "ArrayList doesn't work without generics"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+## Question 7 Hashing
+
+In `MeasuredIngredient.hashCode()`, the name is converted to lowercase before hashing: `getName().toLowerCase()`. Why?
+
+<QuizSlide
+  correct={1}
+  answers={[
+    "Lowercase strings hash faster",
+    "Since equals() compares names case-insensitively, hashCode() must also be case-insensitive so equal objects have equal hash codes",
+    "Java requires lowercase in hashCode()",
+    "It's just a style preference"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+### MeasuredIngredient
+
+```java
+public class MeasuredIngredient extends Ingredient {
+
+  /**
+   * Compares this measured ingredient with the specified object for equality.
+   *
+   * <p>Two MeasuredIngredient objects are equal if they have the same 
+   * name (case-insensitive), quantity, preparation, and notes.
+   */
+  @Override
+  public boolean equals(@Nullable Object o) {
+    // null-checking and type-conversion omitted
+    return this.getName().equalsIgnoreCase(that.getName())
+        && Objects.equals(this.quantity, that.quantity)
+        && Objects.equals(this.getPreparation(), that.getPreparation())
+        && Objects.equals(this.getNotes(), that.getNotes());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getName().toLowerCase(Locale.ROOT), 
+      quantity, getPreparation(), getNotes());
+  }
+}
+```
+
+</Slide>
+
+<Slide>
+
+<Slide>
+
+### What if hashCode() Did Not Convert to Lower-Case?
+
+<div style={{ fontSize: '0.7em' }}>
+```java
+MeasuredIngredient flour1 = new MeasuredIngredient("Flour", ...);
+MeasuredIngredient flour2 = new MeasuredIngredient("flour", ...);
+
+flour1.equals(flour2);  // true (case-insensitive comparison)
+flour1.hashCode();      // "Flour".hashCode() → 67847617
+flour2.hashCode();      // "flour".hashCode() → 97526364  ← Different!
+```
+
+</div>
+
+<div className="fragment" style={{ fontSize: '0.7em' }}>
+```java
+Set<MeasuredIngredient> pantry = new HashSet<>();
+pantry.add(flour1);          // Goes into bucket based on 67847617
+pantry.contains(flour2);     // Looks in bucket based on 97526364
+                             // → Returns false! (Wrong bucket)
+```
+
+</div>
+
+<p className="fragment" style={{ fontSize: '0.85em' }}>
+<strong>The rule:</strong> If <code>a.equals(b)</code>, then <code>a.hashCode() == b.hashCode()</code>
+</p>
+
+</Slide>
+
+</Slide>
+
+<Slide>
+
+### Question 7 Answer
+
+In `MeasuredIngredient.hashCode()`, the name is converted to lowercase before hashing: `getName().toLowerCase()`. Why?
+
+<QuizSlide
+  correct={1}
+  answers={[
+    "Lowercase strings hash faster",
+    "Since equals() compares names case-insensitively, hashCode() must also be case-insensitive so equal objects have equal hash codes",
+    "Java requires lowercase in hashCode()",
+    "It's just a style preference"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+## Question 8: Criteria for Specifications
+
+Which of the following is NOT one of the three criteria for evaluating a good specification?
+
+<QuizSlide
+  answers={[
+    "Restrictiveness (rules out bad implementations)",
+    "Generality (doesn't over-constrain the implementation)",
+    "Efficiency (specifies performance requirements)",
+    "Clarity (easy to understand)"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+### The Vending Machine Contract
+  <Img
+    src="/img/lectures/web/l4.png"
+    prompt="Concept: 'The Vending Machine Contract' (Program Design & Implementation)Tagline: 'Same Promise. Many Machines.'Subtitle: 'Specifications: The Boundary of Trust.'
+A pixel art style educational illustration showing the concept of interface contracts and implementations. The scene shows three vending machines side by side, each with the same interface but different internal mechanisms, plus a rejected fourth machine demonstrating contract violation.
+Header banner:
+'CS 3100: Program Design & Implementation 2' with subtitle 'The Vending Machine Contract'
+Machine 1 — 'Machine 1 (Gravity)':
+A vending machine with a simple gravity-based mechanism visible through a cutaway view. Metal ramps and chutes guide products down using gravity and springs. The display shows three items: 'A1: Chips ($1.00)', 'B2: Soda ($1.50)', 'C3: Candy ($0.75)'. A customer stands in front, with a speech bubble saying 'Simple promise. I trust it.' A chip bag slides down the ramp toward the dispensing slot.
+Machine 2 — 'Machine 2 (Pneumatic)':
+A vending machine with an elaborate pneumatic tube system visible through a cutaway view. Pipes, pressure gauges, valves, and steam elements create a complex but functional delivery system. Same display showing identical items: 'A1: Chips ($1.00)', 'B2: Soda ($1.50)', 'C3: Candy ($0.75)'. A customer presses the B2 button, and a soda can travels through the pneumatic tubes toward the output.
+Machine 3 — 'Machine 3 (Hamsters)':
+A vending machine with an absurd hamster-powered mechanism visible through a cutaway view. Hamsters run on wheels, operate tiny conveyor belts, and push products through an elaborate Rube Goldberg-style system with gears and pulleys. Same display showing identical items: 'A1: Chips ($1.00)', 'B2: Soda ($1.50)', 'C3: Candy ($0.75)'. A customer waits as hamsters work to deliver a candy bar through the ridiculous but functional system.
+Below the three machines:
+A label reads: 'Generality: Multiple implementations satisfy the same spec.'
+Rejected machine scene (bottom right corner):
+A broken, malfunctioning vending machine lies cracked and tilted in a trash heap. Its display shows 'A1: Chips ($1.00)' but instead of chips, a boot sits in the dispensing tray. A large red X marks the machine. Callout labels read: 'Failed Contract! Promised Chips, Dispensed Boot.' and 'Rejected Machine (Violation)'. Additional label: 'Restrictiveness: Violations Rejected.'
+Bottom banner:
+'Same Promise. Many Machines.' with subtitle 'Specifications: The Boundary of Trust.'
+Visual style:
+Retro pixel art with a cohesive color palette of teals, blues, and warm accents. Clear cutaway views showing internal mechanisms. Consistent vending machine frames with identical user interfaces despite wildly different implementations."
+  alt='A pixel art illustration titled "The Vending Machine Contract" showing three vending machines with identical interfaces (Chips $1.00, Soda $1.50, Candy $0.75) but different internal mechanisms: one uses gravity and ramps, one uses pneumatic tubes with steam gauges, and one uses hamsters running on wheels and conveyor belts. All three successfully deliver the correct products. In the corner, a rejected fourth machine lies broken in a trash heap—it promised chips but dispensed a boot, violating the contract. The caption reads "Same Promise. Many Machines." illustrating how multiple implementations can satisfy the same specification, but violations are rejected.'
+/>
+</Slide>
+
+<Slide>
+### What about performance?
+
+<p className="fragment">Specifications generally describe <em>what</em> a system does, rather than <em>how</em> it does it.</p>
+
+<div className="fragment">
+
+There are **hard real-time systems** that do have performance requirements, such as airbag deployment, antilock braking systems, pacemakers, and industrial robots.
+
+</div>
+
+<div className="fragment">
+
+There are also **soft real-time systems**, such as GPS, videogames, and music synthesis.
+
+</div>
+
+<p className="fragment">This class is not about real-time systems.</p>
+
+</Slide>
+
+<Slide>
+
+## Question 8 Answer
+
+Which of the following is NOT one of the three criteria for evaluating a good specification?
+
+<QuizSlide
+  correct={2}
+  answers={[
+    "Restrictiveness (rules out bad implementations)",
+    "Generality (doesn't over-constrain the implementation)",
+    "Efficiency (specifies performance requirements)",
+    "Clarity (easy to understand)"
+  ]}
+/>
+
+</Slide>
+
 </RevealJS>
