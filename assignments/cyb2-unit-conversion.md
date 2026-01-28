@@ -234,8 +234,6 @@ classDiagram
     }
 
     class Instruction {
-        -int stepNumber
-        -String text
         +Instruction(int stepNumber, String text, List~IngredientRef~ ingredientRefs)
         +getStepNumber() int
         +getText() String
