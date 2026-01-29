@@ -140,72 +140,6 @@ Write your roster name and your NUID neatly for OCR.
   />
 
 </Slide>
-<Slide>
-
-### Compilation Enables Optimization
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.85em'}}>
-  <div>
-    <p style={{fontWeight: 'bold'}}>Interpreted</p>
-    <ul style={{marginTop: '0.3em'}}>
-      <li>Reads & executes line by line</li>
-      <li>100s of instructions per statement</li>
-      <li>Executes every branch, every time</li>
-    </ul>
-  </div>
-  <div>
-    <p style={{fontWeight: 'bold'}}>Native Compiled</p>
-    <ul style={{marginTop: '0.3em'}}>
-      <li>Already in machine code</li>
-      <li>Direct CPU execution</li>
-      <li>Dead code eliminated, functions inlined</li>
-    </ul>
-  </div>
-</div>
-
-<aside class="notes">
-**Why interpretation is slower:**
-- Interpreter: decode instruction → look up action → execute (100s of extra instructions)
-- Native: CPU executes machine code directly
-
-**Compiler optimizations interpreters can't do:**
-- Dead code elimination, function inlining, loop optimizations
-
-**Key difference:** Interpreter checks every branch every time. Compiler analyzes whole program and removes unnecessary work ahead of time.
-
-→ **Transition:** Java's innovation: combine both approaches...
-</aside>
-
-</Slide>
-
-<Slide>
-
-### JIT Combines Interpretation with Native Compilation
-
-<p >
-  <strong>Just-In-Time (JIT)</strong> compilation
-</p>
-<p style={{marginTop: '1em'}}>
-  Dynamically compiles bytecode <em>as it executes</em>
-</p>
-<p style={{marginTop: '1em'}}>
-  The program that runs Java code: <strong>JVM</strong> (Java Virtual Machine)
-</p>
-
-<aside class="notes">
-**JIT = Java's innovation:**
-- JVM starts interpreting, monitors "hot" code (frequently run)
-- Hot code → compiled to native on the fly
-- Combines: bytecode portability + native speed
-
-**Bonus:** JVM optimizes based on runtime behavior (ahead-of-time compilers can't!)
-
-**Sidebar:** Other JVM languages: Kotlin (Android), Scala (big data), Clojure (functional), Groovy (scripting)—all benefit from JIT
-
-→ **Transition:** Here's a concrete example of JIT optimization...
-</aside>
-
-</Slide>
 
 <Slide>
 ### Question 1 Answer
@@ -1187,7 +1121,6 @@ Which specification for a `reverse(String s)` method is more general?
 `MeasuredIngredient` overrides both `equals()` and `hashCode()`. Why is it important to override both together?
 
 <QuizSlide
-  correct={1}
   answers={[
     "The compiler enforces that both must be overridden together",
     "Equal objects must have equal hash codes for hash-based collections to work correctly",
@@ -2279,13 +2212,14 @@ change(num);
 **References: Copy the reference**
 
 ```java
-void change(StringBuilder sb) {
-  sb.append("!");  // modifies object
+void cutPower(Light light) {
+  light.turnOff();  // modifies object
 }
 
-StringBuilder s =  new StringBuilder("Hi");
-change(s);
-// s is now "Hi!"
+Light light = new DimmableLight();
+light.turnOn(); // light is now on
+cutPower(light);
+// light is now off
 ```
 
 </div>
