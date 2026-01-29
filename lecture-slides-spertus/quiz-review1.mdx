@@ -1,0 +1,2173 @@
+---
+sidebar_position: 10
+title: "Quiz 1 Review"
+image: /img/lectures/web/l9.png
+---
+
+import RevealJS, { Slide } from '@site/src/components/RevealJS';
+import Img from '@site/src/components/Img';
+import PollSlide from '@site/src/components/PollSlide';
+import QuizSlide from '@site/src/components/QuizSlide';
+
+<style>
+{`
+  .reveal {
+    font-size: 32px;
+  }
+`}
+</style>
+
+<RevealJS transition="slide">
+
+<Slide>
+<Img src="/img/lectures/web/qr1.gif"
+  alt="User Friendly cartoon showing two people taking an exam at desks.
+      Sound effects for Student 1: 'doink doink doink doink doing'
+      Student 2: 'Hey...is that the sweet sound of a multiple-choice section I hear?'
+      Student 1: 'Nope...essay question you have to answer in binary"
+/>
+</Slide>
+
+<Slide>
+
+## How much of the practice quiz did you do?
+
+<PollSlide choices=
+  {["None yet", "I've skimmed it", "A few problems", "Many problems", "All problems"]}
+/>
+</Slide>
+
+<Slide>
+
+## How hard do you think it is?
+
+<PollSlide image="/img/lectures/poll-ev/pollev-smiles.png"
+/>
+<p>
+Click below the faces if you haven't tried it yet.
+</p>
+</Slide>
+
+<Slide>
+
+## Cover Sheet
+<p>
+Write your roster name and your NUID neatly for OCR.
+</p>
+
+<Img src="/img/lectures/web/qr1-screenshot.png"
+  alt="Screenshot of cover page, with spaces to write name and NUID"
+/>
+
+</Slide>
+
+<Slide>
+
+## Question 1: Write Once Run Anywhere
+<QuizSlide
+  question='Which statement best describes how Java achieves "write once, run anywhere"?'
+  answers={[
+    "Java source code is directly interpreted by the operating system",
+    "Java source code is compiled to bytecode, which runs on the JVM available for each platform",
+    "Java programs must be recompiled for each target operating system",
+    "Java uses only ahead-of-time compilation to native machine code"
+  ]}
+/>
+</Slide>
+
+<Slide>
+
+### Different CPUs and OSes Require Different Code
+
+- CPUs have different instruction sets
+- OS's have different APIs
+- How do you run a program on *any* machine?
+
+<aside class="notes">
+**The fundamental problem:**
+- Intel CPUs ≠ ARM CPUs (different instruction sets)
+- Windows ≠ Linux ≠ macOS (different APIs)
+- Traditional solution: platform-specific code or recompile → expensive, error-prone
+
+**Java's solution:** Compile to intermediate representation → virtual machine runs it anywhere
+
+**But:** How do you make that fast?
+
+→ **Transition:** Enter bytecode...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* BYTECODE & JIT */}
+{/* ============================================ */}
+
+<Slide>
+### Bytecode Provides Platform Independence
+  <Img
+    src="/img/lectures/web/l1-bytecode.webp"
+    alt="Bytecode visualization"
+  />
+
+<aside class="notes">
+**Bytecode = intermediate representation:**
+- Java source → bytecode
+- JVM on each platform executes bytecode
+- You write once; JVM handles platform differences
+
+**Both Python and Java use this approach** (in principle)
+
+**Discussion:** "Is it really that easy?" Anyone compiled native Python extensions? That's when platform differences bite back.
+
+→ **Transition:** But interpretation is slow...
+</aside>
+
+</Slide>
+<Slide>
+### Java compilation/execution
+
+  <Img src="/img/lectures/ellen/l1-java-bytecode.svg"
+    alt="Block diagram showing Java compilation-run process"
+  />
+
+</Slide>
+<Slide>
+
+### Compilation Enables Optimization
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.85em'}}>
+  <div>
+    <p style={{fontWeight: 'bold'}}>Interpreted</p>
+    <ul style={{marginTop: '0.3em'}}>
+      <li>Reads & executes line by line</li>
+      <li>100s of instructions per statement</li>
+      <li>Executes every branch, every time</li>
+    </ul>
+  </div>
+  <div>
+    <p style={{fontWeight: 'bold'}}>Native Compiled</p>
+    <ul style={{marginTop: '0.3em'}}>
+      <li>Already in machine code</li>
+      <li>Direct CPU execution</li>
+      <li>Dead code eliminated, functions inlined</li>
+    </ul>
+  </div>
+</div>
+
+<aside class="notes">
+**Why interpretation is slower:**
+- Interpreter: decode instruction → look up action → execute (100s of extra instructions)
+- Native: CPU executes machine code directly
+
+**Compiler optimizations interpreters can't do:**
+- Dead code elimination, function inlining, loop optimizations
+
+**Key difference:** Interpreter checks every branch every time. Compiler analyzes whole program and removes unnecessary work ahead of time.
+
+→ **Transition:** Java's innovation: combine both approaches...
+</aside>
+
+</Slide>
+
+<Slide>
+
+### JIT Combines Interpretation with Native Compilation
+
+<p >
+  <strong>Just-In-Time (JIT)</strong> compilation
+</p>
+<p style={{marginTop: '1em'}}>
+  Dynamically compiles bytecode <em>as it executes</em>
+</p>
+<p style={{marginTop: '1em'}}>
+  The program that runs Java code: <strong>JVM</strong> (Java Virtual Machine)
+</p>
+
+<aside class="notes">
+**JIT = Java's innovation:**
+- JVM starts interpreting, monitors "hot" code (frequently run)
+- Hot code → compiled to native on the fly
+- Combines: bytecode portability + native speed
+
+**Bonus:** JVM optimizes based on runtime behavior (ahead-of-time compilers can't!)
+
+**Sidebar:** Other JVM languages: Kotlin (Android), Scala (big data), Clojure (functional), Groovy (scripting)—all benefit from JIT
+
+→ **Transition:** Here's a concrete example of JIT optimization...
+</aside>
+
+</Slide>
+
+<Slide>
+### Question 1 Answer
+<QuizSlide
+  question='Which statement best describes how Java achieves "write once, run anywhere"?'
+  answers={[
+    "Java source code is directly interpreted by the operating system",
+    "Java source code is compiled to bytecode, which runs on the JVM available for each platform",
+    "Java programs must be recompiled for each target operating system",
+    "Java uses only ahead-of-time compilation to native machine code"
+  ]}
+  correct={1}
+/>
+</Slide>
+
+<Slide>
+
+## Java Evolution
+
+<Img src="/img/lectures/web/qr1-java-history.jpg"
+    prompt="A whimsical editorial cartoon in warm sepia tones with color accents, showing Java as a vintage 1995 coffee maker that has been extensively modified over the decades.
+The Original Machine (faded, ghostly outline in background):
+A simple, elegant coffee maker labeled 'Java 1.0 — 1995' with clean lines and a prominent 'Write Once, Run Anywhere' badge. A small plaque reads: 'Simple. Object-Oriented. Familiar.'
+The Modern Machine (center, detailed):
+The same coffee maker, now barely recognizable under layers of modifications, additions, and duct-taped enhancements. Each addition is color-coded and labeled with its version:
+
+Generics (Java 5, 2004): A complicated type-checking funnel bolted onto the input hopper, with labels like List<Coffee> and Map<String, Bean>. A ghost label reads 'Type Erasure Inside' with a knowing wink.
+Lambda expressions (Java 8, 2014): Sleek arrow-shaped pipes (->) bypassing the original plumbing, with a 'Functional Interface Adapter' junction box.
+Streams API (Java 8): A conveyor belt running parallel to the main mechanism, with .filter(), .map(), .collect() stations.
+Records (Java 16, 2021): A compact, minimalist module snapped onto the side labeled 'Just the data, please.'
+Sealed Classes (Java 17, 2021): A padlock and permit list attached to the class hierarchy chamber. Tags reading permits Espresso, Latte, Americano.
+Pattern Matching (Java 21, 2023): A sophisticated sorting mechanism with instanceof patterns and switch arrows, looking almost alien compared to the original hardware.
+Virtual Threads (Java 21): Hundreds of tiny lightweight threads (depicted as gossamer strands) replacing a few heavy ropes.
+Characters:
+
+An old-timer developer in a Sun Microsystems t-shirt gazes nostalgically at the ghostly original, coffee mug in hand.
+A younger developer enthusiastically attaches yet another module labeled 'String Templates (Preview).'
+James Gosling's portrait hangs on the wall, expression ambiguous—pride? bewilderment?
+Speech bubbles:
+
+Old-timer: 'I remember when we had to unbox Integers into ints'
+Young developer: 'Wait until you see what's in Java 25!'
+Bottom banner:
+'Still backward compatible. Still brewing. Still Java?'"
+alt="Cartoon of Java as a coffee maker evolving from 1995 to today. A simple original machine labeled 'Write Once, Run Anywhere' appears ghosted in the corner. The modern version is covered with bolted-on features: Generics funnel, Lambda arrow pipes, Streams conveyor belt, Records module, Sealed Classes padlock, and Pattern Matching tubes. An old developer in a Sun shirt reminisces while a young developer adds String Templates. Banner reads: 'Still backward compatible. Still brewing. Still Java?'"
+/>
+
+<aside class="notes">
+* Java has changed greatly in its lifetime.
+* Backward compatibility was always maintained.
+* That means that changes did not break old programs.
+</aside>
+</Slide>
+
+<Slide>
+
+## How could new keywords be added to Java?
+
+<p className="fragment">Why didn't adding keywords (<code>record</code>, <code>sealed</code>, etc.) break existing programs?</p>
+
+<p className="fragment">They are <em>contextual keywords</em> (or "restricted identifiers").</p>
+
+<p className="fragment">These words only have special meaning in specific syntactic contexts—so <code>int sealed = 42;</code> still compiles fine.</p>
+
+</Slide>
+
+<aside class="notes">
+* How could new keywords be added without breaking existing programs?
+* They might have used the keywords as variable names.
+* The solution is contextual keywords.
+</aside>
+
+<Slide>
+
+## Question 2: Type Checking
+
+Consider this code:
+
+`Quantity q = new ExactQuantity(2.5, Unit.CUP);`
+
+The compiler verifies that `ExactQuantity` is assignable to `Quantity`. This is an example of:
+<QuizSlide
+  answers={[
+    "Dynamic typing - the type is checked when the program runs",
+    "Static typing - the type is checked at compile time before the program runs",
+    "Duck typing - any object with similar methods would work",
+    "No type checking occurs"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+### Why This is Legal
+
+`Quantity q = new ExactQuantity(2.5, Unit.CUP);`
+
+```mermaid
+classDiagram
+direction TB
+    class Quantity {
+        <<abstract>>
+        -Unit unit
+        #Quantity(Unit unit)
+        +Unit getUnit()
+    }
+
+    class Unit {
+              <<enumeration>>
+    }
+    class ExactQuantity {
+        +DECIMAL_PRECISION: int$
+        -double amount
+        +ExactQuantity(double amount, Unit unit)
+        +double getAmount()
+    }
+
+    Quantity <|-- ExactQuantity
+    Quantity o--> Unit
+```
+Declaration uses abstract supertype.
+
+Liskov Substitution Principle tells us assignment is legal.
+
+</Slide>
+<Slide>
+
+### Kinds of Type Checking
+
+* **Static Typing** (compile-time, Java)
+  → Assignment is legal because `ExactQuantity extends Quantity`
+* **Dynamic Typing** (run-time)
+  * **Duck Typing** is a specific kind of dynamic typing (Python)
+
+</Slide>
+
+<Slide>
+
+### Duck Typing vs Static Typing
+
+<div className="fragment">
+
+**Python (duck typing):** Type checked at runtime
+```python
+def make_sound(animal):
+    animal.quack()  # No compile-time check—just tries it at runtime
+
+make_sound(Duck())    # works because duck has quack()
+make_sound(Person())  # works if Person has quack(), crashes otherwise
+```
+
+</div>
+<div className="fragment">
+
+**Java (static typing):** Type checked at compile time
+```java
+void makeSound(Quackable animal) {
+    animal.quack();  // Compiler verifies animal implements Quackable
+}
+```
+
+</div>
+
+<p className="fragment">"If it walks like a duck and quacks like a duck, it's a duck."</p>
+
+</Slide>
+
+<Slide>
+### Duck Typing (meme)
+
+<Img src="/img/lectures/web/qr1-duck-typing.jpg"
+    alt="Meme captioned 'duck typing' in which a person is connecting a plug to a pig's snout"/>
+</Slide>
+
+<Slide>
+
+### Question 2 Answer
+
+Consider this code:
+
+`Quantity q = new ExactQuantity(2.5, Unit.CUP);`
+
+The compiler verifies that `ExactQuantity` is assignable to `Quantity`. This is an example of:
+<QuizSlide
+  answers={[
+    "Dynamic typing - the type is checked when the program runs",
+    "Static typing - the type is checked at compile time before the program runs",
+    "Duck typing - any object with similar methods would work",
+    "No type checking occurs"
+  ]}
+  correct={1}
+/>
+
+</Slide>
+<Slide>
+## Question 3: Liskov Substitution Principle
+
+In CookYourBooks, `ExactQuantity`, `FractionalQuantity`, and `RangeQuantity` all extend `Quantity`.
+
+According to the Liskov Substitution Principle:
+
+<QuizSlide
+  answers={[
+    "Each subclass can implement toDecimal() to return any value it wants",
+    "Each subclass must be usable anywhere a Quantity is expected without breaking the program",
+    "Subclasses must have identical implementations of all methods",
+    "Only ExactQuantity can be used where Quantity is expected"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+### UML
+In CookYourBooks, `ExactQuantity`, `FractionalQuantity`, and `RangeQuantity` all extend `Quantity`.
+
+```mermaid
+classDiagram
+    class Quantity {
+        <<abstract>>
+        double toDecimal()*
+    }
+
+    class ExactQuantity {
+        double toDecimal()
+    }
+
+    class FractionalQuantity {
+        double toDecimal()
+    }
+
+    class RangeQuantity {
+        double toDecimal()
+    }
+
+    Quantity <|-- ExactQuantity
+    Quantity <|-- FractionalQuantity
+    Quantity <|-- RangeQuantity
+    ```
+<p className="fragment">
+What does the Liskov Substitution Principle tell us?
+</p>
+ <p className="fragment" style={{marginTop: '0em'}}>
+An instance of the subtype can be passed where an instance of the supertype is expected.
+</p>
+</Slide>
+
+<Slide>
+### Superman is Above the Submarine
+
+<Img src="/img/lectures/web/qr1-super-sub.jpg"
+    alt="Cartoon image showing Superman in the sky and a submarine under water"
+/>
+
+</Slide>
+
+<Slide>
+### Question 3 Answer
+
+In CookYourBooks, `ExactQuantity`, `FractionalQuantity`, and `RangeQuantity` all extend `Quantity`.
+
+According to the Liskov Substitution Principle:
+
+<QuizSlide
+  correct={1}
+  answers={[
+    "Each subclass can implement toDecimal() to return any value it wants",
+    "Each subclass must be usable anywhere a Quantity is expected without breaking the program",
+    "Subclasses must have identical implementations of all methods",
+    "Only ExactQuantity can be used where Quantity is expected"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+## Question 4: Abstract Classes
+
+Why is `Quantity` declared as an `abstract class` rather than a regular class?
+
+<QuizSlide
+  answers={[
+    "Abstract classes use less memory",
+    "It has abstract methods like toDecimal() that subclasses must implement, and it should not be instantiated directly",
+    "Java requires all parent classes to be abstract",
+    "It makes the class immutable"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+### A Closer Look at Quantity
+
+```mermaid
+classDiagram
+    class Quantity {
+        <<abstract>>
+        -Unit unit
+        #Quantity(Unit unit)
+        +Unit getUnit()
+        +double toDecimal()*
+        +String toString()
+    }
+
+    class ExactQuantity {
+        double toDecimal()
+    }
+
+    class FractionalQuantity {
+        double toDecimal()
+    }
+
+    class RangeQuantity {
+        double toDecimal()
+    }
+
+    Quantity <|-- ExactQuantity
+    Quantity <|-- FractionalQuantity
+    Quantity <|-- RangeQuantity
+    ```
+
+```
+public abstract class Quantity {
+  public Quantity(Unit unit) { ... }
+
+  public abstract double toDecimal();
+
+  @Override public String toString() { ... }
+}
+```
+</Slide>
+
+<Slide>
+
+### Abstract vs Concrete Classes
+
+<table style={{ fontSize: '0.85em' }}>
+  <thead>
+    <tr>
+      <th></th>
+      <th style={{ textAlign: 'center' }}>Abstract Class</th>
+      <th style={{ textAlign: 'center' }}>Concrete Class</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr className="fragment">
+      <td>Can contain concrete methods</td>
+      <td><div style={{ textAlign: 'center' }}>✓</div></td>
+      <td><div style={{ textAlign: 'center' }}>✓</div></td>
+    </tr>
+    <tr className="fragment">
+      <td>Can contain abstract methods</td>
+      <td><div style={{ textAlign: 'center' }}>✓</div></td>
+      <td><div style={{ textAlign: 'center' }}>✗</div></td>
+    </tr>
+    <tr className="fragment">
+      <td>Can be instantiated</td>
+      <td><div style={{ textAlign: 'center' }}>✗</div></td>
+      <td><div style={{ textAlign: 'center' }}>✓</div></td>
+    </tr>
+    <tr className="fragment">
+      <td>Can be extended</td>
+      <td><div style={{ textAlign: 'center' }}>✓</div></td>
+      <td><div style={{ textAlign: 'center' }}>✓</div></td>
+    </tr>
+  </tbody>
+</table>
+
+</Slide>
+
+<Slide>
+### Question 4 Answer
+
+Why is `Quantity` declared as an `abstract class` rather than a regular class?
+
+<QuizSlide
+  correct={1}
+  answers={[
+    "Abstract classes use less memory",
+    "It has abstract methods like toDecimal() that subclasses must implement, and it should not be instantiated directly",
+    "Java requires all parent classes to be abstract",
+    "It makes the class immutable"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+### Abstract Classes (meme)
+
+<Img src="/img/lectures/web/qr1-abstract-class-meme.webp"
+    alt="A meme from Family Guy showing Noah on the ark looking confused at two mixed-up animal pairs. A penguin stands with an elephant labeled 'Abstract Classes' while another elephant stands with a penguin labeled 'Interfaces'. A third label reads 'Inheritance'. Noah gestures in confusion with the caption 'What the hell is this?'"
+/>
+
+</Slide>
+
+<Slide>
+
+## Question 5: Exceptions
+
+What distinguishes checked exceptions (e.g., `IOException`) from unchecked exceptions (e.g., `IllegalArgumentException`)?
+
+<QuizSlide
+  answers={[
+    "Checked exceptions are faster to throw",
+    "Checked exceptions must be declared in the method signature or caught; unchecked exceptions do not",
+    "Unchecked exceptions cannot be caught",
+    "Checked exceptions extend RuntimeException"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+### Checked and Unchecked Exceptions
+
+  <Img
+    src="/img/lectures/web/l2-exceptions.webp"
+    alt="Airport customs: green channel for unchecked exceptions, red channel for checked exceptions"
+    prompt="Revised: 'The Arrivals Hall' (Airport Declaration Channels)
+A cheerful airport arrivals hall rendered in the style of a friendly airport signage system—think IKEA-meets-international-terminal wayfinding design. The scene shows the familiar customs area after landing, with two clearly marked channels. The green channel ('Nothing to Declare' / Unchecked Exceptions) shows travelers like NullPointerException and IllegalArgumentException walking straight through without stopping—no paperwork, no inspection, just a quick passage into the main terminal. A small sign notes: 'Travelers choosing this channel accept responsibility for any undeclared items.' The red channel ('Goods to Declare' / Checked Exceptions) shows travelers like IOException and SQLException stopping at a customs desk, filling out declaration forms (the throws clause), having their bags inspected (the try-catch block), and getting their forms stamped before proceeding. The process is slower but orderly. Friendly customs officers (the compiler) check that all declarations match what's actually being carried.
+This visualization keeps the 'two paths with different requirements' structure while using a universally relatable, low-stakes scenario that most travelers have experienced. The green/red channel system is internationally recognized and immediately intuitive: some things require declaration, others don't. The metaphor maps cleanly: checked exceptions are like goods that must be declared—you can't just walk through pretending you don't have them. Unchecked exceptions are like personal items—no declaration required, but if something goes wrong (you actually did have something to declare), that's on you. Details include: declaration forms with fields for 'Exception Type' and 'Handling Strategy,' a duty-free shop in the background labeled 'Standard Exceptions' (the ones you don't need to create yourself), and arrival screens showing 'Flight from MethodCall' and 'Destination: CallerLand.' A small Error like OutOfMemoryError appears as an emergency exit—bypassing customs entirely because the whole terminal is being evacuated. The friendly airport aesthetic makes exception handling feel routine rather than adversarial. Tagline: 'Some exceptions require declaration. Know which channel you're in.'"
+  />
+
+</Slide>
+
+<Slide>
+
+### Java's Exception Hierarchy Distinguishes Error Types
+
+<p style={{fontSize: '1.1em'}}>
+  All exceptions extend <code>Throwable</code>
+</p>
+
+```mermaid
+classDiagram
+    class Throwable {
+    }
+    class Exception {
+    }
+    class RuntimeException {
+    }
+    class Error {
+    }
+    Throwable <|-- Exception
+    Throwable <|-- Error
+    Exception <|-- RuntimeException
+    Exception <|-- IOException
+    RuntimeException <|-- NullPointerException
+    RuntimeException <|-- IllegalArgumentException
+    RuntimeException <|-- IndexOutOfBoundsException
+```
+Subclasses of `Error` and `RuntimeException` are unchecked.
+
+</Slide>
+
+<Slide>
+
+### Parameter Validation
+
+* Validate constructor and method parameters as early as possible
+* Throw `IllegalArgumentException`
+* Document requirements and exceptions in Javadoc
+
+```java
+  /**
+   * Creates an ingredient with the given name, preparation, and notes.
+   *
+   * @param name the ingredient name (must not be null or blank)
+   * @param preparation the preparation instructions (may be null)
+   * @param notes additional notes (may be null)
+   * @throws IllegalArgumentException if name is blank (empty or whitespace-only)
+   */
+  protected Ingredient(@NonNull String name, @Nullable String preparation, @Nullable String notes) {
+    if (name.isBlank()) {
+      throw new IllegalArgumentException("Name must not be blank.");
+    }
+    ...
+  }
+```
+
+</Slide>
+
+<Slide>
+
+### Two Ways to Handle Checked Exceptions
+
+<div style={{ display: 'flex', gap: '2em', fontSize: '0.7em' }}>
+
+<div className="fragment">
+
+**Option 1: Catch it**
+```java
+public void processFile(String path) {
+    try {
+        String data = readFile(path);
+        // use data
+    } catch (IOException e) {
+        System.err.println("Could not read file: "
+            + e.getMessage());
+    }
+}
+```
+
+Handle the problem here.
+
+</div>
+
+<div className="fragment">
+
+**Option 2: Propagate it**
+```java
+public void processFile(String path) throws IOException {
+    String data = readFile(path);
+    // use data
+}
+```
+
+Let the caller handle it.
+
+</div>
+
+</div>
+
+</Slide>
+
+<Slide>
+
+<Img src="/img/lectures/web/qr1-babysitter-exception-handling.jpg"
+  prompt="A warm, storybook illustration style showing two side-by-side scenes of babysitters dealing with a crying baby at night.
+Left panel — 'The Good Babysitter (Catch It)':
+A calm, competent babysitter in a cozy nursery, successfully soothing a baby who was just crying. The babysitter rocks the baby gently, perhaps with a lullaby note floating in the air. A teddy bear and warm nightlight set a peaceful scene. The baby is settling down, tears drying.
+Label above: catch (CryingBabyException e)
+Large code snippet on a sticky note on the wall:
+try {    baby.putToBed();} catch (CryingBabyException e) {    baby.soothe();    baby.singLullaby();}
+
+Caption below: 'Handles the problem. Parents sleep peacefully.'
+A thought bubble from the babysitter: 'I got this.'
+Right panel — 'The Bad Babysitter (Declare It)':
+A frazzled babysitter standing at the parents' bedroom door at 2 AM, holding a screaming baby at arm's length, passing the crying child to exhausted, disheveled parents in pajamas. The parents look annoyed and sleepy. The nursery behind is in disarray.
+Label above: throws CryingBabyException
+Large code snippet on a note falling to the floor: public void watchBaby() throws CryingBabyException {    baby.putToBed(); // not my problem!}
+Caption below: 'Propagates the problem. Parents deal with it.'
+A thought bubble from the babysitter: 'Above my pay grade.'
+Bottom banner:
+'Checked exceptions: Handle them or declare them. Someone has to deal with it eventually.'
+Visual consistency:
+Same baby, same crib, same house — only the babysitter's response differs. Clock on wall shows late night in both panels. Color palette shifts from warm greens and yellows (left/good) to stressed oranges and reds (right/bad)."
+  alt="Two-panel storybook illustration titled 'Babysitter Exception Handling'. Left panel labeled 'The Good Babysitter (Catch It)' shows a calm babysitter in a rocking chair holding a content baby in a peaceful nursery at night. A code snippet reads 'try { baby.putToBed(); } catch (CryingBabyException e) { baby.soothe(); baby.singLullaby(); }'. Speech bubble says 'I got this.' Caption: 'Handles the problem. Parents sleep peacefully.' Right panel labeled 'The Bad Babysitter (Declare It)' shows a frazzled babysitter handing a crying baby to exhausted parents in pajamas. Speech bubble says 'Above my pay grade.' Caption: 'Propagates the problem. Parents deal with it.' Bottom banner reads 'Checked exceptions: Handle them or declare them. Someone has to deal with it eventually.'"
+/>
+</Slide>
+
+<Slide>
+
+### Question 5 Answer
+
+What distinguishes checked exceptions (e.g., `IOException`) from unchecked exceptions (e.g., `IllegalArgumentException`)?
+
+<QuizSlide
+  correct={1}
+  answers={[
+    "Checked exceptions are faster to throw",
+    "Checked exceptions must be declared in the method signature or caught; unchecked exceptions do not",
+    "Unchecked exceptions cannot be caught",
+    "Checked exceptions extend RuntimeException"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+## Question 6: Raw Types
+
+If CookYourBooks stored ingredients in a `List` without generics, what problem (if any) would occur in compiling or running the following code?
+```java
+List ingredients = new ArrayList();
+ingredients.add(new MeasuredIngredient("flour", ...));
+ingredients.add("A pinch of salt");
+```
+
+<QuizSlide
+  answers={[
+    "Nothing; this is a fine practice",
+    "Without generics, the compiler can't prevent adding wrong types, leading to potential ClassCastException at runtime",
+    "The program runs slower",
+    "ArrayList doesn't work without generics"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+### Raw Types vs Generics
+
+<div style={{ display: 'flex', gap: '2em', fontSize: '0.65em' }}>
+
+<div>
+
+**Raw Types (avoid)**
+```java
+List ingredients = new ArrayList();
+ingredients.add(new MeasuredIngredient("flour", ...));
+ingredients.add("A pinch of salt"); // Compiles!
+
+// Later...
+for (Object item : ingredients) {
+    Ingredient ingred = (Ingredient) item;
+    // ClassCastException on the String!
+    System.out.println(ingred.getPreparation());
+}
+```
+Error happens at run-time! 🤬
+
+</div>
+
+<div className="fragment">
+
+**With Generics (preferred)**
+```java
+List<MeasuredIngredient> ingredients = new ArrayList<>();
+ingredients.add(new MeasuredIngredient("flour", ...));
+ingredients.add("A pinch of salt"); // Compile error!
+
+// Later...
+for (Ingredient ingred: ingredients) {
+    // No cast needed, type is guaranteed
+    System.out.println(ingred.getPreparation());
+}
+```
+
+No run-time errors! 🙂
+
+</div>
+
+</div>
+
+</Slide>
+
+
+<Slide>
+
+### Question 6 Answer
+
+If CookYourBooks stored ingredients in a `List` without generics, what problem (if any) would occur in compiling or running the following code?
+```java
+List ingredients = new ArrayList();
+ingredients.add(new MeasuredIngredient("flour", ...));
+ingredients.add("A pinch of salt");
+```
+
+<QuizSlide
+  correct={1}
+  answers={[
+    "Nothing; this is a fine practice",
+    "Without generics, the compiler can't prevent adding wrong types, leading to potential ClassCastException at runtime",
+    "The program runs slower",
+    "ArrayList doesn't work without generics"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+## Question 7 Hashing
+
+In `MeasuredIngredient.hashCode()`, the name is converted to lowercase before hashing: `getName().toLowerCase()`. Why?
+
+<QuizSlide
+  answers={[
+    "Lowercase strings hash faster",
+    "Since equals() compares names case-insensitively, hashCode() must also be case-insensitive so equal objects have equal hash codes",
+    "Java requires lowercase in hashCode()",
+    "It's just a style preference"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+### MeasuredIngredient
+
+```java
+public class MeasuredIngredient extends Ingredient {
+
+  /**
+   * Compares this measured ingredient with the specified object for equality.
+   *
+   * <p>Two MeasuredIngredient objects are equal if they have the same
+   * name (case-insensitive), quantity, preparation, and notes.
+   */
+  @Override
+  public boolean equals(@Nullable Object o) {
+    // null-checking and type-conversion omitted
+    return this.getName().equalsIgnoreCase(that.getName())
+        && Objects.equals(this.quantity, that.quantity)
+        && Objects.equals(this.getPreparation(), that.getPreparation())
+        && Objects.equals(this.getNotes(), that.getNotes());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getName().toLowerCase(Locale.ROOT),
+      quantity, getPreparation(), getNotes());
+  }
+}
+```
+
+</Slide>
+
+<Slide>
+
+<Slide>
+
+### What if hashCode() Did Not Convert to Lower-Case?
+
+<div style={{ fontSize: '0.7em' }}>
+```java
+MeasuredIngredient flour1 = new MeasuredIngredient("Flour", ...);
+MeasuredIngredient flour2 = new MeasuredIngredient("flour", ...);
+
+flour1.equals(flour2);  // true (case-insensitive comparison)
+flour1.hashCode();      // "Flour".hashCode() → 67847617
+flour2.hashCode();      // "flour".hashCode() → 97526364  ← Different!
+```
+
+</div>
+
+<div className="fragment" style={{ fontSize: '0.7em' }}>
+```java
+Set<MeasuredIngredient> pantry = new HashSet<>();
+pantry.add(flour1);          // Goes into bucket based on 67847617
+pantry.contains(flour2);     // Looks in bucket based on 97526364
+                             // → Returns false! (Wrong bucket)
+```
+
+</div>
+
+<p className="fragment" style={{ fontSize: '0.85em' }}>
+<strong>The rule:</strong> If <code>a.equals(b)</code>, then <code>a.hashCode() == b.hashCode()</code>
+</p>
+
+</Slide>
+
+</Slide>
+
+<Slide>
+
+### Question 7 Answer
+
+In `MeasuredIngredient.hashCode()`, the name is converted to lowercase before hashing: `getName().toLowerCase()`. Why?
+
+<QuizSlide
+  correct={1}
+  answers={[
+    "Lowercase strings hash faster",
+    "Since equals() compares names case-insensitively, hashCode() must also be case-insensitive so equal objects have equal hash codes",
+    "Java requires lowercase in hashCode()",
+    "It's just a style preference"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+## Question 8: Criteria for Specifications
+
+Which of the following is NOT one of the three criteria for evaluating a good specification?
+
+<QuizSlide
+  answers={[
+    "Restrictiveness (rules out bad implementations)",
+    "Generality (doesn't over-constrain the implementation)",
+    "Efficiency (specifies performance requirements)",
+    "Clarity (easy to understand)"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+### The Vending Machine Contract
+  <Img
+    src="/img/lectures/web/l4.png"
+    prompt="Concept: 'The Vending Machine Contract' (Program Design & Implementation)Tagline: 'Same Promise. Many Machines.'Subtitle: 'Specifications: The Boundary of Trust.'
+A pixel art style educational illustration showing the concept of interface contracts and implementations. The scene shows three vending machines side by side, each with the same interface but different internal mechanisms, plus a rejected fourth machine demonstrating contract violation.
+Header banner:
+'CS 3100: Program Design & Implementation 2' with subtitle 'The Vending Machine Contract'
+Machine 1 — 'Machine 1 (Gravity)':
+A vending machine with a simple gravity-based mechanism visible through a cutaway view. Metal ramps and chutes guide products down using gravity and springs. The display shows three items: 'A1: Chips ($1.00)', 'B2: Soda ($1.50)', 'C3: Candy ($0.75)'. A customer stands in front, with a speech bubble saying 'Simple promise. I trust it.' A chip bag slides down the ramp toward the dispensing slot.
+Machine 2 — 'Machine 2 (Pneumatic)':
+A vending machine with an elaborate pneumatic tube system visible through a cutaway view. Pipes, pressure gauges, valves, and steam elements create a complex but functional delivery system. Same display showing identical items: 'A1: Chips ($1.00)', 'B2: Soda ($1.50)', 'C3: Candy ($0.75)'. A customer presses the B2 button, and a soda can travels through the pneumatic tubes toward the output.
+Machine 3 — 'Machine 3 (Hamsters)':
+A vending machine with an absurd hamster-powered mechanism visible through a cutaway view. Hamsters run on wheels, operate tiny conveyor belts, and push products through an elaborate Rube Goldberg-style system with gears and pulleys. Same display showing identical items: 'A1: Chips ($1.00)', 'B2: Soda ($1.50)', 'C3: Candy ($0.75)'. A customer waits as hamsters work to deliver a candy bar through the ridiculous but functional system.
+Below the three machines:
+A label reads: 'Generality: Multiple implementations satisfy the same spec.'
+Rejected machine scene (bottom right corner):
+A broken, malfunctioning vending machine lies cracked and tilted in a trash heap. Its display shows 'A1: Chips ($1.00)' but instead of chips, a boot sits in the dispensing tray. A large red X marks the machine. Callout labels read: 'Failed Contract! Promised Chips, Dispensed Boot.' and 'Rejected Machine (Violation)'. Additional label: 'Restrictiveness: Violations Rejected.'
+Bottom banner:
+'Same Promise. Many Machines.' with subtitle 'Specifications: The Boundary of Trust.'
+Visual style:
+Retro pixel art with a cohesive color palette of teals, blues, and warm accents. Clear cutaway views showing internal mechanisms. Consistent vending machine frames with identical user interfaces despite wildly different implementations."
+  alt='A pixel art illustration titled "The Vending Machine Contract" showing three vending machines with identical interfaces (Chips $1.00, Soda $1.50, Candy $0.75) but different internal mechanisms: one uses gravity and ramps, one uses pneumatic tubes with steam gauges, and one uses hamsters running on wheels and conveyor belts. All three successfully deliver the correct products. In the corner, a rejected fourth machine lies broken in a trash heap—it promised chips but dispensed a boot, violating the contract. The caption reads "Same Promise. Many Machines." illustrating how multiple implementations can satisfy the same specification, but violations are rejected.'
+/>
+</Slide>
+
+<Slide>
+### What about performance?
+
+<p className="fragment">Specifications generally describe <em>what</em> a system does, rather than <em>how</em> it does it.</p>
+
+<div className="fragment">
+
+There are **hard real-time systems** that do have performance requirements, such as airbag deployment, antilock braking systems, pacemakers, and industrial robots.
+
+</div>
+
+<div className="fragment">
+
+There are also **soft real-time systems**, such as GPS, videogames, and music synthesis.
+
+</div>
+
+<p className="fragment">This class is not about real-time systems.</p>
+
+</Slide>
+
+<Slide>
+
+### Question 8 Answer
+
+Which of the following is NOT one of the three criteria for evaluating a good specification?
+
+<QuizSlide
+  correct={2}
+  answers={[
+    "Restrictiveness (rules out bad implementations)",
+    "Generality (doesn't over-constrain the implementation)",
+    "Efficiency (specifies performance requirements)",
+    "Clarity (easy to understand)"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+## Question 9: Specification Generality
+
+Which specification for a `reverse(String s)` method is more general?
+
+<div style={{ display: 'flex', gap: '2em', fontSize: '0.6em' }}>
+
+<div>
+
+**Spec A:**
+```java
+/**
+ * Creates a char[] from the string `s`,
+ * iterates from the last character to the
+ * first, copying each to the array, then
+ * returns a new string from the array.
+ * @param s a non-null string
+ */
+```
+
+</div>
+
+<div>
+
+**Spec B:**
+```java
+/**
+ * Returns a new string with the characters
+ * of s in reverse order.
+ * @param s a non-null string
+ */
+```
+
+</div>
+
+</div>
+
+<div style={{ marginTop: '1.5em' }}>
+
+<QuizSlide
+  answers={[
+    "Spec A, because it's more detailed",
+    "Spec B, because it defines the result without mandating a specific algorithm",
+    "They are equally general",
+    "Spec B, because it handles edge cases that Spec A doesn't"
+  ]}
+/>
+
+</div>
+
+</Slide>
+
+<Slide>
+
+### Specification Criteria
+
+* A spec is **restrictive** if it rules out unacceptable implementations.
+
+* A spec is **general** if does not rule out correct implementations.
+
+* A spec is **clear** if readers can understand it correctly.
+
+</Slide>
+
+<Slide>
+
+### Question 9 Answer
+
+Which specification for a `reverse(String s)` method is more general?
+
+<div style={{ display: 'flex', gap: '2em', fontSize: '0.6em' }}>
+
+<div>
+
+**Spec A:**
+```java
+/**
+ * Creates a char[] from the string `s`,
+ * iterates from the last character to the
+ * first, copying each to the array, then
+ * returns a new string from the array.
+ * @param s a non-null string
+ */
+```
+
+</div>
+
+<div>
+
+**Spec B:**
+```java
+/**
+ * Returns a new string with the characters
+ * of s in reverse order.
+ * @param s a non-null string
+ */
+```
+
+</div>
+
+</div>
+
+<div style={{ marginTop: '1.5em' }}>
+
+<QuizSlide
+  correct={1}
+  answers={[
+    "Spec A, because it's more detailed",
+    "Spec B, because it defines the result without mandating a specific algorithm",
+    "They are equally general",
+    "Spec B, because it handles edge cases that Spec A doesn't"
+  ]}
+/>
+
+</div>
+
+</Slide>
+
+<Slide>
+
+## Question 10: Overriding equals() and hashCode()
+
+`MeasuredIngredient` overrides both `equals()` and `hashCode()`. Why is it important to override both together?
+
+<QuizSlide
+  correct={1}
+  answers={[
+    "The compiler enforces that both must be overridden together",
+    "Equal objects must have equal hash codes for hash-based collections to work correctly",
+    "hashCode() must call equals() internally to compute its value",
+    "Overriding only equals() causes a compilation error in classes that use generics"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+### Question 10 Answer
+
+`MeasuredIngredient` overrides both `equals()` and `hashCode()`. Why is it important to override both together?
+
+<QuizSlide
+  correct={1}
+  answers={[
+    "The compiler enforces that both must be overridden together",
+    "Equal objects must have equal hash codes for hash-based collections to work correctly",
+    "hashCode() must call equals() internally to compute its value",
+    "Overriding only equals() causes a compilation error in classes that use generics"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+## Question 11: Comparable
+
+What should `x.compareTo(y)` return if `x` is less than `y`?
+
+<QuizSlide
+  answers={[
+    "true",
+    "false",
+    "A negative integer",
+    "Zero"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+### The Comparable Interface
+
+<div style={{display: 'flex', gap: '2em', alignItems: 'flex-start', marginTop: '1em', fontSize: '0.8em'}}>
+
+<div style={{flex: 1}}>
+
+```mermaid
+classDiagram
+    class Comparable~T~ {
+        <<interface>>
+        +compareTo(T o)* int
+    }
+    class DimmableLight {
+        -String id
+        -int brightness
+        +compareTo(DimmableLight o) int
+    }
+    Comparable <|.. DimmableLight
+    style Comparable fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+</div>
+
+<div style={{flex: 1}}>
+
+```java
+public interface Comparable<T> {
+    /**
+     * Compares this object with the
+     * specified object for order.
+     *
+     * @return negative if this < o,
+     *         zero if this == o,
+     *         positive if this > o
+     */
+    int compareTo(T o);
+}
+```
+
+</div>
+
+</div>
+
+</Slide>
+
+<Slide>
+### The Comparator Interface
+
+<div style={{display: 'flex', gap: '2em', alignItems: 'flex-start', marginTop: '1em', fontSize: '0.8em'}}>
+
+<div style={{flex: 1}}>
+```mermaid
+classDiagram
+    class Comparator~T~ {
+        <<interface>>
+        +compare(T o1, T o2)* int
+    }
+    class BrightnessComparator {
+        +compare(DimmableLight a, DimmableLight b) int
+    }
+    class IdComparator {
+        +compare(DimmableLight a, DimmableLight b) int
+    }
+    Comparator <|.. BrightnessComparator
+    Comparator <|.. IdComparator
+    style Comparator fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+</div>
+
+<div style={{flex: 1}}>
+```java
+public interface Comparator<T> {
+    /**
+     * Compares two objects for order.
+     *
+     * @return negative if o1 < o2,
+     *         zero if o1 == o2,
+     *         positive if o1 > o2
+     */
+    int compare(T o1, T o2);
+}
+```
+
+</div>
+
+</div>
+
+</Slide>
+
+<Slide>
+
+### Comparable vs Comparator
+
+<table style={{ fontSize: '0.75em' }}>
+  <thead>
+    <tr>
+      <th></th>
+      <th style={{ textAlign: 'center' }}>Comparable</th>
+      <th style={{ textAlign: 'center' }}>Comparator</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr className="fragment">
+      <td>Method</td>
+      <td><code>compareTo(T o)</code></td>
+      <td><code>compare(T o1, T o2)</code></td>
+    </tr>
+    <tr className="fragment">
+      <td>Compares</td>
+      <td><code>this</code> vs another object</td>
+      <td>Two separate objects</td>
+    </tr>
+    <tr className="fragment">
+      <td>Where defined</td>
+      <td>Inside the class being compared</td>
+      <td>In a separate class</td>
+    </tr>
+    <tr className="fragment">
+      <td>Orderings per class</td>
+      <td>One (the "natural" ordering)</td>
+      <td>Many (different comparators)</td>
+    </tr>
+    <tr className="fragment">
+      <td>Example use</td>
+      <td><code>Collections.sort(list)</code></td>
+      <td><code>Collections.sort(list, comp)</code></td>
+    </tr>
+  </tbody>
+</table>
+
+</Slide>
+
+<Slide>
+
+### Question 11 Answer
+
+What should `x.compareTo(y)` return if `x` is less than `y`?
+
+<QuizSlide
+  correct={2}
+  answers={[
+    "true",
+    "false",
+    "A negative integer",
+    "Zero"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+## Question 12: Lambdas
+
+What is the primary advantage of using a lambda expression instead of an anonymous class for a functional interface?
+
+<QuizSlide
+  answers={[
+    "Lambdas are faster at runtime",
+    "Lambdas are more concise and reduce boilerplate code",
+    "Lambdas can implement multiple methods",
+    "Lambdas can access private fields that anonymous classes cannot"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+### Java Supports Named and Anonymous Classes
+
+<div className="fragment">
+```java
+// Named class
+class BrightnessComparator implements Comparator<DimmableLight> {
+    @Override
+    public int compare(DimmableLight l1, DimmableLight l2) {
+        return Integer.compare(l1.getBrightness(), l2.getBrightness());
+    }
+}
+
+// Usage:
+lights.sort(new BrightnessComparator());
+```
+</div>
+
+<div className="fragment">
+```java
+lights.sort(
+  // Anonymous class
+  new Comparator<DimmableLight>() {
+    @Override
+    public int compare(DimmableLight l1, DimmableLight l2) {
+        return Integer.compare(l1.getBrightness(), l2.getBrightness());
+    }
+});
+```
+
+This still has a lot of boilerplate code.
+</div>
+</Slide>
+
+
+<Slide>
+
+### Lambdas Remove the Boilerplate
+
+```java
+lights.sort(
+  // Anonymous class
+  new Comparator<DimmableLight>() {
+    @Override
+    public int compare(DimmableLight l1, DimmableLight l2) {
+        return Integer.compare(l1.getBrightness(), l2.getBrightness());
+    }
+});
+```
+
+```java
+lights.sort((l1, l2) -> Integer.compare(l1.getBrightness(), l2.getBrightness()));
+```
+</Slide>
+
+<Slide>
+
+### UML
+```mermaid
+classDiagram
+    class Comparator~T~ {
+        <<interface>>
+        +compare(T o1, T o2)* int
+    }
+    class BrightnessComparator {
+        +compare(DimmableLight l1, DimmableLight l2) int
+    }
+    class ㅤ ㅤ  {
+        <<anonymous>>
+        +compare(DimmableLight l1, DimmableLight l2) int
+    }
+    class ㅤ  {
+        <<lambda>>
+        +compare(DimmableLight l1, DimmableLight l2) int
+    }
+    Comparator <|.. BrightnessComparator
+    Comparator <|.. ㅤ ㅤ
+    Comparator <|.. ㅤ
+    style Comparator fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+</Slide>
+
+<Slide>
+### Terminology: Boilerplate
+
+<div style={{fontSize: '0.85em'}}>
+> In the field of printing, the term dates back to the early 1900s.
+> Starting in the late 1800s, printing plates of text that were going to be
+> used over and over, such as advertisements or syndicated columns,
+> started being stamped in steel instead of the much softer and less durable lead.
+> They came to be known as 'boilerplates'.
+
+<Img src="/img/lectures/web/qr1-boilerplate.jpg" width={500}
+  alt="metal plate with reversed letters"/>
+
+
+Source: [Why Name It That?: Boiler Plate](https://whynameitthat.blogspot.com/2013/10/boiler-plate.html)
+</div>
+</Slide>
+<Slide>
+
+### Question 12 Answer
+
+<QuizSlide
+  correct={1}
+  answers={[
+    "Lambdas are faster at runtime",
+    "Lambdas are more concise and reduce boilerplate code",
+    "Lambdas can implement multiple methods",
+    "Lambdas can access private fields that anonymous classes cannot"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+## Question 13: Method References
+
+What does the following method reference represent?
+```java
+lights.sort(Comparator.comparingInt(DimmableLight::getBrightness));
+```
+
+<QuizSlide
+  answers={[
+    "A call to getBrightness() on the DimmableLight class itself",
+    "A reference to the getBrightness method that will be called on each DimmableLight instance",
+    "A static method that returns brightness values",
+    "A constructor reference for creating DimmableLight objects"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+### Three Ways to Sort by Brightness
+
+<div style={{ fontSize: '0.65em' }}>
+
+<div className="fragment">
+
+**Lambda expression**
+```java
+lights.sort((a, b) -> Integer.compare(a.getBrightness(), b.getBrightness()));
+```
+
+</div>
+
+<div className="fragment">
+
+**Using `comparingInt` with a lambda**
+```java
+lights.sort(Comparator.comparingInt(light -> light.getBrightness()));
+```
+
+</div>
+
+<div className="fragment">
+
+**Using `comparingInt` with a method reference**
+```java
+lights.sort(Comparator.comparingInt(DimmableLight::getBrightness));
+```
+
+</div>
+
+</div>
+
+</Slide>
+
+<Slide>
+
+### Question 13 Answer
+
+What does the following method reference represent?
+```java
+lights.sort(Comparator.comparingInt(DimmableLight::getBrightness));
+```
+
+<QuizSlide
+  correct={1}
+  answers={[
+    "A call to getBrightness() on the DimmableLight class itself",
+    "A reference to the getBrightness method that will be called on each DimmableLight instance",
+    "A static method that returns brightness values",
+    "A constructor reference for creating DimmableLight objects"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+## Question 14: Records
+
+Which of the following is NOT automatically provided by a Java record?
+
+<QuizSlide
+  answers={[
+    "A constructor that initializes all fields",
+    "equals(), hashCode(), and toString() implementations",
+    "Mutable setter methods for each field",
+    "Accessor methods for each field"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+### Records: Before and After
+
+<div style={{fontSize: '0.65em'}}>
+```java
+public final class Point {           // final = can't extend
+    private final int x;             // final = immutable
+    private final int y;
+
+    public Point(int x, int y) { this.x = x; this.y = y; }
+
+    public int x() { return x; }     // accessors
+    public int y() { return y; }
+
+    @Override public boolean equals(@Nullable Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Point other)) return false;
+        return x == other.x && y == other.y;
+    }
+
+    @Override public int hashCode() { return Objects.hash(x, y); }
+
+    @Override public String toString() { return "Point[x=" + x + ", y=" + y + "]"; }
+}
+```
+
+```java
+public record Point(int x, int y) {}
+```
+</div>
+
+
+</Slide>
+
+<Slide>
+
+### Records (Java 16, 2021): Data Classes Without Boilerplate
+
+<p style={{fontSize: '0.9em'}}>
+  A <strong>record</strong> is all 30 lines in one:
+</p>
+
+```java
+public record Point(int x, int y) {}
+```
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+  You get automatically:
+</p>
+
+<ul style={{fontSize: '0.8em'}}>
+  <li>Constructor: <code>new Point(1, 2)</code></li>
+  <li>Accessors: <code>point.x()</code>, <code>point.y()</code></li>
+  <li>Correct <code>equals</code>, <code>hashCode</code>, <code>toString</code></li>
+  <li>Immutability: all fields are <code>final</code>, class is <code>final</code></li>
+</ul>
+
+</Slide>
+
+<Slide>
+### Question 14 Answer
+
+Which of the following is NOT automatically provided by a Java record?
+
+<QuizSlide
+  correct={2}
+  answers={[
+    "A constructor that initializes all fields",
+    "equals(), hashCode(), and toString() implementations",
+    "Mutable setter methods for each field",
+    "Accessor methods for each field"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+## Question 15: Coupling
+
+Consider this method signature for code that compiles and runs correctly:
+```java
+void notifyStudent(Submission submission) {
+    sendEmail(submission.student.email, "Your submission was received");
+}
+```
+
+<div style={{ marginTop: '1.5em' }}>
+
+The method only uses `submission.student.email`. What is the main problem with this design?
+
+<QuizSlide
+  answers={[
+    "The method cannot be tested without constructing a full Submission object with a Student",
+    "The method is slower than passing a String directly",
+    "The method violates the Liskov Substitution Principle",
+    "The method cannot handle multiple submissions"
+  ]}
+/>
+
+</div>
+
+</Slide>
+
+<Slide>
+
+### Stamp Coupling
+
+<Img src="/img/lectures/web/qr1-stamp.jpg"
+  prompt="A single rubber stamp viewed from a three-quarter angle, detailed and realistic with a wooden handle and red rubber base.
+The stamp surface shows an overly complex data structure carved into it — a 'Student' object with nested fields visible: 'name', 'email', 'address', 'enrollmentDate', 'GPA', 'courses[]', 'advisor', etc. Far too much information for any single use.
+The stamp has just been pressed onto paper, leaving a red ink impression of the entire bloated data structure. A small hand-written arrow points to just the 'email' field with a note: 'Only needed this part.'"
+  alt="A wooden rubber stamp with a red rubber base showing a complex Student data structure with many fields including name, email, address, street, city, state, zip, enrollmentDate, GPA, courses array, advisor, projects, and achievements. The stamp has been pressed onto cream paper, leaving a red ink impression of the entire data structure. A handwritten note with an arrow points to just the email field saying 'Only needed this part.' Natural window light illuminates the scene."
+/>
+</Slide>
+
+<Slide>
+
+### Question 15: Answer
+
+Consider this method signature for code that compiles and runs correctly:
+```java
+void notifyStudent(Submission submission) {
+    sendEmail(submission.student.email, "Your submission was received");
+}
+```
+
+<div style={{ marginTop: '1.5em' }}>
+
+The method only uses `submission.student.email`. What is the main problem with this design?
+
+<QuizSlide
+  correct={0}
+  answers={[
+    "The method cannot be tested without constructing a full Submission object with a Student",
+    "The method is slower than passing a String directly",
+    "The method violates the Liskov Substitution Principle",
+    "The method cannot handle multiple submissions"
+  ]}
+/>
+
+</div>
+
+</Slide>
+
+<Slide>
+
+## Question 16: Utility Classes
+
+A `Utility` class contains unrelated methods like `formatDate()`, `calculateTax()`, and `validateEmail()`. What is the main problem with this design?
+
+<QuizSlide
+  answers={[
+    "The class will run out of memory",
+    "The class becomes a dumping ground that's hard to navigate, and changes to one method risk affecting unrelated functionality",
+    "Java does not allow static utility methods",
+    "The methods cannot be tested individually"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+### Static Utility Classes
+
+Static utility classes contain static helper methods and cannot be instantiated.
+
+```java
+final public class Utility { // prevent subclassing
+
+    private Utility() {} // prevent instantiation
+
+    public static String formatDate(LocalDate date) {
+        return date.format(DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+    }
+
+    public static String capitalize(String str) {
+        if (str == null || str.isEmpty()) return str;
+        return str.substring(0, 1).toUpperCase() + str.substring(1);
+    }
+
+    public static int clamp(int value, int min, int max) {
+        return Math.max(min, Math.min(max, value));
+    }
+}
+```
+
+</Slide>
+
+<Slide>
+
+### Question 16 Answer
+
+A `Utility` class contains unrelated methods like `formatDate()`, `calculateTax()`, and `validateEmail()`. What is the main problem with this design?
+
+<QuizSlide
+  correct={1}
+  answers={[
+    "The class will run out of memory",
+    "The class becomes a dumping ground that's hard to navigate, and changes to one method risk affecting unrelated functionality",
+    "Java does not allow static utility methods",
+    "The methods cannot be tested individually"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+## Question 17: SOLID
+
+Which SOLID principle states that "a class should have only one reason to change"?
+
+<QuizSlide
+  answers={[
+    "Open/Closed Principle",
+    "Single Responsibility Principle",
+    "Interface Segregation Principle",
+    "Dependency Inversion Principle"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+### SOLID guidelines
+
+* **S**ingle Responsibility Principle: A class should have only one reason to change.
+* **O**pen/Closed Principle: Software entities should be open for extension and closed for modification.
+* **L**iskov Substitution Principle: Objects of a supertype should be replaceable with objects of its subtypes without breaking the application.
+* **I**nterface Segregation Principle: Clients should not be forced to depend on interfaces they don't use.
+* **D**ependency Inversion Principle: Depend on abstractions, not on concretions.
+
+
+</Slide>
+
+<Slide>
+
+### Question 17 Answer
+
+Which SOLID principle states that "a class should have only one reason to change"?
+
+<QuizSlide
+  correct={1}
+  answers={[
+    "Open/Closed Principle",
+    "Single Responsibility Principle",
+    "Interface Segregation Principle",
+    "Dependency Inversion Principle"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+## Question 18: Decorator Pattern
+
+Consider Java's I/O stream design:
+```java
+InputStream in = new BufferedInputStream(new FileInputStream("data.txt"));
+```
+<div style={{ fontSize: '0.8em', marginTop: '-.5em' }}>
+
+<p>`BufferedInputStream` wraps `FileInputStream`, adding buffering without modifying `FileInputStream`.</p>
+
+<p>What is the main advantage of this design over using inheritance (e.g., `class BufferedFileInputStream extends FileInputStream`)?</p>
+
+<QuizSlide
+  answers={[
+    "The wrapper approach is faster at runtime",
+    "Behaviors can be combined flexibly at runtime without creating a subclass for every combination",
+    "The wrapper approach uses less memory",
+    "Inheritance is not allowed for stream classes in Java"
+  ]}
+/>
+
+</div>
+
+</Slide>
+
+<Slide>
+
+### Visual Decorator
+
+<Img src="/img/lectures/web/qr1-visual-decorator.jpg"
+  prompt="A clean, technical illustration showing an exploded isometric view of nested UI components, with each layer floating above the next to show how decorators wrap objects. The only text should be the labels and notes below.
+Bottom layer — 'TextView':
+A simple text document with readable content, clean and minimal. Label points to it: 'TextView'. This is the core component.
+Middle layer — 'ScrollDecorator':
+An empty text view with scrollbars on the right side and bottom, with an outer margin. The scrollbars are clearly visible with up/down and left/right arrows. Label: 'ScrollDecorator'. A small note: 'Adds scrolling behavior.'
+Top layer — 'BorderDecorator':
+An empty text view with a narrow decorative border frame that does not obscure the scrollbars. Label: 'BorderDecorator'. A small note: 'Adds border styling.'
+
+Additional variants floating nearby (smaller scale):
+'LineNumberDecorator' — shows line numbers in a gutter on the left
+'HighlightDecorator' — shows text with highlighted search terms
+'RedactionDecorator' -- blocks parts of the text
+Visual style:
+Crisp lines in dark blue or black. Each layer has subtle transparency to show nesting. Consistent isometric angle (30 degrees) for all layers."
+/>
+</Slide>
+
+<Slide>
+
+### InputStream Decorators
+
+<div style={{ fontSize: '0.75em' }}>
+
+<div className="fragment">
+
+**BufferedInputStream** — adds buffering for efficiency
+```java
+new BufferedInputStream(new FileInputStream("data.txt"));
+```
+
+</div>
+
+<div className="fragment">
+
+**DataInputStream** — reads primitive types (int, double, etc.)
+```java
+new DataInputStream(new FileInputStream("data.bin"));
+```
+
+</div>
+
+<div className="fragment">
+
+**GZIPInputStream** — decompresses gzip data
+```java
+new GZIPInputStream(new FileInputStream("data.gz"));
+```
+
+</div>
+
+<div className="fragment">
+
+**Combining decorators:**
+```java
+new DataInputStream(new BufferedInputStream(new GZIPInputStream(
+    new FileInputStream("data.gz"))));
+```
+
+</div>
+
+</div>
+
+</Slide>
+
+<Slide>
+
+### InputStream Decorator Pattern
+```mermaid
+classDiagram
+    class InputStream {
+        <<abstract>>
+        +read()* int
+        +read(byte[] b)* int
+        +close()* void
+    }
+
+    class FileInputStream {
+        +read() int
+        +close() void
+    }
+
+    class FilterInputStream {
+        <<abstract>>
+        -InputStream in
+        +read() int
+        +close() void
+    }
+
+    class BufferedInputStream {
+        -byte[] buf
+        +read() int
+    }
+
+    class DataInputStream {
+        +readInt() int
+        +readDouble() double
+    }
+
+    class GZIPInputStream {
+        +read() int
+    }
+
+    InputStream <|-- FileInputStream
+    InputStream <|-- FilterInputStream
+    FilterInputStream <|-- BufferedInputStream
+    FilterInputStream <|-- DataInputStream
+    FilterInputStream <|-- GZIPInputStream
+    FilterInputStream o-- InputStream : wraps
+```
+
+</Slide>
+
+
+<Slide>
+
+### Dynamic Decorator Combinations
+
+<div style={{ fontSize: '0.7em' }}>
+```java
+public InputStream openFile(String path, boolean compressed, boolean buffered) {
+    InputStream in = new FileInputStream(path);
+
+    if (compressed) {
+        in = new GZIPInputStream(in);
+    }
+
+    if (buffered) {
+        in = new BufferedInputStream(in);
+    }
+
+    return in;
+}
+```
+
+<div className="fragment">
+
+**Possible combinations at runtime:**
+
+| compressed | buffered | Result |
+|:---:|:---:|---|
+| ✗ | ✗ | `FileInputStream` |
+| ✗ | ✓ | `BufferedInputStream(FileInputStream)` |
+| ✓ | ✗ | `GZIPInputStream(FileInputStream)` |
+| ✓ | ✓ | `BufferedInputStream(GZIPInputStream(FileInputStream))` |
+
+</div>
+
+<p className="fragment">With inheritance, we would need a separate class for each combination!</p>
+
+</div>
+
+</Slide>
+
+<Slide>
+
+### Question 18 Answer
+
+Consider Java's I/O stream design:
+```java
+InputStream in = new BufferedInputStream(new FileInputStream("data.txt"));
+```
+<div style={{ fontSize: '0.8em', marginTop: '-.5em' }}>
+
+<p>`BufferedInputStream` wraps `FileInputStream`, adding buffering without modifying `FileInputStream`.</p>
+
+<p>What is the main advantage of this design over using inheritance (e.g., `class BufferedFileInputStream extends FileInputStream`)?</p>
+
+<QuizSlide
+  correct={1}
+  answers={[
+    "The wrapper approach is faster at runtime",
+    "Behaviors can be combined flexibly at runtime without creating a subclass for every combination",
+    "The wrapper approach uses less memory",
+    "Inheritance is not allowed for stream classes in Java"
+  ]}
+/>
+
+</div>
+
+</Slide>
+
+<Slide>
+## Other topics
+
+* The Four Pillars of OOP
+* Access Modifiers in Java
+* Java Wrapper Classes
+* Dynamic Dispatch
+* Fragile Base Classes
+* Strategy Pattern
+
+</Slide>
+
+<Slide>
+
+### The Four Pillars of OOP
+
+  <Img src="/img/lectures/web/l7-pillars-of-oop.png"
+    prompt="Create an illustration for a computer science lecture slide showing the four pillars of object-oriented programming.
+
+Show a Greek or Roman temple structure with four distinct pillars supporting a roof labeled 'Object-Oriented Programming' or 'OOP'. Each pillar is labeled with one of the four principles:
+
+1. **Encapsulation** - perhaps depicted with a locked box, a wrapped package, or a protective shell icon on or near the pillar
+2. **Abstraction** - perhaps depicted with a simplified shape, a blueprint, or a cloud hiding details
+3. **Inheritance** - perhaps depicted with a family tree, parent-child figures, or an arrow pointing down through generations
+4. **Polymorphism** - perhaps depicted with a shape-shifter, multiple forms, or one interface with many implementations (like one plug fitting different outlets)
+
+The temple should feel sturdy and foundational—these are the principles that support everything else in OOP. The overall mood is educational and approachable, not intimidating.
+
+Clean, modern illustration style with a hint of classical architecture. Horizontal orientation suitable for a presentation slide. No code. Labels should be clear and readable."
+  alt="The four pillars of OOP: Abstraction, Encapsulation, Inheritance, and Polymorphism" />
+
+</Slide>
+
+<Slide>
+
+### Access Modifiers in Java
+
+<div style={{display: 'flex', gap: '1.5em', alignItems: 'center'}}>
+<div style={{flex: 1}}>
+
+<p style={{fontSize: '0.8em'}}>
+  Every class, method, and field has an access modifier:
+</p>
+
+<table style={{fontSize: '0.7em', marginTop: '0.5em', width: '100%'}}>
+  <thead>
+    <tr>
+      <th>Modifier</th>
+      <th>Visibility</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>public</code></td>
+      <td>Accessible from anywhere</td>
+    </tr>
+    <tr>
+      <td><code>protected</code></td>
+      <td>Accessible from package and subclasses</td>
+    </tr>
+    <tr>
+      <td><em>(default)</em></td>
+      <td>Package-private: same package only</td>
+    </tr>
+    <tr>
+      <td><code>private</code></td>
+      <td>Accessible only within the class</td>
+    </tr>
+  </tbody>
+</table>
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
+  Rule: <strong>Minimize accessibility</strong> of classes and members.
+</p>
+
+</div>
+</div>
+
+<aside className="notes">
+**Effective Java Item 15:**
+- "Minimize the accessibility of classes and members"
+- Everything public is part of your API
+- Once public, hard to take back
+
+**Order of preference:**
+1. Private (strongest encapsulation)
+2. Package-private (default—useful for implementation helpers)
+3. Protected (needed for inheritance)
+4. Public (only for genuine API)
+
+→ **Transition:** Access modifiers control *who* can access. But what about controlling *whether* something can change?
+</aside>
+
+</Slide>
+
+</RevealJS>
