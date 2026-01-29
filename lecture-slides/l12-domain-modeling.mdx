@@ -18,18 +18,29 @@ import QuoteSlide from '@site/src/components/QuoteSlide';
 <Slide>
   <Img
     src="/img/lectures/web/l12.png"
-    prompt="Concept: 'Domain Modeling - Bridging Understanding and Code'. A split-scene illustration in a modern educational style.
+    prompt="Concept: 'Domain Modeling: From Chaos to Classes'
+Tagline: 'Their Words. Your Code. Same Language.'
 
-LEFT SIDE - 'The Problem Domain': A busy grading office scene with real-world objects and people. A professor surrounded by stacks of papers, a stressed TA at a desk with student submissions, a student nervously checking grades on their phone, a regrade request form being filled out. Speech bubbles show domain language: 'Submission', 'Grading Session', 'Regrade Request'. Everything feels human, messy, real-world.
+A pixel art style educational illustration showing the transformation from messy real-world requirements to clean domain model.
 
-RIGHT SIDE - 'The Code': The same concepts transformed into clean UML-like boxes and relationships. Classes labeled 'Submission', 'GradingSession', 'RegradeRequest' connected by arrows. The classes glow softly, organized and precise.
+Header banner:
+'CS 3100: Program Design & Implementation 2' with subtitle 'Domain Modeling'
 
-CENTER - A translucent bridge labeled 'Domain Model' connects the two sides. On the bridge, a developer walks from the real-world side toward the code side, carrying concepts and vocabulary across.
+LEFT SIDE - 'The Real World' (chaotic, warm colors):
+A pixel art grading office in disarray. A tiny pixel professor holds a stack of papers labeled 'SUBMISSIONS'. A pixel TA sits at a desk with a speech bubble: 'Is this a regrade or a new submission?' A pixel student waves a form labeled 'REGRADE REQUEST'. Sticky notes everywhere with domain terms: 'Grading Session', 'Rubric', 'Deadline'. The scene feels busy, human, slightly overwhelming. Warm pixel colors (oranges, yellows, browns).
 
-The visual metaphor: domain modeling is the bridge that lets us carry human understanding into code. Without the bridge, there's a dangerous chasm between what users need and what developers build.
+CENTER - 'The Bridge' (transformation zone):
+A pixel art conveyor belt or magical translation machine. On one side, messy paper documents go in. On the other side, clean pixel art class boxes come out. A wizard or architect character stands at the machine with a wand, performing the transformation. Small labels float above: 'Extract', 'Filter', 'Discover', 'Build'.
 
-Color palette: warm, human tones on the left (oranges, browns), cool, digital tones on the right (blues, teals), purple bridge connecting them. Clean modern illustration style suitable for a computer science lecture."
-    alt="Split illustration: left side shows messy real-world grading office with domain concepts (submissions, grading sessions, regrades), right side shows clean UML class diagrams. A glowing bridge labeled 'Domain Model' connects them, with a developer carrying concepts across."
+RIGHT SIDE - 'The Domain Model' (organized, cool colors):
+Clean pixel art boxes representing classes: 'Submission', 'GradingSession', 'RegradeRequest', 'Grader', 'Student'. Pixel arrows connect them showing relationships. Each box glows softly with a teal/blue hue. The arrangement mirrors the chaos on the left but now organized and understandable.
+
+Bottom banner:
+'Their Words. Your Code. Same Language.'
+
+Visual style:
+Retro 8-bit pixel art with cohesive color palette. Warm tones (oranges, browns) on the chaotic left, cool tones (teals, blues) on the organized right. The transformation in the center uses purple/magenta accents. Clear contrast between 'before' and 'after' states."
+    alt="A pixel art illustration showing domain modeling transformation. Left: chaotic grading office with professors, TAs, and papers. Center: a magical translation machine. Right: clean organized class boxes (Submission, GradingSession, RegradeRequest) with connecting arrows. Tagline: Their Words. Your Code. Same Language."
   />
 
 <aside className="notes">
@@ -115,49 +126,56 @@ Plus ~5 min intro connecting to prior material.
 </Slide>
 
 {/* ============================================ */}
-{/* ARC 1: INTRODUCTION - WHY DOMAIN MODELING */}
+{/* ARC 1: INTRODUCTION - CONNECTING TO L9 */}
 {/* ============================================ */}
 
 <Slide>
 
-## Information Hiding at the Conceptual Level
+## Requirements Are the Input—Domain Modeling Is the Output
 
 <p style={{fontSize: '0.9em'}}>
-In <strong>Lecture 6</strong>, we learned that information hiding means modules should expose <em>what</em> they do, not <em>how</em>.
+In <strong>Lecture 9</strong>, we learned to gather and analyze requirements:
 </p>
 
-<p style={{fontSize: '0.9em', marginTop: '1em', color: '#9370DB'}}>
-Today we apply this at the <strong>conceptual level</strong>:
-</p>
-
-<ul style={{fontSize: '0.85em'}}>
-  <li>Hide <strong>implementation-level thinking</strong> (maps, counters, byte arrays)</li>
-  <li>Expose <strong>domain-level abstractions</strong> (Submissions, Students, GradingSessions)</li>
+<ul style={{fontSize: '0.8em'}}>
+  <li>Stakeholder interviews and observation</li>
+  <li>Functional vs. non-functional requirements</li>
+  <li>User stories and acceptance criteria</li>
 </ul>
 
-<p style={{fontSize: '0.9em', marginTop: '1em'}}>
-The same principle—hide the "how," expose the "what"—operates at every scale.
+<p style={{fontSize: '0.9em', marginTop: '1em', color: '#9370DB'}}>
+But requirements are just the <em>input</em>. Today we learn what to <strong>do</strong> with them.
+</p>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+<strong>Domain modeling</strong> transforms messy real-world requirements into a structured understanding that guides our code.
 </p>
 
 <aside className="notes">
-**The connection to L6:**
-- L6: private fields, sealed classes, modules hide implementation details
-- L12: domain models hide *implementation-level thinking* behind domain abstractions
-- Both serve the same goal: understandability and changeability
+**Bridging the gap from L9:**
+- L9 was about *gathering* requirements—listening, asking, documenting
+- L12 is about *structuring* that understanding into a model
+- The model becomes the bridge between stakeholders and code
 
-**Why this matters:**
-- Code that uses domain vocabulary is easier to navigate
-- Developers can predict where functionality lives
-- Non-technical stakeholders can understand the code structure
+**Acknowledge the break:**
+- "We've had a review and quiz since L9, so let's reconnect"
+- L9 gave us raw material (requirements)
+- Today we shape that material into something we can implement
 
-→ **Transition:** But what makes code understandable?
+**The journey so far:**
+- L6: Information hiding (hide *how*, expose *what*)
+- L7-L8: Design for change (coupling, cohesion, SOLID)
+- L9: Requirements (understanding the problem)
+- L12: Domain modeling (structuring that understanding)
+
+→ **Transition:** How does this connect to information hiding?
 </aside>
 
 </Slide>
 
 <Slide>
 
-## The Challenge of Understandability
+## Understandability Is the Ultimate Goal of Good Design
 
 <p style={{fontSize: '0.9em'}}>
 Throughout this course, we've emphasized <strong>changeability</strong>, <strong>readability</strong>, and <strong>maintainability</strong>. But these all serve a more fundamental goal:
@@ -193,7 +211,7 @@ But understandability is <em>subjective</em>—it depends on context. One common
 
 <Slide>
 
-## A Pawtograder Scenario
+## Real Scenarios Reveal Why Domain Modeling Matters
 
 <p style={{fontSize: '0.9em'}}>
 A student submits their assignment. A grader starts reviewing it. But then the student realizes they forgot something and resubmits.
@@ -222,7 +240,7 @@ Let's look at two implementations...
 
 <Slide>
 
-## Approach A: Technical-Focused Design
+## Technical-Focused Design Hides Meaning in Implementation Details
 
 ```java
 public class SubmissionManager {
@@ -269,7 +287,7 @@ public class SubmissionManager {
 
 <Slide>
 
-## Approach B: Domain-Aligned Design
+## Domain-Aligned Design Makes Code Read Like the Business Process
 
 ```java
 public class Submission {
@@ -337,7 +355,7 @@ public class Submission {
 
 <Slide>
 
-## Why Domain-Aligned Design Wins
+## Domain-Aligned Code Is Easier to Navigate, Predict, and Change
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em'}}>
 
@@ -381,9 +399,12 @@ When code uses the same concepts, relationships, and vocabulary as the problem d
 - Understand: Changes to grading affect GradingSession, not random Maps
 - Communicate: Product managers can review domain classes
 
-**Connection to L6:**
-- Information hiding at class level: hide field implementation
-- Information hiding at conceptual level: hide technical implementation behind domain language
+**Connection to L6-L8 (Changeability):**
+- "Understand the impact of changes" is the key benefit
+- Domain-aligned code makes change impact *predictable*
+- "Change regrade rules" → look in RegradeRequest
+- "Change how we store submissions" → look in storage layer, NOT Submission class
+- Technical-focused code: changes ripple unpredictably through Maps and counters
 
 → **Transition:** But achieving this alignment is difficult...
 </aside>
@@ -392,7 +413,7 @@ When code uses the same concepts, relationships, and vocabulary as the problem d
 
 <Slide>
 
-## The Challenge: Same Word, Different Meanings
+## Stakeholders Use the Same Words to Mean Different Things
 
 <p style={{fontSize: '0.9em'}}>
 A "submission" means different things to different stakeholders:
@@ -447,22 +468,86 @@ Creating a domain model is iterative discovery and refinement:
   <li><strong>Build</strong> the initial model with relationships</li>
 </ol>
 
-<p style={{fontSize: '0.85em', marginTop: '1em', color: '#666'}}>
-Let's work through a detailed example...
-</p>
-
 <aside className="notes">
 **The process:**
 - Not linear—expect to iterate
-- Step 3 is often the most valuable
-- Real requirements are messy—we'll use realistic ones
+- Step 3 (hidden concepts) is often the most valuable—that's where Strategy patterns hide
 
-**Connection to L9:**
-- Requirements analysis gave us the raw material
-- Domain modeling structures that material into a model
-- Both are about deep understanding before implementation
+**For lecturers familiar with OOD but not domain modeling:**
+- Classic OOD starts with "find the nouns" → but that's only Step 1
+- Steps 2-4 apply *design principles* to refine the raw extraction
+- Think of it as: Extract → Apply SRP (filter) → Apply Strategy/OCP (hidden concepts) → Build
 
-→ **Transition:** Here's our example requirements...
+**Connection to L9 (Requirements):**
+- L9 taught stakeholder analysis and elicitation
+- Domain modeling is what you DO with those requirements
+- L9 = gathering, L12 = structuring
+
+**Connection to L6-L8 (Design Principles):**
+- Every step uses principles: SRP for filtering, Strategy for hidden policies, Liskov for inheritance decisions
+- This lecture shows domain modeling as *applied* SOLID
+
+→ **Transition:** But first, what are we actually looking for?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Nouns Become Classes; Heavy Verbs Become Interfaces
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.8em', marginTop: '0.5em'}}>
+
+<div>
+
+**Nouns → Classes or Fields**
+
+| In requirements | Becomes |
+|-----------------|---------|
+| *"students"*, *"graders"* | **Classes** (they have identity, behavior) |
+| *"email"*, *"due date"* | **Fields** (just data on something else) |
+| *"score"* | Depends! Could be either. |
+
+</div>
+
+<div>
+
+**Verbs → Methods... or Classes**
+
+| In requirements | Becomes |
+|-----------------|---------|
+| *"submit"*, *"grade"* | Methods (usually) |
+| *"request regrade"* | **A class!** (it has lifecycle, data) |
+| *"ensure fair distribution"* | **Strategy object** (remember L7?) |
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB'}}>
+When a verb has a lifecycle, carries data, or varies in implementation → promote it to a class (or interface!).
+</p>
+
+<aside className="notes">
+**For lecturers familiar with OOD but not domain modeling:**
+This slide bridges classic OO thinking to domain modeling. Students know nouns→classes from intro courses, but the verb→class insight is new and powerful.
+
+**Connection to L5/L7 (Strategy Pattern):**
+- L5 introduced Strategy with Comparator—the *comparison algorithm* became an object
+- L7 revisited Strategy for build systems—`JavaBuildStrategy`, `PythonBuildStrategy`
+- Same pattern here: "ensure fair distribution" → `AssignmentStrategy` interface
+- The requirement describes behavior that *varies*—classic Strategy territory
+
+**Connection to L8 (Open/Closed Principle):**
+- When a verb becomes a class/interface, we get Open/Closed for free
+- New distribution policies = new strategy classes, not modified switch statements
+- This is why L8 said "favor composition over inheritance"
+
+**Key insight for students:**
+- Nouns are obvious candidates (they learned this in CS 2500/2510)
+- Verbs that "feel heavy" are the *non-obvious* candidates—this is the new skill
+
+→ **Transition:** Let's see this in action with real requirements...
 </aside>
 
 </Slide>
@@ -500,67 +585,38 @@ Let's work through a detailed example...
 ## Step 1: Extract Candidate Concepts
 
 <p style={{fontSize: '0.85em'}}>
-Identify all nouns and noun phrases from the requirements:
+Read the requirements like a detective. Every noun could be a class:
 </p>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5em', fontSize: '0.7em', marginTop: '0.5em'}}>
+<div style={{fontSize: '0.68em', backgroundColor: 'rgba(147, 112, 219, 0.05)', padding: '0.5em', borderRadius: '8px', lineHeight: '1.6'}}>
 
-<div>
-- graders
-- meta-graders
-- feedback
-- inline comments
-- programming assignments
-</div>
-
-<div>
-- lines of code
-- code quality
-- dimensions
-- scores
-- rubric
-</div>
-
-<div>
-- regrade requests
-- students
-- submissions
-- original grader
-- instructor
-</div>
+> The university wants to modernize how <mark>**graders**</mark> provide <mark>**feedback**</mark> on <mark>**programming assignments**</mark>. <mark>**Graders**</mark> can provide <mark>**inline comments**</mark> on specific <mark>**lines of code**</mark>, rate <mark>**code quality**</mark> on various <mark>**dimensions**</mark> (correctness, style, design), and assign <mark>**scores**</mark> based on a <mark>**rubric**</mark>. Some graders ("<mark>**meta-graders**</mark>") have additional privileges...
+>
+> <mark>**Students**</mark> can request <mark>**regrades**</mark> if they believe their <mark>**submission**</mark> was scored incorrectly. The <mark>**original grader**</mark> handles the initial <mark>**regrade request**</mark>. If the <mark>**student**</mark> is still dissatisfied, they can escalate to a <mark>**meta-grader**</mark>...
 
 </div>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5em', fontSize: '0.7em', marginTop: '0.5em'}}>
-
-<div>
-- grading work
-- grading decision
-</div>
-
-<div>
-- grading actions
-- audit
-</div>
-
-</div>
-
-<p style={{fontSize: '0.8em', marginTop: '1em', color: '#9370DB'}}>
-This is just the raw extraction—now we need to filter and consolidate.
+<p style={{fontSize: '0.8em', marginTop: '0.75em', color: '#9370DB'}}>
+Don't filter yet! "Lines of code" might become a class. "Dimensions" might not. We decide later.
 </p>
 
 <aside className="notes">
-**Technique:**
-- Read requirements slowly
-- Underline/highlight every noun and noun phrase
-- Don't filter yet—capture everything
+**Live demo possibility:**
+- Project the requirements on screen
+- Highlight nouns as class suggests them
+- Build the list collaboratively—students often spot things you miss
 
-**Common mistake:**
-- Filtering too early
-- Missing subtle concepts
-- Assuming you know what's important
+**Connection to L4 (Specifications):**
+- Just as L4 taught us to read method specs carefully for preconditions/postconditions...
+- Here we read *requirements* carefully for domain concepts
+- Same skill: precise reading to extract meaning
 
-→ **Transition:** Step 2: Filter and consolidate...
+**Key points:**
+- Over-extract now, filter later (like brainstorming)
+- Verbs matter too—they become methods, or sometimes classes (next slide)
+- Some nouns will merge, some will disappear
+
+→ **Transition:** Now we filter and consolidate...
 </aside>
 
 </Slide>
@@ -570,34 +626,48 @@ This is just the raw extraction—now we need to filter and consolidate.
 ## Step 2: Filter and Consolidate
 
 <p style={{fontSize: '0.85em'}}>
-Apply several filters to clean up the raw list:
+Now we sculpt. Not everything survives:
 </p>
 
-<div style={{fontSize: '0.75em'}}>
+<div style={{fontSize: '0.72em', marginTop: '0.5em'}}>
 
-**Remove synonyms—choose canonical names:**
-- "programming assignments" and "assignments" → **Assignment**
-- "grading work" and "grading decision" → **GradingSession**
+<div style={{marginBottom: '0.5em'}}>
+**Merge synonyms** — pick one name and stick with it:
+<div style={{backgroundColor: 'rgba(255,200,100,0.15)', padding: '0.3em 0.5em', borderRadius: '4px', marginTop: '0.25em'}}>
+<s style={{color: '#999'}}>programming assignments</s> + <s style={{color: '#999'}}>assignments</s> → **Assignment** ✓
+</div>
+</div>
 
-**Distinguish attributes from concepts:**
-- "lines of code" → attribute of SourceFile (not a separate concept)
-- "correctness, style, design" → values of a `QualityDimension` attribute
+<div style={{marginBottom: '0.5em'}}>
+**Demote to attributes** — not everything deserves to be a class:
+<div style={{backgroundColor: 'rgba(255,100,100,0.1)', padding: '0.3em 0.5em', borderRadius: '4px', marginTop: '0.25em'}}>
+<s style={{color: '#999'}}>lines of code</s> → just an `int lineNumber` on InlineComment
+</div>
+</div>
 
-**Identify what varies:**
-- Graders vs Meta-graders → might need role attribute or inheritance
-- Regrade requests have stages → need status tracking
+<div>
+**Spot variation** — where things get interesting:
+<div style={{backgroundColor: 'rgba(100,255,100,0.1)', padding: '0.3em 0.5em', borderRadius: '4px', marginTop: '0.25em'}}>
+Grader vs Meta-grader... inheritance? role attribute? <em>We'll decide.</em>
+</div>
+</div>
 
 </div>
 
 <aside className="notes">
-**The filters:**
-- Synonyms create confusion—pick one term and use it consistently
-- Not everything is a class—some things are just attributes
-- Variation often signals important design decisions
+**Ask the class:** "Should meta-grader be a subclass or a role?"
 
-**Discussion:**
-- Should meta-grader be a subclass or a role?
-- This is a design decision we'll revisit
+**Connection to L2 and L8 (Liskov Substitution):**
+- If MetaGrader extends Grader, can we substitute freely? (L2)
+- Does a MetaGrader do everything a Grader does, plus more? Or differently?
+- If "plus more" → inheritance works. If "differently" → maybe composition (L8)
+
+**Connection to L8 (Single Responsibility):**
+- Each class should have one reason to exist
+- "lines of code" isn't a concept with its own responsibility—it's just data
+- "RubricItem" might be—it has behavior (max points, descriptions, scoring logic)
+
+**The goal:** Fewer, cleaner concepts that match stakeholder vocabulary (L4's "ubiquitous language" idea).
 
 → **Transition:** Step 3 is where the magic happens...
 </aside>
@@ -609,44 +679,61 @@ Apply several filters to clean up the raw list:
 ## Step 3: Discover Hidden Concepts
 
 <p style={{fontSize: '0.85em'}}>
-Requirements often <em>imply</em> concepts without <em>naming</em> them:
+The requirements never mention these. But read between the lines:
 </p>
 
-<div style={{fontSize: '0.75em', marginTop: '0.5em'}}>
+<div style={{fontSize: '0.72em', marginTop: '0.5em'}}>
 
-| Requirement phrase | Hidden concept |
-|-------------------|----------------|
-| "ensure fair distribution" | **WorkloadDistributor** or **GradingAssignment** |
-| "prevent same grader from repeatedly grading same student" | **GradingConstraints** or **GradingHistory** |
-| "review a sampling" | **QualityReview** |
-| "based on a rubric" | **Rubric** and **RubricItem** |
-| "tracked for audit purposes" | **AuditLog** or **GradingEvent** |
+<div style={{backgroundColor: 'rgba(147, 112, 219, 0.1)', padding: '0.4em 0.6em', borderRadius: '6px', marginBottom: '0.4em'}}>
+📝 *"ensure fair distribution of grading work"*
+<br/><span style={{color: '#9370DB', fontWeight: 'bold'}}>→ Who distributes? A **GradingAssignment** or **WorkloadManager**</span>
+</div>
+
+<div style={{backgroundColor: 'rgba(147, 112, 219, 0.1)', padding: '0.4em 0.6em', borderRadius: '6px', marginBottom: '0.4em'}}>
+📝 *"prevent same grader from repeatedly grading same student"*
+<br/><span style={{color: '#9370DB', fontWeight: 'bold'}}>→ Someone tracks history. A **GradingHistory** or constraint object.</span>
+</div>
+
+<div style={{backgroundColor: 'rgba(147, 112, 219, 0.1)', padding: '0.4em 0.6em', borderRadius: '6px', marginBottom: '0.4em'}}>
+📝 *"tracked for audit purposes"*
+<br/><span style={{color: '#9370DB', fontWeight: 'bold'}}>→ An **AuditLog** or **GradingEvent** we never discussed.</span>
+</div>
 
 </div>
 
-<p style={{fontSize: '0.8em', marginTop: '1em', color: '#9370DB'}}>
-Hidden concepts are often the most architecturally significant—they represent cross-cutting concerns and business rules.
+<p style={{fontSize: '0.8em', marginTop: '0.75em', color: '#FF9800'}}>
+⚠ Hidden concepts often become the most architecturally critical classes. Miss them, and logic scatters everywhere.
 </p>
 
 <aside className="notes">
-**Why this matters:**
-- Hidden concepts often become critical classes
-- They represent business rules that cut across features
-- Missing them leads to scattered, duplicated logic
+**This is the detective work:**
+- Requirements describe *what* should happen
+- Hidden concepts are *how* it gets enforced
 
-**Technique:**
-- Look for verbs that imply process
-- Look for constraints that need enforcement
-- Ask "how would this be implemented?"
+**Connection to L7 (Strategy Pattern):**
+- "Ensure fair distribution" is a *policy*—and policies often vary!
+- Round-robin? Workload-balanced? Random? That's a Strategy interface (L7)
+- The hidden concept isn't just "WorkloadManager"—it's `AssignmentStrategy`
 
-→ **Transition:** Step 4: Build the model...
+**Connection to L6 (Information Hiding):**
+- Hidden concepts often *enforce invariants*
+- "Prevent same grader repeatedly grading same student" → who enforces this?
+- That enforcer is a hidden concept with a clear responsibility
+
+**Ask the class:** "What would I need to build to make this rule actually work?"
+
+→ **Transition:** Now we assemble what we've found...
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Step 4: Build the Initial Domain Model
+## Step 4: Assemble the Model
+
+<p style={{fontSize: '0.8em', marginBottom: '0.5em'}}>
+From filtered concepts and hidden discoveries, our first sketch emerges:
+</p>
 
 ```mermaid
 classDiagram
@@ -689,32 +776,42 @@ classDiagram
 <aside className="notes">
 **Walk through the model:**
 - Core entities: Grader, Assignment, Submission, GradingSession
-- MetaGrader extends Grader (chosen inheritance over role)
+- MetaGrader extends Grader (we chose inheritance—revisit L2's Liskov test: can we substitute?)
 - Relationships show who does what to whom
-- This is a starting point—will evolve
+
+**Connection to L2 (Inheritance) and L8 (Liskov):**
+- We drew MetaGrader extending Grader—is this valid?
+- L2/L8 test: Can a MetaGrader be used *anywhere* a Grader is expected?
+- If MetaGrader has *additional* capabilities (can review others), inheritance works
+- If MetaGrader *behaves differently* in core grading, maybe composition is better
+
+**Connection to L8 (Interface Segregation):**
+- Notice we didn't create one giant `Person` class with all behaviors
+- Student, Grader, Instructor are separate—each has focused responsibilities
+- This is ISP: clients depend only on interfaces they use
 
 **Note:** This is simplified—full model would include RubricItem, InlineComment, etc.
 
-→ **Transition:** Let's look at common problems in domain modeling...
+→ **Transition:** A few key modeling techniques to keep in mind...
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Common Problem 1: Modeling Verbs as Nouns
+## Actions With Lifecycles Deserve Their Own Classes
 
 <p style={{fontSize: '0.85em'}}>
-Sometimes an action is so important it becomes a concept:
+When an action carries weight, it deserves to be a class:
 </p>
 
 ```java
-// Wrong: Thinking of "regrade" as just a method
+// Starting point: "regrade" as a method
 class Grader {
     void regradeSubmission(Submission s) { }
 }
 
-// Right: "RegradeRequest" is important enough to be a concept
+// Leveled up: "RegradeRequest" captures the full lifecycle
 class RegradeRequest {
     Student requester;
     GradingSession originalSession;
@@ -725,41 +822,48 @@ class RegradeRequest {
 ```
 
 <p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
-Ask: Does this action have a lifecycle? Can it be referenced later? Does it have its own data?
+**Promote when:** the action has a lifecycle, carries data, or needs to be referenced later.
 </p>
 
 <aside className="notes">
-**When verbs become nouns:**
-- The action has a lifecycle (created, in progress, resolved)
-- The action needs to be referenced later
-- The action carries data (reason, responses)
+**Signs a verb should become a class:**
+- It has states (created → in progress → resolved)
 - Multiple parties interact with it
+- You need to refer to "that regrade" later
+- It carries its own data (reason, responses)
 
-**Examples:**
-- "submit" → Submission
-- "grade" → GradingSession
-- "request regrade" → RegradeRequest
+**Connection to L7/L8 (Strategy and Open/Closed):**
+- This is exactly what Strategy pattern does—the *algorithm* becomes an object
+- Remember L7: "ensure fair distribution" → `AssignmentStrategy` interface
+- L8's Open/Closed: new regrade policies = new classes, not modified switch statements
 
-→ **Transition:** Another common problem...
+**Connection to L8 (Single Responsibility):**
+- Once promoted, `RegradeRequest` has ONE job: manage a regrade's lifecycle
+- The `Grader` class is relieved of that responsibility
+- Each class does one thing well
+
+**Classic examples:** "submit" → Submission, "grade" → GradingSession
+
+→ **Transition:** Another useful technique...
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Common Problem 2: Missing Temporal Aspects
+## History Matters When the Domain Cares About the Past
 
 <p style={{fontSize: '0.85em'}}>
-Real domains often involve history and change over time:
+Some domains care about history. Model it explicitly:
 </p>
 
 ```java
-// Naive: Only current state
+// If only current state matters:
 class Submission {
     Grade currentGrade;
 }
 
-// Better: Capturing history
+// If history matters (audit, undo, analytics):
 class Submission {
     List<GradingSession> gradingSessions;  // All grading attempts
     List<Submission> previousVersions;      // If student resubmitted
@@ -773,70 +877,77 @@ class Submission {
 ```
 
 <p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
-Ask: Do we need to know what happened before? Can this change over time?
+**Capture history when:** you need audit trails, undo, analytics, or versioning.
 </p>
 
 <aside className="notes">
-**When to capture history:**
-- Audit requirements ("track all grading actions")
-- Undo/rollback needs
-- Analytics ("how long does grading take?")
-- Multiple versions (resubmissions, regrades)
+**When to add temporal modeling:**
+- "Track all grading actions" → audit log
+- "What grade did they have before?" → version history
+- "How long does grading take?" → timestamps
 
-**The cost:**
-- More complex data model
-- More storage
-- Worth it when history matters to the domain
+**Connection to L6 (Immutability):**
+- Events are naturally immutable—a `GradingEvent` happened and can't un-happen
+- L6 taught us: immutable objects are safer, simpler to reason about
+- Audit logs are *collections of immutable events*—perfect fit
 
-→ **Transition:** One more common problem...
+**Connection to L5 (Records):**
+- Java records (L5) are ideal for immutable event types
+- `record GradeChangedEvent(Submission sub, Grade oldGrade, Grade newGrade, Instant when) {}`
+- Immutable by default, equals/hashCode for free
+
+**The tradeoff:** More complex, more storage—but essential when history matters.
+
+→ **Transition:** One more technique...
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Common Problem 3: Over-Modeling
+## Not Everything Deserves to Be a Class
 
 <p style={{fontSize: '0.85em'}}>
-Not everything needs to be a class:
+Not everything deserves to be a class. Find the right level:
 </p>
 
 ```java
-// Over-modeled: Making everything a class
-class LineNumber {
-    private int value;
-}
+// Too fine-grained:
+class LineNumber { private int value; }
+class CommentText { private String value; }
 
-class CommentText {
-    private String value;
-}
-
-// Appropriate: Using primitives for simple values
+// Right level: primitives for simple values, classes for real concepts
 class InlineComment {
     int lineNumber;      // Just an int
     String comment;      // Just a String
-    SourceFile file;     // This IS a concept
+    SourceFile file;     // This IS a concept worth modeling
 }
 ```
 
 <p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
-Ask: Does this have behavior? Does it have invariants to protect? Would a domain expert recognize it as a distinct concept?
+**Make it a class when:** it has behavior, invariants to protect, or domain experts talk about it as a distinct thing.
 </p>
 
 <aside className="notes">
-**Avoid over-modeling when:**
-- The "concept" is just a primitive wrapper
-- No behavior or invariants
-- Domain experts wouldn't recognize it as distinct
+**Connection to L7 (Cohesion):**
+- L7 warned against "coincidental cohesion"—things grouped for no good reason
+- `LineNumber` class has no cohesion—it's just an int pretending to be important
+- `InlineComment` has *functional cohesion*—all its parts work together for one purpose
 
-**Do model when:**
-- The concept has behavior
-- The concept has invariants (e.g., EmailAddress must be valid)
-- The concept appears in domain conversations
+**Connection to L6 (Information Hiding):**
+- L6: classes exist to *protect invariants*
+- `LineNumber` has no invariant worth protecting (any int is valid)
+- `EmailAddress` DOES—must contain @, valid format → worth a class
+- The L6 PhoneNumber example: class exists because digits must be 0-9
 
-**Balance:** Simple enough to understand, rich enough to express the domain.
+**Connection to L8 (Single Responsibility):**
+- Over-modeling creates classes with *no* responsibility
+- Under-modeling overloads classes with *too many* responsibilities
+- Right granularity = each class has exactly one reason to exist
 
-→ **Transition:** Now let's validate our model...
+**The balance:** Simple enough to understand, rich enough to express the domain.
+
+→ **Transition:** Now let's validate our model with stakeholders...
 </aside>
 
 </Slide>
@@ -847,7 +958,7 @@ Ask: Does this have behavior? Does it have invariants to protect? Would a domain
 
 <Slide>
 
-## Validating Domain Models
+## Validate Early: Misunderstandings Are Cheaper to Fix Before Code
 
 <p style={{fontSize: '0.9em'}}>
 A domain model is a <strong>communication tool</strong>. Before writing code, validate your understanding with stakeholders.
@@ -885,7 +996,7 @@ Validation exposes critical misunderstandings <em>early</em>, when they're cheap
 
 <Slide>
 
-## Validation Technique: Scenario Walkthroughs
+## Walk Through Scenarios to Expose Hidden Assumptions
 
 <p style={{fontSize: '0.85em'}}>
 Take specific scenarios and trace them through the model:
@@ -925,7 +1036,7 @@ This might expose issues like:
 
 <Slide>
 
-## Validation Technique: Terminology Review
+## Use the Language Stakeholders Already Use
 
 <p style={{fontSize: '0.85em'}}>
 Ensure you're using the right words:
@@ -965,7 +1076,7 @@ Using unfamiliar terms creates a translation burden. Use the language stakeholde
 
 <Slide>
 
-## What Validation Typically Reveals
+## Validation Uncovers Business Rules You Never Knew Existed
 
 <div style={{fontSize: '0.75em'}}>
 
@@ -1005,7 +1116,7 @@ The model after validation often looks quite different from the initial attempt�
 
 <Slide>
 
-## From Domain Model to Object-Oriented Design
+## Responsibility Assignment Determines Code Structure
 
 <p style={{fontSize: '0.9em'}}>
 Now we translate our validated domain model into working code.
@@ -1043,101 +1154,161 @@ We'll use three key heuristics:
 
 <Slide>
 
-## Heuristic 1: Information Expert
+## Assign Behavior to the Class That Has the Data
 
 <p style={{fontSize: '0.9em', color: '#9370DB'}}>
 <strong>Assign responsibility to the class that has the information needed to fulfill it.</strong>
 </p>
 
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
 Example: Who should determine if a regrade can be escalated?
 </p>
 
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.62em'}}>
+
+<div style={{backgroundColor: 'rgba(255,100,100,0.08)', padding: '0.4em', borderRadius: '6px'}}>
+
+**❌ Ignoring the heuristic:**
 ```java
-public class RegradeRequest {
-    private final List<RegradeResponse> responses;
-    private RegradeStatus status;
-
-    // RegradeRequest knows its own history
-    public boolean canEscalate() {
-        if (responses.isEmpty()) return false;
-        if (status == RegradeStatus.RESOLVED) return false;
-
-        // Business rule: 24-hour cooling-off period
-        RegradeResponse lastResponse = responses.get(responses.size() - 1);
-        return ChronoUnit.HOURS.between(
-            lastResponse.getCreatedAt(),
-            LocalDateTime.now()
-        ) >= 24;
-    }
+// Service must extract all data from request
+class RegradeService {
+  boolean canEscalate(RegradeRequest req) {
+    List<RegradeResponse> responses =
+        req.getResponses();       // extract
+    RegradeStatus status =
+        req.getStatus();          // extract
+    if (responses.isEmpty()) return false;
+    if (status == RESOLVED) return false;
+    // ... more extraction and logic
+  }
 }
 ```
+Service becomes a "logic hog" that pulls data from anemic objects.
+
+</div>
+
+<div style={{backgroundColor: 'rgba(100,255,100,0.08)', padding: '0.4em', borderRadius: '6px'}}>
+
+**✓ Following the heuristic:**
+```java
+// RegradeRequest knows its own history
+class RegradeRequest {
+  private List<RegradeResponse> responses;
+  private RegradeStatus status;
+
+  boolean canEscalate() {
+    if (responses.isEmpty()) return false;
+    if (status == RESOLVED) return false;
+    // Data is RIGHT HERE—no extraction
+    return coolingOffPeriodPassed();
+  }
+}
+```
+Data and behavior stay together. Self-contained.
+
+</div>
+
+</div>
 
 <aside className="notes">
-**Why RegradeRequest is the expert:**
-- It has the list of responses
-- It has the current status
-- It has the timestamps needed for cooling-off
+**The contrast:**
+- Left: Service becomes a "god class" that knows everyone's business
+- Right: Each class is expert on its own state
 
-**Alternative (wrong):**
-- RegradeService.canEscalate(request) → service has to extract all data
-- GraderController.checkEscalation() → controller shouldn't have business logic
+**Connection to L7 (Cohesion):**
+- Left side has *low cohesion*—service does unrelated things
+- Right side has *functional cohesion*—RegradeRequest manages its own lifecycle
 
-**The pattern:**
-- Data and behavior stay together
-- Reduces coupling (no need to pass data around)
-- Makes the class cohesive
+**Why this enables changeability:**
+- Escalation rules WILL change (24h → 48h, add new conditions, etc.)
+- Left: hunt through service code that extracts data from multiple objects
+- Right: change ONE method in ONE class
+- The data needed for the decision is already there—no ripple effects
 
-→ **Transition:** Another example...
+→ **Transition:** Let's see another example...
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Information Expert: Another Example
+## The Class That Knows Its Constraints Should Enforce Them
 
 <p style={{fontSize: '0.85em'}}>
 Who should check if a grader can review a regrade?
 </p>
 
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.62em'}}>
+
+<div style={{backgroundColor: 'rgba(255,100,100,0.08)', padding: '0.4em', borderRadius: '6px'}}>
+
+**❌ Logic scattered in service:**
 ```java
-public class Grader {
-    private final GraderType type;
-    private final Set<String> previouslyGradedStudentIds;
-    private int activeGradingCount;
+class RegradeService {
+  boolean canGraderReview(Grader g, RegradeRequest r) {
+    // Pull data from grader
+    GraderType type = g.getType();
+    int activeCount = g.getActiveGradingCount();
+    int max = g.getMaxConcurrentGradings();
 
-    // Grader knows its own constraints
-    public boolean canReviewRegrade(RegradeRequest request) {
-        // Can't review own work
-        if (request.getOriginalSession().getGrader().equals(this)) {
-            return false;
-        }
+    // Pull data from request
+    Grader original = r.getOriginalSession()
+                        .getGrader();
 
-        // Check workload
-        if (activeGradingCount >= getMaxConcurrentGradings()) {
-            return false;
-        }
-
-        return true;
-    }
+    // Service implements the logic
+    if (original.equals(g)) return false;
+    if (activeCount >= max) return false;
+    return true;
+  }
 }
 ```
+Service knows too much about Grader's internals.
 
-<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
-The Grader knows its type, workload, and history—it's the expert on its own constraints.
-</p>
+</div>
+
+<div style={{backgroundColor: 'rgba(100,255,100,0.08)', padding: '0.4em', borderRadius: '6px'}}>
+
+**✓ Grader is the expert on itself:**
+```java
+class Grader {
+  private GraderType type;
+  private int activeGradingCount;
+
+  boolean canReviewRegrade(RegradeRequest req) {
+    // Can't review own work
+    if (req.getOriginalSession()
+           .getGrader().equals(this)) {
+      return false;
+    }
+    // Check MY workload (I know it!)
+    if (activeGradingCount >= getMax()) {
+      return false;
+    }
+    return true;
+  }
+}
+```
+Grader knows its own constraints. Easy to test.
+
+</div>
+
+</div>
 
 <aside className="notes">
-**Why Grader is the expert:**
-- Knows its own type (regular vs meta)
-- Knows its workload
-- Can check conflict of interest
+**The contrast:**
+- Left: Service has to know Grader's fields, how max is calculated, etc.
+- Right: Grader encapsulates its own rules
 
-**Benefits:**
-- Self-contained validation
-- Easy to test in isolation
-- Business rules live with the entity they govern
+**Connection to L6-L8 (Changeability via Hyrum's Law):**
+- Left: Service depends on Grader's internal structure—if fields change, service breaks
+- Right: Grader can change its internals freely—only `canReviewRegrade()` matters
+- Example: "max concurrent gradings" changes from 5 to dynamic based on experience level
+  - Left: hunt through all services that extract `maxConcurrent`
+  - Right: change `getMax()` in Grader only
+
+**Why this matters for testing:**
+- Left: To test this, you need a service AND mock graders
+- Right: To test this, you just create a Grader and call the method
 
 → **Transition:** Now let's look at Creator...
 </aside>
@@ -1146,58 +1317,90 @@ The Grader knows its type, workload, and history—it's the expert on its own co
 
 <Slide>
 
-## Heuristic 2: Creator
+## Containers Should Create What They Contain
 
 <p style={{fontSize: '0.9em', color: '#9370DB'}}>
-<strong>Assign class B the responsibility to create instances of class A if B aggregates, contains, records, or has the initializing data for A.</strong>
+<strong>Assign class B the responsibility to create instances of class A if B aggregates, contains, or has the initializing data for A.</strong>
 </p>
 
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
 Example: Who should create InlineComment objects?
 </p>
 
-```java
-public class GradingSession {
-    private final List<InlineComment> comments = new ArrayList<>();
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.62em'}}>
 
-    // GradingSession contains comments, so it creates them
-    public InlineComment addComment(SourceFile file, int lineNumber, String text) {
-        InlineComment comment = new InlineComment(
-            this,           // The session context
-            file,
-            lineNumber,
-            text,
-            LocalDateTime.now()
-        );
-        comments.add(comment);
-        return comment;
-    }
+<div style={{backgroundColor: 'rgba(255,100,100,0.08)', padding: '0.4em', borderRadius: '6px'}}>
+
+**❌ Ignoring the heuristic:**
+```java
+// External service creates comments
+class CommentService {
+  InlineComment createComment(
+      GradingSession session,
+      SourceFile file, int line, String text) {
+    InlineComment c = new InlineComment(
+        session, file, line, text, now());
+    session.getComments().add(c);  // Reaches in!
+    return c;
+  }
 }
 ```
+Service reaches into GradingSession's internals. Session loses control of its own state.
+
+</div>
+
+<div style={{backgroundColor: 'rgba(100,255,100,0.08)', padding: '0.4em', borderRadius: '6px'}}>
+
+**✓ Following the heuristic:**
+```java
+// Container creates what it contains
+class GradingSession {
+  private List<InlineComment> comments = ...;
+
+  InlineComment addComment(
+      SourceFile file, int line, String text) {
+    if (!isActive()) throw new ...;
+    InlineComment c = new InlineComment(
+        this, file, line, text, now());
+    comments.add(c);
+    return c;
+  }
+}
+```
+GradingSession controls its own contents. Can enforce invariants (must be active).
+
+</div>
+
+</div>
 
 <aside className="notes">
-**Why GradingSession creates comments:**
-- It contains/aggregates comments
-- It has the context needed (this session)
-- It can enforce invariants (e.g., session must be active)
+**The contrast:**
+- Left: Service bypasses GradingSession, reaches into its list directly
+- Right: GradingSession is gatekeeper for its own contents
 
-**Alternative creators:**
-- Factory: when creation is complex or varies by type
-- Service: when creation requires external resources
+**Connection to L6 (Information Hiding):**
+- Left *exposes* the comments list (or needs a setter)
+- Right *hides* the list—only GradingSession can modify it
 
-**The pattern:**
-- Container creates contained objects
-- Keeps creation logic close to usage
-- Maintains encapsulation
+**Connection to L6-L8 (Changeability):**
+- Invariant "can only add comments to active sessions" is likely to evolve:
+  - "Allow comments during grace period"
+  - "Allow TAs to add late comments"
+- Left: hunt for all places creating comments, add checks everywhere
+- Right: change `addComment()` in ONE place
 
-→ **Transition:** Sometimes services are the creator...
+**When to break this heuristic:**
+- Complex creation logic → Factory pattern
+- Creation needs external resources (network, etc.) → Service
+
+→ **Transition:** Sometimes services ARE the right creator...
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Creator: Service as Creator
+## Services Create When Coordination Is Required
 
 <p style={{fontSize: '0.85em'}}>
 For complex creation involving multiple entities, a service may be the creator:
@@ -1249,69 +1452,95 @@ public class RegradeService {
 
 <Slide>
 
-## Heuristic 3: Controller
+## Controllers Coordinate—They Don't Implement Business Logic
 
 <p style={{fontSize: '0.9em', color: '#9370DB'}}>
-<strong>Assign responsibility for handling system events to a controller class that coordinates the response.</strong>
+<strong>Assign responsibility for handling system events to a controller class that coordinates—not implements—the response.</strong>
 </p>
 
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
-Controllers manage flow without implementing business logic:
-</p>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.58em', marginTop: '0.5em'}}>
 
+<div style={{backgroundColor: 'rgba(255,100,100,0.08)', padding: '0.4em', borderRadius: '6px'}}>
+
+**❌ Fat controller (logic in controller):**
 ```java
-@RestController
-public class RegradeController {
-    private final RegradeService regradeService;
-    private final AuthenticationService authService;
+@PostMapping("/regrade-requests/{id}/escalate")
+ResponseEntity escalate(@PathVariable String id, ...) {
+  RegradeRequest req = repo.findById(id);
 
-    @PostMapping("/regrade-requests/{id}/escalate")
-    public ResponseEntity<RegradeRequestDto> escalate(
-            @PathVariable String id, @RequestHeader("Authorization") String token) {
+  // Business logic IN the controller!
+  if (req.getResponses().isEmpty()) {
+    throw new BadRequestException("No responses");
+  }
+  if (req.getStatus() == RESOLVED) {
+    throw new BadRequestException("Already resolved");
+  }
+  RegradeResponse last = req.getResponses()
+      .get(req.getResponses().size() - 1);
+  if (hoursBetween(last.getCreatedAt(), now()) < 24) {
+    throw new BadRequestException("Wait 24h");
+  }
 
-        Student student = authService.authenticateStudent(token);
-        RegradeRequest request = regradeService.findById(id);
-
-        if (!request.getStudent().equals(student)) {
-            throw new UnauthorizedException();
-        }
-
-        if (!request.canEscalate()) {  // Delegates to domain object
-            throw new EscalationNotAllowedException();
-        }
-
-        request = regradeService.escalateRequest(request);
-        return ResponseEntity.ok(RegradeRequestDto.fromDomain(request));
-    }
+  req.setStatus(ESCALATED);  // More logic...
+  repo.save(req);
+  return ok(req);
 }
 ```
 
+</div>
+
+<div style={{backgroundColor: 'rgba(100,255,100,0.08)', padding: '0.4em', borderRadius: '6px'}}>
+
+**✓ Thin controller (delegates to domain):**
+```java
+@PostMapping("/regrade-requests/{id}/escalate")
+ResponseEntity escalate(@PathVariable String id, ...) {
+  Student student = authService.authenticate(token);
+  RegradeRequest req = regradeService.findById(id);
+
+  if (!req.getStudent().equals(student)) {
+    throw new UnauthorizedException();
+  }
+
+  if (!req.canEscalate()) {  // Domain decides!
+    throw new EscalationNotAllowedException();
+  }
+
+  req = regradeService.escalateRequest(req);
+  return ok(toJson(req));  // Convert to JSON for response
+}
+```
+Controller coordinates. Domain objects own business rules.
+
+</div>
+
+</div>
+
 <aside className="notes">
-**What controller does:**
-- Authenticates (delegates to authService)
-- Validates authorization (owns this request?)
-- Checks business rule (canEscalate—delegates to domain)
-- Orchestrates the operation (delegates to service)
-- Transforms for API (DTO)
+**The contrast:**
+- Left: Controller is 30+ lines, full of business logic, hard to test
+- Right: Controller is thin—just wiring. Business logic is in `canEscalate()`
 
-**What controller does NOT do:**
-- Implement business logic
-- Know about persistence details
-- Make complex decisions
+**Connection to L8 (Single Responsibility):**
+- Left: Controller has TWO jobs—HTTP handling AND business rules
+- Right: Controller has ONE job—coordinate the request/response flow
 
-**The pattern:**
-- Thin controller, rich domain
-- Easy to test business logic separately
-- Easy to change API without changing logic
+**Connection to L7 (Coupling):**
+- Left: If escalation rules change, you modify the *controller*
+- Right: If rules change, you modify `RegradeRequest.canEscalate()`—controller untouched
 
-→ **Transition:** Let's see how these work together...
+**Why this matters:**
+- Fat controllers are hard to test (need HTTP mocking)
+- Domain objects are easy to test (just Java)
+
+→ **Transition:** Let's see how these heuristics work together...
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Putting It All Together
+## Each Class Has One Clear Job
 
 ```java
 // Information Expert: Domain objects know about themselves
@@ -1339,8 +1568,8 @@ public class RegradeService {
 
 // Controller: Coordinates without business logic
 public class RegradeController {
-    public ResponseEntity<RegradeRequestDto> escalate(...) {
-        /* authenticate, authorize, delegate, transform */
+    public Response escalate(...) {
+        /* authenticate, authorize, delegate, return JSON */
     }
 }
 ```
@@ -1396,22 +1625,24 @@ public class RegradeController {
 
 <Slide>
 
-## The Representational Gap
+## Some Gap Between Domain and Implementation Is Inevitable
 
 <Img
-  src="/img/lectures/web/l12-representational-gap.webp"
-  prompt="An illustration showing the 'representational gap' between domain model and implementation.
+  src="/img/lectures/web/l12-representational-gap-good-bad.webp"
+  prompt="Concept: 'The Representational Gap' - Comparing Good vs Bad Design
+Tagline: 'Mind the Gap'
 
-LEFT SIDE: A clean, simple domain model diagram showing Submission, GradingSession, and RegradeRequest as friendly, simple shapes with clear relationships.
+A pixel art split-screen comparison showing TWO different codebases side by side.
 
-RIGHT SIDE: A complex implementation view showing the same concepts but surrounded by technical infrastructure: Repository interfaces, DTO transformations, Database schemas, Transaction boundaries, Caching layers, API controllers.
+TOP HALF - 'Small Gap (Good Design)':
+A pixel art scene showing two small islands close together. Left island labeled 'Domain Model' has friendly pixel art class boxes (Submission, Grader, RegradeRequest). Right island labeled 'Implementation' shows the same boxes with minimal extra scaffolding. A short, sturdy wooden bridge connects them - easy to cross. The bridge planks have small labels: 'Storage', 'GradingStrategy', 'NotificationService' - these are the thin abstractions that make crossing easy. A happy pixel developer walks across effortlessly. Label: 'Easy to understand. Easy to change.'
 
-The GAP between them is visualized as a chasm or bridge under construction. Some technical elements (like 'GradingSessionRepository', 'RegradeRequestDTO', 'DatabaseTransaction') float in the gap, showing they exist only to bridge domain and implementation.
+BOTTOM HALF - 'Large Gap (Bad Design)':
+Same two islands but now FAR APART with a massive chasm between them. Left island still has the clean domain boxes. Right island shows the concepts BURIED under piles of technical scaffolding - tangled wires, pipes, machinery obscuring the domain concepts. A rickety, impossibly long rope bridge stretches across. A stressed pixel developer clings to the bridge, looking terrified. Technical debris floats in the chasm (fileHandler, jsonParser, cacheManager). Label: 'Hard to understand. Hard to change.'
 
-Above the gap, a measuring tape or ruler shows the 'distance' with labels: 'Smaller gap = more understandable code', 'Larger gap = more translation needed'.
-
-The visual metaphor: the domain model is the clean abstraction, the implementation necessarily adds technical scaffolding, but too much scaffolding obscures the domain."
-  alt="Domain model (clean shapes) on left, implementation (surrounded by technical infrastructure) on right, with a gap between them showing Repository, DTO, Transaction classes. Ruler above shows 'Smaller gap = more understandable'."
+Visual style:
+8-bit pixel art. Top scene has green/blue peaceful tones. Bottom scene has red/orange danger tones. Clear visual contrast between 'good' and 'bad'. The domain concepts should look IDENTICAL on both left islands - the difference is how much technical clutter surrounds them on the right."
+  alt="Pixel art split-screen: TOP shows small gap with sturdy bridge labeled 'Storage', 'GradingStrategy', 'NotificationService' - easy crossing. BOTTOM shows huge gap with rickety bridge and technical debris everywhere. Tagline: Mind the Gap."
 />
 
 <aside className="notes">
@@ -1421,11 +1652,15 @@ The visual metaphor: the domain model is the clean abstraction, the implementati
 - Gap = difference between the two
 
 **Some gap is inevitable:**
-- Technical requirements (persistence, transactions)
+- Technical requirements (storage, network)
 - Performance optimizations
 - Framework constraints
 
-**Goal:** Minimize the gap, contain it well.
+**Connection to L6-L8 (Changeability):**
+- The gap exists because technical details WILL change
+- Storage format, network protocol, caching strategy—all change
+- Goal: keep domain code stable when technical code changes
+- Smaller, well-contained gap = easier to change technical infrastructure
 
 → **Transition:** Let's see where gaps come from...
 </aside>
@@ -1434,30 +1669,32 @@ The visual metaphor: the domain model is the clean abstraction, the implementati
 
 <Slide>
 
-## Sources of Representational Gap
+## Technical Infrastructure Creates the Gap
 
 <p style={{fontSize: '0.85em'}}>
-Our implementation requires technical classes absent from the domain model:
+Our implementation requires technical code absent from the domain model:
 </p>
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.7em'}}>
 
 <div>
 
-**Technical Infrastructure**
+**Saving and Loading Data**
 ```java
 // Domain model has no concept of:
-public interface RegradeRepository {
-    void save(RegradeRequest request);
-    Optional<RegradeRequest> findById(String id);
+class RegradeStorage {
+    void save(RegradeRequest request) {
+        // Write to file? Send to server?
+        // Domain doesn't care!
+    }
+    RegradeRequest load(String id) {
+        // Read from somewhere...
+    }
 }
 
-public class RegradeRequestDto {
-    // JSON representation for API
-}
-
-public class DatabaseTransaction {
-    // Transaction management
+Map<String, Object> toJson(RegradeRequest r) {
+    // Convert domain object to JSON
+    // for sending over the network
 }
 ```
 
@@ -1475,14 +1712,14 @@ class Grader {
 
 // Actual implementation:
 class Grader {
-    Set<String> recentlyGradedStudentIds;
-}
+    // Only keep recent ones in memory
+    Set<String> recentStudentIds;
 
-// Full history in database
-class GradingHistoryService {
-    @Cacheable
-    boolean hasGradedStudent(String graderId,
-                            String studentId);
+    boolean hasGradedStudent(String studentId) {
+        if (recentStudentIds.contains(studentId))
+            return true;
+        return loadFromStorage(studentId);
+    }
 }
 ```
 
@@ -1492,16 +1729,23 @@ class GradingHistoryService {
 
 <aside className="notes">
 **Infrastructure gap:**
-- Repositories for persistence
-- DTOs for serialization
-- Transactions for consistency
+- Saving/loading objects (files, network, etc.)
+- Converting to JSON for web responses
+- Handling errors and retries
 
 **Performance gap:**
 - Can't load everything into memory
-- Need caching, lazy loading
-- Database queries instead of object traversal
+- Need caching, external storage
+- Trade-off between simple code and fast code
 
-**Both are necessary but obscure the domain.**
+**Connection to L6-L8 (Changeability):**
+- These technical concerns are *likely to change*:
+  - Storage: files → database → cloud
+  - Format: JSON → Protocol Buffers → new format
+  - Performance: add caching, change strategy
+- Goal: isolate technical code so domain code doesn't change when infra changes
+
+**Both are necessary but should be isolated from domain.**
 
 → **Transition:** How do we minimize this gap?
 </aside>
@@ -1510,7 +1754,7 @@ class GradingHistoryService {
 
 <Slide>
 
-## Strategies to Minimize the Gap
+## Rich Domain Models Keep Business Logic Close to Data
 
 <p style={{fontSize: '0.9em', color: '#9370DB', fontWeight: 'bold'}}>
 Rich Domain Model
@@ -1576,17 +1820,21 @@ public class RegradeRequest {
 </div>
 
 <aside className="notes">
-**Anemic model:**
-- Domain objects are just data containers
-- Business logic scattered in services
-- Hard to find where rules are enforced
+**Anemic model problems:**
+- Business logic scattered across services
+- To change escalation rules: hunt through multiple files
+- "Where is this rule enforced?" → good luck finding it
 
-**Rich model:**
-- Domain objects have behavior
-- Business logic close to data
-- Code reads like domain description
+**Rich model enables change:**
+- Business rules live in ONE place
+- To change escalation: modify `canEscalate()` only
+- Business rules are the most common axis of change!
 
-**This is Information Expert applied consistently.**
+**Connection to L6-L8 (Changeability):**
+- This is Information Expert applied for changeability
+- "24-hour cooling off" becomes "48-hour" → one method changes
+- New escalation condition? → one method changes
+- Compare to anemic: rule scattered in 5 services...
 
 → **Transition:** Another strategy...
 </aside>
@@ -1595,43 +1843,70 @@ public class RegradeRequest {
 
 <Slide>
 
-## Strategies: Repository Pattern
+## Hide Storage Details to Enable Future Change
 
 <p style={{fontSize: '0.85em'}}>
-Repositories provide an abstraction over data access using domain language:
+When you need to save/load data, use method names that speak domain language:
 </p>
 
-```java
-// Repository speaks domain language
-public interface RegradeRepository {
-    List<RegradeRequest> findPendingRequestsForGrader(Grader grader);
-    List<RegradeRequest> findEscalatedRequestsNeedingMetaGrader();
-    Optional<RegradeRequest> findBySubmissionAndStudent(
-        Submission sub, Student student
-    );
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.68em'}}>
 
-    // NOT: executeSQL("SELECT * FROM regrade_requests WHERE...")
+<div style={{backgroundColor: 'rgba(255,100,100,0.08)', padding: '0.4em', borderRadius: '6px'}}>
+
+**❌ Technical language exposed:**
+```java
+class RegradeService {
+    void handleEscalation(String id) {
+        // Caller sees storage details
+        String json = fileSystem.read(
+            "regrades/" + id + ".json");
+        RegradeRequest r = parseJson(json);
+        // ...
+    }
 }
 ```
 
-<p style={{fontSize: '0.8em', marginTop: '1em'}}>
-The repository hides persistence details while using domain vocabulary.
-</p>
+</div>
 
-<p style={{fontSize: '0.8em', color: '#9370DB'}}>
-Compare to raw SQL: domain concepts vs. table names and columns.
+<div style={{backgroundColor: 'rgba(100,255,100,0.08)', padding: '0.4em', borderRadius: '6px'}}>
+
+**✓ Domain language only:**
+```java
+class RegradeService {
+    void handleEscalation(String id) {
+        // Storage is hidden
+        RegradeRequest r =
+            storage.findPendingRequest(id);
+        // ...
+    }
+}
+```
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.8em', marginTop: '0.75em', color: '#9370DB'}}>
+Domain vocabulary: `findPendingRequest`, not `readJsonFile`. <strong>Storage is a likely axis of change.</strong>
 </p>
 
 <aside className="notes">
-**What repository provides:**
-- Domain-language interface
-- Hides database schema
-- Can change persistence without changing domain
+**Connection to L6-L8 (Changeability):**
+- This is information hiding *for changeability*
+- Storage technology is a **common axis of change**:
+  - Start with JSON files → migrate to database
+  - Local storage → cloud storage
+  - Single server → distributed system
 
-**Connection to L6:**
-- This is information hiding for persistence
-- Interface shows *what*, implementation hides *how*
-- Clients don't know if it's SQL, NoSQL, or in-memory
+**Why this enables change:**
+- Domain code never mentions JSON, files, or network
+- To change storage: swap ONE class, not touch domain code
+- Tests use in-memory storage (fast), production uses real storage
+
+**Real example:**
+- Early Pawtograder: stored submissions as files
+- Later: migrated to cloud storage
+- Domain code unchanged—only storage layer rewired
 
 → **Transition:** How do we measure the gap?
 </aside>
@@ -1640,7 +1915,7 @@ Compare to raw SQL: domain concepts vs. table names and columns.
 
 <Slide>
 
-## Measuring the Gap
+## A Domain Expert Should Understand Your Core Classes
 
 <p style={{fontSize: '0.85em'}}>
 Ask these questions to evaluate your representational gap:
@@ -1676,7 +1951,7 @@ Some gap is inevitable. The goal is not zero gap, but ensuring the gap exists on
 
 <Slide>
 
-## The Cost of Representational Choices Over Time
+## Domain Models Are Expensive to Change—Choose Wisely
 
 <p style={{fontSize: '0.85em'}}>
 Domain models are <strong>expensive to change</strong> once code depends on them.
@@ -1719,7 +1994,7 @@ Domain concepts propagate through the codebase—into method names, class hierar
 
 <Slide>
 
-## A Cautionary Tale: The 16-Bit Counter
+## Small Assumptions Can Have Catastrophic Consequences
 
 <div style={{fontSize: '0.75em', backgroundColor: 'rgba(255,200,100,0.2)', padding: '0.75em', borderRadius: '8px'}}>
 
@@ -1754,39 +2029,73 @@ A seemingly trivial decision—"16 bits should be plenty"—became an existentia
 </Slide>
 
 {/* ============================================ */}
-{/* KEY TAKEAWAYS */}
+{/* KEY TAKEAWAYS - CONNECTING TO PRIOR PRINCIPLES */}
 {/* ============================================ */}
+
+<Slide>
+
+## Domain Modeling Is Where All the Principles Come Together
+
+<div style={{fontSize: '0.72em'}}>
+
+| Domain Modeling Step | Uses This Principle | From Lecture |
+|---------------------|---------------------|--------------|
+| **Extract nouns → classes** | Encapsulation, Abstraction | L1, L2 |
+| **Filter with SRP** | Single Responsibility | L8 |
+| **Hidden concepts → Strategy** | Strategy Pattern, Open/Closed | L5, L7, L8 |
+| **Validate with stakeholders** | Requirements Analysis | L9 |
+| **Information Expert** | Cohesion, Information Hiding | L6, L7 |
+| **Creator heuristic** | Encapsulation, Invariant Protection | L6 |
+| **Rich domain model** | Behavior with data, not anemic objects | L6, L7 |
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '0.75em', color: '#9370DB'}}>
+Domain modeling isn't a new topic—it's where all the principles come together.
+</p>
+
+<aside className="notes">
+**The big picture:**
+- L1-L2: Basic OO (encapsulation, inheritance, polymorphism)
+- L5: Strategy pattern, lambdas
+- L6: Information hiding, immutability
+- L7: Coupling, cohesion
+- L8: SOLID principles
+- L9: Requirements gathering
+- **L12: Apply ALL of these to structure a real problem**
+
+**This is the synthesis lecture.**
+
+→ **Transition:** Quick summary of what you should remember...
+</aside>
+
+</Slide>
 
 <Slide>
 
 ## Key Takeaways
 
-<ul style={{fontSize: '0.8em'}}>
-  <li><strong>Domain modeling</strong> bridges human understanding and code implementation</li>
-  <li><strong>Four-step process:</strong> Extract → Filter → Discover hidden concepts → Build model</li>
-  <li><strong>Validate early</strong> with stakeholders through scenario walkthroughs</li>
-  <li><strong>Responsibility heuristics:</strong> Information Expert, Creator, Controller</li>
-  <li><strong>Representational gap</strong> is inevitable but should be minimized and contained</li>
+<ul style={{fontSize: '0.78em'}}>
+  <li><strong>Domain modeling</strong> transforms requirements (L9) into code structure</li>
+  <li><strong>Four-step process:</strong> Extract → Filter (SRP) → Discover hidden concepts (Strategy) → Build</li>
+  <li><strong>Validate early</strong> with stakeholders—cheaper than fixing later</li>
+  <li><strong>Responsibility heuristics</strong> apply Information Expert (L6) and cohesion (L7)</li>
+  <li><strong>Minimize the gap</strong> between domain understanding and implementation</li>
 </ul>
 
 <p style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
-The key insight: Object-oriented design isn't just about classes and inheritance—it's about creating code that reflects human understanding of the problem space.
+Good OO design creates code that reflects human understanding of the problem—not just technical machinery.
 </p>
 
 <aside className="notes">
 **Summary:**
 1. Domain modeling makes understanding explicit
-2. Systematic process produces better models
+2. The process applies principles you already know
 3. Validation catches misunderstandings early
-4. Heuristics guide responsibility assignment
-5. Technical gap is manageable with good patterns
+4. Heuristics are just cohesion/information hiding applied
+5. Technical gap is real but manageable
 
-**Connection to course themes:**
-- Information hiding at conceptual level (L6)
-- Design for change (L7-L8)
-- Requirements → domain model → code (L9 → L12)
-
-→ **Transition:** Questions?
+→ **Transition:** Looking ahead...
 </aside>
 
 </Slide>
