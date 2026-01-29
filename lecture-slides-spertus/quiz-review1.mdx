@@ -588,4 +588,179 @@ Why is `Quantity` declared as an `abstract class` rather than a regular class?
 
 </Slide>
 
+<Slide>
+
+## Question 5: Exceptions
+
+What distinguishes checked exceptions (e.g., `IOException`) from unchecked exceptions (e.g., `IllegalArgumentException`)?
+
+<QuizSlide
+  answers={[
+    "Checked exceptions are faster to throw",
+    "Checked exceptions must be declared in the method signature or caught; unchecked exceptions do not",
+    "Unchecked exceptions cannot be caught",
+    "Checked exceptions extend RuntimeException"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+### Checked and Unchecked Exceptions
+
+  <Img
+    src="/img/lectures/web/l2-exceptions.webp"
+    alt="Airport customs: green channel for unchecked exceptions, red channel for checked exceptions"
+    prompt="Revised: 'The Arrivals Hall' (Airport Declaration Channels)
+A cheerful airport arrivals hall rendered in the style of a friendly airport signage system—think IKEA-meets-international-terminal wayfinding design. The scene shows the familiar customs area after landing, with two clearly marked channels. The green channel ('Nothing to Declare' / Unchecked Exceptions) shows travelers like NullPointerException and IllegalArgumentException walking straight through without stopping—no paperwork, no inspection, just a quick passage into the main terminal. A small sign notes: 'Travelers choosing this channel accept responsibility for any undeclared items.' The red channel ('Goods to Declare' / Checked Exceptions) shows travelers like IOException and SQLException stopping at a customs desk, filling out declaration forms (the throws clause), having their bags inspected (the try-catch block), and getting their forms stamped before proceeding. The process is slower but orderly. Friendly customs officers (the compiler) check that all declarations match what's actually being carried.
+This visualization keeps the 'two paths with different requirements' structure while using a universally relatable, low-stakes scenario that most travelers have experienced. The green/red channel system is internationally recognized and immediately intuitive: some things require declaration, others don't. The metaphor maps cleanly: checked exceptions are like goods that must be declared—you can't just walk through pretending you don't have them. Unchecked exceptions are like personal items—no declaration required, but if something goes wrong (you actually did have something to declare), that's on you. Details include: declaration forms with fields for 'Exception Type' and 'Handling Strategy,' a duty-free shop in the background labeled 'Standard Exceptions' (the ones you don't need to create yourself), and arrival screens showing 'Flight from MethodCall' and 'Destination: CallerLand.' A small Error like OutOfMemoryError appears as an emergency exit—bypassing customs entirely because the whole terminal is being evacuated. The friendly airport aesthetic makes exception handling feel routine rather than adversarial. Tagline: 'Some exceptions require declaration. Know which channel you're in.'"
+  />
+
+</Slide>
+
+<Slide>
+
+### Java's Exception Hierarchy Distinguishes Error Types
+
+<p style={{fontSize: '1.1em'}}>
+  All exceptions extend <code>Throwable</code>
+</p>
+
+```mermaid
+classDiagram
+    class Throwable {
+    }
+    class Exception {
+    }
+    class RuntimeException {
+    }
+    class Error {
+    }
+    Throwable <|-- Exception
+    Throwable <|-- Error
+    Exception <|-- RuntimeException
+    Exception <|-- IOException
+    RuntimeException <|-- NullPointerException
+    RuntimeException <|-- IllegalArgumentException
+    RuntimeException <|-- IndexOutOfBoundsException
+```
+Subclasses of `Error` and `RuntimException` are unchecked.
+
+</Slide>
+
+<Slide>
+
+### Parameter Validation
+
+* Validate constructor and method parameters as early as possible
+* Throw `IllegalArgumentException`
+* Document requirements and exceptions in Javadoc
+
+```java
+  /**
+   * Creates an ingredient with the given name, preparation, and notes.
+   *
+   * @param name the ingredient name (must not be null or blank)
+   * @param preparation the preparation instructions (may be null)
+   * @param notes additional notes (may be null)
+   * @throws IllegalArgumentException if name is blank (empty or whitespace-only)
+   */
+  protected Ingredient(@NonNull String name, @Nullable String preparation, @Nullable String notes) {
+    if (name.isBlank()) {
+      throw new IllegalArgumentException("Name must not be blank.");
+    }
+    ...
+  }
+```
+
+</Slide>
+
+<Slide>
+
+### Two Ways to Handle Checked Exceptions
+
+<div style={{ display: 'flex', gap: '2em', fontSize: '0.7em' }}>
+
+<div className="fragment">
+
+**Option 1: Catch it**
+```java
+public void processFile(String path) {
+    try {
+        String data = readFile(path);
+        // use data
+    } catch (IOException e) {
+        System.err.println("Could not read file: "
+            + e.getMessage());
+    }
+}
+```
+
+Handle the problem here.
+
+</div>
+
+<div className="fragment">
+
+**Option 2: Propagate it**
+```java
+public void processFile(String path) throws IOException {
+    String data = readFile(path);
+    // use data
+}
+```
+
+Let the caller handle it.
+
+</div>
+
+</div>
+
+</Slide>
+
+<Slide>
+
+<Img src="/img/lectures/web/qr1-babysitter-exception-handling.jpg"
+  prompt="A warm, storybook illustration style showing two side-by-side scenes of babysitters dealing with a crying baby at night.
+Left panel — 'The Good Babysitter (Catch It)':
+A calm, competent babysitter in a cozy nursery, successfully soothing a baby who was just crying. The babysitter rocks the baby gently, perhaps with a lullaby note floating in the air. A teddy bear and warm nightlight set a peaceful scene. The baby is settling down, tears drying.
+Label above: catch (CryingBabyException e)
+Large code snippet on a sticky note on the wall:
+try {    baby.putToBed();} catch (CryingBabyException e) {    baby.soothe();    baby.singLullaby();}
+
+Caption below: 'Handles the problem. Parents sleep peacefully.'
+A thought bubble from the babysitter: 'I got this.'
+Right panel — 'The Bad Babysitter (Declare It)':
+A frazzled babysitter standing at the parents' bedroom door at 2 AM, holding a screaming baby at arm's length, passing the crying child to exhausted, disheveled parents in pajamas. The parents look annoyed and sleepy. The nursery behind is in disarray.
+Label above: throws CryingBabyException
+Lage code snippet on a note falling to the floor: public void watchBaby() throws CryingBabyException {    baby.putToBed(); // not my problem!}
+Caption below: 'Propagates the problem. Parents deal with it.'
+A thought bubble from the babysitter: 'Above my pay grade.'
+Bottom banner:
+'Checked exceptions: Handle them or declare them. Someone has to deal with it eventually.'
+Visual consistency:
+Same baby, same crib, same house — only the babysitter's response differs. Clock on wall shows late night in both panels. Color palette shifts from warm greens and yellows (left/good) to stressed oranges and reds (right/bad)."
+  alt="Two-panel storybook illustration titled 'Babysitter Exception Handling'. Left panel labeled 'The Good Babysitter (Catch It)' shows a calm babysitter in a rocking chair holding a content baby in a peaceful nursery at night. A code snippet reads 'try { baby.putToBed(); } catch (CryingBabyException e) { baby.soothe(); baby.singLullaby(); }'. Speech bubble says 'I got this.' Caption: 'Handles the problem. Parents sleep peacefully.' Right panel labeled 'The Bad Babysitter (Declare It)' shows a frazzled babysitter handing a crying baby to exhausted parents in pajamas. Speech bubble says 'Above my pay grade.' Caption: 'Propagates the problem. Parents deal with it.' Bottom banner reads 'Checked exceptions: Handle them or declare them. Someone has to deal with it eventually.'"
+/>
+</Slide>
+
+<Slide>
+
+### Question 5 Answer
+
+What distinguishes checked exceptions (e.g., `IOException`) from unchecked exceptions (e.g., `IllegalArgumentException`)?
+
+<QuizSlide
+  correct={1}
+  answers={[
+    "Checked exceptions are faster to throw",
+    "Checked exceptions must be declared in the method signature or caught; unchecked exceptions do not",
+    "Unchecked exceptions cannot be caught",
+    "Checked exceptions extend RuntimeException"
+  ]}
+/>
+
+</Slide>
+
 </RevealJS>
