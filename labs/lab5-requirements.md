@@ -3,11 +3,12 @@ sidebar_position: 5
 image: /img/labs/web/lab5.png
 ---
 
-![Lo-fi pixel art showing a central scene of a developer at a desk, puzzling over a short requirements document titled 'OFFICE HOURS SYSTEM'. The document is small and sparse—just a few bullet points visible. Around the developer's head, multiple translucent thought bubbles float outward like branching possibilities: one shows a video call interface, another shows a chat window, another shows a physical queue of students, another shows a ticket system with numbers. Each bubble is equally vivid, equally plausible. On the desk, a highlighter rests on phrases circled with question marks. A sticky note reads 'What does this MEAN?' In the background, a whiteboard shows the three risk dimensions: 'Understanding? Scope? Volatility?' with arrows pointing to a large question mark. Title: 'Lab 5: Requirements Engineering'. Warm evening lighting, cozy study room atmosphere.](/img/labs/web/lab5.png)
 
 # Lab 5: Requirements Engineering
 
 In this lab, you'll experience firsthand why requirements analysis matters. You and a partner will interpret an intentionally ambiguous project brief, then discover how dramatically your interpretation differs from another pair's—even though you read the exact same words. This "parallel universe" exercise demonstrates the critical importance of building shared understanding before writing code.
+
+![Lo-fi pixel art showing a central scene of a developer at a desk, puzzling over a short requirements document titled 'OFFICE HOURS SYSTEM'. The document is small and sparse—just a few bullet points visible. Around the developer's head, multiple translucent thought bubbles float outward like branching possibilities: one shows a video call interface, another shows a chat window, another shows a physical queue of students, another shows a ticket system with numbers. Each bubble is equally vivid, equally plausible. On the desk, a highlighter rests on phrases circled with question marks. A sticky note reads 'What does this MEAN?' In the background, a whiteboard shows the three risk dimensions: 'Understanding? Scope? Volatility?' with arrows pointing to a large question mark. Title: 'Lab 5: Requirements Engineering'. Warm evening lighting, cozy study room atmosphere.](/img/labs/web/lab5.png)
 
 :::info Grading: What You Need to Submit
 
@@ -34,38 +35,19 @@ If lab leaders observe that you are **not working on the lab** during the sectio
 
 :::
 
-## Lab Facilitator Notes
+## Getting Started
 
-:::tip For TAs: Lab Start (10 minutes)
+Your TA will provide a brief introduction and organize pairs. **Important:** During Parts 1 and 2, do not communicate with other pairs—this is essential for the exercise.
 
-**Attendance** (2 min): Take attendance using the roster in Pawtograder.
+**Soft Skill Focus: Building Shared Understanding**
 
-**Brief Intro** (3 min):
-- "Today we're exploring why requirements analysis matters through a hands-on experiment"
-- "You'll interpret a project brief, negotiate with a partner, then discover how different your interpretation is from another pair's"
-- "This connects directly to Lecture 9—understanding, scope, and volatility risk"
+During pair work, practice these skills:
+- Explain your interpretation *and the reasoning behind it*
+- Listen to understand (not to argue)
+- Identify where your interpretations differ
+- Create a merged understanding that incorporates both perspectives
 
-**Soft Skill Focus — Building Shared Understanding** (5 min):
-
-Read this to students:
-
-> "Today we're practicing *building shared understanding*. You'll discover firsthand how two people can read the same requirements and reach completely different conclusions.
->
-> During pair work:
-> - **Explain your interpretation and the reasoning behind it**
-> - **Listen to understand** (not to argue)
-> - **Identify where your interpretations differ**
-> - **Create a merged understanding** that incorporates both perspectives
->
-> **Critical rule:** During Parts 1 and 2, do NOT communicate with other pairs. We'll explain why later. Trust us—this is important for the exercise to work."
-
-**Pair and Quad Formation** (3 min):
-- Have students form pairs (A+B, C+D, etc.)
-- Assign pairs to quads (Pair AB will later merge with Pair CD)
-- **Physically separate pairs if possible**—they should not overhear each other's discussions
-- **Step 1:** Introduce yourself to your partner. Record their name in `REFLECTION.md`.
-
-:::
+**Step 1:** Introduce yourself to your partner and record their name in `REFLECTION.md`.
 
 ## Learning Objectives
 
@@ -105,11 +87,12 @@ The CS department needs a system to help students get help from TAs.
 Key points:
 - Students can request help with course material
 - TAs provide assistance during their scheduled hours
+- Some office hours are in-person, some are virtual
 - The system should support both live help and leaving questions for later
 - Students should know when they can expect a response
 - TAs need to manage their workload fairly
 
-Build something that works for a course with 300 students and 10 TAs.
+Build something that works for a course with 300 students and 10 TAs across three campuses in different time zones.
 
 :::
 
@@ -132,10 +115,10 @@ List **5-7 specific requirements** you believe the system needs. For each requir
 - Note any assumptions you're making
 - Identify which stakeholder (student, TA, instructor, department) it primarily serves
 
-**Example format:**
-> **Requirement:** Students can join a virtual queue and see their position in real-time.
-> **Assumption:** "Live help" means real-time chat or video, not in-person.
-> **Stakeholder:** Students (reduces uncertainty about wait times)
+**Format:**
+> **Requirement:** [A specific, testable requirement]
+> **Assumption:** [What you assumed about the brief to arrive at this requirement]
+> **Stakeholder:** [Who benefits and why]
 
 ### Exercise 1.2: Ambiguity Identification
 
@@ -144,10 +127,10 @@ List **3 or more terms or phrases** from the brief that you found unclear or amb
 - Explain why it's ambiguous
 - State what you *assumed* it means for your requirements above
 
-**Example format:**
-> **Phrase:** "live help"
-> **Why ambiguous:** Could mean video call, text chat, screen sharing, or managing an in-person queue
-> **My assumption:** Video call with screen sharing capability
+**Format:**
+> **Phrase:** [Quote the exact words from the brief]
+> **Why ambiguous:** [What different interpretations are possible?]
+> **My assumption:** [Which interpretation you chose for your requirements]
 
 **Write your answers in the "Part 1: Individual Interpretation" section of `REFLECTION.md` before proceeding.**
 
@@ -179,22 +162,9 @@ The goal is consensus—you should both be able to defend every requirement as t
 
 ---
 
-## Sync Point 1
-
-:::tip For TAs: Sync Point 1 (5 minutes)
-
-**Check progress:**
-- "Is everyone finished with their joint specification of 8 requirements?"
-- "Remember: still no talking to other pairs. The reason will become clear very shortly."
-
-**Build anticipation:**
-- "Take a moment to re-read your 8 requirements."
-- "Ask yourself: Am I confident that another engineering team could build the right system from this spec alone?"
-- "We're about to find out."
-
+:::note Sync Point
+**Wait here** until your TA signals to proceed to Part 3.
 :::
-
----
 
 ## Part 3: The Reveal (20 minutes)
 
@@ -216,8 +186,6 @@ As a quad, create a table documenting **every significant difference** between t
 
 | Topic | Pair AB's Interpretation | Pair CD's Interpretation | Impact if Built Wrong |
 |-------|-------------------------|-------------------------|----------------------|
-| Example: "Live help" | Video calls with screen share | Text-based chat queue | Completely different tech stack |
-| Example: "Response time" | 24-hour SLA for async questions | Real-time queue position display | Different user expectations |
 | ... | ... | ... | ... |
 
 Aim for **at least 4 divergences**. You'll probably find more.
@@ -234,9 +202,9 @@ For your **top 3 divergences**, classify each by the risk dimension from Lecture
 
 | Divergence | Risk Type | Why This Classification? |
 |------------|-----------|-------------------------|
-| Video vs. Chat | **Understanding Risk** | The term "live help" was genuinely ambiguous |
-| Queue system vs. Ticketing | **Scope Risk** | Each interpretation implies very different feature sets |
-| Response time expectations | **Volatility Risk** | This is likely to change based on actual usage patterns |
+| [Your divergence 1] | **Understanding** / **Scope** / **Volatility** | [Your explanation] |
+| [Your divergence 2] | ... | ... |
+| [Your divergence 3] | ... | ... |
 
 For each, explain:
 - Why does this divergence fall into this risk category?
@@ -248,81 +216,36 @@ For each of your top 3 divergences, identify which **elicitation technique** fro
 
 | Divergence | Elicitation Technique | Specific Action |
 |------------|----------------------|-----------------|
-| Video vs. Chat | **Interview** | Ask the department head: "When you say 'live help,' what does that look like?" |
-| Queue vs. Tickets | **Observation** | Shadow TAs during current office hours to see how they work |
-| Response times | **Prototype** | Show mockups of both approaches and ask which matches expectations |
+| [Your divergence 1] | Interview / Observation / Prototype / etc. | [What specifically would you do?] |
+| [Your divergence 2] | ... | ... |
+| [Your divergence 3] | ... | ... |
 
 **Record your analysis in `REFLECTION.md`.**
 
 ---
 
-## Sync Point 2
-
-:::tip For TAs: Sync Point 2 (10 minutes)
-
-**Facilitate class discussion:**
-
-- "What was your most surprising divergence?" (Ask 2-3 quads to share)
-- "Did any quad have *identical* specifications?" (Almost certainly not—make this point!)
-- "How much would it cost if you built Pair AB's system and the client actually wanted Pair CD's?"
-- "Which risk type caused the most divergences in this room?"
-
-**Key insight to emphasize:**
-
-> "You all read the same brief. You're all competent engineers. And yet your specifications diverged dramatically. This is why requirements analysis matters—and why *building shared understanding* is a professional skill, not just a nice-to-have."
-
-**Connect to the real world:**
-- "In professional work, who plays the role we just simulated with the 'reveal'?" (The client, after you've already built the wrong thing)
-- "What's the cost of discovering divergence at that point vs. discovering it today?"
-
+:::note Sync Point
+**Wait here** for a brief class discussion before proceeding to Part 5.
 :::
 
----
+## Part 5: Reflection and Insights (10 minutes)
 
-## Part 5: Unified Specification (10 minutes)
+### Exercise 5.1: User Perspective
 
-### Exercise 5.1: Negotiate Quad Agreement
+You're not just engineers—you're also potential *users* of an office hours system. As a quad, discuss:
 
-As a quad, produce **ONE specification of 8 requirements** that all 4 members agree on:
-- You'll need to make choices where interpretations diverged
-- For each choice, briefly note which interpretation you chose and why
-- All 4 members must be able to defend this specification
-
-This is harder than it sounds. You're now resolving the divergences you cataloged earlier.
+- Which interpretation from either pair would you actually *want* as a student?
+- Did the "engineer" interpretation match what the "user" would want?
+- What requirements did neither pair think of that you'd want as a user?
 
 ### Exercise 5.2: Questions for the Client
 
-List **3 questions** you would need to ask the client before building this system:
-- For each question, note which divergence it would resolve
+If you could ask the CS department **3 questions** before building this system, what would they be?
+
+- Focus on questions that would resolve your biggest divergences
 - Frame questions to get useful answers (avoid yes/no questions)
 
-**Example:**
-> **Question:** "When a student leaves a question for later, what's a reasonable response time? Same day? Same week? Before the next assignment is due?"
-> **Resolves:** The divergence about async response expectations
-
-**Record your unified specification and questions in `REFLECTION.md`.**
-
----
-
-## Debrief
-
-:::tip For TAs: Final Debrief (5 minutes)
-
-**Wrap up the lab:**
-
-- "What soft skill did you practice today? How did it go?"
-- "Building shared understanding isn't just about being nice to your teammates—it directly prevents expensive rework."
-
-**Preview future work:**
-- "In your assignments, you'll receive requirements that are intentionally ambiguous."
-- "Your job is to resolve that ambiguity *before* you start coding—not after you've built the wrong thing."
-- "Today's exercise showed you what's at stake when you skip that step."
-
-**Acknowledge the discomfort:**
-- "It can feel uncomfortable to realize you've been 'wrong' about something you were confident about."
-- "That feeling is valuable—it builds the habit of questioning assumptions early."
-
-:::
+**Record your insights and questions in `REFLECTION.md`.**
 
 ---
 
@@ -347,8 +270,8 @@ Your `REFLECTION.md` should include all of the following sections. Make sure you
 - Risk classification table (top 3 divergences)
 - "What would have helped" table
 
-### Part 5: Unified Specification
-- Final 8 requirements (quad agreement)
+### Part 5: Reflection and Insights
+- User perspective discussion (engineer vs. user interpretations)
 - 3 questions for the client
 
 ### Meta Reflection
@@ -356,7 +279,7 @@ Answer these questions thoughtfully:
 
 1. **Most Surprising Divergence:** What difference between the pairs surprised you most? Why didn't you anticipate it?
 
-2. **Shared Understanding Process:** How did building shared understanding with your partner (in Part 2) help or hinder the quad merge (in Part 5)?
+2. **Engineer vs. User:** Did your "engineer" interpretation match what you'd actually want as a user of this system? What does that tell you about requirements gathering?
 
 3. **Future Behavior:** What will you do differently when reading requirements for your next assignment or project?
 
@@ -372,6 +295,6 @@ Before your final submission, ensure:
 - [ ] Part 2: You and your partner created a joint specification of exactly 8 requirements
 - [ ] Part 3: Your quad cataloged at least 4 divergences between the pair specifications
 - [ ] Part 4: You classified your top 3 divergences by risk type and identified elicitation techniques
-- [ ] Part 5: Your quad produced a unified specification and 3 questions for the client
+- [ ] Part 5: Your quad discussed user perspective and identified 3 questions for the client
 - [ ] `REFLECTION.md` is complete with all sections filled in
 - [ ] All changes are committed and pushed to GitHub
