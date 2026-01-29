@@ -244,6 +244,11 @@ Bottom banner:
 alt="Cartoon of Java as a coffee maker evolving from 1995 to today. A simple original machine labeled 'Write Once, Run Anywhere' appears ghosted in the corner. The modern version is covered with bolted-on features: Generics funnel, Lambda arrow pipes, Streams conveyor belt, Records module, Sealed Classes padlock, and Pattern Matching tubes. An old developer in a Sun shirt reminisces while a young developer adds String Templates. Banner reads: 'Still backward compatible. Still brewing. Still Java?'"
 />
 
+<aside class="notes">
+* Java has changed greatly in its lifetime.
+* Backward compatability was always maintained.
+* That means that changes did not break old programs.
+</aside>
 </Slide>
 
 <Slide>
@@ -257,6 +262,12 @@ alt="Cartoon of Java as a coffee maker evolving from 1995 to today. A simple ori
 <p className="fragment">These words only have special meaning in specific syntactic contexts—so <code>int sealed = 42;</code> still compiles fine.</p>
 
 </Slide>
+
+<aside class="notes">
+* How could new keywords be added without breaking existing programs?
+* They might have used the keywords as variable names.
+* The solution is contextual keywords.
+</aside>
 
 <Slide>
 
@@ -2220,6 +2231,666 @@ Source: [Why Name It That?: Boiler Plate](https://whynameitthat.blogspot.com/201
     "Lambdas can access private fields that anonymous classes cannot"
   ]}
 />
+
+</Slide>
+
+<Slide>
+
+## Question 13: Method References
+
+What does the following method reference represent?
+```java
+lights.sort(Comparator.comparingInt(DimmableLight::getBrightness));
+```
+
+<QuizSlide
+  answers={[
+    "A call to getBrightness() on the DimmableLight class itself",
+    "A reference to the getBrightness method that will be called on each DimmableLight instance",
+    "A static method that returns brightness values",
+    "A constructor reference for creating DimmableLight objects"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+### Three Ways to Sort by Brightness
+
+<div style={{ fontSize: '0.65em' }}>
+
+<div className="fragment">
+
+**Lambda expression**
+```java
+lights.sort((a, b) -> Integer.compare(a.getBrightness(), b.getBrightness()));
+```
+
+</div>
+
+<div className="fragment">
+
+**Using `comparingInt` with a lambda**
+```java
+lights.sort(Comparator.comparingInt(light -> light.getBrightness()));
+```
+
+</div>
+
+<div className="fragment">
+
+**Using `comparingInt` with a method reference**
+```java
+lights.sort(Comparator.comparingInt(DimmableLight::getBrightness));
+```
+
+</div>
+
+</div>
+
+</Slide>
+
+<Slide>
+
+### Question 13 Answer
+
+What does the following method reference represent?
+```java
+lights.sort(Comparator.comparingInt(DimmableLight::getBrightness));
+```
+
+<QuizSlide
+  correct={1}
+  answers={[
+    "A call to getBrightness() on the DimmableLight class itself",
+    "A reference to the getBrightness method that will be called on each DimmableLight instance",
+    "A static method that returns brightness values",
+    "A constructor reference for creating DimmableLight objects"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+## Question 14: Records
+
+Which of the following is NOT automatically provided by a Java record?
+
+<QuizSlide
+  answers={[
+    "A constructor that initializes all fields",
+    "equals(), hashCode(), and toString() implementations",
+    "Mutable setter methods for each field",
+    "Accessor methods for each field"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+### Records: Before and After
+
+<div style={{fontSize: '0.65em'}}>
+```java
+public final class Point {           // final = can't extend
+    private final int x;             // final = immutable
+    private final int y;
+
+    public Point(int x, int y) { this.x = x; this.y = y; }
+
+    public int x() { return x; }     // accessors
+    public int y() { return y; }
+
+    @Override public boolean equals(@Nullable Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Point other)) return false;
+        return x == other.x && y == other.y;
+    }
+
+    @Override public int hashCode() { return Objects.hash(x, y); }
+
+    @Override public String toString() { return "Point[x=" + x + ", y=" + y + "]"; }
+}
+```
+
+```java
+public record Point(int x, int y) {}
+```
+</div>
+
+
+</Slide>
+
+<Slide>
+
+### Records (Java 16, 2021): Data Classes Without Boilerplate
+
+<p style={{fontSize: '0.9em'}}>
+  A <strong>record</strong> is all 30 lines in one:
+</p>
+
+```java
+public record Point(int x, int y) {}
+```
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+  You get automatically:
+</p>
+
+<ul style={{fontSize: '0.8em'}}>
+  <li>Constructor: <code>new Point(1, 2)</code></li>
+  <li>Accessors: <code>point.x()</code>, <code>point.y()</code></li>
+  <li>Correct <code>equals</code>, <code>hashCode</code>, <code>toString</code></li>
+  <li>Immutability: all fields are <code>final</code>, class is <code>final</code></li>
+</ul>
+
+</Slide>
+
+<Slide>
+### Question 14 Answer
+
+Which of the following is NOT automatically provided by a Java record?
+
+<QuizSlide
+  correct={2}
+  answers={[
+    "A constructor that initializes all fields",
+    "equals(), hashCode(), and toString() implementations",
+    "Mutable setter methods for each field",
+    "Accessor methods for each field"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+## Question 15: Coupling
+
+Consider this method signature for code that compiles and runs correctly:
+```java
+void notifyStudent(Submission submission) {
+    sendEmail(submission.student.email, "Your submission was received");
+}
+```
+
+<div style={{ marginTop: '1.5em' }}>
+
+The method only uses `submission.student.email`. What is the main problem with this design?
+
+<QuizSlide
+  answers={[
+    "The method cannot be tested without constructing a full Submission object with a Student",
+    "The method is slower than passing a String directly",
+    "The method violates the Liskov Substitution Principle",
+    "The method cannot handle multiple submissions"
+  ]}
+/>
+
+</div>
+
+</Slide>
+
+<Slide>
+
+### Stamp Coupling
+
+<Img src="/img/lectures/web/qr1-stamp.jpg"
+  prompt="A single rubber stamp viewed from a three-quarter angle, detailed and realistic with a wooden handle and red rubber base.
+The stamp surface shows an overly complex data structure carved into it — a 'Student' object with nested fields visible: 'name', 'email', 'address', 'enrollmentDate', 'GPA', 'courses[]', 'advisor', etc. Far too much information for any single use.
+The stamp has just been pressed onto paper, leaving a red ink impression of the entire bloated data structure. A small hand-written arrow points to just the 'email' field with a note: 'Only needed this part.'"
+  alt="A wooden rubber stamp with a red rubber base showing a complex Student data structure with many fields including name, email, address, street, city, state, zip, enrollmentDate, GPA, courses array, advisor, projects, and achievements. The stamp has been pressed onto cream paper, leaving a red ink impression of the entire data structure. A handwritten note with an arrow points to just the email field saying 'Only needed this part.' Natural window light illuminates the scene."
+/>
+</Slide>
+
+<Slide>
+
+### Question 15: Answer
+
+Consider this method signature for code that compiles and runs correctly:
+```java
+void notifyStudent(Submission submission) {
+    sendEmail(submission.student.email, "Your submission was received");
+}
+```
+
+<div style={{ marginTop: '1.5em' }}>
+
+The method only uses `submission.student.email`. What is the main problem with this design?
+
+<QuizSlide
+  correct={0}
+  answers={[
+    "The method cannot be tested without constructing a full Submission object with a Student",
+    "The method is slower than passing a String directly",
+    "The method violates the Liskov Substitution Principle",
+    "The method cannot handle multiple submissions"
+  ]}
+/>
+
+</div>
+
+</Slide>
+
+<Slide>
+
+## Question 16: Utility Classes
+
+A `Utility` class contains unrelated methods like `formatDate()`, `calculateTax()`, and `validateEmail()`. What is the main problem with this design?
+
+<QuizSlide
+  answers={[
+    "The class will run out of memory",
+    "The class becomes a dumping ground that's hard to navigate, and changes to one method risk affecting unrelated functionality",
+    "Java does not allow static utility methods",
+    "The methods cannot be tested individually"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+### Static Utility Classes
+
+Static utility classes contain static helper methods and cannot be instantiated.
+
+```java
+final public class Utility { // prevent subclassing
+
+    private Utility() {} // prevent instantiation
+
+    public static String formatDate(LocalDate date) {
+        return date.format(DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+    }
+
+    public static String capitalize(String str) {
+        if (str == null || str.isEmpty()) return str;
+        return str.substring(0, 1).toUpperCase() + str.substring(1);
+    }
+
+    public static int clamp(int value, int min, int max) {
+        return Math.max(min, Math.min(max, value));
+    }
+}
+```
+
+</Slide>
+
+<Slide>
+
+### Question 16 Answer
+
+A `Utility` class contains unrelated methods like `formatDate()`, `calculateTax()`, and `validateEmail()`. What is the main problem with this design?
+
+<QuizSlide
+  correct={1}
+  answers={[
+    "The class will run out of memory",
+    "The class becomes a dumping ground that's hard to navigate, and changes to one method risk affecting unrelated functionality",
+    "Java does not allow static utility methods",
+    "The methods cannot be tested individually"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+## Question 17: SOLID
+
+Which SOLID principle states that "a class should have only one reason to change"?
+
+<QuizSlide
+  answers={[
+    "Open/Closed Principle",
+    "Single Responsibility Principle",
+    "Interface Segregation Principle",
+    "Dependency Inversion Principle"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+### SOLID guidelines
+
+* **S**ingle Responsibility Principle: A class should have only one reason to change.
+* **O**pen/Closed Principle: Software entities should be open for extension and closed for modification.
+* **L**iskov Substitution Principle: Objects of a supertype should be replaceable with objects of its subtypes without breaking the application.
+* **I**nterface Segregation Principle: Clients should not be forced to depend on interfaces they don't use.
+* **D**ependency Inversion Principle: Depend on abstractions, not on concretions.
+
+
+</Slide>
+
+<Slide>
+
+### Question 17 Answer
+
+Which SOLID principle states that "a class should have only one reason to change"?
+
+<QuizSlide
+  correct={1}
+  answers={[
+    "Open/Closed Principle",
+    "Single Responsibility Principle",
+    "Interface Segregation Principle",
+    "Dependency Inversion Principle"
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+## Question 18: Decorator Pattern
+
+Consider Java's I/O stream design:
+```java
+InputStream in = new BufferedInputStream(new FileInputStream("data.txt"));
+```
+<div style={{ fontSize: '0.8em', marginTop: '-.5em' }}>
+
+<p>`BufferedInputStream` wraps `FileInputStream`, adding buffering without modifying `FileInputStream`.</p>
+
+<p>What is the main advantage of this design over using inheritance (e.g., `class BufferedFileInputStream extends FileInputStream`)?</p>
+
+<QuizSlide
+  answers={[
+    "The wrapper approach is faster at runtime",
+    "Behaviors can be combined flexibly at runtime without creating a subclass for every combination",
+    "The wrapper approach uses less memory",
+    "Inheritance is not allowed for stream classes in Java"
+  ]}
+/>
+
+</div>
+
+</Slide>
+
+<Slide>
+
+### Visual Decorator
+
+<Img src="/img/lectures/web/qr1-visual-decorator.jpg"
+  prompt="A clean, technical illustration showing an exploded isometric view of nested UI components, with each layer floating above the next to show how decorators wrap objects. The only text should be the labels and notes below.
+Bottom layer — 'TextView':
+A simple text document with readable content, clean and minimal. Label points to it: 'TextView'. This is the core component.
+Middle layer — 'ScrollDecorator':
+An empty text view with scrollbars on the right side and bottom, with an outer margin. The scrollbars are clearly visible with up/down and left/right arrows. Label: 'ScrollDecorator'. A small note: 'Adds scrolling behavior.'
+Top layer — 'BorderDecorator':
+An empty text view with a narrow decorative border frame that does not obscure the scrollbars. Label: 'BorderDecorator'. A small note: 'Adds border styling.'
+
+Additional variants floating nearby (smaller scale):
+'LineNumberDecorator' — shows line numbers in a gutter on the left
+'HighlightDecorator' — shows text with highlighted search terms
+'RedactionDecorator' -- blocks parts of the text
+Visual style:
+Crisp lines in dark blue or black. Each layer has subtle transparency to show nesting. Consistent isometric angle (30 degrees) for all layers."
+/>
+</Slide>
+
+<Slide>
+
+### InputStream Decorators
+
+<div style={{ fontSize: '0.75em' }}>
+
+<div className="fragment">
+
+**BufferedInputStream** — adds buffering for efficiency
+```java
+new BufferedInputStream(new FileInputStream("data.txt"));
+```
+
+</div>
+
+<div className="fragment">
+
+**DataInputStream** — reads primitive types (int, double, etc.)
+```java
+new DataInputStream(new FileInputStream("data.bin"));
+```
+
+</div>
+
+<div className="fragment">
+
+**GZIPInputStream** — decompresses gzip data
+```java
+new GZIPInputStream(new FileInputStream("data.gz"));
+```
+
+</div>
+
+<div className="fragment">
+
+**Combining decorators:**
+```java
+new DataInputStream(new BufferedInputStream(new GZIPInputStream(
+    new FileInputStream("data.gz"))));
+```
+
+</div>
+
+</div>
+
+</Slide>
+
+<Slide>
+
+### InputStream Decorator Pattern
+```mermaid
+classDiagram
+    class InputStream {
+        <<abstract>>
+        +read()* int
+        +read(byte[] b)* int
+        +close()* void
+    }
+
+    class FileInputStream {
+        +read() int
+        +close() void
+    }
+
+    class FilterInputStream {
+        <<abstract>>
+        -InputStream in
+        +read() int
+        +close() void
+    }
+
+    class BufferedInputStream {
+        -byte[] buf
+        +read() int
+    }
+
+    class DataInputStream {
+        +readInt() int
+        +readDouble() double
+    }
+
+    class GZIPInputStream {
+        +read() int
+    }
+
+    InputStream <|-- FileInputStream
+    InputStream <|-- FilterInputStream
+    FilterInputStream <|-- BufferedInputStream
+    FilterInputStream <|-- DataInputStream
+    FilterInputStream <|-- GZIPInputStream
+    FilterInputStream o-- InputStream : wraps
+```
+
+</Slide>
+
+
+<Slide>
+
+### Dynamic Decorator Combinations
+
+<div style={{ fontSize: '0.7em' }}>
+```java
+public InputStream openFile(String path, boolean compressed, boolean buffered) {
+    InputStream in = new FileInputStream(path);
+
+    if (compressed) {
+        in = new GZIPInputStream(in);
+    }
+
+    if (buffered) {
+        in = new BufferedInputStream(in);
+    }
+
+    return in;
+}
+```
+
+<div className="fragment">
+
+**Possible combinations at runtime:**
+
+| compressed | buffered | Result |
+|:---:|:---:|---|
+| ✗ | ✗ | `FileInputStream` |
+| ✗ | ✓ | `BufferedInputStream(FileInputStream)` |
+| ✓ | ✗ | `GZIPInputStream(FileInputStream)` |
+| ✓ | ✓ | `BufferedInputStream(GZIPInputStream(FileInputStream))` |
+
+</div>
+
+<p className="fragment">With inheritance, we would need a separate class for each combination!</p>
+
+</div>
+
+</Slide>
+
+<Slide>
+
+### Question 18 Answer
+
+Consider Java's I/O stream design:
+```java
+InputStream in = new BufferedInputStream(new FileInputStream("data.txt"));
+```
+<div style={{ fontSize: '0.8em', marginTop: '-.5em' }}>
+
+<p>`BufferedInputStream` wraps `FileInputStream`, adding buffering without modifying `FileInputStream`.</p>
+
+<p>What is the main advantage of this design over using inheritance (e.g., `class BufferedFileInputStream extends FileInputStream`)?</p>
+
+<QuizSlide
+  correct={1}
+  answers={[
+    "The wrapper approach is faster at runtime",
+    "Behaviors can be combined flexibly at runtime without creating a subclass for every combination",
+    "The wrapper approach uses less memory",
+    "Inheritance is not allowed for stream classes in Java"
+  ]}
+/>
+
+</div>
+
+</Slide>
+
+<Slide>
+## Other topics
+
+* The Four Pillars of OOP
+* Access Modifiers in Java
+* Java Wrapper Classes
+* Dynamic Dispatch
+* Fragile Base Classes
+* Strategy Pattern
+
+</Slide>
+
+<Slide>
+
+### The Four Pillars of OOP
+
+  <Img src="/img/lectures/web/l7-pillars-of-oop.png"
+    prompt="Create an illustration for a computer science lecture slide showing the four pillars of object-oriented programming.
+
+Show a Greek or Roman temple structure with four distinct pillars supporting a roof labeled 'Object-Oriented Programming' or 'OOP'. Each pillar is labeled with one of the four principles:
+
+1. **Encapsulation** - perhaps depicted with a locked box, a wrapped package, or a protective shell icon on or near the pillar
+2. **Abstraction** - perhaps depicted with a simplified shape, a blueprint, or a cloud hiding details
+3. **Inheritance** - perhaps depicted with a family tree, parent-child figures, or an arrow pointing down through generations
+4. **Polymorphism** - perhaps depicted with a shape-shifter, multiple forms, or one interface with many implementations (like one plug fitting different outlets)
+
+The temple should feel sturdy and foundational—these are the principles that support everything else in OOP. The overall mood is educational and approachable, not intimidating.
+
+Clean, modern illustration style with a hint of classical architecture. Horizontal orientation suitable for a presentation slide. No code. Labels should be clear and readable."
+  alt="The four pillars of OOP: Abstraction, Encapsulation, Inheritance, and Polymorphism" />
+
+</Slide>
+
+<Slide>
+
+### Access Modifiers in Java
+
+<div style={{display: 'flex', gap: '1.5em', alignItems: 'center'}}>
+<div style={{flex: 1}}>
+
+<p style={{fontSize: '0.8em'}}>
+  Every class, method, and field has an access modifier:
+</p>
+
+<table style={{fontSize: '0.7em', marginTop: '0.5em', width: '100%'}}>
+  <thead>
+    <tr>
+      <th>Modifier</th>
+      <th>Visibility</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>public</code></td>
+      <td>Accessible from anywhere</td>
+    </tr>
+    <tr>
+      <td><code>protected</code></td>
+      <td>Accessible from package and subclasses</td>
+    </tr>
+    <tr>
+      <td><em>(default)</em></td>
+      <td>Package-private: same package only</td>
+    </tr>
+    <tr>
+      <td><code>private</code></td>
+      <td>Accessible only within the class</td>
+    </tr>
+  </tbody>
+</table>
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
+  Rule: <strong>Minimize accessibility</strong> of classes and members.
+</p>
+
+</div>
+</div>
+
+<aside className="notes">
+**Effective Java Item 15:**
+- "Minimize the accessibility of classes and members"
+- Everything public is part of your API
+- Once public, hard to take back
+
+**Order of preference:**
+1. Private (strongest encapsulation)
+2. Package-private (default—useful for implementation helpers)
+3. Protected (needed for inheritance)
+4. Public (only for genuine API)
+
+→ **Transition:** Access modifiers control *who* can access. But what about controlling *whether* something can change?
+</aside>
 
 </Slide>
 
