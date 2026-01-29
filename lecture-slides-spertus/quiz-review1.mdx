@@ -20,12 +20,21 @@ import QuizSlide from '@site/src/components/QuizSlide';
 <RevealJS transition="slide">
 
 <Slide>
+
+# CS 3100: Program Design and Implementation II
+
+## Quiz Review 1
+
 <Img src="/img/lectures/web/qr1.gif"
   alt="User Friendly cartoon showing two people taking an exam at desks.
       Sound effects for Student 1: 'doink doink doink doink doing'
       Student 2: 'Hey...is that the sweet sound of a multiple-choice section I hear?'
       Student 1: 'Nope...essay question you have to answer in binary"
 />
+
+<p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
+  ©2026 Ellen Spertus, CC-BY-SA
+</p>
 </Slide>
 
 <Slide>
@@ -2084,12 +2093,13 @@ InputStream in = new BufferedInputStream(new FileInputStream("data.txt"));
 * Dynamic Dispatch
 * Fragile Base Classes
 * Strategy Pattern
+* Inheritance and Overriding
 
 </Slide>
 
 <Slide>
 
-### The Four Pillars of OOP
+## The Four Pillars of OOP
 
   <Img src="/img/lectures/web/l7-pillars-of-oop.png"
     prompt="Create an illustration for a computer science lecture slide showing the four pillars of object-oriented programming.
@@ -2110,7 +2120,7 @@ Clean, modern illustration style with a hint of classical architecture. Horizont
 
 <Slide>
 
-### Access Modifiers in Java
+## Access Modifiers in Java
 
 <div style={{display: 'flex', gap: '1.5em', alignItems: 'center'}}>
 <div style={{flex: 1}}>
@@ -2167,6 +2177,536 @@ Clean, modern illustration style with a hint of classical architecture. Horizont
 
 → **Transition:** Access modifiers control *who* can access. But what about controlling *whether* something can change?
 </aside>
+
+</Slide>
+
+<Slide>
+
+## Primitive Types vs Reference Types
+
+<div style={{ fontSize: '0.8em' }}>
+
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+
+<div>
+
+### Primitive Types
+- `int`, `double`, `boolean`, `char`
+- Store **actual values**
+- No methods
+- `==` compares **values**
+- ❌ **Cannot use in generics**
+
+</div>
+
+<div>
+
+### Reference Types
+- `Integer`, `String`, `ArrayList`, `Object`
+- Store **memory addresses**
+- Have methods
+- `==` compares **references** (use `.equals()`)
+- ✅ **Required for generics**
+
+</div>
+
+</div>
+
+</div>
+
+</Slide>
+
+
+<Slide>
+
+### Auto-boxing & Auto-unboxing
+
+<div style={{ fontSize: '0.75em' }}>
+
+**Java automatically converts between primitive and wrapper types:**
+
+```java
+// Auto-boxing: primitive → wrapper
+int primitive = 42;
+Integer wrapped = primitive;  // int → Integer
+
+// Auto-unboxing: wrapper → primitive  
+Integer obj = 100;
+int value = obj;  // Integer → int
+
+// Works in method calls too!
+ArrayList<Integer> nums = new ArrayList<>();
+nums.add(5);        // auto-boxes int to Integer
+int first = nums.get(0);  // auto-unboxes Integer to int
+```
+
+<div className="fragment">
+
+⚠️ **Performance concern:** Auto-boxing in tight loops creates new wrapper objects each time.
+
+</div>
+
+</div>
+
+</Slide>
+
+<Slide>
+
+### Java is Always Pass by Value
+
+<div style={{ fontSize: '0.7em' }}>
+
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr', gap: '2rem' }}>
+
+<div>
+
+**Primitives: Copy the value**
+
+```java
+void change(int x) {
+  x = 100;  // local copy only
+}
+
+int num = 5;
+change(num);
+// num is still 5
+```
+
+</div>
+
+<div>
+
+**References: Copy the reference**
+
+```java
+void change(StringBuilder sb) {
+  sb.append("!");  // modifies object
+}
+
+StringBuilder s =  new StringBuilder("Hi");
+change(s);
+// s is now "Hi!"
+```
+
+</div>
+
+</div>
+
+<div className="fragment" style={{ marginTop: '2rem' }}>
+
+**Key insight:** The *reference itself* is copied, but it points to the same object.
+
+- You **can't** change *which* object the caller's reference points to
+- You **can** modify the object's state
+
+</div>
+
+</div>
+
+</Slide>
+
+
+<Slide>
+
+### Wrapper Classes Summary
+
+<div style={{ fontSize: '0.8em' }}>
+
+| Primitive | Wrapper Class |
+|:---:|:---:|
+| `int` | `Integer` |
+| `float` | `Float` |
+| `double` | `Double` |
+| `char` | `Character` |
+| `boolean` | `Boolean` |
+
+<div className="fragment" style={{ marginTop: '2rem' }}>
+
+**When to use each:**
+
+- **Primitives:** Performance-critical code, local variables, simple calculations
+- **Wrapper classes:** Collections, generics, when you need `null`, when you need methods
+
+</div>
+
+</div>
+
+</Slide>
+
+<Slide>
+
+## Dynamic Dispatch
+<p style={{fontSize: '1.1em'}}>
+  How does the JVM know which method to call?
+</p>
+
+```java
+Light[] lights = new Light[] {
+    new TunableWhiteLight("light-1", 2700, 100),
+    new DimmableLight("light-2", 100)
+};
+
+for (Light light : lights) {
+    light.turnOn();  // Which turnOn() is called?
+}
+```
+
+</Slide>
+
+<Slide>
+
+### Method Lookup Walks Up the Type Hierarchy
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', alignItems: 'start'}}>
+  <div>
+    <p style={{fontSize: '0.8em', marginTop: 0}}>
+      To call method <em>m</em> on object <em>o</em> of runtime type <em>T</em>:
+    </p>
+    <ol style={{marginTop: '0.25em', fontSize: '0.75em'}}>
+      <li>If <em>T</em> declares <em>m</em>, use that</li>
+      <li>Otherwise, check <em>T</em>'s superclass recursively</li>
+      <li>If still not found, use default interface method (if any)</li>
+    </ol>
+    <p style={{marginTop: '0.5em', fontSize: '0.85em', color: '#9370DB'}}>
+      <strong>Runtime type matters, not compile-time type!</strong>
+    </p>
+  </div>
+  <div>
+```mermaid
+classDiagram
+    class Light {
+        <<interface>>
+        +turnOn()*
+    }
+    class DimmableLight {
+        +turnOn()
+        +setBrightness()
+    }
+    class TunableWhiteLight {
+        +turnOn()
+        +setColorTemperature()
+    }
+    Light <|.. DimmableLight
+    DimmableLight <|-- TunableWhiteLight
+    style Light fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+  </div>
+</div>
+
+</Slide>
+
+<Slide>
+
+### Which Method Gets Called?
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', alignItems: 'start'}}>
+  <div>
+    <p style={{fontSize: '0.8em', marginTop: 0, marginBottom: '0.5em'}}>
+      <strong>Call:</strong> <code style={{backgroundColor: '#2d4a5a', padding: '0.2em 0.4em', borderRadius: '4px'}}>light.turnOn()</code>
+    </p>
+```java
+Light light =
+    new TunableWhiteLight("living-room", 2700, 100);
+light.turnOn();
+```
+<div class="fragment">
+<p style={{fontSize: '0.75em', marginTop: '0.5em'}}>
+  <strong>Compile-time type:</strong> <code>Light</code>
+</p>
+<p style={{fontSize: '0.75em'}}>
+  <strong>Runtime type:</strong> <code style={{color: '#4ac'}}>TunableWhiteLight</code>
+</p>
+<p style={{fontSize: '0.75em'}}>
+  <strong>Step 1:</strong> Does <code>TunableWhiteLight</code> declare <code>turnOn()</code>?
+</p>
+<p style={{fontSize: '0.85em', color: '#4ac'}}>
+  <strong>✓ Yes!</strong> Use <code>TunableWhiteLight.turnOn()</code>
+</p>
+</div>
+  </div>
+  <div>
+```mermaid
+classDiagram
+    class Light {
+        <<interface>>
+        +turnOn()*
+    }
+    class DimmableLight {
+        +turnOn()
+        +setBrightness()
+    }
+    class TunableWhiteLight {
+        +turnOn()
+        +setColorTemperature()
+    }
+    Light <|.. DimmableLight
+    DimmableLight <|-- TunableWhiteLight
+    style Light fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style TunableWhiteLight fill:#2d4a5a,stroke:#4ac,stroke-width:3px
+```
+  </div>
+</div>
+<div class="fragment">
+<p style={{fontSize: '0.8em', color: '#4ac', textAlign: 'center', marginTop: '0.5em'}}>
+  The variable type (<code>Light</code>) doesn't matter — runtime type does!
+</p>
+</div>
+
+<aside class="notes">
+**Example 3: THE KEY CASE**
+- Variable declared as Light
+- Object is actually TunableWhiteLight
+- Dispatch uses RUNTIME type: TunableWhiteLight.turnOn()
+
+**This is why polymorphism works:** Code written for Light automatically gets the right subclass behavior.
+
+→ **Transition:** One more misconception to address—does casting change this?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Fragile Base Classes
+
+<p style={{fontSize: '0.7em'}}>
+  Imagine we want a `Set` that counts how many items are passed to `add()` and `addAll()`:
+</p>
+
+```java
+public class InstrumentedHashSet<E> extends HashSet<E> {
+    private int addCount = 0;
+
+    @Override
+    public boolean add(E e) {
+        addCount++;
+        return super.add(e); // return true if added
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends E> c) {
+        addCount += c.size();
+        return super.addAll(c);
+    }
+
+    public int getAddCount() { return addCount; }
+}
+```
+
+<p style={{fontSize: '0.7em', marginTop: '0.5em'}}>
+  What does `getAddCount()` return after `s.addAll(Arrays.asList("A", "B", "C"))`?
+</p>
+
+</Slide>
+
+<Slide>
+
+### Composition Delegates Without Depending on Implementation
+
+```java
+public class InstrumentedSet<E> implements Set<E> {
+    private final Set<E> s;        // Composition: HAS-A Set
+    private int addCount = 0;
+
+    public InstrumentedSet(Set<E> s) {
+        this.s = s;
+    }
+
+    @Override
+    public boolean add(E e) {
+        addCount++;
+        return s.add(e);           // Delegate to wrapped set
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends E> c) {
+        addCount += c.size();
+        return s.addAll(c);        // Delegate - don't care how it's implemented!
+    }
+
+    public int getAddCount() { return addCount; }
+
+    // Forward all other Set methods to s...
+    @Override public int size() { return s.size(); }
+    @Override public boolean isEmpty() { return s.isEmpty(); }
+    // ... etc ...
+}
+```
+
+</Slide>
+
+<Slide>
+### HashSet Class Hierarchy
+
+```mermaid
+classDiagram
+    class AbstractCollectionE["AbstractCollection&lt;E&gt;"] {
+        <<abstract>>
+        +add(E e)
+        +addAll(Collection c)
+    }
+    
+    class AbstractSetE["AbstractSet&lt;E&gt;"] {
+        <<abstract>>
+    }
+    
+    class HashSetE["HashSet&lt;E&gt;"] {
+    }
+    
+    class InstrumentedSetE["InstrumentedSet&lt;E&gt;"] {
+        -int addCount
+        +getAddCount() int
+        +add(E e) boolean
+        +addAll(Collection c) boolean
+    }
+
+    AbstractCollectionE <|-- AbstractSetE
+    AbstractSetE <|-- HashSetE
+    HashSetE <|-- InstrumentedSetE
+```
+</Slide>
+
+
+<Slide>
+
+### Composition Keeps Method Calls Inside the Wrapped Object
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5em', fontSize: '0.6em'}}>
+
+<div>
+
+**Inheritance: count = 6 ❌**
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant I as InstrumentedHashSet
+    participant H as HashSet
+
+    C->>I: addAll(A,B,C)
+    Note over I: count += 3
+    I->>H: super.addAll()
+    H->>I: this.add(A)
+    Note over I: count++❗
+    H->>I: this.add(B)
+    Note over I: count++❗
+    H->>I: this.add(C)
+    Note over I: count++❗
+```
+
+</div>
+
+<div>
+
+**Composition: count = 3 ✓**
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant I as InstrumentedSet
+    participant H as HashSet
+
+    C->>I: addAll(A,B,C)
+    Note over I: count += 3
+    I->>H: s.addAll()
+    Note over H: add(A), add(B), add(C)
+    H-->>I: done
+```
+
+</div>
+
+</div>
+
+
+</Slide>
+
+<Slide>
+
+## Strategy Pattern
+
+```mermaid
+classDiagram
+    direction TB
+    class SubmissionService {
+        -BuildStrategy buildStrategy
+        +processSubmission(Submission submission)
+    }
+    class BuildStrategy {
+        <<interface>>
+        +build(Submission submission)
+        +lint(Submission submission)
+        +test(Submission submission)
+    }
+    class JavaBuildStrategy {
+        +build(Submission submission)
+        +lint(Submission submission)
+        +test(Submission submission)
+    }
+    class PythonBuildStrategy {
+        +build(Submission submission)
+        +lint(Submission submission)
+        +test(Submission submission)
+    }
+    BuildStrategy <|.. JavaBuildStrategy
+    BuildStrategy <|.. PythonBuildStrategy
+    SubmissionService o-- BuildStrategy
+    style BuildStrategy fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+<p style={{fontSize: '0.75em', marginTop: '0.5em', color: '#8BC34A'}}>
+  Each strategy class has functional cohesion—one language, one job. Adding TypeScript? Just add a new class.
+</p>
+
+
+</Slide>
+
+<Slide>
+
+## Inheritance and Overriding
+
+<div style={{ fontSize: '0.75em' }}>
+
+
+<div className="fragment">
+**1. Inherit As-Is**
+
+```java
+class DimmableLight  extends Light {
+  // inherits turnOn()
+}
+```
+</div>
+
+<div className="fragment">
+**2. Override Completely**
+
+```java
+class DimmableLight extends Light {
+  @Override
+  void turnOn() {
+    System.out.println( "dimmed on");
+  }
+}
+```
+</div>
+
+<div className="fragment">
+**3. Override + Extend**
+
+```java
+class DimmableLight extends Light {
+  @Override
+  void turnOn() {
+    super.turnOn(); // call superclass method
+    System.out.println("set to 50%");
+  }
+}
+```
+
+</div>
+
+</div>
 
 </Slide>
 
