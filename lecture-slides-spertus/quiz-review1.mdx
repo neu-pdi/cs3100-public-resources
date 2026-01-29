@@ -12,7 +12,7 @@ import QuizSlide from '@site/src/components/QuizSlide';
 <style>
 {`
   .reveal {
-    font-size: 32px;
+    font-size: 40px;
   }
 `}
 </style>
@@ -138,72 +138,6 @@ Write your roster name and your NUID neatly for OCR.
   <Img src="/img/lectures/ellen/l1-java-bytecode.svg"
     alt="Block diagram showing Java compilation-run process"
   />
-
-</Slide>
-<Slide>
-
-### Compilation Enables Optimization
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.85em'}}>
-  <div>
-    <p style={{fontWeight: 'bold'}}>Interpreted</p>
-    <ul style={{marginTop: '0.3em'}}>
-      <li>Reads & executes line by line</li>
-      <li>100s of instructions per statement</li>
-      <li>Executes every branch, every time</li>
-    </ul>
-  </div>
-  <div>
-    <p style={{fontWeight: 'bold'}}>Native Compiled</p>
-    <ul style={{marginTop: '0.3em'}}>
-      <li>Already in machine code</li>
-      <li>Direct CPU execution</li>
-      <li>Dead code eliminated, functions inlined</li>
-    </ul>
-  </div>
-</div>
-
-<aside class="notes">
-**Why interpretation is slower:**
-- Interpreter: decode instruction → look up action → execute (100s of extra instructions)
-- Native: CPU executes machine code directly
-
-**Compiler optimizations interpreters can't do:**
-- Dead code elimination, function inlining, loop optimizations
-
-**Key difference:** Interpreter checks every branch every time. Compiler analyzes whole program and removes unnecessary work ahead of time.
-
-→ **Transition:** Java's innovation: combine both approaches...
-</aside>
-
-</Slide>
-
-<Slide>
-
-### JIT Combines Interpretation with Native Compilation
-
-<p >
-  <strong>Just-In-Time (JIT)</strong> compilation
-</p>
-<p style={{marginTop: '1em'}}>
-  Dynamically compiles bytecode <em>as it executes</em>
-</p>
-<p style={{marginTop: '1em'}}>
-  The program that runs Java code: <strong>JVM</strong> (Java Virtual Machine)
-</p>
-
-<aside class="notes">
-**JIT = Java's innovation:**
-- JVM starts interpreting, monitors "hot" code (frequently run)
-- Hot code → compiled to native on the fly
-- Combines: bytecode portability + native speed
-
-**Bonus:** JVM optimizes based on runtime behavior (ahead-of-time compilers can't!)
-
-**Sidebar:** Other JVM languages: Kotlin (Android), Scala (big data), Clojure (functional), Groovy (scripting)—all benefit from JIT
-
-→ **Transition:** Here's a concrete example of JIT optimization...
-</aside>
 
 </Slide>
 
@@ -422,6 +356,7 @@ According to the Liskov Substitution Principle:
 <Slide>
 
 ### UML
+<div style={{fontSize: '0.8em'}}>
 In CookYourBooks, `ExactQuantity`, `FractionalQuantity`, and `RangeQuantity` all extend `Quantity`.
 
 ```mermaid
@@ -453,6 +388,7 @@ What does the Liskov Substitution Principle tell us?
  <p className="fragment" style={{marginTop: '0em'}}>
 An instance of the subtype can be passed where an instance of the supertype is expected.
 </p>
+</div>
 </Slide>
 
 <Slide>
@@ -466,6 +402,7 @@ An instance of the subtype can be passed where an instance of the supertype is e
 
 <Slide>
 ### Question 3 Answer
+<div style={{fontSize: '0.8em'}}>
 
 In CookYourBooks, `ExactQuantity`, `FractionalQuantity`, and `RangeQuantity` all extend `Quantity`.
 
@@ -480,7 +417,7 @@ According to the Liskov Substitution Principle:
     "Only ExactQuantity can be used where Quantity is expected"
   ]}
 />
-
+</div>
 </Slide>
 
 <Slide>
@@ -546,7 +483,7 @@ public abstract class Quantity {
 
 ### Abstract vs Concrete Classes
 
-<table style={{ fontSize: '0.85em' }}>
+<table style={{ fontSize: '0.75em' }}>
   <thead>
     <tr>
       <th></th>
@@ -641,7 +578,7 @@ This visualization keeps the 'two paths with different requirements' structure w
 
 ### Java's Exception Hierarchy Distinguishes Error Types
 
-<p style={{fontSize: '1.1em'}}>
+<p style={{fontSize: '.9em'}}>
   All exceptions extend <code>Throwable</code>
 </p>
 
@@ -670,11 +607,11 @@ Subclasses of `Error` and `RuntimeException` are unchecked.
 <Slide>
 
 ### Parameter Validation
-
+<div style={{fontSize: '0.8em'}}>
 * Validate constructor and method parameters as early as possible
 * Throw `IllegalArgumentException`
 * Document requirements and exceptions in Javadoc
-
+</div>
 ```java
   /**
    * Creates an ingredient with the given name, preparation, and notes.
@@ -766,9 +703,9 @@ Same baby, same crib, same house — only the babysitter's response differs. Clo
 <Slide>
 
 ### Question 5 Answer
-
+<div style={{fontSize: '0.8em'}}>
 What distinguishes checked exceptions (e.g., `IOException`) from unchecked exceptions (e.g., `IllegalArgumentException`)?
-
+</div>
 <QuizSlide
   correct={1}
   answers={[
@@ -784,8 +721,9 @@ What distinguishes checked exceptions (e.g., `IOException`) from unchecked excep
 <Slide>
 
 ## Question 6: Raw Types
-
+<div style={{fontSize: '0.8em'}}>
 If CookYourBooks stored ingredients in a `List` without generics, what problem (if any) would occur in compiling or running the following code?
+</div>
 ```java
 List ingredients = new ArrayList();
 ingredients.add(new MeasuredIngredient("flour", ...));
@@ -855,13 +793,14 @@ No run-time errors! 🙂
 <Slide>
 
 ### Question 6 Answer
-
+<div style={{fontSize: '0.8em'}}>
 If CookYourBooks stored ingredients in a `List` without generics, what problem (if any) would occur in compiling or running the following code?
 ```java
 List ingredients = new ArrayList();
 ingredients.add(new MeasuredIngredient("flour", ...));
 ingredients.add("A pinch of salt");
 ```
+</div>
 
 <QuizSlide
   correct={1}
@@ -878,9 +817,9 @@ ingredients.add("A pinch of salt");
 <Slide>
 
 ## Question 7 Hashing
-
+<div style={{fontSize: '0.8em'}}>
 In `MeasuredIngredient.hashCode()`, the name is converted to lowercase before hashing: `getName().toLowerCase()`. Why?
-
+</div>
 <QuizSlide
   answers={[
     "Lowercase strings hash faster",
@@ -963,9 +902,9 @@ pantry.contains(flour2);     // Looks in bucket based on 97526364
 <Slide>
 
 ### Question 7 Answer
-
+<div style={{fontSize: '0.8em'}}>
 In `MeasuredIngredient.hashCode()`, the name is converted to lowercase before hashing: `getName().toLowerCase()`. Why?
-
+</div>
 <QuizSlide
   correct={1}
   answers={[
@@ -1187,7 +1126,6 @@ Which specification for a `reverse(String s)` method is more general?
 `MeasuredIngredient` overrides both `equals()` and `hashCode()`. Why is it important to override both together?
 
 <QuizSlide
-  correct={1}
   answers={[
     "The compiler enforces that both must be overridden together",
     "Equal objects must have equal hash codes for hash-based collections to work correctly",
@@ -1489,7 +1427,7 @@ classDiagram
 <Slide>
 ### Terminology: Boilerplate
 
-<div style={{fontSize: '0.85em'}}>
+<div style={{fontSize: '0.75em'}}>
 > In the field of printing, the term dates back to the early 1900s.
 > Starting in the late 1800s, printing plates of text that were going to be
 > used over and over, such as advertisements or syndicated columns,
@@ -1694,7 +1632,7 @@ Which of the following is NOT automatically provided by a Java record?
 <Slide>
 
 ## Question 15: Coupling
-
+<div style={{fontSize: '0.8em'}}>
 Consider this method signature for code that compiles and runs correctly:
 ```java
 void notifyStudent(Submission submission) {
@@ -1714,7 +1652,7 @@ The method only uses `submission.student.email`. What is the main problem with t
     "The method cannot handle multiple submissions"
   ]}
 />
-
+</div>
 </div>
 
 </Slide>
@@ -1734,7 +1672,7 @@ The stamp has just been pressed onto paper, leaving a red ink impression of the 
 <Slide>
 
 ### Question 15: Answer
-
+<div style={{fontSize: '0.8em'}}>
 Consider this method signature for code that compiles and runs correctly:
 ```java
 void notifyStudent(Submission submission) {
@@ -1757,15 +1695,16 @@ The method only uses `submission.student.email`. What is the main problem with t
 />
 
 </div>
+</div>
 
 </Slide>
 
 <Slide>
 
 ## Question 16: Utility Classes
-
+<div style={{fontSize: '0.8em'}}>
 A `Utility` class contains unrelated methods like `formatDate()`, `calculateTax()`, and `validateEmail()`. What is the main problem with this design?
-
+</div>
 <QuizSlide
   answers={[
     "The class will run out of memory",
@@ -1808,8 +1747,9 @@ final public class Utility { // prevent subclassing
 <Slide>
 
 ### Question 16 Answer
-
+<div style={{fontSize: '0.8em'}}>
 A `Utility` class contains unrelated methods like `formatDate()`, `calculateTax()`, and `validateEmail()`. What is the main problem with this design?
+</div>
 
 <QuizSlide
   correct={1}
@@ -1843,13 +1783,13 @@ Which SOLID principle states that "a class should have only one reason to change
 <Slide>
 
 ### SOLID guidelines
-
+<div style={{fontSize: '0.8em'}}>
 * **S**ingle Responsibility Principle: A class should have only one reason to change.
 * **O**pen/Closed Principle: Software entities should be open for extension and closed for modification.
 * **L**iskov Substitution Principle: Objects of a supertype should be replaceable with objects of its subtypes without breaking the application.
 * **I**nterface Segregation Principle: Clients should not be forced to depend on interfaces they don't use.
 * **D**ependency Inversion Principle: Depend on abstractions, not on concretions.
-
+</div>
 
 </Slide>
 
@@ -1874,7 +1814,7 @@ Which SOLID principle states that "a class should have only one reason to change
 <Slide>
 
 ## Question 18: Decorator Pattern
-
+<div style={{fontSize: '0.8em'}}>
 Consider Java's I/O stream design:
 ```java
 InputStream in = new BufferedInputStream(new FileInputStream("data.txt"));
@@ -1884,7 +1824,7 @@ InputStream in = new BufferedInputStream(new FileInputStream("data.txt"));
 <p>`BufferedInputStream` wraps `FileInputStream`, adding buffering without modifying `FileInputStream`.</p>
 
 <p>What is the main advantage of this design over using inheritance (e.g., `class BufferedFileInputStream extends FileInputStream`)?</p>
-
+</div>
 <QuizSlide
   answers={[
     "The wrapper approach is faster at runtime",
@@ -2059,7 +1999,7 @@ public InputStream openFile(String path, boolean compressed, boolean buffered) {
 <Slide>
 
 ### Question 18 Answer
-
+<div style={{fontSize: '0.8em'}}>
 Consider Java's I/O stream design:
 ```java
 InputStream in = new BufferedInputStream(new FileInputStream("data.txt"));
@@ -2079,7 +2019,7 @@ InputStream in = new BufferedInputStream(new FileInputStream("data.txt"));
     "Inheritance is not allowed for stream classes in Java"
   ]}
 />
-
+</div>
 </div>
 
 </Slide>
@@ -2279,13 +2219,14 @@ change(num);
 **References: Copy the reference**
 
 ```java
-void change(StringBuilder sb) {
-  sb.append("!");  // modifies object
+void cutPower(Light light) {
+  light.turnOff();  // modifies object
 }
 
-StringBuilder s =  new StringBuilder("Hi");
-change(s);
-// s is now "Hi!"
+Light light = new DimmableLight();
+light.turnOn(); // light is now on
+cutPower(light);
+// light is now off
 ```
 
 </div>
@@ -2336,7 +2277,7 @@ change(s);
 <Slide>
 
 ## Dynamic Dispatch
-<p style={{fontSize: '1.1em'}}>
+<p style={{fontSize: '.9em'}}>
   How does the JVM know which method to call?
 </p>
 
