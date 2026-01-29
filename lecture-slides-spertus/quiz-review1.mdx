@@ -864,7 +864,6 @@ ingredients.add("A pinch of salt");
 In `MeasuredIngredient.hashCode()`, the name is converted to lowercase before hashing: `getName().toLowerCase()`. Why?
 
 <QuizSlide
-  correct={1}
   answers={[
     "Lowercase strings hash faster",
     "Since equals() compares names case-insensitively, hashCode() must also be case-insensitive so equal objects have equal hash codes",
@@ -2191,6 +2190,23 @@ classDiagram
 
 </Slide>
 
+<Slide>
+### Terminology: Boilerplate
+
+<div style={{fontSize: '0.85em'}}>
+> In the field of printing, the term dates back to the early 1900s.
+> Starting in the late 1800s, printing plates of text that were going to be
+> used over and over, such as advertisements or syndicated columns,
+> started being stamped in steel instead of the much softer and less durable lead.
+> They came to be known as 'boilerplates'.
+
+<Img src="/img/lectures/web/qr1-boilerplate.jpg" width={500}
+  alt="metal plate with reversed letters"/>
+
+
+Source: [Why Name It That?: Boiler Plate](https://whynameitthat.blogspot.com/2013/10/boiler-plate.html)
+</div>
+</Slide>
 <Slide>
 
 ### Question 12 Answer
