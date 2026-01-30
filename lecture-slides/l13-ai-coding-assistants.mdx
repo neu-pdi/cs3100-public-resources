@@ -202,7 +202,57 @@ The IDE integration enables iterative refinement based on real compiler feedback
 
 **This is why Copilot is more practical for real development than just pasting into ChatGPT.**
 
-→ **Transition:** But not all AI coding assistants are created equal—let's look at the ecosystem...
+→ **Transition:** Let's look at the most common interaction mode—tab completion...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Tab Completion: Where You'll Spend 80% of Your Time
+
+<Img
+  src="/img/lectures/web/l13-tab-complete.webp"
+  prompt="Concept: 'The Tab-Complete Experience Across Tools'. A side-by-side comparison showing tab completion in different AI coding tools. Show 4 code editor windows arranged in a 2x2 grid, each showing the SAME Java code being written with different tab-complete experiences: TOP-LEFT - GITHUB COPILOT: Code editor showing 'public void processOrder(Order o) {' with ghost text suggesting a full method implementation. Label shows 'Copilot' with characteristics: 'Mature, reliable, good context awareness'. Latency indicator: '~200ms'. Quality bar: HIGH. Unique feature callout: 'Sees your whole repo via GitHub'. TOP-RIGHT - CURSOR TAB: Similar code with ghost text, but showing MULTI-LINE suggestion with syntax highlighting in the ghost text. Label shows 'Cursor' with characteristics: 'Blazing fast, speculative edits'. Latency indicator: '~100ms'. Quality bar: HIGH. Unique feature callout: 'Predicts your NEXT edit, not just current line'. BOTTOM-LEFT - CODEIUM/WINDSURF: Code with ghost text. Label: 'Generous free tier, fast'. Latency: '~150ms'. Quality: GOOD. Callout: 'Best free option for heavy use'. BOTTOM-RIGHT - TABNINE: Code with shorter suggestion. Label: 'Local model option, privacy-focused'. Latency: '~50ms (local)'. Quality: MODERATE. Callout: 'Can run entirely offline'. CENTER COMPARISON: Key differentiators listed: 'Speed matters more than you think—200ms vs 100ms feels VERY different in flow state.' Below: 'All accept with Tab. The magic is what they suggest and how fast.' Style: Clean IDE screenshot mockups with clear labels, speed/quality indicators as visual meters."
+  alt="2x2 grid comparing tab-complete across tools: Copilot (mature, ~200ms, sees GitHub repo), Cursor Tab (~100ms, predicts next edit), Codeium/Windsurf (free tier, ~150ms), Tabnine (local/offline, ~50ms). Center notes that speed differences feel significant in flow state."
+/>
+
+<aside className="notes">
+**Tab completion is THE killer feature:**
+- You'll use this 10x more than chat
+- Speed matters enormously—100ms vs 200ms feels very different
+- Quality of suggestions varies by context
+
+**Tool comparison:**
+
+**Copilot:**
+- The baseline everyone compares to
+- Good context awareness, reliable
+- Deep GitHub integration (sees your whole repo)
+- ~200ms latency typically
+
+**Cursor Tab:**
+- Noticeably faster (~100ms)
+- "Speculative edits"—predicts your NEXT change
+- Sometimes eerily prescient
+- Why people pay $20/mo for Cursor
+
+**Codeium/Windsurf:**
+- Best free tier for heavy use
+- Quality close to Copilot
+- Good if you're cost-conscious
+
+**Tabnine:**
+- Can run LOCAL models (privacy!)
+- Faster latency when local (~50ms)
+- Lower quality but works offline
+
+**The key insight:**
+- Try different tools, feel the speed difference
+- Tab-complete quality compounds over thousands of uses
+- This is where "tool builder UX" really shows
+
+→ **Transition:** Now let's look at the broader ecosystem...
 </aside>
 
 </Slide>
@@ -362,6 +412,49 @@ Both are building the models AND the tools—tight integration, but limited choi
 - Can adopt ANY new model immediately
 
 → **Transition:** How do you choose between them?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## What Are They Optimizing For?
+
+<Img
+  src="/img/lectures/web/l13-business-models.webp"
+  prompt="Concept: 'Strategic Optimization - What Each Player Is Betting On'. A strategic landscape diagram showing three different business strategies as three distinct paths/machines, each optimizing for different outcomes. PATH 1 - COPILOT (Microsoft/OpenAI): A funnel diagram showing 'Enterprise Sales' at the top (big dollar signs, corporate buildings) flowing down to 'Free for Students' (graduation caps, 'future customers' label). Strategy label: 'Lock in the enterprise, capture the next generation.' Icon: handshake with dollar sign. Annotation: 'Why is it free for you? You're the future enterprise customer.' PATH 2 - CLAUDE CODE (Anthropic): A circular flywheel showing: 'Best Models' → 'Build Tool That Consumes Own API Efficiently' → 'Showcase Capabilities' → 'Charge Competitors API Fees' → 'Fund Better Models'. The tool (Claude Code) is shown as both a product AND a demonstration. Strategy label: 'Invest in models, make a product that eats your own API faster than competitors can.' Icon: ouroboros/snake eating tail. Annotation: 'Claude Code is a showcase AND a revenue stream from competitors.' PATH 3 - CURSOR/TOOL BUILDERS: A speed-focused diagram showing 'Lightning-fast UX' (composer-1 speed indicators), 'Model Agnostic' (multiple model logos feeding in), 'Rapid Iteration' (weekly release calendar). Strategy label: 'Win on experience, not models. Be the best interface to ANY model.' Icon: racing car. Annotation: 'When models commoditize, UX is the moat.' BOTTOM CONNECTION: Shows how these strategies INTERACT: Cursor pays Anthropic for Claude API → Anthropic uses revenue for better models → Better models make Claude Code more capable → Competition intensifies. Caption: 'Understanding the game helps you predict where tools are heading.' Style: Strategic business diagram with game-theory feel, clean iconography, distinct color lanes for each strategy."
+  alt="Three-path strategic diagram: Copilot optimizes for enterprise sales while giving free access to students (future customers). Claude Code creates a flywheel where Anthropic builds the best models, then builds a tool that efficiently consumes its own API while charging competitors. Cursor optimizes for lightning-fast UX and model flexibility. Arrows show how strategies interact: tool builders pay model providers, funding better models."
+/>
+
+<aside className="notes">
+**Understanding the strategic game:**
+
+**Copilot (Microsoft/OpenAI):**
+- Sell to enterprise at premium prices
+- Give away to students (you!) for free
+- Why? You're the future enterprise customer
+- Classic "capture the next generation" strategy
+- Also: deep GitHub integration creates lock-in
+
+**Claude Code (Anthropic):**
+- Pour resources into model quality
+- Build a tool that consumes their own API very efficiently
+- Two wins: showcase capabilities AND charge competitors
+- When Cursor uses Claude API, Anthropic gets paid
+- It's a flywheel: revenue funds better models
+
+**Cursor and Tool Builders:**
+- Can't compete on models—so compete on UX
+- "Composer" is FAST—like, shockingly fast
+- Model-agnostic means they can switch to whoever's best
+- Betting that models commoditize, UX becomes the moat
+
+**Why this matters to you:**
+- Helps you predict where tools are heading
+- Understand why features get prioritized
+- The "free" tier always has a strategy behind it
+
+→ **Transition:** Let's look at a comparison table...
 </aside>
 
 </Slide>
