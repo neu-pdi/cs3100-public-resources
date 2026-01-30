@@ -21,11 +21,11 @@ Here are two implementations:
 **Approach A: Technical-focused design**
 ```java
 public class SubmissionManager {
-    private Map<String, List<byte[]>> fileStorage = new HashMap<>();
+    private Map<String, List<File>> fileStorage = new HashMap<>();
     private Map<String, Integer> versionCounters = new HashMap<>();
     private Map<String, Map<String, Object>> gradeData = new HashMap<>();
     
-    public String submitFiles(String userId, String assignmentId, byte[] files) {
+    public String submitFiles(String userId, String assignmentId, List<File> files) {
         String key = userId + "_" + assignmentId;
         
         // Check if grading has started
