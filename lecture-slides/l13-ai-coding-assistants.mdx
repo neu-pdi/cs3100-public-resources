@@ -28,10 +28,11 @@ import PollSlide from '@site/src/components/PollSlide';
 - **Connects to:** Assignment 4 (AI-assisted development)
 
 **Structure:**
-- What are AI Coding Assistants? (~10 min)
+- What are AI Coding Assistants? (~8 min)
+- The Tool Ecosystem: Providers vs Builders (~7 min)
 - The 6-Step Human-AI Collaboration Workflow (~5 min)
 - When to Use AI (and When Not To) (~10 min)
-- Live Demo: Domain Modeling with GitHub Copilot (~25 min)
+- Live Demo: Domain Modeling with GitHub Copilot (~20 min)
 - Key Takeaways (~5 min)
 
 **Key theme:** AI coding assistants amplify your capabilities—but the quality of output depends entirely on the quality of your input. The spec-writing skills from L4 directly apply to writing effective prompts.
@@ -84,6 +85,7 @@ After this lecture, you will be able to:
 
 <ol style={{fontSize: '0.75em', textAlign: 'left'}}>
   <li>Define AI programming agents and enumerate their capabilities and limitations</li>
+  <li>Compare model provider tools (Copilot, Claude Code) with tool builder IDEs (Cursor, Windsurf)</li>
   <li>Apply a 6-step workflow for effective human-AI collaboration</li>
   <li>Determine when it is appropriate (and inappropriate) to use an AI programming agent</li>
   <li>Use AI coding assistants to accelerate domain modeling and design exploration</li>
@@ -91,10 +93,10 @@ After this lecture, you will be able to:
 
 <aside className="notes">
 **Time allocation:**
-- Objective 1: What are AI coding assistants? (~10 min)
+- Objective 1: What are AI coding assistants + ecosystem (~15 min)
 - Objective 2: The 6-step workflow (~5 min)
 - Objective 3: When to use AI (~10 min)
-- Objective 4: Live demo with GitHub Copilot (~25 min)
+- Objective 4: Live demo with GitHub Copilot (~20 min)
 
 **Why this matters:** AI coding assistants are transforming software development. Students who learn to use them effectively will be more productive—but only if they maintain the judgment and expertise that makes AI assistance valuable.
 
@@ -200,7 +202,274 @@ The IDE integration enables iterative refinement based on real compiler feedback
 
 **This is why Copilot is more practical for real development than just pasting into ChatGPT.**
 
-→ **Transition:** What are these tools actually good at?
+→ **Transition:** But not all AI coding assistants are created equal—let's look at the ecosystem...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 1B: THE AI CODING TOOL ECOSYSTEM */}
+{/* ============================================ */}
+
+<Slide>
+
+## Two Categories of AI Coding Tools
+
+<Img
+  src="/img/lectures/web/l13-ecosystem.webp"
+  prompt="Concept: 'The AI Coding Tool Ecosystem - Model Providers vs Tool Builders'. A split infographic showing two distinct categories of AI coding tools, styled as two different storefronts or factories. LEFT SIDE - 'MODEL PROVIDERS' (labeled 'The Source'): A large factory/lab building with logos for Microsoft/OpenAI (powering GitHub Copilot) and Anthropic (powering Claude Code). Inside the factory, show LLM 'brains' being created - neural networks, training data, compute clusters. Output conveyor belt shows: 'Their Own IDE Tools' - Copilot icon going to VS Code, Claude Code icon going to terminal/IDE. Key characteristics listed: 'Control the models', 'Flat subscription pricing', 'Optimized integration', 'Limited model choice'. A price tag shows '$10-20/month flat'. RIGHT SIDE - 'TOOL BUILDERS' (labeled 'The Craftsmen'): A workshop/studio building with logos for Cursor, Windsurf, Cline, Continue. These companies are shown PURCHASING API access from the model providers (dollar signs flowing left). Inside their workshop, they're building sophisticated IDE features - multi-file editing, codebase indexing, agentic workflows. Key characteristics: 'Best-in-class UX', 'Model flexibility (use any model)', 'Pay-per-use API costs', 'Rapid innovation'. A meter shows 'API costs can vary'. CENTER BRIDGE: Arrows showing the relationship - Model providers SELL API access, Tool builders BUY it and add value. Annotation: 'Tool builders compete on UX and features. Model providers compete on model quality.' BOTTOM: A spectrum showing the tradeoff - 'Predictable cost ←→ Maximum flexibility'. Style: Clean, modern business/tech infographic with distinct color coding for each category (blue for providers, orange for builders)."
+  alt="Split infographic comparing Model Providers (Microsoft/OpenAI with Copilot, Anthropic with Claude Code) who control the models and offer flat subscriptions, versus Tool Builders (Cursor, Windsurf, Cline) who purchase API access and compete on UX features. Arrows show API costs flowing from builders to providers."
+/>
+
+<aside className="notes">
+**Two fundamentally different business models:**
+
+**Model Providers (Copilot, Claude Code):**
+- Microsoft/OpenAI → GitHub Copilot
+- Anthropic → Claude Code
+- They MAKE the models AND build tools
+- Subscription pricing ($10-20/month)
+- You're locked to their models
+
+**Tool Builders (Cursor, Windsurf, Cline, etc.):**
+- They DON'T make models—they buy API access
+- Compete on UX, features, workflows
+- Can offer multiple models (GPT-4, Claude, Gemini, local)
+- Pricing often includes API pass-through costs
+
+**Why this matters:**
+- Different cost structures
+- Different feature priorities
+- Different levels of model lock-in
+
+→ **Transition:** Let's compare these in detail...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Model Providers: Copilot and Claude Code
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.7em'}}>
+
+<div style={{backgroundColor: 'rgba(0,120,212,0.1)', padding: '0.75em', borderRadius: '8px'}}>
+
+**GitHub Copilot** (Microsoft/OpenAI)
+
+- **Model:** GPT-4o, o1, o3-mini (OpenAI models)
+- **Pricing:** $10/mo individual, free for students
+- **Integration:** VS Code, JetBrains, Neovim
+- **Strengths:**
+  - Mature, battle-tested
+  - Excellent tab-completion
+  - Deep GitHub integration
+- **Limitations:**
+  - OpenAI models only
+  - Less agentic capability
+
+</div>
+
+<div style={{backgroundColor: 'rgba(204,119,34,0.1)', padding: '0.75em', borderRadius: '8px'}}>
+
+**Claude Code** (Anthropic)
+
+- **Model:** Claude Sonnet 4, Claude Opus 4
+- **Pricing:** Pay-per-use (API costs)
+- **Integration:** Terminal-based, VS Code, JetBrains
+- **Strengths:**
+  - Strong reasoning for complex tasks
+  - Agentic multi-step workflows
+  - Excellent at large refactors
+- **Limitations:**
+  - Claude models only
+  - Newer, less mature ecosystem
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.8em', marginTop: '0.75em', color: '#9370DB'}}>
+Both are building the models AND the tools—tight integration, but limited choice.
+</p>
+
+<aside className="notes">
+**GitHub Copilot:**
+- The original AI coding assistant (launched 2021)
+- Microsoft owns GitHub AND has $13B invested in OpenAI
+- Very mature—millions of users, lots of polish
+- Best-in-class tab completion
+- Free for students through GitHub Education!
+
+**Claude Code:**
+- Newer entrant from Anthropic
+- Claude models known for strong reasoning
+- More "agentic"—can execute multi-step plans
+- Better at understanding large codebases
+- Terminal-first design (CLI tool)
+
+**The tradeoff:**
+- Copilot: Proven, polished, predictable
+- Claude Code: Cutting-edge capabilities, less mature
+
+**For this course:** We use Copilot because you all have free access.
+
+→ **Transition:** Now let's look at the tool builders...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Tool Builders: Cursor, Windsurf, and Others
+
+<Img
+  src="/img/lectures/web/l13-tool-builders.webp"
+  prompt="Concept: 'The Tool Builder Innovation Layer'. A showcase of tool-builder IDEs with their unique features. Show 3-4 tool screenshots or stylized representations arranged in a grid: CURSOR (top-left): A VS Code-like editor with highlighted features - 'Composer' multi-file editing panel, 'Codebase indexing' indicator, model selector showing 'Claude / GPT-4 / Gemini'. Tagline: 'Fork of VS Code with AI superpowers'. WINDSURF (top-right): Similar editor interface with 'Cascade' agentic flow visualization, showing AI executing multiple steps autonomously. Tagline: 'Agentic-first IDE from Codeium'. CLINE (bottom-left): VS Code extension view showing autonomous coding agent with approval workflow. Tagline: 'Open-source agentic assistant'. CONTINUE (bottom-right): IDE showing model configuration panel with local model options (Ollama, LM Studio). Tagline: 'Open-source, bring your own model'. CENTER CALLOUT: 'What they share: Model flexibility, rapid feature iteration, API-based pricing'. Bottom annotation: 'Tool builders move FAST—new features weekly. Model providers move slower but more reliably.' Style: Clean product showcase with subtle screenshots or wireframes, modern tech aesthetic."
+  alt="Grid showcasing tool-builder IDEs: Cursor with multi-file Composer and model selection, Windsurf with agentic Cascade workflows, Cline as open-source VS Code extension, Continue with local model support. Center callout emphasizes shared traits: model flexibility and rapid iteration."
+/>
+
+<aside className="notes">
+**The tool builder landscape:**
+
+**Cursor:**
+- Fork of VS Code with AI built-in
+- "Composer" for multi-file edits
+- Can use Claude, GPT-4, or other models
+- ~$20/mo + API costs for heavy use
+- Currently the most popular "power user" choice
+
+**Windsurf (from Codeium):**
+- "Cascade" agentic workflows
+- AI can execute multi-step plans
+- Strong free tier
+- Growing fast
+
+**Cline:**
+- Open-source VS Code extension
+- Very agentic—can run commands, edit files
+- You provide your own API keys
+- Great for learning how these tools work
+
+**Continue:**
+- Open-source
+- Works with local models (Ollama, LM Studio)
+- No cloud required—privacy-focused
+
+**Why they move fast:**
+- Smaller teams, focused mission
+- Not building models—just UX
+- Can adopt ANY new model immediately
+
+→ **Transition:** How do you choose between them?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Choosing Your Tools: Tradeoffs to Consider
+
+<div style={{fontSize: '0.65em'}}>
+
+| Factor | Model Providers (Copilot, Claude Code) | Tool Builders (Cursor, Windsurf) |
+|--------|----------------------------------------|----------------------------------|
+| **Cost model** | Flat subscription (~$10-20/mo) | Subscription + API usage (variable) |
+| **Model choice** | Locked to provider's models | Mix and match (Claude, GPT, Gemini, local) |
+| **Feature pace** | Slower, more stable releases | Rapid iteration, frequent updates |
+| **Agentic capabilities** | Growing (Copilot Workspace, Claude Code) | Often more advanced |
+| **Risk** | Provider deprecates features | Startup may pivot or fail |
+| **Enterprise readiness** | Generally more mature | Varies widely |
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '0.75em'}}>
+<strong>Recommendation:</strong> Start with Copilot (free for students), explore others as you develop preferences.
+</p>
+
+<aside className="notes">
+**How to think about this:**
+
+**Choose Model Providers when:**
+- You want predictable costs
+- You're in an enterprise environment
+- Stability matters more than cutting-edge features
+- You're just getting started (Copilot is free!)
+
+**Choose Tool Builders when:**
+- You want the latest capabilities
+- You need specific model characteristics
+- You're willing to manage API costs
+- You want to experiment with different models
+
+**The "agentic" trend:**
+- Both categories are racing toward more autonomous AI
+- Copilot Workspace, Claude Code, Cursor Composer, Windsurf Cascade
+- AI that can execute multi-step plans, not just suggest code
+
+**For this course:**
+- Use Copilot—it's free and solid
+- If you want to explore, Cursor's free tier is good
+- The SKILLS transfer between tools
+
+→ **Transition:** Now let's look at what all these tools are actually good at...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Agentic Future: AI That Takes Actions
+
+<Img
+  src="/img/lectures/web/l13-agentic.webp"
+  prompt="Concept: 'The Spectrum of AI Assistance - From Autocomplete to Autonomous Agent'. A horizontal spectrum/timeline showing the evolution of AI coding assistance, with current tools mapped to their position. LEFT END - 'AUTOCOMPLETE' (simplest): Icon of cursor with single-line ghost text. Label: 'Predict the next few tokens'. Examples: Early Copilot, Tabnine. User control: HIGH. AI autonomy: LOW. MIDDLE-LEFT - 'CHAT + APPLY': Icon of chat bubble with code diff. Label: 'Generate code blocks, user applies'. Examples: ChatGPT, Claude.ai for coding. User control: HIGH. AI autonomy: LOW-MEDIUM. MIDDLE - 'INTEGRATED EDIT': Icon of IDE with AI sidebar making multi-line edits. Label: 'AI edits files directly with approval'. Examples: Copilot Chat, Cursor Tab. User control: MEDIUM. AI autonomy: MEDIUM. MIDDLE-RIGHT - 'COMPOSER/MULTI-FILE': Icon showing multiple files being edited simultaneously. Label: 'Coordinate changes across codebase'. Examples: Cursor Composer, Claude Code. User control: MEDIUM. AI autonomy: MEDIUM-HIGH. RIGHT END - 'AUTONOMOUS AGENT' (most advanced): Icon of AI with multiple tool connections (terminal, browser, file system). Label: 'Plan and execute multi-step tasks'. Examples: Claude Code agentic mode, Devin (demo), Cursor Agent. User control: LOW (approval checkpoints). AI autonomy: HIGH. ANNOTATIONS: Arrow showing 'Industry direction →' pointing right. Warning callout near autonomous end: 'More power = more risk. Always review!' Below spectrum: 'Your expertise determines how much autonomy is safe. The 6-step workflow applies at EVERY level.' Style: Clean horizontal spectrum with gradient from blue (user control) to orange (AI autonomy), clear iconography for each level."
+  alt="Horizontal spectrum from Autocomplete (left, high user control) through Chat+Apply, Integrated Edit, Multi-file Composer, to Autonomous Agent (right, high AI autonomy). Current tools mapped to positions. Arrow shows industry trending toward more autonomy, with warning that more power requires more careful review."
+/>
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+The industry is moving right. Your evaluation skills become MORE important, not less.
+</p>
+
+<aside className="notes">
+**The spectrum of AI assistance:**
+
+**Autocomplete (left):**
+- AI predicts next few tokens
+- You accept or reject immediately
+- Very safe—small changes, easy to evaluate
+
+**Chat + Apply:**
+- AI generates larger blocks
+- You copy/paste or click "apply"
+- Still high control
+
+**Integrated Edit:**
+- AI can modify your files directly
+- But you approve each change
+- Copilot Chat, basic Cursor
+
+**Multi-file Composer:**
+- AI coordinates changes across many files
+- Refactoring, feature implementation
+- Harder to review—more trust required
+
+**Autonomous Agent:**
+- AI plans and executes multi-step tasks
+- Can run commands, browse docs, iterate
+- Maximum power, maximum risk
+
+**The key insight:**
+- Industry is moving toward MORE autonomy
+- But YOUR skills become MORE important
+- You need to evaluate larger chunks of work
+- The 6-step workflow scales to all levels
+
+**Connection to task familiarity:**
+- More autonomy = need MORE expertise to evaluate
+- Don't use agentic mode for unfamiliar domains!
+
+→ **Transition:** Now let's look at what these tools are actually good at...
 </aside>
 
 </Slide>
