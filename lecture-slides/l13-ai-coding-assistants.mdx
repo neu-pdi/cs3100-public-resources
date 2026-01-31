@@ -28,10 +28,11 @@ import PollSlide from '@site/src/components/PollSlide';
 - **Connects to:** Assignment 4 (AI-assisted development)
 
 **Structure:**
-- What are AI Coding Assistants? (~8 min)
+- What is an LLM? Context is Everything (~5 min)
+- AI Coding Assistants and Tab Completion (~5 min)
 - The Tool Ecosystem: Providers vs Builders (~7 min)
 - The 6-Step Human-AI Collaboration Workflow (~5 min)
-- When to Use AI (and When Not To) (~10 min)
+- When to Use AI (and When Not To) (~8 min)
 - Live Demo: Domain Modeling with GitHub Copilot (~20 min)
 - Key Takeaways (~5 min)
 
@@ -93,14 +94,101 @@ After this lecture, you will be able to:
 
 <aside className="notes">
 **Time allocation:**
-- Objective 1: What are AI coding assistants + ecosystem (~15 min)
+- Foundations: What is an LLM + context windows (~5 min)
+- Objective 1: AI coding assistants + ecosystem (~12 min)
 - Objective 2: The 6-step workflow (~5 min)
-- Objective 3: When to use AI (~10 min)
+- Objective 3: When to use AI (~8 min)
 - Objective 4: Live demo with GitHub Copilot (~20 min)
 
 **Why this matters:** AI coding assistants are transforming software development. Students who learn to use them effectively will be more productive—but only if they maintain the judgment and expertise that makes AI assistance valuable.
 
 → **Transition:** Let's start with what AI coding assistants actually are...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 0: WHAT IS AN LLM? (FOUNDATION) */}
+{/* ============================================ */}
+
+<Slide>
+
+## What Is an LLM? Text Prediction at Scale
+
+<Img
+  src="/img/lectures/web/l13-llm-basics.webp"
+  prompt="Concept: 'LLMs Are Fancy Text Predictors'. A clean educational diagram showing the fundamental mechanism of Large Language Models. LEFT SIDE - INPUT: A text prompt shown as a document/speech bubble: 'The capital of France is'. An arrow labeled 'tokenization' shows this being broken into tokens. CENTER - THE MODEL: A large neural network visualization (simplified, not scary) with billions of parameters indicated. Label: 'Trained on trillions of words from the internet'. The model is shown as a sophisticated pattern-matching machine, not a database. A key annotation: 'NOT a search engine. NOT a database. A pattern predictor.' RIGHT SIDE - OUTPUT: Multiple possible next tokens shown with probability bars: 'Paris' (95%), 'a' (2%), 'located' (1%), 'the' (0.5%). The highest probability token 'Paris' is highlighted and selected. Below, show the process REPEATING: 'The capital of France is Paris.' → predict next token → '.' or 'and' etc. BOTTOM INSIGHT: 'Every response is generated one token at a time. The model predicts what text SHOULD come next based on patterns in training data.' VISUAL METAPHOR: Perhaps show this as a very sophisticated autocomplete—like phone keyboard suggestions but trained on the entire internet. Style: Clean, educational, not intimidating. Blues and purples. Should demystify, not mystify."
+  alt="Diagram showing LLM basics: Input text 'The capital of France is' gets tokenized, passes through a neural network trained on trillions of words, outputs probability distribution over next tokens (Paris 95%, a 2%, etc.). Bottom shows this repeats token by token. Key insight: Not a database, a pattern predictor."
+/>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+LLMs predict the next token based on patterns learned from training data. That's it.
+</p>
+
+<aside className="notes">
+**The fundamental insight:**
+- LLMs are NOT databases that store and retrieve facts
+- LLMs are NOT search engines that find information
+- LLMs are PATTERN PREDICTORS that generate plausible text
+
+**How it works:**
+1. Take input text, break into tokens (~words/subwords)
+2. Model predicts probability of each possible next token
+3. Sample from distribution (or take highest probability)
+4. Repeat until done
+
+**Why this matters:**
+- Explains hallucination: model predicts plausible-LOOKING text, not necessarily TRUE text
+- Explains why context matters: predictions depend on what came before
+- Explains strengths: patterns in code are highly predictable!
+
+**The autocomplete metaphor:**
+- Phone keyboard suggestions, but trained on the internet
+- Really good at predicting what text SHOULD come next
+- Doesn't "know" anything—just predicts patterns
+
+→ **Transition:** So if it's all about prediction, what determines the quality of predictions?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Context Is Everything
+
+<Img
+  src="/img/lectures/web/l13-context-window.webp"
+  prompt="Concept: 'Context Is Everything - The Same Question, Different Answers'. A dramatic before/after comparison showing how context transforms LLM output quality. TOP HALF - 'WITHOUT CONTEXT' (labeled 'Vague Input → Generic Output'): A small prompt box contains: 'Write a good lecture on AI coding assistants for CS3100'. Arrow points to OUTPUT: A generic, bland lecture outline that could apply to any course. Labels indicate: 'Generic structure', 'No course-specific connections', 'Could be from anywhere on the internet'. The output is shown as mediocre/gray. BOTTOM HALF - 'WITH CONTEXT' (labeled 'Rich Input → Tailored Output'): A LARGE prompt box contains: '📄 40,000 words of course notes on specs, requirements, design for change... 📄 Previous lecture slides showing style and format... 📄 Learning objectives for this unit... Then: Write a good lecture on AI coding assistants for CS3100'. Arrow points to OUTPUT: A rich, tailored lecture that references L4 specs, connects to the 6-step workflow, matches the course's pixel art style, uses SceneItAll examples. Labels indicate: 'References prior lectures', 'Matches course style', 'Uses course-specific examples'. The output GLOWS with quality. CENTER DIVIDER: Shows the 'context window' as a container—bigger context = better predictions. Size indicators: '4K tokens (early models)' → '100K tokens (modern)' → '1M+ tokens (frontier)'. KEY INSIGHT at bottom: 'The model is the same. The context is different. The output quality is DRAMATICALLY different. Your job is to provide the right context.' Style: Dramatic split comparison, gray/mediocre on top, golden/excellent on bottom. Clear cause-and-effect."
+  alt="Split comparison: Top shows vague prompt 'Write lecture on AI assistants' producing generic output. Bottom shows same request with 40,000 words of course context producing tailored output with course-specific connections. Center shows context window sizes growing from 4K to 1M+ tokens. Key insight: Same model, different context, dramatically different quality."
+/>
+
+<aside className="notes">
+**The key insight of this entire lecture:**
+- The MODEL is the same
+- The CONTEXT is different
+- The OUTPUT QUALITY is dramatically different
+
+**What is the context window?**
+- Everything the model can "see" when generating
+- Early models: ~4,000 tokens (a few pages)
+- Modern models: 100,000-200,000 tokens (a novel)
+- Frontier: 1,000,000+ tokens (multiple books)
+
+**Why context matters for coding:**
+- "Write a function to process orders" → generic
+- "Write a function to process orders [+ your Order class + your database schema + your error handling conventions]" → useful
+
+**This is why IDE integration matters:**
+- Copilot sees your open files = more context
+- Claude Code can read your whole codebase = even more context
+- More relevant context = better predictions
+
+**The spec-writing connection (L4):**
+- A vague spec yields unpredictable implementations
+- A vague prompt yields unpredictable outputs
+- Same principle, same solution: be specific about what matters
+
+→ **Transition:** Now let's see how these tools integrate this into your workflow...
 </aside>
 
 </Slide>
