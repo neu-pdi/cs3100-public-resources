@@ -25,7 +25,7 @@ public class SubmissionManager {
     private Map<String, Integer> versionCounters = new HashMap<>();
     private Map<String, Map<String, Object>> gradeData = new HashMap<>();
     
-    public String submitFiles(String userId, String assignmentId, byte[] files) {
+    public String submitFiles(String userId, String assignmentId, List<byte[]> files) {
         String key = userId + "_" + assignmentId;
         
         // Check if grading has started
