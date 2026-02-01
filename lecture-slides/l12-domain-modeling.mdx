@@ -256,17 +256,15 @@ But understandability is <em>subjective</em>—it depends on context. One common
 
 ## Real Scenarios Reveal Why Domain Modeling Matters
 
-<p style={{fontSize: '0.9em'}}>
+<div style={{fontSize: '0.9em'}}>
 A student submits their assignment. A grader starts reviewing it. But then the student realizes they forgot something and resubmits.
-</p>
 
-<p style={{fontSize: '1em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
+<p style={{marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
 How should our system handle this?
 </p>
 
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
 Let's look at two implementations...
-</p>
+</div>
 
 <aside className="notes">
 **Set up the scenario:**
@@ -440,8 +438,8 @@ When code uses the same concepts, relationships, and vocabulary as the problem d
 
 <QuoteSlide quote="Any fool can write code that a computer can understand. Good programmers write code that humans can understand."
  imageSrc='/img/lectures/web/l12-martin-fowler.png'
- imageAlt="Headshot of Martin Fowler"
- attribution="Webysther Nunes CC-BY-SA 4.0"/>
+ author="Martin Fowler"
+ credit="Image credit: Webysther Nunes CC-BY-SA 4.0"/>
 
 {/* Image source: https://commons.wikimedia.org/wiki/File:Webysther_20150414193208_-_Martin_Fowler.jpg*/}
 </Slide>
@@ -582,7 +580,9 @@ This slide bridges classic OO thinking to domain modeling. Students know nouns�
 - Nouns are obvious candidates (they learned this in CS 2500/2510)
 - Verbs that "feel heavy" are the *non-obvious* candidates—this is the new skill
 
-→ **Transition:** Let's see this in action with real requirements...
+→ **Transition:**
+- I'll say more about lifecycles later.
+- First, let's see this in action with real requirements...
 </aside>
 
 </Slide>
@@ -772,6 +772,7 @@ From filtered concepts and hidden discoveries, our first sketch emerges:
 
 ```mermaid
 classDiagram
+direction LR
     class Grader {
         name: String
         email: String
@@ -825,7 +826,8 @@ classDiagram
 - Student, Grader, Instructor are separate—each has focused responsibilities
 - This is ISP: clients depend only on interfaces they use
 
-**Note:** This is simplified—full model would include RubricItem, InlineComment, etc.
+**Note:** This is simplified—full model would include RubricItem, InlineComment,
+connections between the top and bottom graphs, etc.
 
 → **Transition:** A few key modeling techniques to keep in mind...
 </aside>
@@ -911,6 +913,7 @@ RegradeRequest example
 ## Lifecycle State Diagram
 ```mermaid
 stateDiagram-v2
+
     [*] --> Submitted
     Submitted --> UnderReview : grader begins review
     UnderReview --> Resolved : grader decides
@@ -921,6 +924,9 @@ stateDiagram-v2
     Closed --> [*]
     ```
 
+<aside className="notes">
+Not shown is data attached to the states, such as the current level of review.
+</aside>
 </Slide>
 
 <Slide>
@@ -1268,6 +1274,7 @@ and show relationships.
 
 ```mermaid
 classDiagram
+direction LR
     class Patron {
         name: String
         email: String
@@ -1290,8 +1297,9 @@ classDiagram
     }
 
     Book "1" <--> "*" Copy : has
-    Book "1" --> "*" Hold : has
     Patron "1" --> "*" Hold : places
+    Copy --> Hold : fulfills
+    Hold "*" <--> "1" Book
 ```
 
 
@@ -1333,8 +1341,9 @@ classDiagram
     Book "1" <--> "*" Copy : has
     Book "1" --> "1" HoldQueue : has
     HoldQueue "1" --> "*" Hold : contains
+    Book "1" <--> "*" Hold : has
     Patron "1" --> "*" Hold : places
-    Copy "0..1" --> "0..1" Hold : fulfills
+    Copy --> Hold : fulfills
 ```
 
 
@@ -1549,7 +1558,7 @@ Grader knows its own constraints. Easy to test.
 
 ## Containers Should Create What They Contain
 
-<p style={{fontSize: '0.9em', color: '#9370DB'}}>
+<p style={{fontSize: '0.85em', color: '#9370DB'}}>
 <strong>Assign class B the responsibility to create instances of class A if B aggregates, contains, or has the initializing data for A.</strong>
 </p>
 
@@ -1673,6 +1682,8 @@ classDiagram
 
 </div>
 
+Heuristic: Assign responsibility to the class that has the information needed to fulfill it.
+
 <aside className="notes">
 **Answer: A (Book).** Book contains Copies, so Book is the natural creator. The Creator heuristic says: assign creation to the class that contains or aggregates the new object.
 </aside>
@@ -1775,6 +1786,7 @@ classDiagram
 </div>
 
 </div>
+Heuristic: Assign responsibility to the class that has the information needed to fulfill it.
 
 <aside className="notes">
 **Answer: D (Patron).** Patron has the data needed (their activeHolds list), so Patron is the Information Expert for questions about their own holds.
@@ -1949,7 +1961,7 @@ Book must extract data from Hold to answer the question.<br/>Hold already has it
 
 ## Services Create When Coordination Is Required
 
-<div style={{fontSize: '0.85em'}}>
+<div style={{fontSize: '0.75em'}}>
 For complex creation involving multiple entities, a service may be the creator:
 
 ```java
@@ -2066,16 +2078,119 @@ Controller coordinates. Domain objects own business rules.
 
 <Slide>
 
+## Controllers vs. Services
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.75em', marginTop: '0.5em'}}>
+
+<div style={{backgroundColor: 'rgba(147, 112, 219, 0.1)', padding: '0.75em', borderRadius: '8px'}}>
+
+**Controller**
+
+- Handles external requests (HTTP, UI events)
+- Knows about request/response formats (JSON, HTML)
+- Authenticates and authorizes
+- Exists at the system boundary
+
+</div>
+
+<div style={{backgroundColor: 'rgba(100, 200, 150, 0.1)', padding: '0.75em', borderRadius: '8px'}}>
+
+**Service**
+
+- Coordinates internal operations
+- Knows nothing about HTTP or UI
+- Assumes caller is already authorized
+- Exists inside the system
+- One per business capability
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB'}}>
+A controller might call a service, but a service should never call a controller.
+</p>
+
+<aside className="notes">
+**The layering:**
+- Controller → Service → Domain Objects
+- Each layer only talks to the one below it
+
+**Example flow:**
+1. HoldController receives POST /holds
+2. Controller authenticates patron, extracts bookId
+3. Controller calls HoldService.placeHold(patron, book)
+4. Service coordinates: checks patron.canPlaceHold(), creates Hold, sends notification
+5. Controller formats Hold as JSON and returns response
+
+**Why separate them?** Services can be reused (CLI, batch jobs, tests) without going through HTTP. Controllers are tied to one interface.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Example: Escalating a Regrade Request
+```mermaid
+flowchart TB
+    GUI[GUI] -->|"student clicks 'Escalate'"| Controller[RegradeController]
+    Controller -->|authenticates student| Controller
+    Controller -->|"escalateRequest(request)"| Service[RegradeService]
+    Service -->|"canEscalate?"| Domain[RegradeRequest]
+    Service -->|"escalate()"| Domain
+    Service -->|"notify()"| Notification[NotificationService]
+    Controller -->|"update UI"| GUI
+```
+
+<aside className="notes">
+**The flow:**
+1. Student clicks "Escalate" button in the GUI
+2. RegradeController receives the event, authenticates the student
+3. Controller calls RegradeService.escalateRequest(request)
+4. Service asks RegradeRequest.canEscalate() — domain owns the rule
+5. Service tells RegradeRequest.escalate() — domain changes its own state
+6. Service calls NotificationService to notify the next reviewer
+7. Controller updates the GUI with the result
+
+**Key point:** Business logic (canEscalate, escalate) lives in the domain object. Service coordinates. Controller handles the UI boundary.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Remember the Single Responsibility Principle
+
+<Img src="/img/lectures/web/l12-single-responsibility-principle.webp"
+    alt="Colorful drawing labeled 'Single Responsible Principle.
+    On the left are a wooden spoon, whisk, spatula, and knife.
+    On the right is a spork with a frowny face.
+    Author: Lara Schenck @larasx"
+/>
+{/* Image source: https://notlaura.com/writing-css-algorithms/ */}
+
+<aside className="notes">
+This slide serves as a transition.
+</aside>
+
+</Slide>
+
+<Slide className="small-code">
+
 ## Each Class Has One Clear Job
+
+<style>{`
+  .small-code .codeBlockContainer_Ckt0 pre,
+  .small-code .codeBlockContainer_Ckt0 code {
+    font-size: 0.75em !important;
+  }
+`}</style>
 
 ```java
 // Information Expert: Domain objects know about themselves
 public class RegradeRequest {
     public boolean canEscalate() { /* uses its own data */ }
-}
-
-public class Grader {
-    public boolean canReviewRegrade(RegradeRequest r) { /* knows constraints */ }
+    public void escalate() { /* uses its own data */ }
 }
 
 // Creator: Containers create their components
@@ -2095,7 +2210,7 @@ public class RegradeService {
 // Controller: Coordinates without business logic
 public class RegradeController {
     public Response escalate(...) {
-        /* authenticate, authorize, delegate, return JSON */
+        /* authenticate, authorize, delegate, update GUI */
     }
 }
 ```
@@ -2129,16 +2244,16 @@ public class RegradeController {
 
 <aside className="notes">
 **Discussion after poll:**
-- Student: has the student ID but not regrade history
+- Student: might have a list of requests but shouldn't have to change if the policy changes
 - RegradeRequest: knows one request, not all requests
 - RegradeService: has access to repository, can count
 - RegradeController: should not have business logic
 - RegradePolicy: encapsulates the business rule
 
 **Best answer:** RegradeService or RegradePolicy
-- Needs to query across requests (not single request's data)
-- Is a business rule (not just coordination)
-- Could be extracted to Policy class for testability
+- No single domain object has all the data needed
+- RegradeService is pragmatic; RegradePolicy is more testable
+- Either is better than putting it in the controller
 
 → **Transition:** Now let's discuss the representational gap...
 </aside>
@@ -2189,6 +2304,43 @@ Visual style:
 - Smaller, well-contained gap = easier to change technical infrastructure
 
 → **Transition:** Let's see where gaps come from...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## JSON: JavaScript Object Notation
+
+<div style={{fontSize: '0.85em'}}>
+
+A lightweight text format for representing structured data:
+</div>
+
+```json
+{
+  "name": "Alice Chen",
+  "email": "chen.a@university.edu",
+  "submissions": [
+    {
+      "assignment": "Homework 3",
+      "submittedAt": "2025-01-28T23:45:00",
+      "status": "GRADED"
+    },
+    { ... }
+  ]
+}
+```
+<div style={{fontSize: '0.75em'}}>
+**Serialization:** converting an object to JSON text (to save or send)
+
+**Deserialization:** converting JSON text back to an object (to load or receive)
+
+**Common uses:** saving to files, databases, sending over networks (APIs)
+</div>
+
+<aside className="notes">
+First, some background...
 </aside>
 
 </Slide>
