@@ -15,6 +15,8 @@ import QuoteSlide from '@site/src/components/QuoteSlide';
 {/* COVER IMAGE */}
 {/* ============================================ */}
 
+{/* TODO: DEFINE BUSINESS LOGIC */}
+
 <Slide>
   <Img
     src="/img/lectures/web/l12.png"
@@ -74,7 +76,7 @@ Retro 8-bit pixel art with cohesive color palette. Warm tones (oranges, browns) 
 ## Lecture 12: Domain Modeling
 
 <p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
-  ©2025 Jonathan Bell, CC-BY-SA
+  ©2026 Jonathan Bell & Ellen Spertus, CC-BY-SA
 </p>
 
 <aside className="notes">
@@ -123,6 +125,47 @@ Plus ~5 min intro connecting to prior material.
 → **Transition:** Let's start by connecting to what we've learned...
 </aside>
 
+</Slide>
+
+{/* ============================================ */}
+{/* OPENING EXERCISE */}
+{/* ============================================ */}
+
+<Slide>
+
+## Poll: Which code is easier to understand, and why?
+
+**Option A:**
+```java
+public double process(String id, double amt, String type) {
+    double curr = balances.getOrDefault(id, 0.0);
+    double fee = type.equals("PREMIUM") ? 0.0 : amt * 0.02;
+    double result = curr - amt - fee;
+    if (result < 0) throw new RuntimeException("insufficient");
+    balances.put(id, result);
+    return result;
+}
+```
+
+**Option B:**
+```java
+public Balance withdraw(Account account, Money amount) {
+    Money fee = account.membership().calculateFee(amount);
+    Balance newBalance = account.balance().subtract(amount).subtract(fee);
+    if (newBalance.isNegative()) throw new InsufficientFundsException(account);
+    account.updateBalance(newBalance);
+    return newBalance;
+}
+```
+
+<aside className="notes">
+* Goal: Students see benefit of proper domain modeling.
+* Method: Ask them to compare two versions of code.
+* Their answer should include their preferred version
+and why they prefer it.
+
+**Transition:** The lower code features good domain modeling.
+</aside>
 </Slide>
 
 {/* ============================================ */}
@@ -244,11 +287,11 @@ Let's look at two implementations...
 
 ```java
 public class SubmissionManager {
-    private Map<String, List<byte[]>> fileStorage = new HashMap<>();
+    private Map<String, List<btye[]>> fileStorage = new HashMap<>();
     private Map<String, Integer> versionCounters = new HashMap<>();
     private Map<String, Map<String, Object>> gradeData = new HashMap<>();
 
-    public String submitFiles(String userId, String assignmentId, byte[] files) {
+    public String submitFiles(String userId, String assignmentId, List<byte[]> files) {
         String key = userId + "_" + assignmentId;
 
         Map<String, Object> existingGrade = gradeData.get(key);
@@ -335,26 +378,6 @@ public class Submission {
 
 <Slide>
 
-## Poll: Which Implementation is More Understandable?
-
-<PollSlide choices={["Approach A (Technical)", "Approach B (Domain-Aligned)", "They're equally understandable", "Neither is understandable"]} />
-
-<aside className="notes">
-**Discussion after poll:**
-- Approach A might execute faster, use less memory
-- But what does "v2" mean? Version? Variant?
-- What happens to the grader's work in A?
-- Approach B directly represents domain concepts
-
-**Key insight:** Performance can be optimized later. Understanding can't be retrofitted.
-
-→ **Transition:** Let's break down why domain-aligned is better...
-</aside>
-
-</Slide>
-
-<Slide>
-
 ## Domain-Aligned Code Is Easier to Navigate, Predict, and Change
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em'}}>
@@ -409,6 +432,18 @@ When code uses the same concepts, relationships, and vocabulary as the problem d
 → **Transition:** But achieving this alignment is difficult...
 </aside>
 
+</Slide>
+
+<Slide>
+
+## Keep Your Reader In Mind
+
+<QuoteSlide quote="Any fool can write code that a computer can understand. Good programmers write code that humans can understand."
+ imageSrc='/img/lectures/web/l12-martin-fowler.png'
+ imageAlt="Headshot of Martin Fowler"
+ attribution="Webysther Nunes CC-BY-SA 4.0"/>
+
+{/* Image source: https://commons.wikimedia.org/wiki/File:Webysther_20150414193208_-_Martin_Fowler.jpg*/}
 </Slide>
 
 <Slide>
@@ -851,6 +886,45 @@ class RegradeRequest {
 
 <Slide>
 
+## Lifecycles
+
+<div style={{fontSize: '0.85em'}}>
+
+An object has a **lifecycle** if it moves through different states over time,
+affecting which actions are possible and how they behave.
+
+RegradeRequest example
+
+* Submitted → student has requested a regrade
+* UnderReview → grader, meta-grader, or instructor is looking at it
+* Resolved → grader made a decision
+* Escalated → student appeals decision to next level
+* Closed → either
+  * highest authority has performed review
+  * student did not object to resolution in allowed time
+
+</div>
+</Slide>
+
+<Slide>
+
+## Lifecycle State Diagram
+```mermaid
+stateDiagram-v2
+    [*] --> Submitted
+    Submitted --> UnderReview : grader begins review
+    UnderReview --> Resolved : grader decides
+    Resolved --> Escalated : student appeals
+    Escalated --> UnderReview : next level reviews
+    Resolved --> Closed : accepted or timeout
+    Escalated --> Closed : instructor decides (final)
+    Closed --> [*]
+    ```
+
+</Slide>
+
+<Slide>
+
 ## History Matters When the Domain Cares About the Past
 
 <p style={{fontSize: '0.85em'}}>
@@ -1111,6 +1185,162 @@ The model after validation often looks quite different from the initial attempt�
 </Slide>
 
 {/* ============================================ */}
+{/* ARC: STUDENTS WORK THROUGH AN EXAMPLE */}
+{/* ============================================ */}
+
+<Slide>
+
+## Example: Library Hold System
+
+<div style={{fontSize: '0.7em', backgroundColor: 'rgba(147, 112, 219, 0.1)', padding: '0.75em', borderRadius: '8px'}}>
+
+> The library wants to modernize how patrons request books
+> that are currently checked out. Patrons can place holds on
+> unavailable items, and when an item is returned, the next
+> patron in the queue is notified. They have 7 days to pick
+> up the item before the hold expires and the next patron is
+> notified.
+>
+> Some books have multiple copies; when any copy is returned,
+> it fulfills the next hold. Patrons can cancel holds anytime
+> and can have at most 10 active holds.
+</div>
+
+</Slide>
+
+<Slide>
+
+### Select Candidate Concepts
+
+<p style={{fontSize: '0.85em'}}>
+Choose nouns to be classes. They could be explicit or implicit.
+</p>
+
+<div style={{fontSize: '0.68em', backgroundColor: 'rgba(147, 112, 219, 0.05)', padding: '0.5em', borderRadius: '8px', lineHeight: '1.6'}}>
+
+> The library wants to modernize how patrons request books
+> that are currently checked out. Patrons can place holds on
+> unavailable items, and when an item is returned, the next
+> patron in the queue is notified. They have 7 days to pick
+> up the item before the hold expires and the next patron is
+> notified.
+>
+> Some books have multiple copies; when any copy is returned,
+> it fulfills the next hold. Patrons can cancel holds anytime
+> and can have at most 10 active holds.
+
+</div>
+
+<aside className="notes">
+Have students do a word cloud poll or think-pair-share.
+Hide the results at first, then share and discuss the results.
+
+**Obvious nouns**
+- **Patron**
+- Something to represent an individual book, such as **BookCopy** or **Copy** or **Item**
+- Something to represent all copies of the same book, such as **Book** or **Title**
+- **Hold**
+
+**Less obvious nouns**
+- **HoldQueue**
+- **Notification** (possibly)
+
+**Hidden concept**
+- ExpirationTracker
+
+→ **Transition:** Now we filter and consolidate...
+</aside>
+
+</Slide>
+
+<Slide>
+ ### Draw Classes and Relationships
+
+<aside className="notes">
+Use a whiteboard or software to draw out classes that students chose
+and show relationships.
+</aside>
+</Slide>
+
+<Slide>
+
+### One Possible Domain Model
+
+```mermaid
+classDiagram
+    class Patron {
+        name: String
+        email: String
+    }
+
+    class Book {
+        title: String
+        author: String
+    }
+
+    class Copy {
+        barcode: String
+        status: CopyStatus
+    }
+
+    class Hold {
+        requestedAt: DateTime
+        notifiedAt: DateTime
+        status: HoldStatus
+    }
+
+    Book "1" <--> "*" Copy : has
+    Book "1" --> "*" Hold : has
+    Patron "1" --> "*" Hold : places
+```
+
+
+</Slide>
+
+<Slide>
+
+### Another Possible Domain Model
+
+```mermaid
+classDiagram
+    class Patron {
+        name: String
+        email: String
+    }
+
+    class Book {
+        title: String
+        author: String
+    }
+
+    class Copy {
+        barcode: String
+        status: CopyStatus
+    }
+
+    class Hold {
+        requestedAt: DateTime
+        notifiedAt: DateTime
+        status: HoldStatus
+    }
+
+    class HoldQueue {
+        getNextHold()
+        addHold(Hold)
+        removeHold(Hold)
+    }
+
+    Book "1" <--> "*" Copy : has
+    Book "1" --> "1" HoldQueue : has
+    HoldQueue "1" --> "*" Hold : contains
+    Patron "1" --> "*" Hold : places
+    Copy "0..1" --> "0..1" Hold : fulfills
+```
+
+
+</Slide>
+
+{/* ============================================ */}
 {/* ARC 4: TRANSLATING TO OO DESIGN */}
 {/* ============================================ */}
 
@@ -1183,7 +1413,7 @@ class RegradeService {
   }
 }
 ```
-Service becomes a "logic hog" that pulls data from anemic objects.
+Service becomes a "logic hog" that pulls data from passive objects.
 
 </div>
 
@@ -1400,11 +1630,327 @@ GradingSession controls its own contents. Can enforce invariants (must be active
 
 <Slide>
 
+## Poll: Who should create Copy objects?
+
+<div style={{display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1em', alignItems: 'center'}}>
+
+<div>
+```mermaid
+classDiagram
+    class Patron {
+        name: String
+        activeHolds: List~Hold~
+    }
+    class Book {
+        title: String
+        copies: List~Copy~
+    }
+    class Copy {
+        barcode: String
+        status: CopyStatus
+    }
+    class Hold {
+        status: HoldStatus
+    }
+    Patron "1" <--> "*" Hold : has
+    Book "1" <--> "*" Hold : has
+    Book "1" <--> "*" Copy : has
+```
+
+</div>
+
+<div>
+
+**A.** Book
+
+**B.** Copy
+
+**C.** Hold
+
+**D.** Patron
+
+</div>
+
+</div>
+
+<aside className="notes">
+**Answer: A (Book).** Book contains Copies, so Book is the natural creator. The Creator heuristic says: assign creation to the class that contains or aggregates the new object.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Creating Copy Objects
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em'}}>
+
+<div>
+
+**In Book (contains copies):**
+```java
+class Book {
+  private List<Copy> copies;
+
+  Copy addCopy(String barcode) {
+    Copy copy = new Copy(barcode, this);
+    copies.add(copy);
+    return copy;
+  }
+}
+```
+
+</div>
+
+<div>
+
+**In Copy (doesn't contain copies):**
+```java
+class Copy {
+  private String barcode;
+  private Book book;
+
+  static Copy create(String barcode, Book book) {
+    Copy copy = new Copy(barcode, book);
+    book.getCopies().add(copy); // reaching in!
+    return copy;
+  }
+}
+```
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#9370DB'}}>
+Copy must reach into Book's internal list.<br/>Book can manage its own collection.
+</p>
+
+<aside className="notes">
+**Key point:** Copy doesn't know about other copies—it has no list to add itself to. It must reach into Book to register itself, which exposes Book's internals and splits the responsibility for managing the collection.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Poll: Who should check if a patron can place a hold?
+
+<div style={{display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1em', alignItems: 'center'}}>
+
+<div>
+```mermaid
+classDiagram
+    class Patron {
+        name: String
+        activeHolds: List~Hold~
+    }
+    class Book {
+        title: String
+    }
+    class Copy {
+        barcode: String
+        status: CopyStatus
+    }
+    class Hold {
+        status: HoldStatus
+    }
+    Patron "1" <--> "*" Hold : has
+    Book "1" <--> "*" Hold : has
+    Book "1" <--> "*" Copy : has
+```
+
+</div>
+
+<div style={{fontSize: '1.0em'}}>
+
+**A.** Book
+
+**B.** Copy
+
+**C.** Hold
+
+**D.** Patron
+
+</div>
+
+</div>
+
+<aside className="notes">
+**Answer: D (Patron).** Patron has the data needed (their activeHolds list), so Patron is the Information Expert for questions about their own holds.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Checking if a Patron Can Place a Hold
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em'}}>
+
+<div>
+
+**In Patron (has the data):**
+```java
+class Patron {
+  private List<Hold> activeHolds;
+
+  boolean canPlaceHold(Book book) {
+    if (activeHolds.size() >= 10) return false;
+    for (Hold h : activeHolds) {
+      if (h.getBook().equals(book)) return false;
+    }
+    return true;
+  }
+}
+```
+
+</div>
+
+<div>
+
+**In Hold (doesn't have the data):**
+```java
+class Hold {
+  private HoldStatus status;
+
+  boolean canPatronPlaceHold(Patron p, Book b) {
+    // I don't know about other holds!
+    // Need to ask Patron for their list
+    List<Hold> holds = p.getActiveHolds();
+    if (holds.size() >= 10) return false;
+    for (Hold h : holds) {
+      if (h.getBook().equals(b)) return false;
+    }
+    return true;
+  }
+}
+```
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#9370DB'}}>
+Hold must extract data from Patron to answer the question. Patron already has it.
+</p>
+
+<aside className="notes">
+**Key point:** The code is almost identical, but Hold has to reach into Patron to get the data. This is a sign the responsibility is in the wrong place. When you find yourself extracting data from another object to make a decision, ask: should that object make the decision instead?
+</aside>
+
+</Slide>
+<Slide>
+
+## Poll: Who should check if a hold is expired?
+
+<div style={{display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1em', alignItems: 'center'}}>
+
+<div>
+```mermaid
+classDiagram
+    class Patron {
+        name: String
+        activeHolds: List~Hold~
+    }
+    class Book {
+        title: String
+        copies: List~Copy~
+    }
+    class Copy {
+        barcode: String
+        status: CopyStatus
+    }
+    class Hold {
+        status: HoldStatus
+        notifiedAt: DateTime
+    }
+    Patron "1" <--> "*" Hold : has
+    Book "1" <--> "*" Hold : has
+    Book "1" <--> "*" Copy : has
+```
+
+</div>
+
+<div>
+
+**A.** Book
+
+**B.** Copy
+
+**C.** Hold
+
+**D.** Patron
+
+</div>
+
+</div>
+
+<aside className="notes">
+**Answer: C (Hold).** Hold has the data needed (notifiedAt and status), so Hold is the Information Expert for whether it's expired.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Checking if a Hold is Expired
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em'}}>
+
+<div>
+
+**In Hold (has the data):**
+```java
+class Hold {
+  private HoldStatus status;
+  private Instant notifiedAt;
+
+  boolean isExpired() {
+    return status == HoldStatus.READY
+        && daysBetween(notifiedAt, now()) > 7;
+  }
+}
+```
+
+</div>
+
+<div>
+
+**In Book (doesn't have the data):**
+```java
+class Book {
+  private List<Hold> holds;
+
+  boolean isHoldExpired(Hold hold) {
+    HoldStatus status = hold.getStatus();
+    Instant notified = hold.getNotifiedAt();
+    return status == HoldStatus.READY
+        && daysBetween(notified, now()) > 7;
+  }
+}
+```
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#9370DB'}}>
+Book must extract data from Hold to answer the question.<br/>Hold already has it.
+</p>
+
+<aside className="notes">
+**Key point:** The logic is identical, but Book has to pull status and notifiedAt out of Hold. When you're extracting data just to make a decision, the decision belongs in the class that has the data.
+</aside>
+
+</Slide>
+
+<Slide>
+
 ## Services Create When Coordination Is Required
 
-<p style={{fontSize: '0.85em'}}>
+<div style={{fontSize: '0.85em'}}>
 For complex creation involving multiple entities, a service may be the creator:
-</p>
 
 ```java
 public class RegradeService {
@@ -1428,12 +1974,11 @@ public class RegradeService {
         request.addResponse(response);
         auditLog.recordRegradeResponse(grader, request, response);
         notificationService.notifyStudent(request.getStudent(), response);
-
         return response;
     }
 }
 ```
-
+</div>
 <aside className="notes">
 **Why service creates here:**
 - Creation involves coordination (notification, audit)
@@ -1464,26 +2009,20 @@ public class RegradeService {
 
 **❌ Fat controller (logic in controller):**
 ```java
-@PostMapping("/regrade-requests/{id}/escalate")
-ResponseEntity escalate(@PathVariable String id, ...) {
-  RegradeRequest req = repo.findById(id);
-
+void escalate(RegradeRequest request) {
   // Business logic IN the controller!
-  if (req.getResponses().isEmpty()) {
+  if (request.getResponses().isEmpty()) {
     throw new BadRequestException("No responses");
   }
-  if (req.getStatus() == RESOLVED) {
+  if (request.getStatus() == RESOLVED) {
     throw new BadRequestException("Already resolved");
   }
-  RegradeResponse last = req.getResponses()
-      .get(req.getResponses().size() - 1);
+  RegradeResponse last = request.getResponses().getLast();
   if (hoursBetween(last.getCreatedAt(), now()) < 24) {
     throw new BadRequestException("Wait 24h");
   }
 
-  req.setStatus(ESCALATED);  // More logic...
-  repo.save(req);
-  return ok(req);
+  request.setStatus(ESCALATED);  // More logic...
 }
 ```
 
@@ -1493,21 +2032,12 @@ ResponseEntity escalate(@PathVariable String id, ...) {
 
 **✓ Thin controller (delegates to domain):**
 ```java
-@PostMapping("/regrade-requests/{id}/escalate")
-ResponseEntity escalate(@PathVariable String id, ...) {
-  Student student = authService.authenticate(token);
-  RegradeRequest req = regradeService.findById(id);
-
-  if (!req.getStudent().equals(student)) {
-    throw new UnauthorizedException();
-  }
-
-  if (!req.canEscalate()) {  // Domain decides!
+void escalate(RegradeRequest request) {
+  if (!request.canEscalate()) {  // Domain decides!
     throw new EscalationNotAllowedException();
   }
 
-  req = regradeService.escalateRequest(req);
-  return ok(toJson(req));  // Convert to JSON for response
+  regradeService.escalateRequest(request);
 }
 ```
 Controller coordinates. Domain objects own business rules.
@@ -1518,12 +2048,8 @@ Controller coordinates. Domain objects own business rules.
 
 <aside className="notes">
 **The contrast:**
-- Left: Controller is 30+ lines, full of business logic, hard to test
+- Left: Controller is full of business logic, hard to test
 - Right: Controller is thin—just wiring. Business logic is in `canEscalate()`
-
-**Connection to L8 (Single Responsibility):**
-- Left: Controller has TWO jobs—HTTP handling AND business rules
-- Right: Controller has ONE job—coordinate the request/response flow
 
 **Connection to L7 (Coupling):**
 - Left: If escalation rules change, you modify the *controller*
@@ -1599,7 +2125,7 @@ public class RegradeController {
 "Check if a student has exceeded their maximum regrade requests for the semester"
 </p>
 
-<PollSlide choices={["Student class", "RegradeRequest class", "RegradeService", "RegradeController", "A new RegradePolicy class"]} />
+<PollSlide choices={["Student", "RegradeRequest", "RegradeService", "RegradeController", "A new RegradePolicy class"]} />
 
 <aside className="notes">
 **Discussion after poll:**
@@ -2028,6 +2554,19 @@ A seemingly trivial decision—"16 bits should be plenty"—became an existentia
 
 </Slide>
 
+<Slide>
+## 16-bit Overflow
+    <Img src="/img/lectures/web/l12-overflow-xkcd.png"
+    alt="XKCD cartoon with four frames containing a stick figure trying to sleep.
+    In frame 1, a thought bubble shows him imagining sheep leaping over a fence, with a count 1...2...
+    In frame 2, the count has gotten to 1,306...1,307...
+    In frame 3, the sheep are leaping in the other direction, and the count shows 32,767...-32,768...
+    In frame 4, the count continues -32,767...-32,766.
+    "
+    imgSrc="XKCD 571 CC BY-NC 2.5"
+    />
+</Slide>
+
 {/* ============================================ */}
 {/* KEY TAKEAWAYS - CONNECTING TO PRIOR PRINCIPLES */}
 {/* ============================================ */}
@@ -2135,6 +2674,14 @@ Domain modeling connects to many upcoming topics:
 
 **Questions?**
 </aside>
+
+</Slide>
+
+<Slide>
+
+## Bonus Slide
+
+<Img src="/img/lectures/web/l12-weeks-of-coding-save-hours-of-designing.jpg" />
 
 </Slide>
 
