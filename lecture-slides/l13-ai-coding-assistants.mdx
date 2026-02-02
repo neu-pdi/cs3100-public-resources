@@ -275,7 +275,7 @@ Have you used an AI coding assistant before? (GitHub Copilot, Cursor, ChatGPT fo
 
 <Img
   src="/img/lectures/web/l13-ecosystem.webp"
-  prompt="Concept: 'The AI Coding Tool Ecosystem - Model Providers vs Tool Builders'. A split infographic showing two distinct categories of AI coding tools, styled as two different storefronts or factories. LEFT SIDE - 'MODEL PROVIDERS' (labeled 'The Source'): A large factory/lab building with logos for Microsoft/OpenAI (powering GitHub Copilot) and Anthropic (powering Claude Code). Inside the factory, show LLM 'brains' being created - neural networks, training data, compute clusters. Output conveyor belt shows: 'Their Own IDE Tools' - Copilot icon going to VS Code, Claude Code icon going to terminal/IDE. Key characteristics listed: 'Control the models', 'Flat subscription pricing', 'Optimized integration', 'Limited model choice'. A price tag shows '$10-20/month flat'. RIGHT SIDE - 'TOOL BUILDERS' (labeled 'The Craftsmen'): A workshop/studio building with logos for Cursor, Windsurf, Cline, Continue. These companies are shown PURCHASING API access from the model providers (dollar signs flowing left). Inside their workshop, they're building sophisticated IDE features - multi-file editing, codebase indexing, agentic workflows. Key characteristics: 'Best-in-class UX', 'Model flexibility (use any model)', 'Pay-per-use API costs', 'Rapid innovation'. A meter shows 'API costs can vary'. CENTER BRIDGE: Arrows showing the relationship - Model providers SELL API access, Tool builders BUY it and add value. Annotation: 'Tool builders compete on UX and features. Model providers compete on model quality.' BOTTOM: A spectrum showing the tradeoff - 'Predictable cost ←→ Maximum flexibility'. Style: Clean, modern business/tech infographic with distinct color coding for each category (blue for providers, orange for builders)."
+  prompt="A split infographic styled as two different buildings showing two categories of AI coding tools. LEFT SIDE - 'MODEL PROVIDERS': Two separate factories. First factory has Microsoft/OpenAI logos, glowing cubes inside representing LLM models, conveyor belt outputs GitHub Copilot going to VS Code logo. Second factory has Anthropic logo, glowing cubes inside, conveyor belt outputs Claude Code going to terminal icon. Key characteristics: 'Control the models', 'Flat subscription pricing', 'Optimized integration', 'Limited model choice'. Price tag: '$10-20/month flat'. RIGHT SIDE - 'TOOL BUILDERS': A workshop/studio building with text names (not logos) for Cursor, Windsurf, Cline, Continue. These purchase API access from model providers (dollar signs flowing left). Inside they're building IDE features. Key characteristics: 'Best-in-class UX', 'Model flexibility', 'Pay-per-use API costs', 'Rapid innovation'. CENTER: Arrows showing relationship - providers SELL API access, builders BUY it. Annotation: 'Tool builders compete on UX. Model providers compete on model quality.' BOTTOM: Spectrum showing 'Predictable cost ←→ Maximum flexibility'. Style: Clean tech infographic, blue for providers, orange for builders. No title or caption at the top of the image."
   alt="Split infographic comparing Model Providers (Microsoft/OpenAI with Copilot, Anthropic with Claude Code) who control the models and offer flat subscriptions, versus Tool Builders (Cursor, Windsurf, Cline) who purchase API access and compete on UX features. Arrows show API costs flowing from builders to providers."
 />
 
@@ -528,7 +528,7 @@ Based on <a href="https://arxiv.org/abs/2506.00202">research on Developer-AI col
 **The practical implication:**
 - "Identify what context AI needs" is outdated for modern tools
 - Better framing: "Recognize when the tool WON'T find what it needs"
-- Cursor with @codebase often just... figures it out
+- Modern tools often just... figure it out
 
 → **Transition:** So what does this mean practically?
 </aside>
@@ -558,13 +558,13 @@ Based on <a href="https://arxiv.org/abs/2506.00202">research on Developer-AI col
 
 <div style={{backgroundColor: 'rgba(100,255,100,0.1)', padding: '0.75em', borderRadius: '8px'}}>
 
-**New Reality (2024+)**
+**New Reality (2026+)**
 
 "I describe intent; the tool finds context"
 
-- `@codebase` searches everything
-- `@file` pulls in specific files
-- Tool indexes and retrieves automatically
+- Tools search your codebase automatically
+- You can reference specific files when needed
+- Tool indexes and retrieves relevant context
 - AI asks clarifying questions
 
 **Tool does context gathering; you validate**
