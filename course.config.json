@@ -931,7 +931,7 @@
     },
     {
       "id": "lab5-mon",
-      "title": "Lab 5: Domain Modeling",
+      "title": "Lab 5: Requirements Engineering",
       "dates": [
         "2026-02-02"
       ],
@@ -947,11 +947,11 @@
         "L13",
         "L14"
       ],
-      "url": "/labs/lab5-domain-modeling"
+      "url": "/labs/lab5-requirements"
     },
     {
       "id": "lab5-tue",
-      "title": "Lab 5: Domain Modeling",
+      "title": "Lab 5: Requirements Engineering",
       "dates": [
         "2026-02-03"
       ],
@@ -960,7 +960,7 @@
         "L02",
         "L04"
       ],
-      "url": "/labs/lab5-domain-modeling"
+      "url": "/labs/lab5-requirements"
     },
     {
       "id": "lab6-mon",
