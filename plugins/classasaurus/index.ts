@@ -250,6 +250,8 @@ sidebar: false
                     const slideId = file.replace(/\.(md|mdx)$/, '');
                     // Skip index files
                     if (slideId === 'index') continue;
+                    // Skip non-lecture files (only include files starting with 'l' followed by a number)
+                    if (!/^l\d/.test(slideId)) continue;
 
                     const filePath = path.join(lectureSlidesDir, file);
                     const content = fs.readFileSync(filePath, 'utf-8');

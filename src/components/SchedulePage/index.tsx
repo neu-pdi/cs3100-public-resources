@@ -613,8 +613,12 @@ export default function SchedulePage({ scheduleData }: Props) {
     return `${baseUrl}${url}`;
   };
 
-  const [selectedLectureId, setSelectedLectureId] = useState<string>(() => config.sections[0]?.id || '');
-  const [selectedLabId, setSelectedLabId] = useState<string>(() => config.labSections?.[0]?.id || '');
+  const [selectedLectureId, setSelectedLectureId] = useState<string>(() => 
+    config.sections.find(s => s.timeZone === 'America/New_York')?.id || config.sections[0]?.id || ''
+  );
+  const [selectedLabId, setSelectedLabId] = useState<string>(() => 
+    config.labSections?.find(s => s.timeZone === 'America/New_York')?.id || config.labSections?.[0]?.id || ''
+  );
 
   // Hydrate selections from localStorage on client
   useEffect(() => {
