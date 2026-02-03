@@ -15,8 +15,6 @@ import QuoteSlide from '@site/src/components/QuoteSlide';
 {/* COVER IMAGE */}
 {/* ============================================ */}
 
-{/* TODO: DEFINE BUSINESS LOGIC */}
-
 <Slide>
   <Img
     src="/img/lectures/web/l12.png"
@@ -402,7 +400,11 @@ public class Submission {
 
 </div>
 
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+<p style={{fontSize: '0.8em', marginTop: '0.75em', backgroundColor: 'rgba(147, 112, 219, 0.15)', padding: '0.5em', borderRadius: '6px'}}>
+<strong>Business logic</strong>: the rules, workflows, and decisions that define how a domain actually operates—independent of how we store or display data.
+</p>
+
+<p style={{fontSize: '0.85em', marginTop: '0.75em'}}>
 When code uses the same concepts, relationships, and vocabulary as the problem domain, it becomes easier to:
 </p>
 
@@ -414,6 +416,10 @@ When code uses the same concepts, relationships, and vocabulary as the problem d
 </ul>
 
 <aside className="notes">
+**Defining "business logic":**
+- This is likely a new term for students—pause to make sure they absorb it
+- Business logic = the rules specific to THIS domain (grading, not storage)
+- Contrast: "save to file" is NOT business logic; "grader can't review their own work" IS
 **The benefits:**
 - Navigate: "Where's the regrade logic?" → look in RegradeRequest
 - Predict: "How do we handle deadlines?" → probably in Assignment or Submission
@@ -927,60 +933,6 @@ stateDiagram-v2
 <aside className="notes">
 Not shown is data attached to the states, such as the current level of review.
 </aside>
-</Slide>
-
-<Slide>
-
-## History Matters When the Domain Cares About the Past
-
-<p style={{fontSize: '0.85em'}}>
-Some domains care about history. Model it explicitly:
-</p>
-
-```java
-// If only current state matters:
-class Submission {
-    Grade currentGrade;
-}
-
-// If history matters (audit, undo, analytics):
-class Submission {
-    List<GradingSession> gradingSessions;  // All grading attempts
-    List<Submission> previousVersions;      // If student resubmitted
-
-    GradingSession getActiveGrading() {
-        return gradingSessions.stream()
-            .filter(s -> s.getStatus() == GradingStatus.IN_PROGRESS)
-            .findFirst().orElse(null);
-    }
-}
-```
-
-<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
-**Capture history when:** you need audit trails, undo, analytics, or versioning.
-</p>
-
-<aside className="notes">
-**When to add temporal modeling:**
-- "Track all grading actions" → audit log
-- "What grade did they have before?" → version history
-- "How long does grading take?" → timestamps
-
-**Connection to L6 (Immutability):**
-- Events are naturally immutable—a `GradingEvent` happened and can't un-happen
-- L6 taught us: immutable objects are safer, simpler to reason about
-- Audit logs are *collections of immutable events*—perfect fit
-
-**Connection to L5 (Records):**
-- Java records (L5) are ideal for immutable event types
-- `record GradeChangedEvent(Submission sub, Grade oldGrade, Grade newGrade, Instant when) {}`
-- Immutable by default, equals/hashCode for free
-
-**The tradeoff:** More complex, more storage—but essential when history matters.
-
-→ **Transition:** One more technique...
-</aside>
-
 </Slide>
 
 <Slide>
@@ -2240,7 +2192,9 @@ public class RegradeController {
 "Check if a student has exceeded their maximum regrade requests for the semester"
 </p>
 
-<PollSlide choices={["Student", "RegradeRequest", "RegradeService", "RegradeController", "A new RegradePolicy class"]} />
+<PollSlide
+    username="espertus"
+    choices={["Student", "RegradeRequest", "RegradeService", "RegradeController", "A new RegradePolicy class"]} />
 
 <aside className="notes">
 **Discussion after poll:**
