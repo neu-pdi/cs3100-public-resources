@@ -170,6 +170,52 @@ LLMs predict the next token based on patterns learned from training data. That's
 
 <Slide>
 
+## Model Tiers: Cost, Speed, and Capability
+
+<div style={{fontSize: '0.7em'}}>
+
+| Tier | Examples | Best For | Tradeoff |
+|------|----------|----------|----------|
+| **Fast/Cheap** | GPT-5-nano, Claude Haiku, Gemini Flash | Simple completions, boilerplate, routine tasks | Low cost, fast, but limited reasoning |
+| **Balanced** | GPT-5.2-mini, Claude Sonnet | Most coding tasks, explanations, refactoring | Good balance of speed and capability |
+| **Frontier** | Claude Opus, GPT-5.2, Gemini Pro| Complex architecture, difficult bugs, novel problems | Highest capability, but slower and expensive |
+| **Tool-specific** | Cursor's composer-1, Copilot's internal models | Optimized for that tool's workflow | Tuned for speed in specific contexts |
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB'}}>
+<strong>Most tools offer "Auto" mode</strong> — the tool picks the right model for each task. This is often the right default.
+</p>
+
+<aside className="notes">
+**Why this matters:**
+- Different tasks need different models
+- Simple autocomplete? Fast model is fine
+- Architecture decision? You want frontier reasoning
+
+**"Auto" mode in modern tools:**
+- Cursor, Copilot, Claude Code all have auto-selection
+- Tool decides: simple completion → fast model, complex reasoning → frontier
+- This optimizes cost/quality automatically
+- Let the tool handle this unless you have a reason to override
+
+**When to override auto:**
+- Force frontier model for architecture decisions
+- Force fast model when you need quick iteration
+- Understanding tiers helps you make this call
+
+**The landscape changes fast:**
+- Today's frontier is tomorrow's baseline
+- The tiers matter more than specific model names
+- Focus on understanding the tradeoffs
+
+→ **Transition:** But the model is only half the equation—context determines output quality...
+</aside>
+
+</Slide>
+
+<Slide>
+
 ## Context Is Everything
 
 <Img
@@ -620,7 +666,7 @@ Based on <a href="https://arxiv.org/abs/2506.00202">research on Developer-AI col
 | Myth | Example | Reality |
 |------|---------|---------|
 | **Persona prompts improve output** | "You are a brilliant 10x engineer who..." | Models don't roleplay better code. Context and specificity matter, not flattery. |
-| **Politeness affects performance** | "Please" and "Thank you" | Models don't have feelings. Be clear, not polite. (Though it doesn't hurt!) |
+| **Politeness affects performance** | "Please" and "Thank you" | Doesn't affect the model—but polite, humble communication is a good habit for talking to humans! |
 | **Threats or stakes help** | "I'll lose my job if you get this wrong" | The model has no concept of your job. Just describe what you actually need. |
 | **More instructions = better** | 500-word system prompts | Often WORSE. Key details get lost. Be concise and specific. |
 | **Magic phrases always work** | "Think step by step" everywhere | Useful for reasoning, but tools have built this in better. See: Plan Mode. |
@@ -644,9 +690,10 @@ Based on <a href="https://arxiv.org/abs/2506.00202">research on Developer-AI col
 - What DOES help: "Generate lecture slides in this format: [example]"
 
 **Politeness:**
-- Won't hurt, but won't help either
-- The model isn't offended by terse prompts
-- Clarity beats courtesy
+- Won't affect model performance
+- But expressing yourself with humility and politeness IS a good habit
+- Same communication skills help when talking to humans
+- Think of it as practice for "winning friends" in professional settings
 
 **Threats/stakes:**
 - "This is for my thesis defense" doesn't make the model try harder
@@ -707,7 +754,62 @@ Based on <a href="https://arxiv.org/abs/2506.00202">research on Developer-AI col
 - Anything where "wrong direction" would be costly
 - NOT needed for: single-line fixes, simple refactors
 
-→ **Transition:** But you still need to evaluate—let's talk about that...
+→ **Transition:** But there's a deeper SE principle here...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## How Do You Know You're Done?
+
+<Img
+  src="/img/lectures/web/l13-definition-of-done2.webp"
+  prompt="A simple split comparison showing two workplace scenarios. LEFT SIDE: Intern brings laptop to supervisor's desk, speech bubble says 'I'm done!' Supervisor looks at screen, frowns, speech bubble says 'What about OAuth token refresh? And session timeout handling?' Intern looks deflated. RED tint suggesting failure. RIGHT SIDE: First, intern and supervisor at whiteboard together writing checklist: 'OAuth login', 'Token refresh', 'Session timeout', 'Error messages'. Then intern brings laptop to supervisor, speech bubble says 'All four criteria pass.' Supervisor nods approvingly, gives thumbs up. GREEN tint suggesting success. Style: Clean split comparison, 8-bit pixel art, no text captions above or below the scenes, just the speech bubbles and whiteboard content."
+  alt="Split comparison: Left - intern says 'I'm done!' but supervisor frowns asking 'What about OAuth token refresh?' Right - intern and supervisor agree on checklist first, then intern confidently reports 'All four criteria pass' and supervisor approves."
+/>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+Whether waterfall or Agile, SE techniques share one thing: <strong>agree on what "done" means before you start each piece of work.</strong>
+</p>
+
+<aside className="notes">
+**The intern/supervisor scenario:**
+- You're an intern, you finish a task, you bring it to your supervisor
+- "I'm done!" → Supervisor looks, frowns: "No... where's the error handling?"
+- You didn't know that was required. Now you have to redo the work.
+- This happens ALL THE TIME in professional settings
+- The fix: agree on what "done" means BEFORE you start
+
+**The SE principle:**
+- If you start making changes without knowing where you're going, how do you know when you arrive?
+- This is why we write specs (L4), define requirements (L9), create acceptance criteria
+- The same principle applies to AI-assisted work AND to working with humans
+
+**Without a definition of done:**
+- "Make it better" → but better how? Better for whom?
+- Endless tweaking with no exit condition
+- "I'll know it when I see it" rarely works in practice
+- You waste time and never feel confident in the result
+
+**With a definition of done:**
+- Clear success criteria BEFORE you start prompting (or coding)
+- Each output can be checked against the criteria
+- You know exactly when to stop
+- The plan you approved in Plan Mode IS your definition of done
+
+**Connection to CS4530:**
+- This is an essential skill you'll practice more deeply in CS4530
+- Agile "Definition of Done", acceptance criteria, user stories
+- Start building this habit now—with AI, with supervisors, with yourself
+
+**Practical application:**
+- Before starting ANY work, write down: "I'll know this is done when..."
+- Use that as your evaluation checklist
+- Plan Mode makes this explicit for AI work
+- Asking your supervisor "what does done look like?" makes it explicit for human work
+
+→ **Transition:** Now let's talk about evaluation itself...
 </aside>
 
 </Slide>
@@ -843,7 +945,54 @@ The goal: AI accelerates initial generation, but YOU make the final decisions.
 
 **Key insight:** The ability to EVALUATE output determines appropriateness.
 
-→ **Transition:** What happens when you use AI without the ability to evaluate?
+→ **Transition:** But there's another dimension to consider...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## How Hard Is It to Evaluate?
+
+<Img
+  src="/img/lectures/web/l13-evaluation-difficulty2.webp"
+  prompt="A horizontal spectrum showing tasks from easy to hard to evaluate. LEFT (GREEN) - 'Easy to Evaluate': Examples with clear yes/no answers. 'Does the script run and download the course schedule?' with a simple checkmark/X. 'Does it compile?' Binary outcome. 'Does the test pass?' Clear result. Icon: simple checkbox. CENTER (YELLOW) - 'Medium Difficulty': 'Is the code readable?' - needs human judgment but can assess relatively quickly. 'Does it follow our style guide?' - checkable but requires expertise. Icon: magnifying glass. RIGHT (RED) - 'Hard to Evaluate': 'Does the quiz have confusing questions?' - annotation: 'Give it to 100 students and find out...' 'Is this architecture scalable?' - annotation: 'Wait 6 months and see...' 'Will users find this intuitive?' - annotation: 'Ship it and measure...' Icon: crystal ball with question mark. BOTTOM INSIGHT BOX: 'AI can help you GENERATE for any of these tasks. But for hard-to-evaluate outcomes, don't rely on AI to EVALUATE. You need external validation: user testing, expert review, time in production.' Arrow showing: AI helps generate → YOU (or users/time) must evaluate. Style: Clean horizontal spectrum, traffic light colors, clear examples at each point."
+  alt="Horizontal spectrum from easy to hard evaluation. Easy (green): Does it run? Does it compile? Medium (yellow): Is code readable? Hard (red): Are quiz questions confusing? (give to 100 students), Is architecture scalable? (wait 6 months). Key insight: AI can generate for any task, but hard evaluations need external validation."
+/>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+AI can help you <strong>generate</strong> for any task. But don't rely on AI to <strong>evaluate</strong> hard-to-evaluate outcomes.
+</p>
+
+<aside className="notes">
+**The evaluation difficulty dimension:**
+- Task familiarity tells you IF you can evaluate
+- Evaluation difficulty tells you HOW HARD it is to evaluate
+- Both matter for deciding how to use AI
+
+**Easy to evaluate (use AI freely):**
+- Does the script run? (Yes/No)
+- Does it compile? (Yes/No)
+- Does the test pass? (Yes/No)
+- You can verify immediately
+
+**Hard to evaluate (use AI carefully):**
+- Does the quiz have confusing questions? → Give it to 100 students
+- Is this architecture scalable? → Wait 6 months in production
+- Will users find this intuitive? → Ship and measure
+
+**The key nuance:**
+- This DOESN'T mean "don't use AI" for hard-to-evaluate tasks
+- You CAN use AI to generate quiz drafts, explore architectures, prototype UIs
+- But don't trust AI's judgment on the OUTCOME
+- "This quiz looks clear to me" ≠ "Students won't find it confusing"
+
+**What to do for hard-to-evaluate tasks:**
+- Use AI to generate options quickly
+- Get external validation: user testing, expert review, stakeholder feedback
+- Accept that some evaluations take time
+
+→ **Transition:** Let's test your evaluation intuition...
 </aside>
 
 </Slide>
@@ -913,6 +1062,7 @@ If AI generates a sorting algorithm and you don't know any sorting algorithms, h
 1. **You can't evaluate the output** — You're not sure if the code is correct or why it works
 2. **You can't calibrate effectively** — Repeated attempts don't move toward your goal
 3. **You're describing symptoms, not problems** — "It's broken" instead of "The recursion doesn't terminate"
+4. **You're repeating without progress** — 3-4 variations of the same request aren't getting closer to what you need
 
 </div>
 
@@ -944,6 +1094,13 @@ If AI generates a sorting algorithm and you don't know any sorting algorithms, h
 - "It's slow" vs "The nested loops create O(n²) complexity"
 - If you can only describe symptoms, you can't guide AI
 
+**Repeating without progress:**
+- You've tried 3-4 different phrasings of the same request
+- Each attempt isn't getting closer to what you need
+- This might mean: there's no right answer to give
+- Tools behave differently with false negatives vs false positives
+- Sometimes the task isn't well-suited for AI—reformulate your approach
+
 **Connection to L9:**
 - Remember requirements elicitation?
 - Same skills apply—if you don't understand the domain, go learn it
@@ -963,11 +1120,27 @@ If AI generates a sorting algorithm and you don't know any sorting algorithms, h
   alt="Two parallel paths comparison: 'Learning First' shows slow steady progress building strong foundation. 'AI First' shows rapid initial progress then collapse when hitting complex bugs. A graph shows Path A (learning first) eventually surpassing Path B (AI first) in long-term productivity."
 />
 
+<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
+<strong>The goal isn't to avoid AI</strong> — it's to use it in ways that support learning rather than replace it.
+</p>
+
 <aside className="notes">
+**The car analogy:**
+- When you get in a car, you should know you could crash
+- Does that mean you don't drive? No!
+- You learn to drive safely, understand the risks, and make informed choices
+- Same with AI: the goal isn't avoidance, it's informed, skillful use
+
 **The learning debt concept:**
 - Like technical debt, but for YOUR knowledge
 - Functional code masks gaps in understanding
 - Works until you hit something that requires real expertise
+
+**There are ways to use AI that support learning vs. replace it:**
+- SUPPORT: Use AI to explain concepts after you've tried manually
+- SUPPORT: Use AI to generate variations after you understand the pattern
+- REPLACE: Use AI to skip understanding entirely
+- REPLACE: Copy-paste without reading the code
 
 **Path A - Learning First:**
 - Slower at first—manual work, mistakes, frustration
@@ -1131,6 +1304,10 @@ Connection to L4: This is like writing a spec. What does the reader (AI) need to
 
 ## Step 2: Engage with Context-Rich Prompt
 
+<p style={{fontSize: '0.8em', fontStyle: 'italic', color: '#666', marginBottom: '0.5em'}}>
+This isn't a magic formula—it's showing what effective prompts have in common: context, constraints, and clear success criteria.
+</p>
+
 <div style={{fontSize: '0.7em', backgroundColor: 'rgba(147, 112, 219, 0.1)', padding: '0.5em', borderRadius: '8px'}}>
 
 ```
@@ -1154,6 +1331,11 @@ mermaid class diagrams, including pros/cons for each.
 </div>
 
 <aside className="notes">
+**This is NOT a magic prompt formula:**
+- The specific format doesn't matter
+- What matters: context, constraints, clear success criteria
+- This example shows what success LOOKS LIKE, not a template to copy
+
 **Notice the structure:**
 - Context: What project, what phase
 - Domain: Specific concepts with details
@@ -1163,7 +1345,7 @@ mermaid class diagrams, including pros/cons for each.
 **What makes this effective:**
 - Tells AI WHAT we want, not HOW to do it (like a good spec!)
 - Provides enough domain context
-- States evaluation criteria
+- States evaluation criteria (how will we judge the output?)
 - Requests specific, usable artifacts
 
 **What to expect:**
@@ -1271,65 +1453,6 @@ Calibration is a <strong>conversation</strong>—guide AI toward better solution
 
 <Slide>
 
-## Sidebar: What Can Tools Actually Find?
-
-<Img
-  src="/img/lectures/web/l13-context-frontier.webp"
-  prompt="Concept: 'The Context Discovery Frontier'. Three concentric rings diagram showing where context lives and whether AI tools can find it. INNER RING (solid green, labeled 'Your Codebase'): Icons for code files, type definitions, test files, call graphs. Fully accessible. Label: 'Tools explore this fully'. MIDDLE RING (dashed yellow border, labeled 'Connected Systems'): Icons for issue tracker tickets, team wiki pages, chat threads, build/CI logs. Arrows showing the boundary EXPANDING outward. Label: 'The expanding frontier - standardized connectors (MCP) are opening this up'. Some connectors shown as plugs linking to the inner ring. OUTER RING (red, labeled 'Human Knowledge'): Icons for thought bubbles, meeting notes, rejected ideas crossed out, verbal conversations. Label: 'Only findable if you document it'. A KEY INSIGHT arrow from outer ring pointing inward with text: 'Document it → it moves inward'. Shows a design doc being written and then appearing in the middle ring. BOTTOM annotation: 'The more you write down, the more tools can discover.' Style: Clean concentric ring diagram, traffic light colors (green inner, yellow middle, red outer), clear iconography, expanding/dynamic feel for the middle ring."
-  alt="Three concentric rings showing context discovery: Inner green ring (codebase) is fully searchable. Middle yellow ring (connected systems like issue trackers, wikis) is the expanding frontier as tools gain standardized connectors. Outer red ring (human knowledge) requires documentation to become findable. Arrow shows: document it and it moves inward."
-/>
-
-<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
-<strong>Key insight:</strong> The more you document, the more tools can find. Design docs turn human knowledge into discoverable context.
-</p>
-
-<aside className="notes">
-**The three layers of context:**
-
-**1. Your Codebase (inner ring - tools find this easily):**
-- Static analysis indexes everything
-- Types, call graphs, test files, usage patterns
-- This is what we talked about earlier with Cursor's @codebase
-- Already solved—tools are great at this
-
-**2. Connected Systems (middle ring - the expanding frontier):**
-- Issue trackers, team wikis, chat history, CI/CD logs
-- Historically: you had to copy-paste from these into your prompt
-- What's changing: standardized protocols (like MCP) let tools connect directly
-- Your AI assistant can now: read the issue ticket, check why the build failed, pull relevant wiki pages
-- This boundary is moving outward rapidly
-
-**3. Human Knowledge (outer ring - still requires you):**
-- Why you rejected alternative X
-- What the stakeholder said in that meeting
-- The security concern your teammate mentioned at lunch
-- Tacit knowledge that only exists in your head
-- Tools can't find what was never written down
-
-**The key insight for students:**
-- Documentation isn't just for humans anymore
-- It's how you make context FINDABLE for tools
-- A design decision you don't document is invisible to AI
-- This connects to why we'll spend time on Architecture Decision Records later
-
-**Forward reference to architecture lectures:**
-- "We'll talk more about this when we cover software architecture"
-- ADRs (Architecture Decision Records) capture the WHY
-- Design docs capture rejected alternatives
-- These aren't bureaucracy—they're context infrastructure
-
-**Connection to earlier slides:**
-- "Modern Tools Change the Game" said tools can't find requirements not in code
-- This slide explains WHERE that context lives and how to make it findable
-- The solution isn't better prompting—it's better documentation
-
-→ **Transition:** Back to our demo workflow...
-</aside>
-
-</Slide>
-
-<Slide>
-
 ## Steps 5-6: Tweak and Finalize
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em'}}>
@@ -1344,6 +1467,11 @@ Manual refinements after AI generation:
 - Edge cases: Add handling AI missed
 - Comments: Explain WHY, not just WHAT
 - Style: Adjust to team standards
+
+**How do you know you're done?**
+- It meets your plan/spec criteria
+- It passes your tests
+- You can explain every decision
 
 </div>
 
@@ -1371,6 +1499,12 @@ The goal isn't AI-generated code. It's code YOU understand and can maintain.
 - AI output is rarely perfect
 - This is EXPECTED, not a failure
 - Your tweaks add the domain knowledge AI lacks
+
+**How do you know you're done tweaking?**
+- Connect back to your definition of done (from Plan Mode)
+- Check against the success criteria in your original prompt
+- Apply the Documentation Test: can you justify it? will you understand in 6 months?
+- Tweaking ends when: it meets the spec, passes tests, and you can explain every decision
 
 **Finalize is often skipped but critical:**
 - Document what you decided
