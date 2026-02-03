@@ -15,8 +15,6 @@ import QuoteSlide from '@site/src/components/QuoteSlide';
 {/* COVER IMAGE */}
 {/* ============================================ */}
 
-{/* TODO: DEFINE BUSINESS LOGIC */}
-
 <Slide>
   <Img
     src="/img/lectures/web/l12.png"
@@ -402,7 +400,11 @@ public class Submission {
 
 </div>
 
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+<p style={{fontSize: '0.8em', marginTop: '0.75em', backgroundColor: 'rgba(147, 112, 219, 0.15)', padding: '0.5em', borderRadius: '6px'}}>
+<strong>Business logic</strong>: the rules, workflows, and decisions that define how a domain actually operates—independent of how we store or display data.
+</p>
+
+<p style={{fontSize: '0.85em', marginTop: '0.75em'}}>
 When code uses the same concepts, relationships, and vocabulary as the problem domain, it becomes easier to:
 </p>
 
@@ -414,6 +416,11 @@ When code uses the same concepts, relationships, and vocabulary as the problem d
 </ul>
 
 <aside className="notes">
+**Defining "business logic":**
+- This is likely a new term for students—pause to make sure they absorb it
+- Business logic = the rules specific to THIS domain (grading, not storage)
+- Contrast: "save to file" is NOT business logic; "grader can't review their own work" IS
+
 **The benefits:**
 - Navigate: "Where's the regrade logic?" → look in RegradeRequest
 - Predict: "How do we handle deadlines?" → probably in Assignment or Submission
