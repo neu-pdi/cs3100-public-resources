@@ -932,80 +932,7 @@ RegradeRequest example
 </div>
 </Slide>
 
-<Slide>
 
-## Lifecycle State Diagram
-```mermaid
-stateDiagram-v2
-
-    [*] --> Submitted
-    Submitted --> UnderReview : grader begins review
-    UnderReview --> Resolved : grader decides
-    Resolved --> Escalated : student appeals
-    Escalated --> UnderReview : next level reviews
-    Resolved --> Closed : accepted or timeout
-    Escalated --> Closed : instructor decides (final)
-    Closed --> [*]
-    ```
-
-<aside className="notes">
-Not shown is data attached to the states, such as the current level of review.
-</aside>
-</Slide>
-
-<Slide>
-
-## History Matters When the Domain Cares About the Past
-
-<p style={{fontSize: '0.85em'}}>
-Some domains care about history. Model it explicitly:
-</p>
-
-```java
-// If only current state matters:
-class Submission {
-    Grade currentGrade;
-}
-
-// If history matters (audit, undo, analytics):
-class Submission {
-    List<GradingSession> gradingSessions;  // All grading attempts
-    List<Submission> previousVersions;      // If student resubmitted
-
-    GradingSession getActiveGrading() {
-        return gradingSessions.stream()
-            .filter(s -> s.getStatus() == GradingStatus.IN_PROGRESS)
-            .findFirst().orElse(null);
-    }
-}
-```
-
-<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
-**Capture history when:** you need audit trails, undo, analytics, or versioning.
-</p>
-
-<aside className="notes">
-**When to add temporal modeling:**
-- "Track all grading actions" → audit log
-- "What grade did they have before?" → version history
-- "How long does grading take?" → timestamps
-
-**Connection to L6 (Immutability):**
-- Events are naturally immutable—a `GradingEvent` happened and can't un-happen
-- L6 taught us: immutable objects are safer, simpler to reason about
-- Audit logs are *collections of immutable events*—perfect fit
-
-**Connection to L5 (Records):**
-- Java records (L5) are ideal for immutable event types
-- `record GradeChangedEvent(Submission sub, Grade oldGrade, Grade newGrade, Instant when) {}`
-- Immutable by default, equals/hashCode for free
-
-**The tradeoff:** More complex, more storage—but essential when history matters.
-
-→ **Transition:** One more technique...
-</aside>
-
-</Slide>
 
 <Slide>
 
@@ -1283,14 +1210,6 @@ Hide the results at first, then share and discuss the results.
 
 </Slide>
 
-<Slide>
- ### Draw Classes and Relationships
-
-<aside className="notes">
-Use a whiteboard or software to draw out classes that students chose
-and show relationships.
-</aside>
-</Slide>
 
 <Slide>
 
@@ -1329,49 +1248,6 @@ direction LR
 
 </Slide>
 
-<Slide>
-
-### Another Possible Domain Model
-
-```mermaid
-classDiagram
-    class Patron {
-        name: String
-        email: String
-    }
-
-    class Book {
-        title: String
-        author: String
-    }
-
-    class Copy {
-        barcode: String
-        status: CopyStatus
-    }
-
-    class Hold {
-        requestedAt: DateTime
-        notifiedAt: DateTime
-        status: HoldStatus
-    }
-
-    class HoldQueue {
-        getNextHold()
-        addHold(Hold)
-        removeHold(Hold)
-    }
-
-    Book "1" <--> "*" Copy : has
-    Book "1" --> "1" HoldQueue : has
-    HoldQueue "1" --> "*" Hold : contains
-    Book "1" <--> "*" Hold : has
-    Patron "1" --> "*" Hold : places
-    Copy --> Hold : fulfills
-```
-
-
-</Slide>
 
 {/* ============================================ */}
 {/* ARC 4: TRANSLATING TO OO DESIGN */}
@@ -1876,110 +1752,6 @@ Hold must extract data from Patron to answer the question. Patron already has it
 </aside>
 
 </Slide>
-<Slide>
-
-## Poll: Who should check if a hold is expired?
-
-<div style={{display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1em', alignItems: 'center'}}>
-
-<div>
-```mermaid
-classDiagram
-    class Patron {
-        name: String
-        activeHolds: List~Hold~
-    }
-    class Book {
-        title: String
-        copies: List~Copy~
-    }
-    class Copy {
-        barcode: String
-        status: CopyStatus
-    }
-    class Hold {
-        status: HoldStatus
-        notifiedAt: DateTime
-    }
-    Patron "1" <--> "*" Hold : has
-    Book "1" <--> "*" Hold : has
-    Book "1" <--> "*" Copy : has
-```
-
-</div>
-
-<div>
-
-**A.** Book
-
-**B.** Copy
-
-**C.** Hold
-
-**D.** Patron
-
-</div>
-
-</div>
-
-<aside className="notes">
-**Answer: C (Hold).** Hold has the data needed (notifiedAt and status), so Hold is the Information Expert for whether it's expired.
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Checking if a Hold is Expired
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em'}}>
-
-<div>
-
-**In Hold (has the data):**
-```java
-class Hold {
-  private HoldStatus status;
-  private Instant notifiedAt;
-
-  boolean isExpired() {
-    return status == HoldStatus.READY
-        && daysBetween(notifiedAt, now()) > 7;
-  }
-}
-```
-
-</div>
-
-<div>
-
-**In Book (doesn't have the data):**
-```java
-class Book {
-  private List<Hold> holds;
-
-  boolean isHoldExpired(Hold hold) {
-    HoldStatus status = hold.getStatus();
-    Instant notified = hold.getNotifiedAt();
-    return status == HoldStatus.READY
-        && daysBetween(notified, now()) > 7;
-  }
-}
-```
-
-</div>
-
-</div>
-
-<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#9370DB'}}>
-Book must extract data from Hold to answer the question.<br/>Hold already has it.
-</p>
-
-<aside className="notes">
-**Key point:** The logic is identical, but Book has to pull status and notifiedAt out of Hold. When you're extracting data just to make a decision, the decision belongs in the class that has the data.
-</aside>
-
-</Slide>
 
 <Slide>
 
@@ -2100,57 +1872,6 @@ Controller coordinates. Domain objects own business rules.
 
 </Slide>
 
-<Slide>
-
-## Controllers vs. Services
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.75em', marginTop: '0.5em'}}>
-
-<div style={{backgroundColor: 'rgba(147, 112, 219, 0.1)', padding: '0.75em', borderRadius: '8px'}}>
-
-**Controller**
-
-- Handles external requests (HTTP, UI events)
-- Knows about request/response formats (JSON, HTML)
-- Authenticates and authorizes
-- Exists at the system boundary
-
-</div>
-
-<div style={{backgroundColor: 'rgba(100, 200, 150, 0.1)', padding: '0.75em', borderRadius: '8px'}}>
-
-**Service**
-
-- Coordinates internal operations
-- Knows nothing about HTTP or UI
-- Assumes caller is already authorized
-- Exists inside the system
-- One per business capability
-
-</div>
-
-</div>
-
-<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB'}}>
-A controller might call a service, but a service should never call a controller.
-</p>
-
-<aside className="notes">
-**The layering:**
-- Controller → Service → Domain Objects
-- Each layer only talks to the one below it
-
-**Example flow:**
-1. HoldController receives POST /holds
-2. Controller authenticates patron, extracts bookId
-3. Controller calls HoldService.placeHold(patron, book)
-4. Service coordinates: checks patron.canPlaceHold(), creates Hold, sends notification
-5. Controller formats Hold as JSON and returns response
-
-**Why separate them?** Services can be reused (CLI, batch jobs, tests) without going through HTTP. Controllers are tied to one interface.
-</aside>
-
-</Slide>
 
 <Slide>
 
@@ -2181,23 +1902,6 @@ flowchart TB
 
 </Slide>
 
-<Slide>
-
-## Remember the Single Responsibility Principle
-
-<Img src="/img/lectures/web/l12-single-responsibility-principle.webp"
-    alt="Colorful drawing labeled 'Single Responsible Principle.
-    On the left are a wooden spoon, whisk, spatula, and knife.
-    On the right is a spork with a frowny face.
-    Author: Lara Schenck @larasx"
-/>
-{/* Image source: https://notlaura.com/writing-css-algorithms/ */}
-
-<aside className="notes">
-This slide serves as a transition.
-</aside>
-
-</Slide>
 
 <Slide className="small-code">
 
@@ -2332,42 +2036,6 @@ Visual style:
 
 </Slide>
 
-<Slide>
-
-## JSON: JavaScript Object Notation
-
-<div style={{fontSize: '0.85em'}}>
-
-A lightweight text format for representing structured data:
-</div>
-
-```json
-{
-  "name": "Alice Chen",
-  "email": "chen.a@university.edu",
-  "submissions": [
-    {
-      "assignment": "Homework 3",
-      "submittedAt": "2025-01-28T23:45:00",
-      "status": "GRADED"
-    },
-    { ... }
-  ]
-}
-```
-<div style={{fontSize: '0.75em'}}>
-**Serialization:** converting an object to JSON text (to save or send)
-
-**Deserialization:** converting JSON text back to an object (to load or receive)
-
-**Common uses:** saving to files, databases, sending over networks (APIs)
-</div>
-
-<aside className="notes">
-First, some background...
-</aside>
-
-</Slide>
 
 <Slide>
 
@@ -2458,9 +2126,6 @@ class Grader {
 
 ## Rich Domain Models Keep Business Logic Close to Data
 
-<p style={{fontSize: '0.9em', color: '#9370DB', fontWeight: 'bold'}}>
-Rich Domain Model
-</p>
 
 <p style={{fontSize: '0.8em'}}>
 Put behavior in domain classes, not just data:
@@ -2730,20 +2395,6 @@ A seemingly trivial decision—"16 bits should be plenty"—became an existentia
 
 </Slide>
 
-<Slide>
-## 16-bit Overflow
-    <Img src="/img/lectures/web/l12-overflow-xkcd.png"
-    alt="XKCD cartoon with four frames containing a stick figure trying to sleep.
-    In frame 1, a thought bubble shows him imagining sheep leaping over a fence, with a count 1...2...
-    In frame 2, the count has gotten to 1,306...1,307...
-    In frame 3, the sheep are leaping in the other direction, and the count shows 32,767...-32,768...
-    In frame 4, the count continues -32,767...-32,766.
-    "
-    />
-<p style={{fontSize: '0.6em', color: '#666', textAlign: 'center'}}>
-  Source: <a href="https://xkcd.com/571/">xkcd.com/571</a> by Randall Munroe (CC BY-NC 2.5)
-</p>
-</Slide>
 
 {/* ============================================ */}
 {/* KEY TAKEAWAYS - CONNECTING TO PRIOR PRINCIPLES */}
