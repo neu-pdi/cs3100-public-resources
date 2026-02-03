@@ -72,7 +72,7 @@ import PollSlide from '@site/src/components/PollSlide';
 ## Lecture 13: AI Coding Assistants
 
 <p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
-  ©2025 Jonathan Bell, CC-BY-SA
+  ©2026 Jonathan Bell, CC-BY-SA
 </p>
 
 <aside className="notes">
@@ -177,8 +177,8 @@ LLMs predict the next token based on patterns learned from training data. That's
 | Tier | Examples | Best For | Tradeoff |
 |------|----------|----------|----------|
 | **Fast/Cheap** | GPT-5-nano, Claude Haiku, Gemini Flash | Simple completions, boilerplate, routine tasks | Low cost, fast, but limited reasoning |
-| **Balanced** | GPT-5.2-mini, Claude Sonnet | Most coding tasks, explanations, refactoring | Good balance of speed and capability |
-| **Frontier** | Claude Opus, GPT-5.2, Gemini Pro| Complex architecture, difficult bugs, novel problems | Highest capability, but slower and expensive |
+| **Balanced** | GPT-5-mini, Claude Sonnet | Most coding tasks, explanations, refactoring | Good balance of speed and capability |
+| **Frontier** | Claude Opus, GPT-5-mini, Gemini Pro| Complex architecture, difficult bugs, novel problems | Highest capability, but slower and expensive |
 | **Tool-specific** | Cursor's composer-1, Copilot's internal models | Optimized for that tool's workflow | Tuned for speed in specific contexts |
 
 </div>
@@ -187,7 +187,19 @@ LLMs predict the next token based on patterns learned from training data. That's
 <strong>Most tools offer "Auto" mode</strong> — the tool picks the right model for each task. This is often the right default.
 </p>
 
+<p style={{fontSize: '0.75em', marginTop: '0.5em', color: '#666'}}>
+Pricing is usually per million tokens (input and output priced separately). Fast models: ~\$0.10-0.50/M tokens. Frontier: ~\$5-75/M tokens. Output tokens cost more than input.
+</p>
+
 <aside className="notes">
+**Pricing basics:**
+- Models charge per million tokens (roughly ~750K words per million tokens)
+- Input tokens (your prompt + context) and output tokens (model's response) priced separately
+- Output tokens typically cost 2-5x more than input tokens
+- Fast models: fractions of a cent per request
+- Frontier models: can be dollars per long conversation
+- This is why "auto" mode matters—no need to pay frontier prices for simple completions
+
 **Why this matters:**
 - Different tasks need different models
 - Simple autocomplete? Fast model is fine
