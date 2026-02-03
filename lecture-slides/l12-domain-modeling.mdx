@@ -434,14 +434,38 @@ When code uses the same concepts, relationships, and vocabulary as the problem d
 
 <Slide>
 
-## Keep Your Reader In Mind
+## Code Is For Humans First
 
-<QuoteSlide quote="Any fool can write code that a computer can understand. Good programmers write code that humans can understand."
- imageSrc='/img/lectures/web/l12-martin-fowler.png'
- author="Martin Fowler"
- credit="Image credit: Webysther Nunes CC-BY-SA 4.0"/>
+<Img
+  src="/img/lectures/web/l12-sicp-wizard3.webp"
+  prompt="A medieval scholar in robes teaching a young student. The scholar gestures while explaining something important. A speech scroll above reads: 'Programs are meant to be read by humans and only incidentally for computers to execute.'
 
-{/* Image source: https://commons.wikimedia.org/wiki/File:Webysther_20150414193208_-_Martin_Fowler.jpg*/}
+In the corner, a small brass clockwork automaton labeled 'Cy D. Fect' waits to perform tasks. The student wears a badge reading 'Ben Bitdiddle'.
+
+A glowing Greek letter lambda (λ) floats in the background.
+
+Style: Detailed pen-and-ink illustration with crosshatching, like a woodcut from an old manuscript. Warm sepia and gold tones. Medieval scholarly aesthetic - think illuminated manuscripts meets alchemy."
+  alt="SICP-style illustration: A wizard conjures readable code ('Student', 'Submission', 'GradingSession') while apprentices watch and understand. A small automaton waits passively. A lambda symbol glows in the background. Banner reads: 'Written for people to read.'"
+/>
+
+<p style={{fontSize: '0.85em', fontStyle: 'italic', textAlign: 'center', marginTop: '0.5em'}}>
+"Programs must be written for people to read, and only incidentally for machines to execute."
+<br/><span style={{fontSize: '0.8em'}}>— Harold Abelson & Gerald Sussman, <em>Structure and Interpretation of Computer Programs</em>, 1984</span>
+</p>
+
+<aside className="notes">
+**The SICP philosophy:**
+- This quote opens one of the most influential CS textbooks ever written
+- The wizard imagery from SICP treats programming as a form of "magic" - but magic that must be *understood*
+- A spell that only the machine understands is useless to the next wizard who maintains it
+
+**Connection to domain modeling:**
+- Domain modeling is how we make the "spell" readable
+- The domain concepts (Student, Submission, GradingSession) are the words humans understand
+- The machine doesn't care what we call things - but our fellow programmers do
+
+**Transition:** But here's the challenge - different people use the same words differently...
+</aside>
 </Slide>
 
 <Slide>
