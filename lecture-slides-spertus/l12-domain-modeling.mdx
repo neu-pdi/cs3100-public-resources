@@ -1686,7 +1686,7 @@ class Copy {
 </div>
 
 <p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#9370DB'}}>
-Copy must reach into Book's internal list.<br/>Book can manage its own collection.
+Book can manage its own collection.<br/>Copy must reach into Book's internal list.
 </p>
 
 <aside className="notes">
@@ -1695,115 +1695,6 @@ Copy must reach into Book's internal list.<br/>Book can manage its own collectio
 
 </Slide>
 
-<Slide>
-
-## Poll: Who should check if a patron can place a hold?
-
-<div style={{display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1em', alignItems: 'center'}}>
-
-<div>
-```mermaid
-classDiagram
-    class Patron {
-        name: String
-        activeHolds: List~Hold~
-    }
-    class Book {
-        title: String
-    }
-    class Copy {
-        barcode: String
-        status: CopyStatus
-    }
-    class Hold {
-        status: HoldStatus
-    }
-    Patron "1" <--> "*" Hold : has
-    Book "1" <--> "*" Hold : has
-    Book "1" <--> "*" Copy : has
-```
-
-</div>
-
-<div style={{fontSize: '1.0em'}}>
-
-**A.** Book
-
-**B.** Copy
-
-**C.** Hold
-
-**D.** Patron
-
-</div>
-
-</div>
-Heuristic: Assign responsibility to the class that has the information needed to fulfill it.
-
-<aside className="notes">
-**Answer: D (Patron).** Patron has the data needed (their activeHolds list), so Patron is the Information Expert for questions about their own holds.
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Checking if a Patron Can Place a Hold
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em'}}>
-
-<div>
-
-**In Patron (has the data):**
-```java
-class Patron {
-  private List<Hold> activeHolds;
-
-  boolean canPlaceHold(Book book) {
-    if (activeHolds.size() >= 10) return false;
-    for (Hold h : activeHolds) {
-      if (h.getBook().equals(book)) return false;
-    }
-    return true;
-  }
-}
-```
-
-</div>
-
-<div>
-
-**In Hold (doesn't have the data):**
-```java
-class Hold {
-  private HoldStatus status;
-
-  boolean canPatronPlaceHold(Patron p, Book b) {
-    // I don't know about other holds!
-    // Need to ask Patron for their list
-    List<Hold> holds = p.getActiveHolds();
-    if (holds.size() >= 10) return false;
-    for (Hold h : holds) {
-      if (h.getBook().equals(b)) return false;
-    }
-    return true;
-  }
-}
-```
-
-</div>
-
-</div>
-
-<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#9370DB'}}>
-Hold must extract data from Patron to answer the question. Patron already has it.
-</p>
-
-<aside className="notes">
-**Key point:** The code is almost identical, but Hold has to reach into Patron to get the data. This is a sign the responsibility is in the wrong place. When you find yourself extracting data from another object to make a decision, ask: should that object make the decision instead?
-</aside>
-
-</Slide>
 <Slide>
 
 ## Poll: Who should check if a hold is expired?
@@ -2004,12 +1895,13 @@ void escalate(RegradeRequest request) {
   regradeService.escalateRequest(request);
 }
 ```
+
+</div>
+
+</div>
+<p style={{fontSize: '0.9em'}}>
 Controller coordinates. Domain objects own business rules.
-
-</div>
-
-</div>
-
+</p>
 <aside className="notes">
 **The contrast:**
 - Left: Controller is full of business logic, hard to test
@@ -2076,13 +1968,54 @@ A controller might call a service, but a service should never call a controller.
 5. Controller formats Hold as JSON and returns response
 
 **Why separate them?** Services can be reused (CLI, batch jobs, tests) without going through HTTP. Controllers are tied to one interface.
+
+**Transition:** Since I mentioned JSON, I should define it...
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Example: Escalating a Regrade Request
+## JSON: JavaScript Object Notation
+
+<div style={{fontSize: '0.85em'}}>
+
+A lightweight text format for representing structured data:
+</div>
+
+```json
+{
+  "name": "Alice Chen",
+  "email": "chen.a@university.edu",
+  "submissions": [
+    {
+      "assignment": "Homework 3",
+      "submittedAt": "2025-01-28T23:45:00",
+      "status": "GRADED"
+    },
+    { ... }
+  ]
+}
+```
+<div style={{fontSize: '0.75em'}}>
+**Serialization:** converting an object to JSON text (to save or send)
+
+**Deserialization:** converting JSON text back to an object (to load or receive)
+
+**Common uses:** saving to files, databases, sending over networks (APIs)
+</div>
+
+<aside className="notes">
+First, some background...
+
+**Transition:** Now let's look at a controller.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Controller Example: Escalating a Regrade Request
 ```mermaid
 flowchart TB
     GUI[GUI] -->|"student clicks 'Escalate'"| Controller[RegradeController]
@@ -2189,7 +2122,8 @@ public class RegradeController {
 ## Poll: Where Should This Logic Live?
 
 <p style={{fontSize: '0.85em'}}>
-"Check if a student has exceeded their maximum regrade requests for the semester"
+What class should check if a student has exceeded their maximum regrade requests
+for the semester?
 </p>
 
 <PollSlide
@@ -2258,43 +2192,6 @@ Visual style:
 - Smaller, well-contained gap = easier to change technical infrastructure
 
 → **Transition:** Let's see where gaps come from...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## JSON: JavaScript Object Notation
-
-<div style={{fontSize: '0.85em'}}>
-
-A lightweight text format for representing structured data:
-</div>
-
-```json
-{
-  "name": "Alice Chen",
-  "email": "chen.a@university.edu",
-  "submissions": [
-    {
-      "assignment": "Homework 3",
-      "submittedAt": "2025-01-28T23:45:00",
-      "status": "GRADED"
-    },
-    { ... }
-  ]
-}
-```
-<div style={{fontSize: '0.75em'}}>
-**Serialization:** converting an object to JSON text (to save or send)
-
-**Deserialization:** converting JSON text back to an object (to load or receive)
-
-**Common uses:** saving to files, databases, sending over networks (APIs)
-</div>
-
-<aside className="notes">
-First, some background...
 </aside>
 
 </Slide>
@@ -2387,10 +2284,6 @@ class Grader {
 <Slide>
 
 ## Rich Domain Models Keep Business Logic Close to Data
-
-<p style={{fontSize: '0.9em', color: '#9370DB', fontWeight: 'bold'}}>
-Rich Domain Model
-</p>
 
 <p style={{fontSize: '0.8em'}}>
 Put behavior in domain classes, not just data:
@@ -2660,20 +2553,7 @@ A seemingly trivial decision—"16 bits should be plenty"—became an existentia
 
 </Slide>
 
-<Slide>
-## 16-bit Overflow
-    <Img src="/img/lectures/web/l12-overflow-xkcd.png"
-    alt="XKCD cartoon with four frames containing a stick figure trying to sleep.
-    In frame 1, a thought bubble shows him imagining sheep leaping over a fence, with a count 1...2...
-    In frame 2, the count has gotten to 1,306...1,307...
-    In frame 3, the sheep are leaping in the other direction, and the count shows 32,767...-32,768...
-    In frame 4, the count continues -32,767...-32,766.
-    "
-    />
-<p style={{fontSize: '0.6em', color: '#666', textAlign: 'center'}}>
-  Source: <a href="https://xkcd.com/571/">xkcd.com/571</a> by Randall Munroe (CC BY-NC 2.5)
-</p>
-</Slide>
+
 
 {/* ============================================ */}
 {/* KEY TAKEAWAYS - CONNECTING TO PRIOR PRINCIPLES */}
@@ -2749,6 +2629,14 @@ Good OO design creates code that reflects human understanding of the problem—n
 
 <Slide>
 
+## Saving Time
+
+<Img src="/img/lectures/web/l12-weeks-of-coding-save-hours-of-designing.jpg" alt="Humorous image about the importance of design: 'Weeks of coding can save you hours of designing'" />
+
+</Slide>
+
+<Slide>
+
 ## Looking Ahead
 
 <p style={{fontSize: '0.9em'}}>
@@ -2786,11 +2674,19 @@ Domain modeling connects to many upcoming topics:
 </Slide>
 
 <Slide>
-
 ## Bonus Slide
-
-<Img src="/img/lectures/web/l12-weeks-of-coding-save-hours-of-designing.jpg" alt="Humorous image about the importance of design: 'Weeks of coding can save you hours of designing'" />
-
+    <Img src="/img/lectures/web/l12-overflow-xkcd.png"
+    alt="XKCD cartoon with four frames containing a stick figure trying to sleep.
+    In frame 1, a thought bubble shows him imagining sheep leaping over a fence, with a count 1...2...
+    In frame 2, the count has gotten to 1,306...1,307...
+    In frame 3, the sheep are leaping in the other direction, and the count shows 32,767...-32,768...
+    In frame 4, the count continues -32,767...-32,766.
+    "
+    />
+<p style={{fontSize: '0.6em', color: '#666', textAlign: 'center'}}>
+  Source: <a href="https://xkcd.com/571/">xkcd.com/571</a> by Randall Munroe (CC BY-NC 2.5)
+</p>
 </Slide>
-
 </RevealJS>
+
+
