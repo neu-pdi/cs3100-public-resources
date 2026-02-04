@@ -1,0 +1,1558 @@
+---
+sidebar_position: 16
+title: "Designing for Testability"
+image: /img/lectures/web/l16.png
+---
+
+import RevealJS, { Slide } from '@site/src/components/RevealJS';
+import Img from '@site/src/components/Img';
+import QuoteSlide from '@site/src/components/QuoteSlide';
+import PollSlide from '@site/src/components/PollSlide';
+
+<RevealJS transition="slide">
+
+{/* ============================================ */}
+{/* COVER IMAGE */}
+{/* ============================================ */}
+
+<Slide>
+  <Img
+    src="/img/lectures/web/l16.png"
+    prompt="Concept: 'Designing for Testability' (Program Design & Implementation). A pixel art educational illustration showing two contrasting software systems. On the left, a tangled monolithic structure with database cables, API wires, and hardware connections all hardwired together - a frustrated developer tries to test it but can't reach the core logic (shown as a glowing gem buried deep inside). On the right, a clean hexagonal architecture with the core logic (the same glowing gem) in the center, surrounded by clean plug-and-play adapters. A happy developer easily swaps in test doubles (shown as friendly robot helpers) through clearly labeled ports. The tagline reads 'Separate Concerns. Test with Confidence.' in a retro pixel art style with teals, blues, greens, and warm accents."
+    alt='A pixel art illustration contrasting untestable code (tangled monolith with buried logic) versus testable code (hexagonal architecture with clean ports for test doubles). Shows how separating infrastructure from domain logic enables easy testing.'
+  />
+
+<aside className="notes">
+**Lecture overview:**
+- **Total time:** ~55 minutes
+- **Prerequisites:** Students understand coupling/cohesion (L7), SOLID principles (L8), test doubles (L15)
+- **Connects to:** L6 (information hiding), L7 (coupling/cohesion), L8 (Dependency Inversion)
+
+**Structure:**
+- Observability and controllability (~20 min)
+- Hexagonal Architecture / Ports and Adapters (~15 min)
+- Properties of good test suites (~10 min)
+- Anti-patterns that lead to untestable code (~10 min)
+
+**Key theme:** Good design for changeability naturally leads to good design for testability. The same principles that reduce coupling also make code easier to test.
+
+-> **Transition:** Let's start with the learning objectives...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* TITLE SLIDE */}
+{/* ============================================ */}
+
+<Slide>
+
+# CS 3100: Program Design and Implementation II
+
+## Lecture 16: Designing for Testability
+
+<p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
+  ©2025 Jonathan Bell & Ellen Spertus, CC-BY-SA
+</p>
+
+<aside className="notes">
+**Context from L15:**
+- Students learned about test doubles: stubs, fakes, spies, and mocks
+- They can substitute dependencies to test code in isolation
+- But we glossed over: *why was ThermostatController so easy to test?*
+
+**Key theme:** This lecture answers that question. Testability isn't an accident—it's a consequence of good design.
+
+-> **Transition:** Here's what you'll be able to do after today...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* LEARNING OBJECTIVES */}
+{/* ============================================ */}
+
+<Slide>
+
+## Learning Objectives
+
+<p style={{fontSize: '0.85em', textAlign: 'left'}}>
+After this lecture, you will be able to:
+</p>
+
+<ol style={{fontSize: '0.75em', textAlign: 'left'}}>
+  <li>Evaluate the testability of a software module using the concepts of <strong>observability</strong> and <strong>controllability</strong></li>
+  <li>Explain <strong>Hexagonal Architecture</strong> (Ports and Adapters) and its relationship to testability</li>
+  <li>Describe properties of <strong>good test suites</strong>: fast, deterministic, independent, readable</li>
+  <li>Recognize <strong>anti-patterns</strong> that lead to untestable code</li>
+</ol>
+
+<aside className="notes">
+**Time allocation:**
+- Objective 1: Observability and controllability (~20 min)
+- Objective 2: Hexagonal Architecture (~15 min)
+- Objective 3: Good test suite properties (~10 min)
+- Objective 4: Anti-patterns (~10 min)
+
+**Connection to prior lectures:**
+- These concepts build directly on information hiding (L6) and coupling/cohesion (L7)
+- Testability is a *consequence* of following SOLID principles (L8)
+
+-> **Transition:** Let's start by understanding what makes code testable...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 1: OBSERVABILITY AND CONTROLLABILITY */}
+{/* ============================================ */}
+
+<Slide>
+
+## Some Code is Easier to Test Than Other Code
+
+<p style={{fontSize: '0.9em', marginTop: '1em'}}>
+  Imagine testing a feature that requires:
+</p>
+
+<ul style={{fontSize: '0.8em'}}>
+  <li>Setting up three different web services</li>
+  <li>Creating five files in specific directories</li>
+  <li>Putting a database in a specific state</li>
+  <li>Then verifying all of those were modified correctly</li>
+</ul>
+
+<p style={{fontSize: '0.9em', marginTop: '1em', color: '#9370DB'}}>
+  All of this is *doable*... but couldn't it be simpler?
+</p>
+
+<aside className="notes">
+**The reality check:**
+- Complex test setup is a sign of poor testability
+- If tests are painful to write, they won't get written
+- If tests are slow to run, they won't get run
+
+**The question:**
+- What properties make code *easy* to test?
+- Can we design for testability from the start?
+
+-> **Transition:** Two properties determine testability...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Two Properties Determine Testability
+
+<Img
+  src="/img/lectures/web/l16-observability-controllability.webp"
+  prompt="An illustration showing the two pillars of testability: Observability and Controllability.
+
+LEFT PILLAR - 'OBSERVABILITY' (Can we see what happened?):
+A scientist with a magnifying glass examining a transparent glass box labeled 'Code Under Test'. Inside the box, all internal state is visible - variables glowing, return values streaming out, side effects clearly labeled. A dashboard shows 'State: VISIBLE'. Contrast with a murky black box where nothing can be seen.
+
+RIGHT PILLAR - 'CONTROLLABILITY' (Can we set up the scenario?):
+A conductor with a baton directing an orchestra. Each musician represents a dependency (Clock, Database, API) and can be told exactly what to play. Contrast with a chaotic scene where dependencies do their own thing and can't be directed.
+
+The two pillars support a roof labeled 'TESTABILITY'. Message: Without both, testing is painful or impossible."
+  alt="Two pillars supporting 'Testability': Left pillar 'Observability' shows a scientist examining a transparent glass box with visible internal state. Right pillar 'Controllability' shows a conductor directing dependencies. Without both pillars, the roof collapses."
+/>
+
+<aside className="notes">
+**The two key properties:**
+1. **Observability:** Can we see what happened after running the code?
+2. **Controllability:** Can we set up the exact scenario we want to test?
+
+**Connection to L7 (coupling):**
+- High coupling reduces controllability
+- Information hiding (L6) can reduce observability if overdone
+
+-> **Transition:** Let's look at observability first...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Observability: Can We See What Happened?
+
+<p style={{fontSize: '0.9em'}}>
+  Observability is about how easily we can <strong>inspect the results</strong> of executing code.
+</p>
+
+```java
+public class TemperatureLogger {
+    public void logReading(String zoneId, double temperature) {
+        String timestamp = LocalDateTime.now().toString();
+        String logEntry = String.format("[%s] Zone %s: %.1f°F",
+            timestamp, zoneId, temperature);
+        System.out.println(logEntry);  // Where does this go?
+    }
+}
+```
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#f44336'}}>
+  How would you test this? The method returns `void` and the output goes to `System.out`.
+</p>
+
+<aside className="notes">
+**The problem:**
+- Method returns `void`—nothing to assert on
+- Output goes to `System.out`—need to capture stdout
+- Uses `LocalDateTime.now()`—timestamp changes every run
+
+**To verify correct behavior:**
+- Must capture System.out (possible but awkward)
+- Can't verify exact output because of timestamp
+
+-> **Transition:** How can we make this more observable?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Increase Observability by Exposing State
+
+```java
+public class TemperatureLogger {
+    private final List<String> logEntries = new ArrayList<>();
+
+    public void logReading(String zoneId, double temperature, Instant timestamp) {
+        String logEntry = String.format("[%s] Zone %s: %.1f°F",
+            timestamp, zoneId, temperature);
+        logEntries.add(logEntry);
+    }
+
+    public List<String> getLogEntries() {
+        return Collections.unmodifiableList(logEntries);
+    }
+}
+```
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#4CAF50'}}>
+  ✓ Now we can call `getLogEntries()` to verify what was logged.
+</p>
+
+<p style={{fontSize: '0.75em', marginTop: '0.5em', color: '#666'}}>
+  Note: We also moved the timestamp to a parameter—that's controllability!
+</p>
+
+<aside className="notes">
+**What changed:**
+- Store entries instead of just printing
+- Expose read-only access via `getLogEntries()`
+- Move timestamp to parameter (controllability bonus)
+
+**Other ways to increase observability:**
+- Return values instead of void
+- Fire events that tests can listen to
+- Use a test-friendly logging framework
+
+-> **Transition:** Now let's look at controllability...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Poll: What's Hard to Test About This Code?
+
+<PollSlide code={`
+public class EnergyPriceService {
+    public double getCurrentPrice() {
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create("https://api.energyprices.com/current"))
+            .build();
+        // ... parse response and return price
+    }
+
+    public boolean isOffPeakHours() {
+        int hour = LocalTime.now().getHour();
+        return hour >= 22 || hour < 6;
+    }
+}
+`}
+  choices={["getCurrentPrice() creates its own HTTP client", "isOffPeakHours() uses the system clock", "Both of the above", "Neither - this code is testable"]}
+/>
+
+<aside className="notes">
+**Answer:** Both!
+- `getCurrentPrice()` creates its own HTTP client—can't substitute a test version
+- `isOffPeakHours()` uses the system clock—can't test 3 AM behavior at 2 PM
+
+These are **controllability** problems.
+
+-> **Transition:** Let's see how to fix this...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Controllability: Can We Set Up the Test Scenario?
+
+<p style={{fontSize: '0.9em'}}>
+  Controllability is about how easily we can <strong>put the system into a specific state</strong> for testing.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', marginTop: '0.5em'}}>
+
+<div>
+
+**Low Controllability**
+
+```java
+public double getCurrentPrice() {
+    // Creates its own client!
+    HttpClient client =
+        HttpClient.newHttpClient();
+    // Can't substitute test version
+}
+
+public boolean isOffPeakHours() {
+    // Uses system clock!
+    int hour = LocalTime.now()
+                       .getHour();
+    // Can't test 3 AM at 2 PM
+}
+```
+
+</div>
+
+<div>
+
+**High Controllability**
+
+```java
+private final EnergyPriceApi api;
+private final Clock clock;
+
+public EnergyPriceService(
+    EnergyPriceApi api, Clock clock) {
+    this.api = api;
+    this.clock = clock;
+}
+
+public double getCurrentPrice() {
+    return api.fetchCurrentPrice();
+}
+
+public boolean isOffPeakHours() {
+    int hour = LocalTime.now(clock)
+                       .getHour();
+    return hour >= 22 || hour < 6;
+}
+```
+
+</div>
+
+</div>
+
+<aside className="notes">
+**The key insight:**
+- Dependencies that are *created* inside methods can't be controlled
+- Dependencies that are *injected* can be substituted with test doubles
+
+**Connection to L8:**
+- This is the **Dependency Inversion Principle** in action!
+- "Depend on abstractions, not concretions"
+
+-> **Transition:** This lets us write tests like this...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Injection Enables Testing Any Scenario
+
+```java
+@Test
+void detectsOffPeakAt3AM() {
+    // Arrange: Create a fixed clock at 3 AM
+    Clock fixedClock = Clock.fixed(
+        Instant.parse("2024-01-15T03:00:00Z"),
+        ZoneId.systemDefault());
+    EnergyPriceApi stubApi = () -> 0.12;  // Simple stub
+    EnergyPriceService service = new EnergyPriceService(stubApi, fixedClock);
+
+    // Act
+    boolean result = service.isOffPeakHours();
+
+    // Assert
+    assertTrue(result);  // 3 AM is off-peak
+}
+```
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#4CAF50'}}>
+  ✓ We can test time-dependent behavior at any time of day.
+</p>
+
+<aside className="notes">
+**The power of injection:**
+- Test 3 AM behavior at 2 PM
+- Test with any price we want
+- No network calls, no database, no waiting
+
+**This is what test doubles are for:**
+- Stubs give controlled responses
+- Mocks verify interactions
+- But code must be *designed* to accept them
+
+-> **Transition:** Let's see how testability connects to information hiding...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Testability is Information Hiding at the Architecture Level
+
+<QuoteSlide
+  quote="Just as a class hides its fields behind methods, a well-designed system hides infrastructure behind abstractions. The domain code doesn't know or care *how* data is stored—only that it can be stored and retrieved."
+  size="medium"
+/>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+  This separation is what makes testing possible without real infrastructure.
+</p>
+
+<aside className="notes">
+**Connection to L6 (Information Hiding):**
+- At class level: hide fields behind methods
+- At architecture level: hide infrastructure behind interfaces
+
+**The principle is the same:**
+- Reduce coupling to implementation details
+- Depend on abstractions, not concretions
+- This creates natural "seams" for testing
+
+-> **Transition:** Let's see a concrete example of mixing concerns...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Mixed Concerns Make Testing Painful
+
+```java
+public class SmartThermostat {
+    public void adjustForComfort(String zoneId, double targetTemp) {
+        // Infrastructure: database access
+        Connection conn = DriverManager.getConnection(
+            "jdbc:mysql://localhost/iot", "root", "");
+        PreparedStatement ps = conn.prepareStatement(
+            "SELECT temperature FROM sensors WHERE zone_id = ?");
+        ps.setString(1, zoneId);
+        ResultSet rs = ps.executeQuery();
+        rs.next();
+        double currentTemp = rs.getDouble("temperature");
+
+        // Domain: business logic (buried in the middle!)
+        double delta = targetTemp - currentTemp;
+        String action = Math.abs(delta) <= 0.5 ? "NONE"
+                      : delta > 0 ? "HEAT" : "COOL";
+
+        // Infrastructure: web service call
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create("http://hvac-service/zones/" + zoneId + "/" + action))
+            .POST(HttpRequest.BodyPublishers.noBody()).build();
+        client.send(request, HttpResponse.BodyHandlers.discarding());
+    }
+}
+```
+
+<aside className="notes">
+**The testing nightmare:**
+- Need a real MySQL database running
+- Need a real HVAC web service running
+- The business rule (when to heat vs cool) is buried in the middle!
+
+**The root cause:**
+- Infrastructure and domain logic are mixed together
+- Can't test the "heat vs cool" decision without all the infrastructure
+
+-> **Transition:** Let's separate these concerns...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Separate Infrastructure from Domain
+
+<Img
+  src="/img/lectures/web/l16-domain-vs-infrastructure.webp"
+  prompt="An illustration showing the separation of domain logic from infrastructure.
+
+CENTER - 'DOMAIN LOGIC' (the gem/core):
+A glowing crystal or gem in the center representing pure business logic: ComfortCalculator. It has simple inputs (currentTemp, targetTemp) and outputs (HEAT, COOL, NONE). No wires, no connections to external systems. Clean and simple.
+
+SURROUNDING - 'INFRASTRUCTURE' (the adapters):
+Around the gem, show adapters connecting to external systems:
+- TemperatureSensor adapter connecting to a database icon
+- HVACService adapter connecting to a cloud/API icon
+- Each adapter has a clean plug connecting to the gem's ports
+
+BOTTOM - 'ORCHESTRATION':
+SmartThermostat shown as a conductor coordinating between the gem and the adapters, but not containing the logic itself.
+
+Message: Domain logic is pure and testable. Infrastructure is isolated behind interfaces."
+  alt="Central glowing gem 'ComfortCalculator' represents pure domain logic (inputs: temps, outputs: HEAT/COOL/NONE). Surrounding adapters connect to database and API. SmartThermostat orchestrates but doesn't contain logic. Domain is testable without infrastructure."
+/>
+
+<aside className="notes">
+**The key insight:**
+- **Domain code** = business rules, calculations, decisions
+- **Infrastructure code** = databases, APIs, file systems, hardware
+
+**Why separate them?**
+- Domain logic can be tested without infrastructure
+- Infrastructure can change without affecting domain logic
+- This is low coupling applied at the architecture level
+
+-> **Transition:** Let's see the separated code...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Domain Logic: Pure and Testable
+
+```java
+// Domain: pure business logic, easily testable
+public class ComfortCalculator {
+    public HVACAction calculateAction(double currentTemp, double targetTemp) {
+        double delta = targetTemp - currentTemp;
+        if (Math.abs(delta) <= 0.5) {
+            return HVACAction.NONE;
+        } else if (delta > 0) {
+            return HVACAction.HEAT;
+        } else {
+            return HVACAction.COOL;
+        }
+    }
+}
+```
+
+```java
+// Test: no database, no HTTP, just business logic
+@Test
+void heatsWhenBelowTarget() {
+    ComfortCalculator calc = new ComfortCalculator();
+    assertEquals(HVACAction.HEAT, calc.calculateAction(68.0, 72.0));
+}
+
+@Test
+void doesNothingWithinThreshold() {
+    ComfortCalculator calc = new ComfortCalculator();
+    assertEquals(HVACAction.NONE, calc.calculateAction(72.3, 72.0));
+}
+```
+
+<aside className="notes">
+**Notice:**
+- No database connection
+- No HTTP client
+- No exceptions to handle
+- Tests run in milliseconds
+
+**The domain logic is:**
+- Pure (no side effects)
+- Deterministic (same inputs = same outputs)
+- Easy to understand and test
+
+-> **Transition:** The orchestration layer coordinates everything...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Orchestration: Coordinates Domain and Infrastructure
+
+```java
+public class SmartThermostat {
+    private final TemperatureSensor sensor;
+    private final HVACService hvac;
+    private final ComfortCalculator calculator;
+
+    public SmartThermostat(TemperatureSensor sensor, HVACService hvac,
+                           ComfortCalculator calculator) {
+        this.sensor = sensor;
+        this.hvac = hvac;
+        this.calculator = calculator;
+    }
+
+    public void adjustForComfort(String zoneId, double targetTemp) {
+        double currentTemp = sensor.readTemperature(zoneId);
+        HVACAction action = calculator.calculateAction(currentTemp, targetTemp);
+        if (action != HVACAction.NONE) {
+            hvac.execute(action, zoneId);
+        }
+    }
+}
+```
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#4CAF50'}}>
+  ✓ SmartThermostat is now a thin orchestration layer. The interesting business logic lives in ComfortCalculator, which is trivially testable.
+</p>
+
+<aside className="notes">
+**The orchestrator:**
+- Coordinates domain and infrastructure
+- Contains no business logic itself
+- Can be tested with mocks if needed
+
+**The beauty:**
+- Most tests target ComfortCalculator (fast, simple)
+- Only a few tests need to verify SmartThermostat coordination
+- Integration tests can use real or fake infrastructure
+
+-> **Transition:** This pattern has a name...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 2: HEXAGONAL ARCHITECTURE */}
+{/* ============================================ */}
+
+<Slide>
+
+## Hexagonal Architecture (Ports and Adapters)
+
+<p style={{fontSize: '0.9em'}}>
+  This principle is formalized as <strong>Hexagonal Architecture</strong>, proposed by Alistair Cockburn in 2005.
+</p>
+
+<Img
+  src="/img/lectures/web/l16-hexagonal-architecture.webp"
+  prompt="An illustration of Hexagonal Architecture (Ports and Adapters).
+
+CENTER - THE HEXAGON (Application Core):
+A hexagonal shape in the center labeled 'Application Core / Domain'. Inside it shows pure business logic: calculations, rules, domain objects. No technology-specific code. Glowing warmly.
+
+EDGES - THE PORTS (Interfaces):
+Along each edge of the hexagon, show 'ports' as socket outlets or USB ports. Each port is labeled: 'Repository Port', 'External Service Port', 'Sensor Port', etc. These are interfaces defined by the domain.
+
+OUTSIDE - THE ADAPTERS:
+Outside the hexagon, adapters plug into the ports:
+- DatabaseAdapter plugs into RepositoryPort, connects to MySQL/PostgreSQL icons
+- APIAdapter plugs into ExternalServicePort, connects to cloud icon
+- TestAdapter plugs into any port, shown as a friendly test robot
+
+Key insight: Adapters can be swapped without changing the core. Test adapters enable testing without real infrastructure."
+  alt="Hexagonal Architecture: Central hexagon 'Application Core' with ports (interfaces) on edges. Outside, adapters (DatabaseAdapter, APIAdapter, TestAdapter) plug into ports and connect to external systems. Adapters are swappable without changing the core."
+/>
+
+<aside className="notes">
+**The three layers:**
+1. **Application Core (the hexagon):** Business logic, domain rules
+2. **Ports:** Interfaces that define what the domain needs
+3. **Adapters:** Technology-specific implementations
+
+**Why "hexagonal"?**
+- The shape emphasizes that there's no "top" or "bottom"
+- All external systems connect through ports
+- The domain doesn't know which adapters are plugged in
+
+-> **Transition:** Let's see the structure in code...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Ports Define What the Domain Needs
+
+<p style={{fontSize: '0.85em'}}>
+  Ports are <strong>interfaces</strong> defined by the domain, describing what it needs from the outside world.
+</p>
+
+```java
+// Port: How we get energy prices (technology-agnostic)
+public interface EnergyPricePort {
+    double getCurrentPricePerKWh();
+    List<PriceForecast> getForecast(Duration window);
+}
+
+// Port: How we control devices (technology-agnostic)
+public interface DeviceControlPort {
+    List<ControllableDevice> getDevices();
+    void setDevicePower(String deviceId, int powerPercent);
+}
+
+// Port: How we persist user preferences (technology-agnostic)
+public interface UserPreferencesPort {
+    EnergyPreferences getPreferences(String homeId);
+}
+```
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
+  Notice: These interfaces say nothing about HTTP, SQL, or any specific technology.
+</p>
+
+<aside className="notes">
+**Key insight:**
+- Ports are defined by the *domain*, not by technology
+- The domain says "I need price data" not "I need HTTP calls"
+- This is Dependency Inversion Principle at the architecture level
+
+**Connection to L8:**
+- Ports are the "abstractions" that both sides depend on
+- Domain depends on ports, adapters implement ports
+
+-> **Transition:** Let's see the domain logic...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Domain Uses Ports, Not Concrete Technologies
+
+```java
+public class EnergyOptimizer {
+    private final EnergyPricePort priceService;
+    private final DeviceControlPort deviceControl;
+    private final UserPreferencesPort preferences;
+
+    public EnergyOptimizer(EnergyPricePort priceService,
+                           DeviceControlPort deviceControl,
+                           UserPreferencesPort preferences) {
+        this.priceService = priceService;
+        this.deviceControl = deviceControl;
+        this.preferences = preferences;
+    }
+
+    public void optimizeForPrice(String homeId) {
+        double currentPrice = priceService.getCurrentPricePerKWh();
+        EnergyPreferences prefs = preferences.getPreferences(homeId);
+
+        if (currentPrice > prefs.highPriceThreshold()) {
+            reduceNonEssentialDevices();
+        } else if (currentPrice < prefs.lowPriceThreshold()) {
+            preconditionHome();
+        }
+    }
+    // ...
+}
+```
+
+<aside className="notes">
+**Notice:**
+- No `HttpClient`, no `Connection`, no `DataSource`
+- Only references to ports (interfaces)
+- The domain doesn't know if it's talking to real APIs or test stubs
+
+**This is testable by design:**
+- Inject any implementation of the ports
+- Test with in-memory stubs
+- No infrastructure needed for domain tests
+
+-> **Transition:** Adapters implement the ports...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Adapters Connect Ports to Real Infrastructure
+
+```java
+// Adapter: Gets prices from a real API
+public class GridPriceApiAdapter implements EnergyPricePort {
+    private final HttpClient httpClient;
+    private final String apiKey;
+
+    public GridPriceApiAdapter(HttpClient httpClient, String apiKey) {
+        this.httpClient = httpClient;
+        this.apiKey = apiKey;
+    }
+
+    @Override
+    public double getCurrentPricePerKWh() {
+        // Real HTTP calls here
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create("https://api.gridprices.com/current"))
+            .header("Authorization", "Bearer " + apiKey)
+            .build();
+        // ... parse response and return price
+    }
+}
+
+// Adapter: Stores preferences in PostgreSQL
+public class PostgresPreferencesAdapter implements UserPreferencesPort {
+    private final DataSource dataSource;
+    // ... SQL queries here
+}
+```
+
+<aside className="notes">
+**Adapters know the technology:**
+- HTTP clients, SQL queries, hardware protocols
+- But they implement domain-defined interfaces
+
+**The separation:**
+- Domain says *what* it needs
+- Adapters know *how* to get it
+
+-> **Transition:** The magic happens in testing...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Testing with Hexagonal Architecture
+
+```java
+@Test
+void reducesNonEssentialDevicesWhenPriceIsHigh() {
+    // Simple in-memory implementations — no real infrastructure!
+    EnergyPricePort stubPrices = () -> 0.35;  // High price (lambda!)
+
+    List<ControllableDevice> devices = List.of(
+        new ControllableDevice("light-1", true, 100),   // non-essential
+        new ControllableDevice("fridge", false, 100)    // essential
+    );
+    SpyDeviceControl spyDevices = new SpyDeviceControl(devices);
+
+    UserPreferencesPort stubPrefs = (homeId) ->
+        new EnergyPreferences(0.25, 0.10);  // high=0.25, low=0.10
+
+    EnergyOptimizer optimizer = new EnergyOptimizer(
+        stubPrices, spyDevices, stubPrefs);
+
+    optimizer.optimizeForPrice("home-123");
+
+    // Verify only non-essential devices were reduced
+    assertEquals(50, spyDevices.getPowerLevel("light-1"));
+    assertEquals(100, spyDevices.getPowerLevel("fridge"));  // unchanged
+}
+```
+
+<aside className="notes">
+**Notice what's NOT here:**
+- No database setup
+- No HTTP mock server
+- No waiting for network calls
+- No flaky test failures from external services
+
+**This test is:**
+- Fast (milliseconds)
+- Deterministic (no external dependencies)
+- Focused (tests one business rule)
+
+-> **Transition:** How does this connect to coupling?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Hexagonal Architecture Minimizes Coupling
+
+<p style={{fontSize: '0.85em'}}>
+  Remember the coupling types from L7? Hexagonal Architecture addresses each one:
+</p>
+
+| Coupling Type | How Hexagonal Architecture Addresses It |
+|---------------|----------------------------------------|
+| **Data** | Ports pass only the data needed—`getCurrentPricePerKWh()` returns a `double`, not `HttpResponse` |
+| **Stamp** | Domain types (`EnergyPreferences`) are defined by the domain, not dictated by external APIs |
+| **Control** | Adapters don't pass flags that control domain logic |
+| **Common** | No shared global state between domain and infrastructure |
+| **Content** | Impossible—adapters can't access domain internals |
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#4CAF50'}}>
+  Low coupling and high cohesion don't just make code easier to change—they make it easier to test.
+</p>
+
+<aside className="notes">
+**The key insight:**
+- Testability is not a separate goal from good design
+- It's a *consequence* of following the same principles
+- Low coupling = easy to substitute test doubles
+- High cohesion = clear what each test should cover
+
+**Connection to L7:**
+- Same vocabulary, same principles
+- Now applied at architectural level
+
+-> **Transition:** Let's talk about test suite properties...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 3: PROPERTIES OF GOOD TEST SUITES */}
+{/* ============================================ */}
+
+<Slide>
+
+## Properties of Good Test Suites
+
+<Img
+  src="/img/lectures/web/l16-good-test-properties.webp"
+  prompt="An illustration showing the four properties of good test suites as pillars or badges.
+
+Four panels arranged horizontally:
+
+1. 'FAST' - A stopwatch showing milliseconds, a rocket ship, tests completing in the blink of an eye. Developers run tests constantly because they're instant.
+
+2. 'DETERMINISTIC' - A balanced scale showing same inputs always produce same outputs. No dice, no random elements. A frustrated developer next to a 'flaky test' warning sign is crossed out.
+
+3. 'INDEPENDENT' - Isolated test tubes or separate rooms, each test sets up its own state. No arrows connecting them. Contrast with tests connected by shared state (bad).
+
+4. 'READABLE' - A clearly written story with Given/When/Then labels. The test reads like documentation. A developer says 'I understand what this tests!'
+
+All four properties together create a 'Trustworthy Test Suite' badge."
+  alt="Four pillars of good tests: 1) Fast (stopwatch, rocket), 2) Deterministic (balanced scale, no randomness), 3) Independent (isolated test tubes), 4) Readable (Given/When/Then story). Together they create a trustworthy test suite."
+/>
+
+<aside className="notes">
+**Why these properties matter:**
+- Fast: Developers run tests constantly
+- Deterministic: Tests can be trusted
+- Independent: Tests can run in any order
+- Readable: Tests serve as documentation
+
+**The connection to testability:**
+- Hexagonal Architecture enables all of these
+- Domain tests are fast (no I/O)
+- Injected dependencies are deterministic
+- No shared infrastructure means independence
+
+-> **Transition:** Let's examine each property...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Tests Should Be Fast
+
+<p style={{fontSize: '0.9em'}}>
+  If tests take 30 minutes, developers won't run them often. If they take 30 seconds, they'll run them after every change.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', marginTop: '1em'}}>
+
+<div style={{fontSize: '0.75em'}}>
+
+**Slow tests (infrastructure)**
+```java
+@Test
+void savesUserToDatabase() {
+    // Spin up test database
+    // Insert test data
+    // Run migrations
+    // Execute test
+    // Tear down
+    // ... seconds to minutes
+}
+```
+
+</div>
+
+<div style={{fontSize: '0.75em'}}>
+
+**Fast tests (domain)**
+```java
+@Test
+void calculatesComfortAction() {
+    ComfortCalculator calc =
+        new ComfortCalculator();
+
+    assertEquals(HVACAction.HEAT,
+        calc.calculateAction(68.0, 72.0));
+    // ... milliseconds
+}
+```
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.8em', marginTop: '1em', color: '#9370DB'}}>
+  Separating domain from infrastructure means most tests can be fast.
+</p>
+
+<aside className="notes">
+**The test pyramid:**
+- Many fast domain tests (base)
+- Fewer integration tests (middle)
+- Few end-to-end tests (top)
+
+**The payoff:**
+- Fast feedback catches bugs earlier
+- Earlier bugs are cheaper to fix
+- Developers stay in flow
+
+-> **Transition:** But fast isn't enough...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Tests Should Be Deterministic
+
+<p style={{fontSize: '0.9em'}}>
+  A <strong>flaky test</strong> sometimes passes and sometimes fails without code changes. Flaky tests destroy trust.
+</p>
+
+<div style={{fontSize: '0.75em'}}>
+
+**Common causes of flakiness:**
+
+| Cause | Problem | Solution |
+|-------|---------|----------|
+| System time | `LocalDateTime.now()` changes | Inject `Clock` |
+| Random values | Unpredictable behavior | Inject random generator with fixed seed |
+| Execution order | Test B needs Test A to run first | Each test sets up own state |
+| External services | Network failures, slow responses | Use test doubles |
+
+</div>
+
+<p style={{fontSize: '0.8em', marginTop: '1em', color: '#f44336'}}>
+  ⚠ When tests fail randomly, developers start ignoring failures.
+</p>
+
+<aside className="notes">
+**The trust problem:**
+- "Oh that test is flaky, ignore it"
+- Now a real bug can hide behind "flakiness"
+- Test suite becomes useless
+
+**The fix:**
+- All non-determinism comes from injected dependencies
+- Tests control those dependencies completely
+- Same inputs → same outputs, always
+
+-> **Transition:** Tests must also be independent...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Tests Should Be Independent
+
+<p style={{fontSize: '0.9em'}}>
+  Each test should run in isolation. If Test B only passes when Test A runs first, you have a problem.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', marginTop: '0.5em'}}>
+
+<div>
+
+**Bad: Shared state**
+
+```java
+public class DeviceRegistryTest {
+    // Shared across all tests!
+    private static DeviceRegistry
+        registry = new DeviceRegistry();
+
+    @Test
+    void registersNewDevice() {
+        registry.register(
+            new Light("light-1"));
+        assertEquals(1, registry.count());
+        // Fails if another test ran first!
+    }
+}
+```
+
+</div>
+
+<div>
+
+**Good: Fresh state per test**
+
+```java
+public class DeviceRegistryTest {
+    private DeviceRegistry registry;
+
+    @BeforeEach
+    void setUp() {
+        // Fresh state for each test
+        registry = new DeviceRegistry();
+    }
+
+    @Test
+    void registersNewDevice() {
+        registry.register(
+            new Light("light-1"));
+        assertEquals(1, registry.count());
+        // Always starts from 0
+    }
+}
+```
+
+</div>
+
+</div>
+
+<aside className="notes">
+**Why independence matters:**
+- Tests can run in any order
+- Tests can run in parallel
+- Failures are easier to debug (isolated)
+
+**The pattern:**
+- `@BeforeEach` sets up fresh state
+- Each test is a self-contained story
+- No assumptions about what ran before
+
+-> **Transition:** Finally, tests should be readable...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Tests Should Be Readable
+
+<p style={{fontSize: '0.9em'}}>
+  Tests serve as documentation. A well-written test tells a story.
+</p>
+
+```java
+@Test
+void sendsAlertWhenTemperatureExceedsSafetyThreshold() {
+    // Given: A safety monitor with a 90°F threshold
+    TemperatureSensor stubSensor = mock(TemperatureSensor.class);
+    AlertService spyAlerts = mock(AlertService.class);
+    SafetyMonitor monitor = new SafetyMonitor(stubSensor, spyAlerts, 90.0);
+
+    // When: The temperature exceeds the threshold
+    when(stubSensor.readTemperature("server-room")).thenReturn(95.0);
+    monitor.checkZone("server-room");
+
+    // Then: An alert is sent
+    verify(spyAlerts).sendCriticalAlert(
+        argThat(alert -> alert.contains("server-room") &&
+                         alert.contains("95.0")));
+}
+```
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#4CAF50'}}>
+  The method name describes expected behavior. Given/When/Then structure makes the test's purpose clear.
+</p>
+
+<aside className="notes">
+**The structure:**
+- **Given:** Set up the scenario
+- **When:** Execute the action
+- **Then:** Verify the outcome
+
+**Also called:**
+- Arrange/Act/Assert (same idea)
+
+**Why it matters:**
+- Tests fail → you read the test → you understand the bug
+- New developer → reads tests → understands the system
+
+-> **Transition:** Now let's look at anti-patterns...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 4: ANTI-PATTERNS */}
+{/* ============================================ */}
+
+<Slide>
+
+## Anti-Patterns That Kill Testability
+
+<Img
+  src="/img/lectures/web/l16-antipatterns.webp"
+  prompt="An illustration showing four anti-patterns that kill testability, presented as monsters or villains.
+
+1. 'STATIC METHODS' - A stone statue labeled 'TimeUtils.isBusinessHours()' that can't be moved or replaced. A test robot tries to push a test double into place but the statue is immovable.
+
+2. 'SINGLETONS' - A king on a throne labeled 'The One and Only DatabaseConnection'. He refuses to leave, and no imposter (test double) can take his place.
+
+3. 'HIDDEN DEPENDENCIES' - A method that looks simple on the outside but inside is a tangled web of secret connections to databases, APIs, and files. A developer peeks inside and looks horrified.
+
+4. 'TIGHT COUPLING' - A test setup that requires assembling 10 different objects connected by a web of arrows just to test one small feature. The developer is drowning in dependencies.
+
+Each villain has a red X over it indicating 'AVOID'."
+  alt="Four testability villains: 1) Static Methods - immovable stone statue, 2) Singletons - king refusing to leave throne, 3) Hidden Dependencies - simple exterior hiding tangled web, 4) Tight Coupling - 10 objects needed for one test. All marked with red X."
+/>
+
+<aside className="notes">
+**These patterns consistently make testing painful:**
+1. Static methods can't be substituted
+2. Singletons are globally accessible and can't be replaced
+3. Hidden dependencies surprise you during testing
+4. Tight coupling requires massive setup
+
+**The common thread:**
+- All violate Dependency Inversion
+- All create invisible coupling
+- All make substitution impossible
+
+-> **Transition:** Let's examine each one...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Anti-Pattern: Static Methods and Singletons
+
+<p style={{fontSize: '0.9em'}}>
+  Static methods and singletons are <strong>globally accessible</strong>, which means you can't substitute test implementations.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', marginTop: '0.5em'}}>
+
+<div>
+
+**Hard to test**
+
+```java
+public class ScheduledTask {
+    public void runIfDue() {
+        // Static call - can't stub!
+        if (TimeUtils.isBusinessHours()) {
+            doWork();
+        }
+    }
+}
+```
+
+</div>
+
+<div>
+
+**Testable**
+
+```java
+public class ScheduledTask {
+    private final BusinessHoursChecker
+        hoursChecker;
+
+    public ScheduledTask(
+        BusinessHoursChecker hoursChecker) {
+        this.hoursChecker = hoursChecker;
+    }
+
+    public void runIfDue() {
+        if (hoursChecker.isBusinessHours()) {
+            doWork();
+        }
+    }
+}
+```
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
+  If you must use static methods (like `LocalDateTime.now()`), wrap them in an abstraction you control.
+</p>
+
+<aside className="notes">
+**The problem with static:**
+- No object to replace
+- No interface to implement
+- Globally accessible = globally coupled
+
+**The solution:**
+- Wrap static calls in injectable interfaces
+- `TimeProvider` interface with `SystemTimeProvider` and `FixedTimeProvider`
+
+-> **Transition:** Another anti-pattern...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Anti-Pattern: Private Methods That Want to Be Tested
+
+<p style={{fontSize: '0.9em'}}>
+  If you feel the urge to test a private method directly, it's often a sign that it should be its own class.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', marginTop: '0.5em'}}>
+
+<div style={{fontSize: '0.7em'}}>
+
+**Hard to test**
+
+```java
+public class DeviceHealthChecker {
+    public HealthReport checkAll(
+            List<IoTDevice> devices) {
+        HealthReport report = new HealthReport();
+        for (IoTDevice device : devices) {
+            report.add(device.getId(),
+                assessHealth(device));
+        }
+        return report;
+    }
+
+    // Complex logic we want to test!
+    private HealthStatus assessHealth(
+            IoTDevice device) {
+        // Battery, signal, contact time...
+        // Many branches to test
+    }
+}
+```
+
+</div>
+
+<div style={{fontSize: '0.7em'}}>
+
+**Testable**
+
+```java
+// Now easily testable
+public class DeviceHealthAssessor {
+    public HealthStatus assess(
+            double batteryPercent,
+            int signalStrength,
+            long minutesSinceContact) {
+        if (minutesSinceContact > 60)
+            return HealthStatus.OFFLINE;
+        if (batteryPercent < 10)
+            return HealthStatus.CRITICAL;
+        if (batteryPercent < 25 ||
+            signalStrength < 20)
+            return HealthStatus.WARNING;
+        return HealthStatus.HEALTHY;
+    }
+}
+```
+
+</div>
+
+</div>
+
+<aside className="notes">
+**The smell:**
+- "I want to test this private method"
+- Private methods should be tested through public API
+- If that's hard, the class is doing too much
+
+**The refactoring:**
+- Extract to its own class
+- Now it's public and testable
+- Original class delegates
+
+**Connection to SRP (L8):**
+- DeviceHealthChecker was doing two things
+- Health assessment is its own responsibility
+
+-> **Transition:** One more anti-pattern...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Anti-Pattern: Tight Coupling Between Classes
+
+<p style={{fontSize: '0.9em'}}>
+  If your tests require setting up many dependencies just to test one behavior, the class is doing too much.
+</p>
+
+```java
+// Requires 5 dependencies just to test notification formatting!
+public class SubmissionProcessor {
+    public SubmissionProcessor(
+        TestRunner tests,
+        Linter linter,
+        Grader grader,
+        Repository repo,
+        NotificationService notifier) { ... }
+
+    public void process(Submission submission) {
+        // Uses all 5 dependencies
+    }
+}
+```
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#FF9800'}}>
+  A sign of this problem: you write a test for class A, but when it fails, the bug is actually in class B.
+</p>
+
+<aside className="notes">
+**The symptom:**
+- Setting up 5+ mocks for one test
+- Can't tell what the test is actually testing
+- Bugs in dependencies show up as failures here
+
+**The cause:**
+- Low cohesion (class does too much)
+- High coupling (knows too many details)
+
+**The fix:**
+- Split responsibilities into smaller classes
+- Each class has fewer dependencies
+- Tests become focused
+
+-> **Transition:** Let's wrap up...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Anti-Pattern: Complex Boolean Conditions
+
+<p style={{fontSize: '0.9em'}}>
+  Complex conditions require many test cases to cover all branches.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', marginTop: '0.5em'}}>
+
+<div>
+
+**Hard to test**
+
+```java
+// How many tests to cover this?
+if ((device.isOnline() &&
+     device.batteryLevel() > 20) ||
+    (device.isPowered() &&
+     !device.isInSleepMode()) ||
+    (device.isEssential() &&
+     emergencyMode)) {
+    // ...
+}
+```
+
+</div>
+
+<div>
+
+**Testable**
+
+```java
+private boolean canReceiveCommands(
+        IoTDevice device) {
+    return hasSufficientBattery(device)
+        || hasReliablePower(device)
+        || isRequiredInEmergency(device);
+}
+
+private boolean hasSufficientBattery(
+        IoTDevice device) {
+    return device.isOnline() &&
+           device.batteryLevel() > 20;
+}
+// Each predicate tested individually
+```
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#4CAF50'}}>
+  Breaking conditions into named methods doesn't reduce complexity, but it spreads out the testing burden.
+</p>
+
+<aside className="notes">
+**The problem:**
+- One giant boolean = exponential test cases
+- Hard to know what each branch means
+- Easy to miss edge cases
+
+**The fix:**
+- Extract to named predicates
+- Test each predicate in isolation
+- Main condition is clear and readable
+
+-> **Transition:** Key takeaways...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* KEY TAKEAWAYS */}
+{/* ============================================ */}
+
+<Slide>
+
+## Key Takeaways
+
+<Img
+  src="/img/lectures/web/l16-takeaways.webp"
+  prompt="A summary illustration showing the key takeaways for designing for testability.
+
+Show a central theme: 'TESTABILITY = GOOD DESIGN'
+
+Around it, four connected concepts:
+
+1. OBSERVABILITY + CONTROLLABILITY - Two eyes (observe) and a joystick (control) with checkmarks
+2. HEXAGONAL ARCHITECTURE - The clean hexagon with ports and adapters
+3. GOOD TEST PROPERTIES - Fast/Deterministic/Independent/Readable as badges
+4. AVOID ANTI-PATTERNS - Static methods, singletons, tight coupling with X marks
+
+At the bottom, a golden rule banner: 'Separate Domain from Infrastructure'
+
+The overall message: Testability isn't extra work—it's a natural result of following good design principles."
+  alt="Summary showing 'Testability = Good Design' with four concepts: Observability/Controllability, Hexagonal Architecture, Good Test Properties, and Anti-patterns to avoid. Golden rule: 'Separate Domain from Infrastructure'."
+/>
+
+<aside className="notes">
+**The key insight:**
+- Testability isn't separate from good design
+- It's a *consequence* of good design
+- Low coupling, high cohesion, Dependency Inversion → testability
+
+-> **Transition:** Let's review the specific points...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Summary
+
+<ul style={{fontSize: '0.8em'}}>
+  <li><strong>Observability</strong> = can we see what happened? (return values, accessible state)</li>
+  <li><strong>Controllability</strong> = can we set up the scenario? (dependency injection)</li>
+  <li><strong>Hexagonal Architecture</strong> separates domain logic from infrastructure</li>
+  <li>Good tests are <strong>fast, deterministic, independent, and readable</strong></li>
+  <li><strong>Avoid</strong> static methods, singletons, hidden dependencies, tight coupling</li>
+</ul>
+
+<p style={{fontSize: '0.9em', marginTop: '1em', color: '#9370DB', textAlign: 'center'}}>
+  <strong>The same principles that make code easy to change make it easy to test.</strong>
+</p>
+
+<aside className="notes">
+**Connection to prior lectures:**
+- Information hiding (L6) → isolate infrastructure behind interfaces
+- Coupling/cohesion (L7) → low coupling enables test double substitution
+- SOLID (L8) → Dependency Inversion is key to testability
+
+**For assignments:**
+- Design for testability from the start
+- Inject dependencies instead of creating them
+- Keep domain logic pure and simple
+
+**Questions?**
+</aside>
+
+</Slide>
+
+</RevealJS>
