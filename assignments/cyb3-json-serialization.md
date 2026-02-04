@@ -89,7 +89,7 @@ Your IDE (Copilot, Cursor) automatically provides context from your open files a
 **Think first, then validate with AI:**
 
 ```
-I need to design a Cookbook class. See Recipe for the pattern I've been using for immutable domain objects with builders.
+I need to design a Cookbook class. See Recipe for the pattern I've been using for immutability.
 
 Cookbook needs: title, optional author, optional ISBN, list of recipes,
 and a TableOfContents.
