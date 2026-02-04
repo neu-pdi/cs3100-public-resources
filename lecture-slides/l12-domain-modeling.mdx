@@ -1149,114 +1149,6 @@ The model after validation often looks quite different from the initial attempt�
 </Slide>
 
 {/* ============================================ */}
-{/* ARC: STUDENTS WORK THROUGH AN EXAMPLE */}
-{/* ============================================ */}
-
-<Slide>
-
-## Example: Library Hold System
-
-<div style={{fontSize: '0.7em', backgroundColor: 'rgba(147, 112, 219, 0.1)', padding: '0.75em', borderRadius: '8px'}}>
-
-> The library wants to modernize how patrons request books
-> that are currently checked out. Patrons can place holds on
-> unavailable items, and when an item is returned, the next
-> patron in the queue is notified. They have 7 days to pick
-> up the item before the hold expires and the next patron is
-> notified.
->
-> Some books have multiple copies; when any copy is returned,
-> it fulfills the next hold. Patrons can cancel holds anytime
-> and can have at most 10 active holds.
-</div>
-
-</Slide>
-
-<Slide>
-
-### Select Candidate Concepts
-
-<p style={{fontSize: '0.85em'}}>
-Choose nouns to be classes. They could be explicit or implicit.
-</p>
-
-<div style={{fontSize: '0.68em', backgroundColor: 'rgba(147, 112, 219, 0.05)', padding: '0.5em', borderRadius: '8px', lineHeight: '1.6'}}>
-
-> The library wants to modernize how patrons request books
-> that are currently checked out. Patrons can place holds on
-> unavailable items, and when an item is returned, the next
-> patron in the queue is notified. They have 7 days to pick
-> up the item before the hold expires and the next patron is
-> notified.
->
-> Some books have multiple copies; when any copy is returned,
-> it fulfills the next hold. Patrons can cancel holds anytime
-> and can have at most 10 active holds.
-
-</div>
-
-<aside className="notes">
-Have students do a word cloud poll or think-pair-share.
-Hide the results at first, then share and discuss the results.
-
-**Obvious nouns**
-- **Patron**
-- Something to represent an individual book, such as **BookCopy** or **Copy** or **Item**
-- Something to represent all copies of the same book, such as **Book** or **Title**
-- **Hold**
-
-**Less obvious nouns**
-- **HoldQueue**
-- **Notification** (possibly)
-
-**Hidden concept**
-- ExpirationTracker
-
-→ **Transition:** Now we filter and consolidate...
-</aside>
-
-</Slide>
-
-
-<Slide>
-
-### One Possible Domain Model
-
-```mermaid
-classDiagram
-direction LR
-    class Patron {
-        name: String
-        email: String
-    }
-
-    class Book {
-        title: String
-        author: String
-    }
-
-    class Copy {
-        barcode: String
-        status: CopyStatus
-    }
-
-    class Hold {
-        requestedAt: DateTime
-        notifiedAt: DateTime
-        status: HoldStatus
-    }
-
-    Book "1" <--> "*" Copy : has
-    Patron "1" --> "*" Hold : places
-    Copy --> Hold : fulfills
-    Hold "*" <--> "1" Book
-```
-
-
-</Slide>
-
-
-{/* ============================================ */}
 {/* ARC 4: TRANSLATING TO OO DESIGN */}
 {/* ============================================ */}
 
@@ -1540,222 +1432,6 @@ GradingSession controls its own contents. Can enforce invariants (must be active
 - Creation needs external resources (network, etc.) → Service
 
 → **Transition:** Sometimes services ARE the right creator...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Poll: Who should create Copy objects?
-
-<div style={{display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1em', alignItems: 'center'}}>
-
-<div>
-```mermaid
-classDiagram
-    class Patron {
-        name: String
-        activeHolds: List~Hold~
-    }
-    class Book {
-        title: String
-        copies: List~Copy~
-    }
-    class Copy {
-        barcode: String
-        status: CopyStatus
-    }
-    class Hold {
-        status: HoldStatus
-    }
-    Patron "1" <--> "*" Hold : has
-    Book "1" <--> "*" Hold : has
-    Book "1" <--> "*" Copy : has
-```
-
-</div>
-
-<div>
-
-**A.** Book
-
-**B.** Copy
-
-**C.** Hold
-
-**D.** Patron
-
-</div>
-
-</div>
-
-Heuristic: Assign responsibility to the class that has the information needed to fulfill it.
-
-<aside className="notes">
-**Answer: A (Book).** Book contains Copies, so Book is the natural creator. The Creator heuristic says: assign creation to the class that contains or aggregates the new object.
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Creating Copy Objects
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em'}}>
-
-<div>
-
-**In Book (contains copies):**
-```java
-class Book {
-  private List<Copy> copies;
-
-  Copy addCopy(String barcode) {
-    Copy copy = new Copy(barcode, this);
-    copies.add(copy);
-    return copy;
-  }
-}
-```
-
-</div>
-
-<div>
-
-**In Copy (doesn't contain copies):**
-```java
-class Copy {
-  private String barcode;
-  private Book book;
-
-  static Copy create(String barcode, Book book) {
-    Copy copy = new Copy(barcode, book);
-    book.getCopies().add(copy); // reaching in!
-    return copy;
-  }
-}
-```
-
-</div>
-
-</div>
-
-<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#9370DB'}}>
-Copy must reach into Book's internal list.<br/>Book can manage its own collection.
-</p>
-
-<aside className="notes">
-**Key point:** Copy doesn't know about other copies—it has no list to add itself to. It must reach into Book to register itself, which exposes Book's internals and splits the responsibility for managing the collection.
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Poll: Who should check if a patron can place a hold?
-
-<div style={{display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1em', alignItems: 'center'}}>
-
-<div>
-```mermaid
-classDiagram
-    class Patron {
-        name: String
-        activeHolds: List~Hold~
-    }
-    class Book {
-        title: String
-    }
-    class Copy {
-        barcode: String
-        status: CopyStatus
-    }
-    class Hold {
-        status: HoldStatus
-    }
-    Patron "1" <--> "*" Hold : has
-    Book "1" <--> "*" Hold : has
-    Book "1" <--> "*" Copy : has
-```
-
-</div>
-
-<div style={{fontSize: '1.0em'}}>
-
-**A.** Book
-
-**B.** Copy
-
-**C.** Hold
-
-**D.** Patron
-
-</div>
-
-</div>
-Heuristic: Assign responsibility to the class that has the information needed to fulfill it.
-
-<aside className="notes">
-**Answer: D (Patron).** Patron has the data needed (their activeHolds list), so Patron is the Information Expert for questions about their own holds.
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Checking if a Patron Can Place a Hold
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em'}}>
-
-<div>
-
-**In Patron (has the data):**
-```java
-class Patron {
-  private List<Hold> activeHolds;
-
-  boolean canPlaceHold(Book book) {
-    if (activeHolds.size() >= 10) return false;
-    for (Hold h : activeHolds) {
-      if (h.getBook().equals(book)) return false;
-    }
-    return true;
-  }
-}
-```
-
-</div>
-
-<div>
-
-**In Hold (doesn't have the data):**
-```java
-class Hold {
-  private HoldStatus status;
-
-  boolean canPatronPlaceHold(Patron p, Book b) {
-    // I don't know about other holds!
-    // Need to ask Patron for their list
-    List<Hold> holds = p.getActiveHolds();
-    if (holds.size() >= 10) return false;
-    for (Hold h : holds) {
-      if (h.getBook().equals(b)) return false;
-    }
-    return true;
-  }
-}
-```
-
-</div>
-
-</div>
-
-<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#9370DB'}}>
-Hold must extract data from Patron to answer the question. Patron already has it.
-</p>
-
-<aside className="notes">
-**Key point:** The code is almost identical, but Hold has to reach into Patron to get the data. This is a sign the responsibility is in the wrong place. When you find yourself extracting data from another object to make a decision, ask: should that object make the decision instead?
 </aside>
 
 </Slide>
@@ -2518,6 +2194,414 @@ Domain modeling connects to many upcoming topics:
 ## Bonus Slide
 
 <Img src="/img/lectures/web/l12-weeks-of-coding-save-hours-of-designing.jpg" alt="Humorous image about the importance of design: 'Weeks of coding can save you hours of designing'" />
+
+</Slide>
+
+{/* ============================================ */}
+{/* OPTIONAL PRACTICE EXERCISES */}
+{/* ============================================ */}
+
+<Slide>
+
+## Optional Practice Exercises
+
+<p style={{fontSize: '0.9em', color: '#9370DB'}}>
+The following slides contain practice exercises for applying domain modeling concepts to a library hold system.
+</p>
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+These exercises are <strong>not required during lecture time</strong>. They are provided for:
+</p>
+
+<ul style={{fontSize: '0.8em'}}>
+  <li>Lab activities and discussion</li>
+  <li>Homework practice</li>
+  <li>Self-study and review</li>
+</ul>
+
+<aside className="notes">
+**Important:** These slides are NOT part of the main lecture flow.
+
+**Usage recommendations:**
+- Skip during lecture if time is tight
+- Use in lab sessions for hands-on practice
+- Assign as homework for students to work through
+- Great for office hours discussions
+
+**Key difference from main example:**
+- Main lecture uses Regrade/Pawtograder (familiar to students)
+- Library example provides different domain for practice
+- Same principles, different context
+
+→ **Transition:** Start with library requirements...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Practice Example: Library Hold System
+
+<div style={{fontSize: '0.7em', backgroundColor: 'rgba(147, 112, 219, 0.1)', padding: '0.75em', borderRadius: '8px'}}>
+
+> The library wants to modernize how patrons request books
+> that are currently checked out. Patrons can place holds on
+> unavailable items, and when an item is returned, the next
+> patron in the queue is notified. They have 7 days to pick
+> up the item before the hold expires and the next patron is
+> notified.
+>
+> Some books have multiple copies; when any copy is returned,
+> it fulfills the next hold. Patrons can cancel holds anytime
+> and can have at most 10 active holds.
+</div>
+
+<aside className="notes">
+**Exercise goal:** Apply the 4-step domain modeling process to a different domain.
+
+**Students should:**
+1. Extract candidate concepts (nouns)
+2. Filter and consolidate
+3. Discover hidden concepts
+4. Build initial model
+
+→ **Transition:** Let's extract candidate concepts...
+</aside>
+
+</Slide>
+
+<Slide>
+
+### Exercise: Select Candidate Concepts
+
+<p style={{fontSize: '0.85em'}}>
+Choose nouns to be classes. They could be explicit or implicit.
+</p>
+
+<div style={{fontSize: '0.68em', backgroundColor: 'rgba(147, 112, 219, 0.05)', padding: '0.5em', borderRadius: '8px', lineHeight: '1.6'}}>
+
+> The library wants to modernize how patrons request books
+> that are currently checked out. Patrons can place holds on
+> unavailable items, and when an item is returned, the next
+> patron in the queue is notified. They have 7 days to pick
+> up the item before the hold expires and the next patron is
+> notified.
+>
+> Some books have multiple copies; when any copy is returned,
+> it fulfills the next hold. Patrons can cancel holds anytime
+> and can have at most 10 active holds.
+
+</div>
+
+<aside className="notes">
+Have students do a word cloud poll or think-pair-share.
+Hide the results at first, then share and discuss the results.
+
+**Obvious nouns**
+- **Patron**
+- Something to represent an individual book, such as **BookCopy** or **Copy** or **Item**
+- Something to represent all copies of the same book, such as **Book** or **Title**
+- **Hold**
+
+**Less obvious nouns**
+- **HoldQueue**
+- **Notification** (possibly)
+
+**Hidden concept**
+- ExpirationTracker
+
+→ **Transition:** Now we filter and consolidate...
+</aside>
+
+</Slide>
+
+
+<Slide>
+
+### Exercise: One Possible Domain Model
+
+```mermaid
+classDiagram
+direction LR
+    class Patron {
+        name: String
+        email: String
+    }
+
+    class Book {
+        title: String
+        author: String
+    }
+
+    class Copy {
+        barcode: String
+        status: CopyStatus
+    }
+
+    class Hold {
+        requestedAt: DateTime
+        notifiedAt: DateTime
+        status: HoldStatus
+    }
+
+    Book "1" <--> "*" Copy : has
+    Patron "1" --> "*" Hold : places
+    Copy --> Hold : fulfills
+    Hold "*" <--> "1" Book
+```
+
+<aside className="notes">
+**Discussion points:**
+- Why is Copy separate from Book?
+- What about the queue? Is it explicit or implicit?
+- Where does expiration tracking live?
+
+→ **Transition:** Now apply responsibility assignment heuristics...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Exercise Poll: Who should create Copy objects?
+
+<div style={{display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1em', alignItems: 'center'}}>
+
+<div>
+```mermaid
+classDiagram
+    class Patron {
+        name: String
+        activeHolds: List~Hold~
+    }
+    class Book {
+        title: String
+        copies: List~Copy~
+    }
+    class Copy {
+        barcode: String
+        status: CopyStatus
+    }
+    class Hold {
+        status: HoldStatus
+    }
+    Patron "1" <--> "*" Hold : has
+    Book "1" <--> "*" Hold : has
+    Book "1" <--> "*" Copy : has
+```
+
+</div>
+
+<div>
+
+**A.** Book
+
+**B.** Copy
+
+**C.** Hold
+
+**D.** Patron
+
+</div>
+
+</div>
+
+Heuristic: Assign responsibility to the class that has the information needed to fulfill it.
+
+<aside className="notes">
+**Answer: A (Book).** Book contains Copies, so Book is the natural creator. The Creator heuristic says: assign creation to the class that contains or aggregates the new object.
+
+**Teaching points:**
+- Container creates what it contains
+- Book has the initializing data (title, author)
+- Book needs to track its copies anyway
+
+→ **Transition:** Let's see the implementation...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Exercise: Creating Copy Objects
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em'}}>
+
+<div>
+
+**In Book (contains copies):**
+```java
+class Book {
+  private List<Copy> copies;
+
+  Copy addCopy(String barcode) {
+    Copy copy = new Copy(barcode, this);
+    copies.add(copy);
+    return copy;
+  }
+}
+```
+
+</div>
+
+<div>
+
+**In Copy (doesn't contain copies):**
+```java
+class Copy {
+  private String barcode;
+  private Book book;
+
+  static Copy create(String barcode, Book book) {
+    Copy copy = new Copy(barcode, book);
+    book.getCopies().add(copy); // reaching in!
+    return copy;
+  }
+}
+```
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#9370DB'}}>
+Copy must reach into Book's internal list.<br/>Book can manage its own collection.
+</p>
+
+<aside className="notes">
+**Key point:** Copy doesn't know about other copies—it has no list to add itself to. It must reach into Book to register itself, which exposes Book's internals and splits the responsibility for managing the collection.
+
+**Discussion:**
+- What if we need validation (barcode format)?
+- Where does that logic belong?
+- How does this connect to Information Expert?
+
+→ **Transition:** Another exercise...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Exercise Poll: Who should check if a patron can place a hold?
+
+<div style={{display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1em', alignItems: 'center'}}>
+
+<div>
+```mermaid
+classDiagram
+    class Patron {
+        name: String
+        activeHolds: List~Hold~
+    }
+    class Book {
+        title: String
+    }
+    class Copy {
+        barcode: String
+        status: CopyStatus
+    }
+    class Hold {
+        status: HoldStatus
+    }
+    Patron "1" <--> "*" Hold : has
+    Book "1" <--> "*" Hold : has
+    Book "1" <--> "*" Copy : has
+```
+
+</div>
+
+<div style={{fontSize: '1.0em'}}>
+
+**A.** Book
+
+**B.** Copy
+
+**C.** Hold
+
+**D.** Patron
+
+</div>
+
+</div>
+Heuristic: Assign responsibility to the class that has the information needed to fulfill it.
+
+<aside className="notes">
+**Answer: D (Patron).** Patron has the data needed (their activeHolds list), so Patron is the Information Expert for questions about their own holds.
+
+**Teaching points:**
+- Information Expert: who has the data?
+- Patron knows its own holds
+- This makes testing easier (just test Patron)
+
+→ **Transition:** Let's see the code...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Exercise: Checking if a Patron Can Place a Hold
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em'}}>
+
+<div>
+
+**In Patron (has the data):**
+```java
+class Patron {
+  private List<Hold> activeHolds;
+
+  boolean canPlaceHold(Book book) {
+    if (activeHolds.size() >= 10) return false;
+    for (Hold h : activeHolds) {
+      if (h.getBook().equals(book)) return false;
+    }
+    return true;
+  }
+}
+```
+
+</div>
+
+<div>
+
+**In Hold (doesn't have the data):**
+```java
+class Hold {
+  private HoldStatus status;
+
+  boolean canPatronPlaceHold(Patron p, Book b) {
+    // I don't know about other holds!
+    // Need to ask Patron for their list
+    List<Hold> holds = p.getActiveHolds();
+    if (holds.size() >= 10) return false;
+    for (Hold h : holds) {
+      if (h.getBook().equals(b)) return false;
+    }
+    return true;
+  }
+}
+```
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#9370DB'}}>
+Hold must extract data from Patron to answer the question. Patron already has it.
+</p>
+
+<aside className="notes">
+**Key point:** The code is almost identical, but Hold has to reach into Patron to get the data. This is a sign the responsibility is in the wrong place. When you find yourself extracting data from another object to make a decision, ask: should that object make the decision instead?
+
+**Discussion questions:**
+- What if the "10 holds max" rule changes?
+- Where would you make that change in each approach?
+- Which design makes that change easier?
+
+**End of optional exercises**
+</aside>
 
 </Slide>
 
