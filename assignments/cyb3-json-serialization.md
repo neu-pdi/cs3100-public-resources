@@ -115,6 +115,61 @@ Different tasks benefit from AI assistance in different ways:
 | **MarkdownExporter tests**                            | High     | Format is precisely specified; AI generates tests, you verify expected values    |
 | **Debugging**                                         | High     | Use scientific debugging, supported by AI                                        |
 
+### Managing Your AI Assistant
+
+IDE-integrated assistants like Copilot and Cursor are powerful, but require some skill to use
+effectively. Here's what you need to know:
+
+#### Copilot Chat Modes
+
+Copilot offers different interaction modes. Choose the right one for your task:
+
+| Mode     | What It Does                                                    | Best For                                                   |
+| -------- | --------------------------------------------------------------- | ---------------------------------------------------------- |
+| **Ask**  | Answers questions, explains code. Read-only—won't change files. | Understanding starter code, learning patterns, debugging   |
+| **Edit** | Makes targeted changes to specific files you select.            | Small, focused edits where you know exactly what to change |
+| **Agent**| Autonomously explores codebase, reads files, runs commands.     | Multi-file tasks, when AI needs to find relevant code      |
+
+**For this assignment:** Start with **Ask** mode to understand the starter code and patterns.
+Use **Edit** mode for small, focused changes. Use **Agent** mode when the AI needs to explore
+your codebase to find relevant examples.
+
+#### Project-Specific Context Limitations
+
+AI assistants don't automatically understand all your project conventions. For example:
+
+- The starter code uses NullAway with `@NonNull` as the default—most parameters don't need
+  explicit annotations. However, an AI trained on general Java code may add `@NonNull`
+  annotations everywhere because that's the common pattern in other codebases.
+- Your project may have specific naming conventions, package structures, or patterns that the
+  AI won't know unless you tell it.
+
+If the AI keeps making the same mistake, add a note to your prompt: "This project uses NullAway
+with @NonNull as the default, so don't add @NonNull annotations unless the existing code does."
+
+#### Task Scope: Start Small
+
+:::warning AI Assistants Want to "Help" Too Much
+
+If you give an AI assistant a large, vague task ("Implement all the collection classes"), it
+will often get stuck in a loop, generating and regenerating code without converging.
+
+The AI is eager to finish the whole assignment for you. **This is not helpful for learning.**
+
+:::
+
+**The key principle: Only accept code you understand.**
+
+Why this matters:
+
+1. **Smaller changes are easier to review.** You can actually verify the code is correct.
+2. **You stay in control.** If something is wrong, you know exactly where to look.
+3. **You build understanding.** Reviewing small pieces teaches you the patterns.
+4. **The AI produces better code.** Focused prompts get focused, accurate responses.
+
+As you practice specifying and reviewing AI-generated code, you'll develop intuition for what
+task sizes work well. Early on, err on the side of smaller tasks. You can always ask for more.
+
 ### Suggested Prompts by Task
 
 Your IDE (Copilot, Cursor) automatically provides context from your open files and codebase. Use
