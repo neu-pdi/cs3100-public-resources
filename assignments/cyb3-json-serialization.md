@@ -32,6 +32,38 @@ implementation and design decisions rather than transcription. See
 
 ![8-bit lo-fi pixel art illustration for a programming assignment cover. Kitchen/bakery setting with warm wooden cabinets and countertops in browns and tans. Scene composition (left to right): LEFT SIDE - Three source types as distinct objects: (1) a physical cookbook with "ISBN" visible, (2) a handwritten index card box labeled "Family Recipes", (3) a pixel art laptop showing a recipe website. Small recipe cards float above each. CENTER - A vintage-style "Persistence Machine" (retro filing cabinet crossed with computer terminal) with labeled buttons showing Java method names: "save()", "toJSON()", "toMarkdown()". Glowing cyan arrows flow from sources into the machine. RIGHT SIDE - Two output stacks via cyan arrows: (1) JSON files with visible "{ }" curly braces, (2) a Markdown document showing "# Recipe".  The pixel art chef stands at the machine, but beside them is a friendly glowing robot assistant (small, helpful-looking, with antenna and simple face) holding a wrench and pointing at the machine's buttons. A speech bubble from the robot shows Java code snippets. The chef and robot are clearly working together as a team. POST-IT NOTE: Yellow sticky note reading "Your first (?) AI partner project!" TOP BANNER: Metallic blue banner with white pixel text "A3: Serialize & Persist". BOTTOM TEXT: "CS 3100: Program Design & Implementation 2". SUBTLE DETAIL: Small sparkles/stars around the robot to indicate it's a helpful AI companion, not doing the work alone but assisting. Color palette: Warm browns/tans for kitchen, cyan/teal for data flow and the robot's glow, cream recipe cards. Same visual style as A2 immutability cover.](/img/assignments/web/a3.png)
 
+:::tip How to Succeed on This Assignment
+
+This assignment has more moving parts than previous ones. Here's a pacing strategy that works:
+
+1. **Read this handout when it's released.** Skim the whole thing to understand the scope. You
+   don't need to understand every detail yet—just get the big picture.
+
+2. **Look at the starter code on Friday.** Open the files, read through `CookbookImpl` (the
+   reference implementation), and start connecting the handout to actual code.
+
+3. **Post questions on the discussion board.** If something in the handout or starter code
+   doesn't make sense, ask. Early questions help everyone.
+
+4. **Work incrementally over several days.** Don't try to do everything in one session. Let
+   ideas settle. Come back with fresh eyes.
+
+5. **If you're stuck for more than 30 minutes on an error: STOP.** Post on the discussion
+   board, then go do something else for a few hours (or the rest of the day). Banging your head
+   against an error rarely helps—stepping away often does, especially if you left a post on the discussion board asking for help.
+
+6. **Submit early and often.** The submission limit is 15 per rolling 24 hours—that's plenty!
+   Early in the week, go wild with submissions. Each one gives you free feedback from the
+   autograder. Submissions early in the week don't count against your limit later, so use them
+   to check your progress and catch issues early.
+
+**The discussion board is your best resource.** As you learned in the requirements lab,
+asynchronous communication has real value. Post your error publicly (anonymously or not), and course
+staff can click your name to see your latest submission with your code. This lets us help point
+you in the right direction—and your question helps future students with the same issue.
+
+:::
+
 ## Learning Outcomes
 
 By completing this assignment, you will demonstrate proficiency in:
@@ -95,6 +127,26 @@ for each part of this assignment.
 
 **You must document your AI usage** in the [Reflection](#reflection) section. This helps you develop
 metacognitive skills about when and how AI assists your learning.
+
+### Setup: Re-Enable AI Features
+
+In [Lab 1](/labs/lab1-java-setup#disable-ai-features), you disabled AI features in VS Code to build
+foundational skills. **Now it's time to turn them back on!**
+
+To re-enable AI features:
+
+1. Open VS Code Settings:
+   - **Mac**: Press `⌘+,` (Command + comma)
+   - **Windows/Linux**: Press `Ctrl+,`
+2. In the search bar, type: `chat.disableAIFeatures`
+3. **Uncheck** the box next to "Chat: Disable AI Features"
+
+Or click this link: [vscode://settings/chat.disableAIFeatures](vscode://settings/chat.disableAIFeatures)
+
+You should now see the Copilot icon in your editor and have access to chat features. If you don't
+have GitHub Copilot set up yet, see the
+[GitHub Copilot documentation](https://docs.github.com/en/copilot/using-github-copilot/getting-code-suggestions-in-your-ide-with-github-copilot)
+for setup instructions.
 
 ## AI Workflow Guide
 
