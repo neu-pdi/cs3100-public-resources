@@ -229,66 +229,70 @@ When we encounter unexpected behavior, we need to understand:
 
 <Img
   src="/img/lectures/web/l14-two-lenses.png"
-  alt="Split visualization showing control flow (blue paths through code) and data flow (orange streams of values), combining to reveal a bug"
-  prompt="Concept: 'Two Lenses for Understanding Code' (Control Flow + Data Flow)
+  alt="Split visualization showing control flow and data flow analysis of the same Java code snippet"
+  prompt="Concept: 'Two Lenses for Understanding Code' - Control Flow vs Data Flow on CONCRETE Java Code
 
-A split-screen educational visualization showing two complementary ways to see the same code, like putting on different-colored glasses.
+A split-screen educational visualization showing two different analyses of the SAME Java code snippet.
 
-THE METAPHOR:
-A developer looking at code through two different lenses/filters, each revealing different information about the same program.
+THE CODE (shown prominently in center, readable):
+```java
+public int sumEvens(int n) {
+    int sum = 0;
+    for (int i = 1; i <= n; i++) {
+        if (i % 2 == 0) {
+            sum += i;
+        }
+    }
+    return sum;
+}
+```
 
-LEFT SIDE - 'CONTROL FLOW LENS' (Blue tones):
+LEFT SIDE - 'CONTROL FLOW' (Blue tones):
 Header: 'What PATH does execution take?'
 
-The code is shown as a maze or flowchart:
-- Entry point at top (function start)
-- Branch points shown as decision diamonds with arrows going different directions
-- Loops shown as circular paths that can repeat
-- Method calls shown as portals/doors to other code sections
-- The current execution path is highlighted as a glowing blue trail
+Show the same code with blue arrows/lines overlaid tracing the execution path:
+- Arrow from method entry to 'int sum = 0'
+- Arrow to for-loop initialization 'int i = 1'
+- Diamond decision point at 'i <= n' with two branches: TRUE (continues) and FALSE (exits to return)
+- Inside loop: diamond at 'i % 2 == 0' with TRUE branch going to 'sum += i' and FALSE branch skipping it
+- Back-edge arrow from end of loop body back up to the condition check
+- Final arrow from loop exit to 'return sum'
 
-Key questions floating around:
-- 'Which branch was taken?'
-- 'How many iterations?'
-- 'Did we reach this line?'
-- 'What called what?'
+Annotations in blue:
+- 'Entry point' at method start
+- 'Loop: repeats n times'
+- 'Branch: even or odd?'
+- 'Exit point' at return
 
-Bug clue visible: A path that goes somewhere unexpected, or a loop that doesn't terminate
+RIGHT SIDE - 'DATA FLOW' (Orange tones):
+Header: 'How do VALUES flow and change?'
 
-RIGHT SIDE - 'DATA FLOW LENS' (Orange tones):
-Header: 'How do VALUES change?'
+Show the same code with orange flow lines showing how data moves:
+- Orange arrow: parameter 'n' flows INTO the comparison 'i <= n'
+- Orange container labeled 'sum' starting at 0, with arrows showing values accumulating: 0 → 2 → 6 → 12...
+- Orange container labeled 'i' with arrows showing: 1 → 2 → 3 → 4 → 5...
+- Orange arrow: 'i' flows into 'i % 2' computation
+- Orange arrow: 'i' flows into 'sum += i' when condition is true
+- Orange arrow: final 'sum' value flows to return statement
 
-The same code, but now showing data as flowing streams:
-- Variables shown as containers/buckets
-- Assignments shown as water/energy flowing INTO containers
-- Reads shown as water/energy flowing OUT of containers
-- Transformations shown as the stream passing through filters/machines
-- Values annotated at key points: 'x=5 here', 'x=null here'
-
-Key questions floating around:
-- 'What value is x here?'
-- 'Where was this assigned?'
-- 'How did it become null?'
-- 'Who modified this?'
-
-Bug clue visible: A variable that has an unexpected value, or a null where there shouldn't be one
-
-CENTER - 'COMBINING THE LENSES':
-Show the two views overlapping/merging in the middle, revealing:
-- 'The loop ran one too many times (control) AND overwrote the wrong value (data)'
-- A bug that's only visible when you see BOTH perspectives together
-
-BOTTOM INSIGHT:
-'Most bugs involve BOTH: wrong path due to wrong data, or wrong data due to wrong path.'
-'Master both lenses to see the full picture.'
+Annotations in orange:
+- 'Input: n=5'
+- 'sum changes: 0→2→6→12'
+- 'i changes: 1→2→3→4→5'
+- 'Output: 12'
 
 VISUAL STYLE:
-- Clear blue vs orange color coding throughout
-- The 'glasses' or 'lens' metaphor should be visually prominent
-- Code should look like the same code in both views, just visualized differently
-- The combination/overlap in the center is the 'aha!' moment
+- Code is clearly readable in both views - the overlays ADD to it, don't obscure it
+- Blue = paths/arrows showing control flow direction
+- Orange = values/streams showing data movement
+- Clean, educational diagram style
+- Could be a side-by-side or overlapping visualization
+- Make it clear these are TWO WAYS TO SEE THE SAME CODE
 
-Style notes: Educational, not intimidating. Should make students feel like they're gaining superpowers, not facing complexity. The two-lens metaphor helps them remember there are two different questions to ask."
+BOTTOM TEXT:
+'Control Flow: WHERE does execution go?' | 'Data Flow: WHAT values exist at each point?'
+
+Style: Clean educational diagram. The code should be clearly readable. The overlays (arrows, annotations) should enhance understanding, not create visual clutter. Think textbook diagram quality."
 />
 
 <aside className="notes">
