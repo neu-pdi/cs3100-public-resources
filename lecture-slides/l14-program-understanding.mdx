@@ -1110,10 +1110,76 @@ flowchart LR
 
 <Slide>
 
+## Quick Background: What Is HTML?
+
+<p style={{fontSize: '0.9em'}}>
+HTML uses <strong>tags</strong> (text in angle brackets) to format web pages:
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.85em', marginTop: '0.5em'}}>
+
+<div style={{backgroundColor: 'rgba(66, 165, 245, 0.1)', padding: '1em', borderRadius: '8px'}}>
+
+**HTML (what you write):**
+```html
+<b>Hello</b> world
+<p class="intro">Welcome!</p>
+```
+
+</div>
+
+<div style={{backgroundColor: 'rgba(76, 175, 80, 0.1)', padding: '1em', borderRadius: '8px'}}>
+
+**Rendered (what users see):**
+
+**Hello** world
+
+Welcome!
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+<strong>The task:</strong> Write a function that extracts just the text, removing all tags.
+</p>
+
+<div style={{fontSize: '0.8em'}}>
+
+| Input | Expected Output |
+|-------|-----------------|
+| `<b>Hello</b>` | `Hello` |
+| `Click <a href="url">here</a>` | `Click here` |
+
+</div>
+
+<aside className="notes">
+**Quick HTML primer:**
+- Tags are surrounded by `<` and `>`
+- Opening tag: `<b>` (start bold)
+- Closing tag: `</b>` (end bold)
+- Tags can have attributes: `<a href="url">` — note the quotes inside!
+
+**Why this matters for the example:**
+- We need to recognize when we're INSIDE a tag (between `<` and `>`)
+- We need to handle quotes in attributes (don't treat `<` inside quotes as a tag start)
+- The bug we'll find is subtle but common
+
+**If students aren't familiar with HTML:**
+- That's fine! The key is: `<stuff>` = tag to remove, everything else = keep
+- The complexity comes from quotes inside tags
+
+→ **Transition:** Now let's see the code that tries to do this...
+</aside>
+
+</Slide>
+
+<Slide>
+
 ## Example: Debugging HTML Markup Removal
 
 <p style={{fontSize: '0.9em'}}>
-Let's debug a function that removes HTML tags from text:
+Here's a function that attempts to remove HTML tags:
 </p>
 
 ```java
@@ -1190,10 +1256,10 @@ A clean, structured table being built row by row:
 
 | Test Case | Input | Expected | Actual | ✓/✗ |
 |-----------|-------|----------|--------|-----|
-| Basic tags | <b>foo</b> | foo | foo | ✓ |
-| Quotes in content | <b>\"foo\"</b> | \"foo\" | foo | ✗ |
-| Quotes outside | \"<b>foo</b>\" | \"foo\" | <b>foo</b> | ✗ |
-| Attributes | <b id=\"bar\">foo</b> | foo | foo | ✓ |
+| Basic tags | &lt;b&gt;foo&lt;/b&gt; | foo | foo | ✓ |
+| Quotes in content | &lt;b&gt;'foo'&lt;/b&gt; | 'foo' | foo | ✗ |
+| Quotes outside | '&lt;b&gt;foo&lt;/b&gt;' | 'foo' | &lt;b&gt;foo&lt;/b&gt; | ✗ |
+| Attributes | &lt;b id='bar'&gt;foo&lt;/b&gt; | foo | foo | ✓ |
 
 Each row being added like placing evidence on the board.
 Failed tests highlighted in red, passed in green.
@@ -1546,7 +1612,7 @@ Swirling cloud of possibilities:
 Many question marks, wide search space.
 
 LAYER 2 - 'H1: Quotes stripped from input' (narrower):
-Test: Input \"foo\" (no tags) → Output foo
+Test: Input 'foo' (no tags) → Output foo
 Result: ✓ CONFIRMED
 Effect: Many possibilities ELIMINATED (crossed out):
 - NOT a tag-interaction issue
@@ -1555,7 +1621,7 @@ Effect: Many possibilities ELIMINATED (crossed out):
 Remaining possibilities shrink.
 
 LAYER 3 - 'H3: Is tag being set wrong?' (narrower still):
-Test: Assert !tag for \"foo\" input
+Test: Assert !tag for 'foo' input
 Result: ✗ REFUTED (assertion passes)
 Effect: More eliminated:
 - NOT about tag variable
