@@ -1923,73 +1923,51 @@ Instead of adding print statements and re-running, the debugger lets you test hy
 
 <Slide>
 
-## AI Can Accelerate Debugging (When Used Right)
+## AI + Scientific Debugging Workflow
 
-<p style={{fontSize: '0.9em'}}>
-Remember the workflow from <strong>L13</strong>? It applies directly to debugging:
+<p style={{fontSize: '0.85em'}}>
+AI can assist at <strong>each step</strong> of the scientific method—but YOU lead:
 </p>
 
-<div style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+<div style={{fontSize: '0.75em'}}>
 
-```mermaid
-flowchart LR
-    I[1. Identify] --> E[2. Engage]
-    E --> EV[3. Evaluate]
-    EV --> C[4. Calibrate]
-    C --> T[5. Tweak]
-    T --> F[6. Finalize]
-
-    style I fill:#42A5F5,color:white
-    style E fill:#FF9800,color:white
-    style EV fill:#e74c3c,color:white
-```
+| Step | You Do | AI Assists |
+|------|--------|------------|
+| **1. Observe** | Notice the bug, gather symptoms | "Explain what this error message means" |
+| **2. Hypothesize** | Form theory about cause | "What could cause this behavior?" |
+| **3. Predict** | Define what evidence to look for | "Generate test cases to isolate this" |
+| **4. Test** | Run debugger, check values | "Create a Mermaid diagram of this call flow" |
+| **5. Analyze** | Interpret results | "Does this match pattern X?" |
+| **6. Fix** | Implement the solution | "Suggest a fix for this root cause" |
 
 </div>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em', marginTop: '0.5em'}}>
-
-<div>
-
-**What AI is good at:**
-- Spotting common bug patterns
-- Generating test cases
-- Explaining unfamiliar code
-- Suggesting hypotheses
-- Creating diagrams from code
-
-</div>
-
-<div>
-
-**What AI struggles with:**
-- Runtime state (can't run your code)
-- Your specific domain rules
-- Environmental issues
-- Root cause vs symptoms
-
-</div>
-
-</div>
+<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#9370DB', fontWeight: 'bold'}}>
+Notice: YOU lead every step. AI accelerates, but doesn't replace your thinking.
+</p>
 
 <aside className="notes">
-**Connection to L13:**
-- Same 6-step workflow
-- Same critical evaluation
-- Same "learning tax" principle
+**The integration:**
+- This lecture's scientific method + L13's AI workflow
+- AI is a tool at each step, not the driver
+- YOU form hypotheses, AI helps generate them faster
+- YOU test predictions, AI helps create test cases
+- YOU analyze results, AI helps explain patterns
 
-**AI's limitations for debugging:**
-- AI can't run your code
-- AI doesn't know your runtime state
-- AI might suggest fixing symptoms, not causes
-- YOU must verify everything
+**Key principle:**
+- "AI assists" ≠ "AI decides"
+- You must understand each step well enough to EVALUATE AI's help
+- If you can't evaluate, don't use AI for that step
 
-**AI's strengths:**
-- Pattern recognition across many codebases
-- Generating test cases quickly
-- Explaining complex code
-- Mermaid diagrams from code!
+**Practical examples:**
+- Observe: "Explain this NullPointerException stack trace"
+- Hypothesize: "What are common causes of off-by-one errors in loops?"
+- Predict: "Generate edge case tests for this function"
+- Test: "Create a sequence diagram showing how these classes interact"
+- Analyze: "Does this variable change where I expect?"
+- Fix: "Given this root cause, suggest a minimal fix"
 
-→ **Transition:** Remember from L13—some things are harder to evaluate than others...
+→ **Transition:** But remember from L13—some evaluations are harder than others...
 </aside>
 
 </Slide>
