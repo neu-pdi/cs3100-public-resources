@@ -107,14 +107,16 @@ Quick title slide, move on to the hook.
 <div style={{fontSize: '0.85em'}}>
 
 **Where you are now:**
-- Individual assignments, ~500-1000 lines of code
-- You wrote most of it yourself
+- A1/A2: ~500 lines, you wrote it all
 - Structure fits in your head
 
-**Where you're heading:**
-- Group project with teammates' code
-- Open-source libraries with thousands of files
-- Unfamiliar codebases you need to modify or debug
+**A3 (this week!):**
+- Starter code with 10+ interfaces: `RecipeCollection`, `Cookbook`, `UserLibrary`...
+- Inheritance hierarchies you didn't design
+- Jackson annotations you've never seen
+
+**Group project (March):**
+- Teammates' code you need to understand and extend
 
 </div>
 
@@ -123,19 +125,20 @@ Quick title slide, move on to the hook.
 </p>
 
 <aside className="notes">
-**The reality check:**
-- Assignment 4 is coming—more complex model with library, cookbooks
-- Group project in March—you'll inherit teammates' code
-- Future jobs—you'll rarely start from scratch
+**The immediate challenge (A3):**
+- RecipeCollection hierarchy: Cookbook, PersonalCollection, WebCollection
+- UserLibrary that holds collections
+- JsonRecipeRepository, JsonRecipeCollectionRepository
+- Jackson annotations for polymorphic serialization
 
 **The fear is real:**
 - "There's so much code, where do I even begin?"
-- "I don't understand what this does"
-- "Something is broken and I have no idea why"
+- "What's @JsonTypeInfo? What's @JsonSubTypes?"
+- "How does CookbookImpl relate to Cookbook?"
 
-**Today's promise:** We're going to learn the fundamental skills for tackling unfamiliar code. We'll practice at small scale so you're ready when the big codebases arrive.
+**Today's promise:** We're learning the skills to tackle A3's codebase systematically—and these same skills scale to any codebase you'll ever work with.
 
-→ **Transition:** These are learnable skills...
+→ **Transition:** This is a learnable skill...
 </aside>
 
 </Slide>
@@ -150,9 +153,9 @@ Understanding code = building a **mental model** of what it does.
 
 <div style={{marginTop: '0.8em', marginLeft: '1em'}}>
 
-1. **Form a hypothesis:** "I think this class handles user authentication"
-2. **Test it:** Look at method names, read key functions, trace a call
-3. **Refine:** "Actually, it only handles password hashing—auth is elsewhere"
+1. **Form a hypothesis:** "I think `UserLibrary` stores recipes directly"
+2. **Test it:** Look at the interface—it has `getCollections()`, not `getRecipes()`
+3. **Refine:** "Actually, it stores *collections* that contain recipes"
 
 </div>
 
@@ -168,9 +171,15 @@ Same process for debugging: "I think the bug is in X" → test → refine
 - Both involve forming and testing hypotheses about behavior
 - Both require building accurate mental models
 
+**A3 example:**
+- First hypothesis: "UserLibrary holds recipes"
+- Test: Look at the interface methods
+- Refined model: "UserLibrary holds RecipeCollections, which hold Recipes"
+- This is EXACTLY how you'd approach a new codebase at a job
+
 **Connection to patterns (L7-L8):**
 - Patterns are reusable mental models!
-- When you recognize "this is a Strategy pattern," you instantly know how it works
+- When you see `CookbookImpl.builder()`, you instantly know it's the Builder pattern
 - Pattern recognition accelerates understanding
 
 **Why mental models matter:**
