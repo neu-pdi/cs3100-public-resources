@@ -469,7 +469,64 @@ These tools become essential as codebases grow beyond what you can hold in your 
 - When explaining to others
 - When debugging complex interactions
 
-→ **Transition:** Let's learn to create these visualizations...
+→ **Transition:** But there's a catch with OO code...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Don't Forget: Dynamic Dispatch Affects Control Flow
+
+<p style={{fontSize: '0.9em'}}>
+When you see <code>device.setState()</code>, which <code>setState</code> runs?
+</p>
+
+```mermaid
+classDiagram
+    class Device {
+        <<interface>>
+        +setState(State)*
+    }
+    class DimmableLight {
+        +setState(State)
+    }
+    class SmartPlug {
+        +setState(State)
+    }
+    class Thermostat {
+        +setState(State)
+    }
+    Device <|.. DimmableLight
+    Device <|.. SmartPlug
+    Device <|.. Thermostat
+
+    style Device fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#FF9800'}}>
+⚠️ <strong>Recall from Quiz 1:</strong> The runtime type determines which method executes, not the declared type!
+</p>
+
+<aside className="notes">
+**This was tricky on Quiz 1!**
+- Many students struggled with dynamic dispatch questions
+- Static analysis shows what COULD be called
+- Runtime behavior depends on actual object type
+
+**When tracing control flow:**
+- `Device device = getDevice();` — declared type is Device
+- `device.setState(...)` — but which setState?
+- Depends on runtime type: DimmableLight? SmartPlug? Thermostat?
+
+**Debugging implication:**
+- Can't always know statically which method runs
+- May need to use debugger to see actual runtime type
+- Or add logging to identify which implementation executed
+
+**Key skill:** When "Go to Definition" shows an interface, remember to check which implementation is actually being used at runtime.
+
+→ **Transition:** Diagrams can help visualize these relationships...
 </aside>
 
 </Slide>
@@ -1569,7 +1626,116 @@ flowchart LR
 - Sometimes do it manually
 - The intuition you build helps you use AI better later
 
-→ **Transition:** Let's put it all together...
+→ **Transition:** There's a RIGHT way and a WRONG way to use AI for debugging...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Right Way to Use AI for Debugging
+
+<Img
+  src="/img/lectures/web/l14-ai-debugging.png"
+  alt="Split panel contrasting two AI approaches: left shows 'Fix my bug' leading to confusion and no learning; right shows using AI for diagrams and understanding, leading to verified knowledge"
+  prompt="Concept: 'Two Paths with AI' (Learning vs Outsourcing)
+
+A split-panel illustration contrasting two approaches to using AI for debugging, with clear visual messaging about which leads to learning.
+
+LEFT PANEL - 'THE WRONG WAY' (Red/Warning tones):
+Header: 'Just Fix It For Me'
+
+Scene: A student sitting at a computer, looking passive/bored, with thought bubble showing 'I don't get it but whatever'.
+
+The interaction:
+- Student prompt bubble: 'Find and fix whatever bug is in my code'
+- AI response: A magic wand producing 'fixed' code with sparkles
+- The code flows directly into the project, bypassing the student's brain entirely
+
+The result (shown below):
+- Student shrugging with question marks around their head
+- A trophy labeled 'Working Code' but a brain icon showing empty/dim
+- Text: 'Code works. You learned nothing.'
+- A ticking time bomb labeled 'Next Bug' suggesting this will repeat
+
+Visual elements:
+- Red X or warning symbol
+- Passive student posture
+- Code bypassing the brain
+- Empty knowledge meter
+
+RIGHT PANEL - 'THE RIGHT WAY' (Green/Positive tones):
+Header: 'Help Me Understand'
+
+Scene: A student actively engaged, leaning forward, with thought bubbles showing gears turning.
+
+The interaction:
+- Student prompt bubble: 'Help me trace the execution flow and create a diagram'
+- AI response: A beautiful Mermaid diagram (sequence or flowchart)
+- Student examining the diagram with magnifying glass
+
+The verification step (shown as middle stage):
+- Student comparing diagram to actual code
+- Checkmarks appearing: '✓ This matches!' or '✗ Wait, AI got this wrong'
+- Student correcting/annotating the diagram
+- Text: 'Verify AI output against reality'
+
+The result (shown below):
+- Student with lightbulb over head, confident posture
+- A diagram artifact they can keep and reference
+- Brain icon glowing bright, filled with understanding
+- Text: 'You understand. You have a useful artifact. You saved time.'
+
+Visual elements:
+- Green checkmark
+- Active student posture
+- Diagram flowing THROUGH the brain
+- Full knowledge meter
+
+CENTER DIVIDER:
+A clear line with text: 'Same tool. Different outcomes.'
+
+BOTTOM BANNER:
+Left side: '❌ BAD FOR LEARNING: Outsource the thinking'
+Right side: '✓ GOOD FOR LEARNING: Outsource the drawing'
+
+Or alternatively:
+'AI as a crutch vs AI as a bicycle'
+
+VISUAL STYLE:
+- Clear contrast between red (wrong) and green (right) panels
+- Student body language should clearly show passive vs active engagement
+- The brain/learning imagery should be prominent
+- Diagram artifact on the right should look valuable and useful
+- The 'verification' step on the right is crucial—show the student checking AI's work
+
+Style notes: This should feel like a 'choose your own adventure' with an obvious right choice. The left path looks easy but leads nowhere. The right path shows more engagement but leads to real outcomes (understanding + artifact). The key insight is that AI should do the TEDIOUS work (drawing diagrams) while the student does the LEARNING work (understanding and verifying)."
+/>
+
+<aside className="notes">
+**The key distinction:**
+- WRONG: "AI, find and fix my bug" → You learn nothing
+- RIGHT: "AI, help me understand this code" → You learn AND get useful artifacts
+
+**Why diagrams are perfect for AI:**
+- Drawing is tedious, not educational
+- Understanding is educational, not tedious
+- Let AI do the tedious part
+- YOU do the understanding part
+
+**The verification step is crucial:**
+- AI might hallucinate incorrect diagrams
+- Checking the diagram against code = learning
+- You either confirm understanding or catch AI errors
+- Either way, you win
+
+**The artifact value:**
+- You now have a diagram you can reference
+- You can share it with teammates
+- You didn't spend 30 minutes in Mermaid syntax
+- Time saved on drawing → more time for understanding
+
+→ **Transition:** Let's put all these tools together...
 </aside>
 
 </Slide>
