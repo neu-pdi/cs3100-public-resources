@@ -1599,6 +1599,68 @@ Style notes: This is the 'aha!' visual that ties together the example. Students 
 
 <Slide>
 
+## Two Approaches to Debugging
+
+<Img
+  src="/img/lectures/web/l14-println-vs-debugger.png"
+  alt="Side-by-side comparison: println debugging with scattered print statements and log files vs debugger with live variable inspection"
+  prompt="A side-by-side comparison of two debugging approaches. NO text labels or titles.
+
+LEFT SIDE - PRINTLN DEBUGGING (cluttered, tedious):
+- Code file with many print statements scattered throughout, highlighted in yellow
+- A developer adding yet another println, looking frustrated
+- Below: A massive scrolling terminal/log output with hundreds of lines
+- Developer squinting at the log, trying to find the relevant line
+- Magnifying glass searching through noise
+- Multiple run cycles shown (edit → run → read logs → repeat)
+- Visual feeling: cluttered, noisy, indirect, guessing
+
+RIGHT SIDE - DEBUGGER (clean, direct):
+- Same code but clean, no print statements added
+- A clear breakpoint marker (red dot) on one line
+- Execution paused at that line (highlighted)
+- A clean variables panel showing ALL values: tag=true, quote=false, out='foo', c='>'
+- Step controls visible (step over, step into, continue)
+- Developer looking directly at the state, confident expression
+- Single workflow: set breakpoint → run → inspect
+- Visual feeling: focused, direct, complete visibility
+
+CENTER - Arrow or VS symbol between them
+
+VISUAL CONTRAST:
+- Left: messy, many artifacts, indirect observation
+- Right: clean, focused, direct observation
+- The debugger side should look obviously better/easier
+
+Style: Clean educational illustration. The contrast should be immediately obvious - println is noisy and indirect, debugger is clean and direct."
+/>
+
+<aside className="notes">
+**Two fundamentally different approaches:**
+
+**Println debugging:**
+- Add print statements, guess what to print
+- Run program, read through log output
+- Didn't print the right thing? Add more, run again
+- Indirect: you see what you THOUGHT to print
+
+**Debugger:**
+- Set breakpoint, run program
+- Execution stops, you see EVERYTHING
+- Step through line by line if needed
+- Direct: you see the actual state
+
+**Tradeoffs:**
+- Println: Works anywhere, no tools needed, good for production logs
+- Debugger: Much faster for finding bugs, but need IDE/setup
+
+**Key insight:** Debugger is like having X-ray vision vs. taking photos blindfolded.
+</aside>
+
+</Slide>
+
+<Slide>
+
 ## Debugging Our HTML Example
 
 <img
