@@ -928,106 +928,6 @@ Client → AreaScene.activate()
 
 <Slide>
 
-## Two Approaches to Debugging
-
-<Img
-  src="/img/lectures/web/l14-debugging-approaches.png"
-  alt="Split comparison: Chaotic debugging (random changes, frustration, hours wasted) vs Systematic debugging (hypotheses, evidence, convergence to solution)"
-  prompt="Concept: 'Two Approaches to Debugging' (Chaos vs System)
-
-A dramatic split-panel comparison showing two developers facing the same bug, with very different approaches and outcomes.
-
-LEFT PANEL - 'CHAOTIC DEBUGGING' (Red/stressed tones):
-Header: 'The Guessing Game'
-
-Scene: A frustrated developer surrounded by chaos:
-- Multiple browser tabs open with random Stack Overflow posts
-- Code editor with scattered print statements everywhere: 'HERE 1', 'HERE 2', 'WHY???'
-- Crossed-out code changes that didn't work
-- A clock showing hours passing (2:00 PM → 8:00 PM)
-- Thought bubbles showing confusion: 'Maybe it's this?', 'What if I try...', 'WHY ISN'T THIS WORKING'
-- Coffee cups accumulating
-- Hair increasingly messy
-
-The approach (shown as chaotic arrows):
-- Change random things
-- Run and see what happens
-- Google the error message
-- Try the first Stack Overflow answer
-- Repeat until something works (or give up)
-
-Result indicator: A spinning wheel labeled 'May never converge'
-
-Emotional state: 😫 Frustrated, exhausted, demoralized
-
-RIGHT PANEL - 'SYSTEMATIC DEBUGGING' (Green/calm tones):
-Header: 'The Scientific Method'
-
-Scene: A calm, focused developer with organized workspace:
-- A notebook/document open with 'DEBUGGING LOG' showing hypotheses and test results
-- Code editor with strategic, labeled logging
-- A clear diagram of the code flow
-- Clock showing reasonable time (2:00 PM → 3:30 PM)
-- Thought bubbles showing methodical thinking: 'Hypothesis: X is null here', 'If true, this test should fail', 'Confirmed. Now why is X null?'
-- Single coffee cup
-- Composed appearance
-
-The approach (shown as a clear flowchart):
-1. Observe the symptom
-2. Form hypothesis
-3. Design test
-4. Gather evidence
-5. Analyze → Confirm or refute
-6. Iterate or fix
-
-Result indicator: A funnel labeled 'Converges to root cause'
-
-Emotional state: 🧘 Focused, confident, learning
-
-CENTER DIVIDER:
-Text: 'Same bug. Same developer. Different approach.'
-Arrow pointing right with: 'This lecture teaches you how to be on the right side.'
-
-BOTTOM INSIGHT:
-'Debugging isn't about intelligence—it's about method.'
-'Random changes might find A fix. Systematic investigation finds THE fix.'
-
-VISUAL STYLE:
-- Strong contrast between chaotic (messy, red, stressed) and systematic (organized, green, calm)
-- The time difference should be visually prominent (hours vs. reasonable time)
-- The 'convergence' concept should be clear—chaos spirals, system funnels down
-- Should feel relatable—students have experienced the left side
-
-Style notes: This should motivate students to WANT the systematic approach. The left side should feel painfully familiar, the right side should feel achievable and desirable. Not judgmental—everyone has been on the left side. The lecture offers a path to the right side."
-/>
-
-<aside className="notes">
-**The contrast:**
-- Left side: We've ALL been there. Random changes, desperation, hours lost.
-- Right side: What experts do. Systematic, calm, convergent.
-- The difference isn't intelligence—it's METHOD.
-
-**Why random fails:**
-- You might find A fix, but not understand WHY
-- Same bug class will hit you again
-- Time to solution is unpredictable (could be hours, could be days)
-- Emotionally draining
-
-**Why systematic works:**
-- Each step narrows the search space
-- You build understanding as you go
-- Time is bounded—you're always making progress
-- You learn from the process
-
-**Key message:** This isn't about being "smart enough." It's about having a method.
-
-→ **Transition:** Let's see what this systematic approach looks like...
-</aside>
-
-</Slide>
-
-<Slide>
-
 ## Debugging Is Critical Thinking Applied to Code
 
 <QuoteSlide
@@ -1239,58 +1139,24 @@ Adapted from Andreas Zeller's <a href="https://www.debuggingbook.org/html/Intro_
 
 <Img
   src="/img/lectures/web/l14-observation-table.png"
-  alt="Observation table being built: inputs, expected outputs, actual outputs, and pass/fail results forming a structured evidence log"
-  prompt="Concept: 'Building an Observation Table' (The Foundation of Scientific Debugging)
+  alt="Transformation from scattered chaotic notes to organized clear patterns"
+  prompt="A simple before/after transformation graphic with NO text, titles, or captions.
 
-A visualization showing the process of systematically recording test results before forming theories.
+LEFT SIDE - CHAOS:
+A messy jumble of scattered sticky notes, random arrows pointing nowhere, question marks, crumpled paper, tangled strings on a corkboard. Stressed, disorganized energy. Muted/grey tones.
 
-THE SCENE:
-A detective's evidence board transforming into a structured observation table.
+RIGHT SIDE - CLARITY:
+Clean organized grid/structure, neat rows and columns (but NO actual text in them - just clean boxes), arrows pointing to clear connections, a lightbulb moment. Calm, organized energy. Bright/clear tones.
 
-LEFT SIDE - 'BEFORE: Scattered Evidence':
-Random notes, question marks, confused thoughts:
-- 'It doesn't work'
-- 'Something's wrong with quotes'
-- 'Maybe it's the loop?'
-- Arrows going nowhere
-- Messy, unorganized
-
-CENTER - 'THE OBSERVATION TABLE' (main focus):
-A clean, structured table being built row by row:
-
-| Test Case | Input | Expected | Actual | ✓/✗ |
-|-----------|-------|----------|--------|-----|
-| Basic tags | &lt;b&gt;foo&lt;/b&gt; | foo | foo | ✓ |
-| Quotes in content | &lt;b&gt;'foo'&lt;/b&gt; | 'foo' | foo | ✗ |
-| Quotes outside | '&lt;b&gt;foo&lt;/b&gt;' | 'foo' | &lt;b&gt;foo&lt;/b&gt; | ✗ |
-| Attributes | &lt;b id='bar'&gt;foo&lt;/b&gt; | foo | foo | ✓ |
-
-Each row being added like placing evidence on the board.
-Failed tests highlighted in red, passed in green.
-
-RIGHT SIDE - 'AFTER: Clear Patterns Emerge':
-The table reveals patterns:
-- Arrow pointing to failures: 'Both failures involve quotes'
-- Arrow pointing to successes: 'Basic tags work fine'
-- A lightbulb: 'Something specific about quote handling is wrong'
-- Clean hypothesis forming from the data
-
-BOTTOM INSIGHT:
-'Don't theorize before you have data.'
-'The observation table is your evidence log. Patterns emerge from structure, not guessing.'
-
-KEY ANNOTATIONS:
-- 'Expected vs Actual: The gap IS the bug'
-- 'Start with simple cases, add complexity'
-- 'Write it down—memory lies, tables don't'
+CENTER:
+A large arrow pointing from left to right showing the transformation.
 
 VISUAL STYLE:
-- Left side: chaotic, messy, stressed
-- Center: clean, structured, illuminated
-- Right side: clear, organized, confident
-- The transformation from chaos to clarity should be the emotional arc
-
-Style notes: This reinforces that observation comes BEFORE hypothesis. Many students want to jump to theories—this visual emphasizes the discipline of gathering evidence first."
+- No text, labels, titles, or captions anywhere
+- Left: chaotic, messy, grey/stressed colors
+- Right: structured, organized, bright/confident colors
+- Simple, clean illustration style
+- The contrast between chaos and order tells the whole story"
 />
 
 <div style={{fontSize: '0.8em'}}>
