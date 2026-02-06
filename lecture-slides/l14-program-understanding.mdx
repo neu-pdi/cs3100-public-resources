@@ -1137,27 +1137,6 @@ Adapted from Andreas Zeller's <a href="https://www.debuggingbook.org/html/Intro_
 
 ## Step 1: Observe — Build an Observation Table
 
-<Img
-  src="/img/lectures/web/l14-observation-table.png"
-  alt="Transformation from scattered chaotic notes to organized clear patterns"
-  prompt="A simple before/after transformation graphic with NO text, titles, or captions.
-
-LEFT SIDE - CHAOS:
-A messy jumble of scattered sticky notes, random arrows pointing nowhere, question marks, crumpled paper, tangled strings on a corkboard. Stressed, disorganized energy. Muted/grey tones.
-
-RIGHT SIDE - CLARITY:
-Clean organized grid/structure, neat rows and columns (but NO actual text in them - just clean boxes), arrows pointing to clear connections, a lightbulb moment. Calm, organized energy. Bright/clear tones.
-
-CENTER:
-A large arrow pointing from left to right showing the transformation.
-
-VISUAL STYLE:
-- No text, labels, titles, or captions anywhere
-- Left: chaotic, messy, grey/stressed colors
-- Right: structured, organized, bright/confident colors
-- Simple, clean illustration style
-- The contrast between chaos and order tells the whole story"
-/>
 
 <div style={{fontSize: '0.8em'}}>
 
@@ -1620,99 +1599,47 @@ Style notes: This is the 'aha!' visual that ties together the example. Students 
 
 <Slide>
 
-## The Debugger: Your Time-Control Interface
+## Debugging Our HTML Example
 
-<Img
-  src="/img/lectures/web/l14-debugger-control.png"
-  alt="Debugger as a time-control interface: pause execution, inspect state, step forward, rewind to breakpoint"
-  prompt="Concept: 'The Debugger as Time Control' (Pause, Inspect, Step)
-
-A futuristic control-room visualization showing the debugger as a time-manipulation interface for code execution.
-
-THE METAPHOR:
-A developer sitting at a control console with time-control powers over their program's execution.
-
-THE CONTROL ROOM:
-A sci-fi inspired control panel with the code execution visualized as a timeline/stream flowing from left to right.
-
-TIME CONTROL BUTTONS (prominent, central):
-- ⏸️ PAUSE (Breakpoint) - A big red button. When pressed, the execution stream FREEZES. Everything stops. Label: 'Stop time at any point'
-- ▶️ CONTINUE (F5) - Resume the flow. Label: 'Let time flow again'
-- ⏭️ STEP OVER (F10) - Move forward one moment. Label: 'Advance one step'
-- ⤵️ STEP INTO (F11) - Dive deeper into current moment. Label: 'Zoom into method call'
-- ⤴️ STEP OUT (Shift+F11) - Rise back up. Label: 'Zoom out to caller'
-
-THE EXECUTION STREAM:
-Code execution visualized as a flowing stream/timeline:
-- Past execution (left) is grayed out but visible - 'where we came from'
-- Current moment (center) is bright and frozen - 'where we are'
-- Future execution (right) is foggy/unknown - 'where we're going'
-
-THE INSPECTION PANEL:
-A large display showing the 'frozen moment' in detail:
-- VARIABLES panel: All values at this exact moment in time, like a photograph
-- CALL STACK panel: How we got here, like a breadcrumb trail through time
-- WATCHES panel: Specific values we're tracking, like surveillance monitors
-- EXPRESSION EVALUATOR: 'What if?' queries about the frozen state
-
-VISUAL CALLOUTS:
-- Arrow pointing to frozen moment: 'Execution STOPS here. Examine everything.'
-- Arrow to variables: 'See ALL values, not just what you thought to print'
-- Arrow to call stack: 'Trace back through time to see how we arrived'
-- Arrow to expression evaluator: 'Ask hypothetical questions about current state'
-
-KEY INSIGHT (bottom):
-'Without a debugger: You add print statements, re-run, hope you printed the right thing.'
-'With a debugger: You freeze time, look at EVERYTHING, then decide what to do next.'
-'It's the difference between taking photos vs. having a time machine.'
-
-VISUAL STYLE:
-- Sci-fi control room aesthetic, but not intimidating
-- The 'time stream' metaphor should be visually clear
-- Emphasize the POWER of being able to stop and inspect
-- Should make students excited to use the debugger, not scared of it
-
-Style notes: The debugger is often undertaught and underused. This visual should make students think 'why would I ever NOT use this?' The time-control metaphor makes the abstract concrete."
+<img
+  src="/img/lectures/web/l14-debugger-screenshot.png"
+  alt="Screenshot of debugger stepping through the HTML strip tags code, showing breakpoint hit, variables panel with tag and quote values, and call stack"
+  style={{maxHeight: '55vh'}}
 />
 
 <aside className="notes">
-**The debugger superpower:**
-- You can PAUSE time (breakpoints)
-- You can INSPECT the frozen moment (variables, call stack)
-- You can STEP through time one moment at a time
-- You can JUMP to the next interesting moment (continue)
+**Walk through this screenshot:**
+- Set breakpoint where we suspect the bug
+- Variables panel shows `tag`, `quote`, `out` values
+- We can see exactly where the state goes wrong
+- No print statements needed—just inspect
 
-**Why this matters:**
-- Print statements: You guess what to print, run, hope you guessed right
-- Debugger: You freeze, look at EVERYTHING, then decide what matters
-- It's reactive (print) vs. exploratory (debugger)
+**Why debugger beats print statements:**
+- See ALL variables, not just what you guessed to print
+- Step through one line at a time
+- No code changes, no recompilation
 
-**Common excuse: "I never learned to use the debugger"**
-- Now is the time to learn!
-- 15 minutes of learning saves HOURS of print-statement debugging
-- The IDE does most of the work—you just click
-
-→ **Transition:** Let's see the specific features...
+→ **Demo:** Step through failing test case `"<b>foo</b>"`
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Debuggers Accelerate the Scientific Method
+## Debugger = Interactive Hypothesis Testing
 
 <p style={{fontSize: '0.9em'}}>
-In our HTML example, we added assertions and print statements. A <strong>debugger</strong> lets you do this interactively, without modifying code:
+Instead of adding print statements and re-running, the debugger lets you test hypotheses <strong>interactively</strong>:
 </p>
 
 <div style={{fontSize: '0.85em', marginTop: '1em'}}>
 
-| Manual Approach | Debugger Equivalent |
-|-----------------|---------------------|
-| Add `assert !tag;` | Set conditional breakpoint: `tag == true` |
-| Add `System.out.println(quote);` | Watch the `quote` variable |
-| Add `assert false;` to check if line runs | Set breakpoint on that line |
-| Re-run test after each change | Step through execution interactively |
+| To Test This Hypothesis... | Use This Debugger Feature |
+|----------------------------|---------------------------|
+| "Is `tag` ever true outside a tag?" | Conditional breakpoint: `tag == true` |
+| "What is `quote` when we hit this line?" | Watch the `quote` variable |
+| "Does this branch ever execute?" | Set breakpoint on that line |
+| "What path did execution take?" | Check the call stack |
 
 </div>
 
@@ -1720,15 +1647,13 @@ In our HTML example, we added assertions and print statements. A <strong>debugge
 **The debugger advantage:**
 - No code changes needed
 - Interactive exploration
-- See ALL variables, not just what you printed
+- See ALL variables at any point
 - Step through execution in real-time
 
-**The debugger doesn't replace the scientific method:**
+**The debugger doesn't replace thinking:**
 - You still form hypotheses
 - You still test them
 - The debugger just makes testing FASTER
-
-**Key insight:** Debugger is a tool for hypothesis testing, not a replacement for thinking.
 
 → **Transition:** Let's review the core debugger concepts...
 </aside>
