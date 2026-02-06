@@ -225,6 +225,96 @@ When we encounter unexpected behavior, we need to understand:
 
 <Slide>
 
+## Two Lenses for Understanding Code
+
+<Img
+  src="/img/lectures/web/l14-two-lenses.png"
+  alt="Split visualization showing control flow (blue paths through code) and data flow (orange streams of values), combining to reveal a bug"
+  prompt="Concept: 'Two Lenses for Understanding Code' (Control Flow + Data Flow)
+
+A split-screen educational visualization showing two complementary ways to see the same code, like putting on different-colored glasses.
+
+THE METAPHOR:
+A developer looking at code through two different lenses/filters, each revealing different information about the same program.
+
+LEFT SIDE - 'CONTROL FLOW LENS' (Blue tones):
+Header: 'What PATH does execution take?'
+
+The code is shown as a maze or flowchart:
+- Entry point at top (function start)
+- Branch points shown as decision diamonds with arrows going different directions
+- Loops shown as circular paths that can repeat
+- Method calls shown as portals/doors to other code sections
+- The current execution path is highlighted as a glowing blue trail
+
+Key questions floating around:
+- 'Which branch was taken?'
+- 'How many iterations?'
+- 'Did we reach this line?'
+- 'What called what?'
+
+Bug clue visible: A path that goes somewhere unexpected, or a loop that doesn't terminate
+
+RIGHT SIDE - 'DATA FLOW LENS' (Orange tones):
+Header: 'How do VALUES change?'
+
+The same code, but now showing data as flowing streams:
+- Variables shown as containers/buckets
+- Assignments shown as water/energy flowing INTO containers
+- Reads shown as water/energy flowing OUT of containers
+- Transformations shown as the stream passing through filters/machines
+- Values annotated at key points: 'x=5 here', 'x=null here'
+
+Key questions floating around:
+- 'What value is x here?'
+- 'Where was this assigned?'
+- 'How did it become null?'
+- 'Who modified this?'
+
+Bug clue visible: A variable that has an unexpected value, or a null where there shouldn't be one
+
+CENTER - 'COMBINING THE LENSES':
+Show the two views overlapping/merging in the middle, revealing:
+- 'The loop ran one too many times (control) AND overwrote the wrong value (data)'
+- A bug that's only visible when you see BOTH perspectives together
+
+BOTTOM INSIGHT:
+'Most bugs involve BOTH: wrong path due to wrong data, or wrong data due to wrong path.'
+'Master both lenses to see the full picture.'
+
+VISUAL STYLE:
+- Clear blue vs orange color coding throughout
+- The 'glasses' or 'lens' metaphor should be visually prominent
+- Code should look like the same code in both views, just visualized differently
+- The combination/overlap in the center is the 'aha!' moment
+
+Style notes: Educational, not intimidating. Should make students feel like they're gaining superpowers, not facing complexity. The two-lens metaphor helps them remember there are two different questions to ask."
+/>
+
+<aside className="notes">
+**The two-lens metaphor:**
+- Same code, two different ways to see it
+- Control flow: Where does execution GO?
+- Data flow: What VALUES exist?
+- Most bugs require seeing BOTH
+
+**Why two lenses?**
+- Control flow alone misses: "the right path, but wrong value"
+- Data flow alone misses: "right value at wrong time"
+- Combining them reveals the full picture
+
+**Connection to L5 Readability:**
+- Good naming makes both lenses clearer
+- `isConnected` immediately tells you what the branch means
+- `brightnessPercent` tells you what the data represents
+
+→ **Transition:** Let's look at each lens in detail...
+</aside>
+
+</Slide>
+
+<Slide>
+
 ## Two Fundamental Questions About Any Code
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', marginTop: '1em'}}>
@@ -834,6 +924,106 @@ Client → AreaScene.activate()
 
 <Slide>
 
+## Two Approaches to Debugging
+
+<Img
+  src="/img/lectures/web/l14-debugging-approaches.png"
+  alt="Split comparison: Chaotic debugging (random changes, frustration, hours wasted) vs Systematic debugging (hypotheses, evidence, convergence to solution)"
+  prompt="Concept: 'Two Approaches to Debugging' (Chaos vs System)
+
+A dramatic split-panel comparison showing two developers facing the same bug, with very different approaches and outcomes.
+
+LEFT PANEL - 'CHAOTIC DEBUGGING' (Red/stressed tones):
+Header: 'The Guessing Game'
+
+Scene: A frustrated developer surrounded by chaos:
+- Multiple browser tabs open with random Stack Overflow posts
+- Code editor with scattered print statements everywhere: 'HERE 1', 'HERE 2', 'WHY???'
+- Crossed-out code changes that didn't work
+- A clock showing hours passing (2:00 PM → 8:00 PM)
+- Thought bubbles showing confusion: 'Maybe it's this?', 'What if I try...', 'WHY ISN'T THIS WORKING'
+- Coffee cups accumulating
+- Hair increasingly messy
+
+The approach (shown as chaotic arrows):
+- Change random things
+- Run and see what happens
+- Google the error message
+- Try the first Stack Overflow answer
+- Repeat until something works (or give up)
+
+Result indicator: A spinning wheel labeled 'May never converge'
+
+Emotional state: 😫 Frustrated, exhausted, demoralized
+
+RIGHT PANEL - 'SYSTEMATIC DEBUGGING' (Green/calm tones):
+Header: 'The Scientific Method'
+
+Scene: A calm, focused developer with organized workspace:
+- A notebook/document open with 'DEBUGGING LOG' showing hypotheses and test results
+- Code editor with strategic, labeled logging
+- A clear diagram of the code flow
+- Clock showing reasonable time (2:00 PM → 3:30 PM)
+- Thought bubbles showing methodical thinking: 'Hypothesis: X is null here', 'If true, this test should fail', 'Confirmed. Now why is X null?'
+- Single coffee cup
+- Composed appearance
+
+The approach (shown as a clear flowchart):
+1. Observe the symptom
+2. Form hypothesis
+3. Design test
+4. Gather evidence
+5. Analyze → Confirm or refute
+6. Iterate or fix
+
+Result indicator: A funnel labeled 'Converges to root cause'
+
+Emotional state: 🧘 Focused, confident, learning
+
+CENTER DIVIDER:
+Text: 'Same bug. Same developer. Different approach.'
+Arrow pointing right with: 'This lecture teaches you how to be on the right side.'
+
+BOTTOM INSIGHT:
+'Debugging isn't about intelligence—it's about method.'
+'Random changes might find A fix. Systematic investigation finds THE fix.'
+
+VISUAL STYLE:
+- Strong contrast between chaotic (messy, red, stressed) and systematic (organized, green, calm)
+- The time difference should be visually prominent (hours vs. reasonable time)
+- The 'convergence' concept should be clear—chaos spirals, system funnels down
+- Should feel relatable—students have experienced the left side
+
+Style notes: This should motivate students to WANT the systematic approach. The left side should feel painfully familiar, the right side should feel achievable and desirable. Not judgmental—everyone has been on the left side. The lecture offers a path to the right side."
+/>
+
+<aside className="notes">
+**The contrast:**
+- Left side: We've ALL been there. Random changes, desperation, hours lost.
+- Right side: What experts do. Systematic, calm, convergent.
+- The difference isn't intelligence—it's METHOD.
+
+**Why random fails:**
+- You might find A fix, but not understand WHY
+- Same bug class will hit you again
+- Time to solution is unpredictable (could be hours, could be days)
+- Emotionally draining
+
+**Why systematic works:**
+- Each step narrows the search space
+- You build understanding as you go
+- Time is bounded—you're always making progress
+- You learn from the process
+
+**Key message:** This isn't about being "smart enough." It's about having a method.
+
+→ **Transition:** Let's see what this systematic approach looks like...
+</aside>
+
+</Slide>
+
+<Slide>
+
 ## Debugging Is Critical Thinking Applied to Code
 
 <QuoteSlide
@@ -977,6 +1167,62 @@ Adapted from Andreas Zeller's <a href="https://www.debuggingbook.org/html/Intro_
 
 ## Step 1: Observe — Build an Observation Table
 
+<Img
+  src="/img/lectures/web/l14-observation-table.png"
+  alt="Observation table being built: inputs, expected outputs, actual outputs, and pass/fail results forming a structured evidence log"
+  prompt="Concept: 'Building an Observation Table' (The Foundation of Scientific Debugging)
+
+A visualization showing the process of systematically recording test results before forming theories.
+
+THE SCENE:
+A detective's evidence board transforming into a structured observation table.
+
+LEFT SIDE - 'BEFORE: Scattered Evidence':
+Random notes, question marks, confused thoughts:
+- 'It doesn't work'
+- 'Something's wrong with quotes'
+- 'Maybe it's the loop?'
+- Arrows going nowhere
+- Messy, unorganized
+
+CENTER - 'THE OBSERVATION TABLE' (main focus):
+A clean, structured table being built row by row:
+
+| Test Case | Input | Expected | Actual | ✓/✗ |
+|-----------|-------|----------|--------|-----|
+| Basic tags | <b>foo</b> | foo | foo | ✓ |
+| Quotes in content | <b>\"foo\"</b> | \"foo\" | foo | ✗ |
+| Quotes outside | \"<b>foo</b>\" | \"foo\" | <b>foo</b> | ✗ |
+| Attributes | <b id=\"bar\">foo</b> | foo | foo | ✓ |
+
+Each row being added like placing evidence on the board.
+Failed tests highlighted in red, passed in green.
+
+RIGHT SIDE - 'AFTER: Clear Patterns Emerge':
+The table reveals patterns:
+- Arrow pointing to failures: 'Both failures involve quotes'
+- Arrow pointing to successes: 'Basic tags work fine'
+- A lightbulb: 'Something specific about quote handling is wrong'
+- Clean hypothesis forming from the data
+
+BOTTOM INSIGHT:
+'Don't theorize before you have data.'
+'The observation table is your evidence log. Patterns emerge from structure, not guessing.'
+
+KEY ANNOTATIONS:
+- 'Expected vs Actual: The gap IS the bug'
+- 'Start with simple cases, add complexity'
+- 'Write it down—memory lies, tables don't'
+
+VISUAL STYLE:
+- Left side: chaotic, messy, stressed
+- Center: clean, structured, illuminated
+- Right side: clear, organized, confident
+- The transformation from chaos to clarity should be the emotional arc
+
+Style notes: This reinforces that observation comes BEFORE hypothesis. Many students want to jump to theories—this visual emphasizes the discipline of gathering evidence first."
+/>
+
 <div style={{fontSize: '0.8em'}}>
 
 | Input | Expected | Actual | Result |
@@ -988,14 +1234,9 @@ Adapted from Andreas Zeller's <a href="https://www.debuggingbook.org/html/Intro_
 
 </div>
 
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
-Two test cases fail. Observations:
+<p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+Both failures involve quotes. Pattern emerging!
 </p>
-
-<ul style={{fontSize: '0.8em'}}>
-  <li>Double quotes in content are being <strong>stripped</strong></li>
-  <li>Tags after a leading quote are <strong>not removed</strong></li>
-</ul>
 
 <aside className="notes">
 **Building the table:**
@@ -1273,7 +1514,110 @@ Parsed as:
 5. Generalize findings (test single quotes too)
 6. Understand before fixing
 
-→ **Transition:** Let's talk about the costs and benefits of this approach...
+→ **Transition:** Let's visualize what we just did...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Hypothesis Funnel: How We Narrowed Down the Bug
+
+<Img
+  src="/img/lectures/web/l14-hypothesis-funnel.png"
+  alt="Funnel diagram showing how each hypothesis test narrowed the search space from 'something is wrong' to 'operator precedence bug'"
+  prompt="Concept: 'The Hypothesis Funnel' (Narrowing Down to Root Cause)
+
+A funnel visualization showing how systematic hypothesis testing progressively narrows the search space until only the root cause remains.
+
+THE FUNNEL STRUCTURE:
+A large funnel, wide at the top and narrow at the bottom, with distinct layers representing each stage of our debugging process.
+
+TOP OF FUNNEL - 'ALL POSSIBLE CAUSES' (widest):
+Label: 'Something is wrong with quotes'
+Swirling cloud of possibilities:
+- Loop logic?
+- Quote detection?
+- Tag detection?
+- String building?
+- Edge cases?
+- Unicode issues?
+- Memory problems?
+Many question marks, wide search space.
+
+LAYER 2 - 'H1: Quotes stripped from input' (narrower):
+Test: Input \"foo\" (no tags) → Output foo
+Result: ✓ CONFIRMED
+Effect: Many possibilities ELIMINATED (crossed out):
+- NOT a tag-interaction issue
+- NOT about attributes
+- Affects ALL quotes, not just some
+Remaining possibilities shrink.
+
+LAYER 3 - 'H3: Is tag being set wrong?' (narrower still):
+Test: Assert !tag for \"foo\" input
+Result: ✗ REFUTED (assertion passes)
+Effect: More eliminated:
+- NOT about tag variable
+- Tag logic is correct
+Remaining space smaller.
+
+LAYER 4 - 'H4: Quote condition triggers incorrectly' (very narrow):
+Test: Assert false in quote branch
+Result: ✓ CONFIRMED (assertion fails!)
+Effect: Now we know WHERE
+- The condition itself is the problem
+- Triggers when it shouldn't
+
+BOTTOM OF FUNNEL - 'ROOT CAUSE FOUND':
+Test: Compare single quotes vs double quotes
+Result: Single quotes preserved, double quotes stripped
+Revelation: OPERATOR PRECEDENCE!
+The exact bug is revealed: missing parentheses
+
+SIDE ANNOTATIONS:
+- Arrow showing eliminated possibilities at each stage
+- Time/effort invested shown as small compared to 'guess and check'
+- Each layer labeled with 'Evidence gathered'
+
+BOTTOM INSIGHT:
+'Each test doesn't just confirm or refute—it ELIMINATES possibilities.'
+'After 4 targeted tests, we went from infinite causes to one.'
+'This is why systematic debugging is FASTER than guessing.'
+
+VISUAL STYLE:
+- Classic funnel shape, wide to narrow
+- Each layer distinctly colored
+- Eliminated possibilities shown as crossed out or faded
+- The narrowing should feel satisfying—like solving a mystery
+- Final 'root cause' at bottom should glow/highlight
+
+Style notes: This is the 'aha!' visual that ties together the example. Students should see that each step DRAMATICALLY reduced the search space. The systematic approach isn't just more rigorous—it's actually FASTER because it eliminates possibilities efficiently."
+/>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em', textAlign: 'center'}}>
+4 targeted tests took us from "something is wrong" to "operator precedence bug."
+</p>
+
+<aside className="notes">
+**The power of systematic debugging:**
+- We didn't guess randomly
+- Each test ELIMINATED possibilities
+- H1: Confirmed it's a quote issue (not tags)
+- H3: Ruled out tag variable (refuted)
+- H4: Confirmed the condition is wrong
+- Generalization: Single vs double quotes revealed precedence
+
+**Why this is faster:**
+- 4 targeted tests vs potentially dozens of random changes
+- Each test gives INFORMATION even when it fails
+- We converged on the exact bug
+
+**The takeaway:**
+- Systematic doesn't mean slow
+- It means efficient—maximum information per test
+
+→ **Transition:** Let's talk about when to use this approach...
 </aside>
 
 </Slide>
@@ -1337,6 +1681,85 @@ Parsed as:
 {/* ============================================ */}
 {/* ARC 5: DEBUGGER USAGE (8 min) */}
 {/* ============================================ */}
+
+<Slide>
+
+## The Debugger: Your Time-Control Interface
+
+<Img
+  src="/img/lectures/web/l14-debugger-control.png"
+  alt="Debugger as a time-control interface: pause execution, inspect state, step forward, rewind to breakpoint"
+  prompt="Concept: 'The Debugger as Time Control' (Pause, Inspect, Step)
+
+A futuristic control-room visualization showing the debugger as a time-manipulation interface for code execution.
+
+THE METAPHOR:
+A developer sitting at a control console with time-control powers over their program's execution.
+
+THE CONTROL ROOM:
+A sci-fi inspired control panel with the code execution visualized as a timeline/stream flowing from left to right.
+
+TIME CONTROL BUTTONS (prominent, central):
+- ⏸️ PAUSE (Breakpoint) - A big red button. When pressed, the execution stream FREEZES. Everything stops. Label: 'Stop time at any point'
+- ▶️ CONTINUE (F5) - Resume the flow. Label: 'Let time flow again'
+- ⏭️ STEP OVER (F10) - Move forward one moment. Label: 'Advance one step'
+- ⤵️ STEP INTO (F11) - Dive deeper into current moment. Label: 'Zoom into method call'
+- ⤴️ STEP OUT (Shift+F11) - Rise back up. Label: 'Zoom out to caller'
+
+THE EXECUTION STREAM:
+Code execution visualized as a flowing stream/timeline:
+- Past execution (left) is grayed out but visible - 'where we came from'
+- Current moment (center) is bright and frozen - 'where we are'
+- Future execution (right) is foggy/unknown - 'where we're going'
+
+THE INSPECTION PANEL:
+A large display showing the 'frozen moment' in detail:
+- VARIABLES panel: All values at this exact moment in time, like a photograph
+- CALL STACK panel: How we got here, like a breadcrumb trail through time
+- WATCHES panel: Specific values we're tracking, like surveillance monitors
+- EXPRESSION EVALUATOR: 'What if?' queries about the frozen state
+
+VISUAL CALLOUTS:
+- Arrow pointing to frozen moment: 'Execution STOPS here. Examine everything.'
+- Arrow to variables: 'See ALL values, not just what you thought to print'
+- Arrow to call stack: 'Trace back through time to see how we arrived'
+- Arrow to expression evaluator: 'Ask hypothetical questions about current state'
+
+KEY INSIGHT (bottom):
+'Without a debugger: You add print statements, re-run, hope you printed the right thing.'
+'With a debugger: You freeze time, look at EVERYTHING, then decide what to do next.'
+'It's the difference between taking photos vs. having a time machine.'
+
+VISUAL STYLE:
+- Sci-fi control room aesthetic, but not intimidating
+- The 'time stream' metaphor should be visually clear
+- Emphasize the POWER of being able to stop and inspect
+- Should make students excited to use the debugger, not scared of it
+
+Style notes: The debugger is often undertaught and underused. This visual should make students think 'why would I ever NOT use this?' The time-control metaphor makes the abstract concrete."
+/>
+
+<aside className="notes">
+**The debugger superpower:**
+- You can PAUSE time (breakpoints)
+- You can INSPECT the frozen moment (variables, call stack)
+- You can STEP through time one moment at a time
+- You can JUMP to the next interesting moment (continue)
+
+**Why this matters:**
+- Print statements: You guess what to print, run, hope you guessed right
+- Debugger: You freeze, look at EVERYTHING, then decide what matters
+- It's reactive (print) vs. exploratory (debugger)
+
+**Common excuse: "I never learned to use the debugger"**
+- Now is the time to learn!
+- 15 minutes of learning saves HOURS of print-statement debugging
+- The IDE does most of the work—you just click
+
+→ **Transition:** Let's see the specific features...
+</aside>
+
+</Slide>
 
 <Slide>
 
