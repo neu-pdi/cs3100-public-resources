@@ -142,46 +142,94 @@ Quick title slide, move on to the hook.
 
 <Slide>
 
-## Program Understanding Is a Skill
+## Building Mental Models
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.85em'}}>
+<div style={{fontSize: '0.85em'}}>
 
-<div>
+Understanding code = building a **mental model** of what it does.
 
-**Not magic or "talent":**
-- Systematic techniques exist
-- Tools can help enormously
-- Practice makes you faster
+<div style={{marginTop: '0.8em', marginLeft: '1em'}}>
 
-</div>
-
-<div>
-
-**Two core questions:**
-1. **Control flow:** What *path* does execution take?
-2. **Data flow:** What *values* exist at each point?
+1. **Form a hypothesis:** "I think this class handles user authentication"
+2. **Test it:** Look at method names, read key functions, trace a call
+3. **Refine:** "Actually, it only handles password hashing—auth is elsewhere"
 
 </div>
 
 </div>
 
-<p style={{fontSize: '0.9em', marginTop: '1em'}}>
-Today we'll learn these techniques at a small scale—so they become second nature when you need them on large codebases.
+<p style={{fontSize: '0.9em', marginTop: '1em', color: '#9370DB', fontWeight: 'bold'}}>
+Same process for debugging: "I think the bug is in X" → test → refine
 </p>
 
 <aside className="notes">
-**The mindset shift:**
-- Some students think "I'm just not good at reading code"
-- Wrong! It's a skill like any other
-- The techniques we'll learn today work at ANY scale
+**The key insight:**
+- Understanding code and debugging are the SAME skill
+- Both involve forming and testing hypotheses about behavior
+- Both require building accurate mental models
+
+**Connection to patterns (L7-L8):**
+- Patterns are reusable mental models!
+- When you recognize "this is a Strategy pattern," you instantly know how it works
+- Pattern recognition accelerates understanding
+
+**Why mental models matter:**
+- You can't hold entire codebase in your head
+- You need accurate models of how pieces interact
+- Wrong mental model = wrong assumptions = bugs
+
+→ **Transition:** Two lenses help us build these models...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Two Lenses for Mental Models
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.85em'}}>
+
+<div style={{backgroundColor: 'rgba(66, 165, 245, 0.1)', padding: '1em', borderRadius: '8px'}}>
+
+**Control Flow:**
+*What path does execution take?*
+
+- Which branch was taken?
+- How many loop iterations?
+- What methods get called?
+
+</div>
+
+<div style={{backgroundColor: 'rgba(255, 152, 0, 0.1)', padding: '1em', borderRadius: '8px'}}>
+
+**Data Flow:**
+*What values exist at each point?*
+
+- What is `x` here?
+- Where did this value come from?
+- How did it become null?
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+Today we'll practice these techniques at small scale—so they're second nature when you hit big codebases.
+</p>
+
+<aside className="notes">
+**Two complementary questions:**
+- Control flow alone misses: "right path, but wrong value"
+- Data flow alone misses: "right value at wrong time"
+- You need BOTH to build accurate mental models
 
 **Connection to L5 (Readability):**
-- Good naming and structure make understanding easier
-- But you still need techniques for when code ISN'T well-written
-- (And let's be honest—you'll encounter plenty of that)
+- Good naming makes control flow obvious ("handleLogin" vs "process")
+- Good structure makes data flow traceable
+- Readable code = easier mental models
 
 **Connection to L13 (AI Assistants):**
-- AI can help explain code—but YOU need to verify
+- AI can help explain code—but YOU verify against your mental model
 - AI can suggest fixes—but YOU need to understand the bug first
 - The 6-step workflow applies directly to debugging
 
