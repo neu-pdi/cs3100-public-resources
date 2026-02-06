@@ -1,0 +1,1205 @@
+---
+sidebar_position: 15
+lecture_number: 15
+title: Test Doubles and Isolation
+image: /img/lectures/web/l15.png
+---
+
+import RevealJS, { Slide } from '@site/src/components/RevealJS';
+import Img from '@site/src/components/Img';
+
+<RevealJS transition="slide">
+
+{/* ============================================ */}
+{/* COVER IMAGE */}
+{/* ============================================ */}
+
+<Slide>
+  <Img
+    src="/img/lectures/web/l15.png"
+    alt="Lecture 15 Cover"
+    prompt="A cinematic testing laboratory scene rendered in a sleek, modern technical illustration style. The scene shows a software testing facility where 'stunt doubles' (represented as simplified mannequin-like figures) stand in for complex real-world systems. In the center, a developer works at a terminal running fast unit tests, while behind glass walls we see the 'real' systems they're replacing: a massive industrial HVAC unit, a network of temperature sensors, and a notification broadcast tower. The mannequin doubles are labeled with tags like 'StubSensor', 'SpyHVAC', 'FakeRepository'. A digital clock shows tests completing in milliseconds. The overall mood conveys speed, control, and precision—the power of testing in isolation. Tagline at bottom: 'Test Doubles: Stand-ins for the Real World'"
+  />
+
+<aside class="notes">
+**Lecture overview:**
+- **Total time:** ~55 minutes (tight!)
+- **Prerequisites:** Students have JUnit basics, testing principles from earlier lectures
+- **Connects to:** A4 (testing with Mockito), prior readability work, mutation testing grading
+
+**Key framing:**
+- We're about to scale up to larger codebases
+- As systems grow, testing becomes harder—dependencies multiply
+- This lecture gives you tools to keep tests fast, focused, and reliable
+
+**Structure:**
+- Test scope spectrum (~10 min)
+- The dependency problem (~5 min)
+- Test doubles: stubs, fakes, spies (~10 min)
+- Mockito framework (~10 min)
+- Tradeoffs (~10 min)
+- AI for test generation (~10 min)
+
+→ **Transition:** Let's start with the learning objectives...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* TITLE SLIDE */}
+{/* ============================================ */}
+
+<Slide>
+
+# CS 3100: Program Design and Implementation II
+
+## Lecture 15: Test Doubles and Isolation
+
+<p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
+  ©2025 Jonathan Bell, CC-BY-SA
+</p>
+
+<aside class="notes">
+**Context from prior lectures:**
+- L5: Readability—tests are documentation that must be readable
+- L7-8: Design for change—good design makes testing easier
+- Assignments: Your test suites are graded on mutation testing—can they detect bugs?
+
+**Today's big question:** How do we test code that depends on databases, networks, hardware?
+
+→ **Transition:** Here's what you'll be able to do after today...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Learning Objectives
+
+<p style={{fontSize: '0.85em', textAlign: 'left'}}>
+After this lecture, you will be able to:
+</p>
+
+<ol style={{fontSize: '0.75em', textAlign: 'left'}}>
+  <li>Distinguish between unit, integration, and end-to-end tests</li>
+  <li>Explain the challenge of testing code with external dependencies</li>
+  <li>Differentiate between stubs, fakes, and spies as types of test doubles</li>
+  <li>Apply mocking frameworks to generate test doubles</li>
+  <li>Evaluate the tradeoffs of using test doubles</li>
+  <li>Apply AI coding assistants to generate test plans and test doubles</li>
+</ol>
+
+<aside class="notes">
+**Time allocation:**
+- Objectives 1-2: Test scope + dependency problem (~15 min)
+- Objective 3: Stubs, fakes, spies (~10 min)
+- Objective 4: Mockito framework (~10 min)
+- Objective 5: Tradeoffs (~10 min)
+- Objective 6: AI for testing (~10 min)
+
+**Why this matters now:**
+- Next lectures scale up to larger codebases with more dependencies
+- A4 requires Mockito for testing services with repository dependencies
+- Your test suites are graded by mutation testing—tests must actually detect bugs!
+
+→ **Transition:** Let's start by understanding the spectrum of test types...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* TEST SCOPE SPECTRUM */}
+{/* ============================================ */}
+
+<Slide>
+
+## Why Are We Talking About This Now?
+
+<p style={{fontSize: '1.1em'}}>
+  We're about to <strong>scale up</strong> to larger systems
+</p>
+
+<ul style={{marginTop: '1em', fontSize: '0.9em'}}>
+  <li>More classes, more dependencies, more complexity</li>
+  <li>Tests that worked for small programs don't scale</li>
+  <li>Need techniques to test components <em>in isolation</em></li>
+</ul>
+
+<p style={{marginTop: '1em', fontSize: '0.85em', color: '#9370DB'}}>
+  <strong>Your test suites are graded on bug detection, not just coverage</strong>
+</p>
+
+<aside class="notes">
+**The scaling problem:**
+- Small programs: test the whole thing, easy
+- Large programs: dependencies everywhere, slow tests, flaky tests
+- We need to break the problem apart
+
+**Assignment connection:**
+- A4 introduces services with repository dependencies
+- You MUST use Mockito to test services in isolation
+- Mutation testing checks if your tests actually catch bugs
+
+**The test quality question:** A test that passes isn't necessarily a good test. Does it actually verify behavior? Would it catch a bug?
+
+→ **Transition:** Let's map out the spectrum of test types...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Tests Vary in Scope
+
+<Img
+  src="/img/lectures/web/l15-test-pyramid.png"
+  alt="Test pyramid showing unit tests at base, integration in middle, E2E at top"
+  prompt="A clean, modern visualization of the testing pyramid rendered in an architectural blueprint style. The pyramid has three distinct layers, each clearly labeled with different visual treatments. At the wide BASE: 'Unit Tests' — shown as many small, fast-moving particles or gears, with annotations '✓ Fast (milliseconds)', '✓ Focused', '✓ Many'. In the MIDDLE layer: 'Integration Tests' — shown as connected modules or puzzle pieces fitting together, with annotations '~ Moderate speed', '~ Some dependencies', '~ Fewer'. At the narrow TOP: 'E2E Tests' — shown as a complete system diagram with user at one end, with annotations '✗ Slow', '✗ Complex setup', '✗ Few'. An arrow on the left shows 'SCOPE' increasing upward. An arrow on the right shows 'SPEED' increasing downward. A callout notes: 'Many unit tests, some integration, few E2E' The style should feel technical but accessible, like a well-designed engineering poster."
+/>
+
+<aside class="notes">
+**The pyramid shape is intentional:**
+- Many unit tests at the base (fast, cheap)
+- Fewer integration tests in the middle
+- Very few E2E tests at the top (slow, expensive)
+
+**Why this ratio matters:**
+- Edge cases and detailed logic: unit tests
+- Component communication: integration tests
+- Critical user journeys: E2E tests
+
+→ **Transition:** Let's define each level...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Unit Tests: Fast, Focused, Numerous
+
+<p style={{fontSize: '0.95em'}}>
+  Test a single "unit" — typically one class — <strong>in isolation</strong>
+</p>
+
+<ul style={{marginTop: '0.75em', fontSize: '0.9em'}}>
+  <li><span style={{color: '#060'}}>✓</span> <strong>Fast:</strong> Run in milliseconds (no I/O, no network)</li>
+  <li><span style={{color: '#060'}}>✓</span> <strong>Focused:</strong> When it fails, you know exactly where to look</li>
+  <li><span style={{color: '#060'}}>✓</span> <strong>Numerous:</strong> Thousands of tests, run in seconds</li>
+</ul>
+
+<p style={{marginTop: '1em', fontSize: '0.85em', color: '#666'}}>
+  The challenge: achieving isolation when code has dependencies
+</p>
+
+<aside class="notes">
+**Unit test characteristics:**
+- One test, one behavior, one class
+- No databases, no files, no network
+- Milliseconds to run
+
+**The isolation problem:**
+- If ThermostatController calls TemperatureSensor.readTemperature()...
+- How do we test the controller without a real sensor?
+- This is the central question of today's lecture
+
+**Readability connection (L5):** Unit tests are documentation. A reader should understand the expected behavior from the test name and structure.
+
+→ **Transition:** Integration tests cover the middle ground...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Integration Tests: Components Working Together
+
+<p style={{fontSize: '0.95em'}}>
+  Test multiple components interacting
+</p>
+
+<ul style={{marginTop: '0.75em', fontSize: '0.9em'}}>
+  <li>Do components communicate correctly?</li>
+  <li>Do they agree on data formats and protocols?</li>
+  <li>Does timing and ordering work as expected?</li>
+</ul>
+
+<p style={{marginTop: '1em', fontSize: '0.85em', color: '#c60'}}>
+  Tradeoff: slower, harder to debug when they fail
+</p>
+
+<aside class="notes">
+**When integration tests shine:**
+- Real ThermostatController + real TemperatureSensor + fake HVAC
+- Testing the "seams" between components
+- Catching issues unit tests can't: protocol mismatches, timing bugs
+
+**When integration tests hurt:**
+- Slower (database setup, network calls)
+- When they fail, which component caused it?
+- Harder to test edge cases
+
+→ **Transition:** At the far end of the spectrum...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## End-to-End Tests: The Whole System
+
+<p style={{fontSize: '0.95em'}}>
+  Test the entire system as a user would experience it
+</p>
+
+<ul style={{marginTop: '0.75em', fontSize: '0.9em'}}>
+  <li><span style={{color: '#c00'}}>✗</span> <strong>Slow:</strong> Seconds or minutes per test</li>
+  <li><span style={{color: '#c00'}}>✗</span> <strong>Expensive:</strong> Requires complete deployment</li>
+  <li><span style={{color: '#c00'}}>✗</span> <strong>Flaky:</strong> Network glitches, timing issues, browser quirks</li>
+  <li><span style={{color: '#c00'}}>✗</span> <strong>Hard to debug:</strong> Bug could be anywhere</li>
+</ul>
+
+<p style={{marginTop: '1em', fontSize: '0.85em', color: '#060'}}>
+  But: tests what actually matters — does it work for users?
+</p>
+
+<aside class="notes">
+**Example:** Pawtograder E2E tests:
+1. Deploy complete system to test environment
+2. Create class with assignments
+3. Create student submissions
+4. Verify student can log in, view results, submit review
+
+**Why we still need them:**
+- Catches integration issues across the whole stack
+- Tests real user journeys
+- But too expensive for edge case coverage
+
+**We'll cover E2E testing in depth in L30 (GUI Patterns and Testing).**
+
+→ **Transition:** Why not just write E2E tests for everything?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Practical Mix
+
+<p style={{fontSize: '1em'}}>
+  Why not just write E2E tests for everything?
+</p>
+
+<p style={{marginTop: '1em', fontSize: '0.95em'}}>
+  Imagine testing 15 edge cases for a thermostat:
+</p>
+
+<table style={{margin: '1em auto', fontSize: '0.8em'}}>
+  <thead>
+    <tr>
+      <th style={{padding: '0.4em 0.8em'}}></th>
+      <th style={{padding: '0.4em 0.8em'}}>Unit Tests</th>
+      <th style={{padding: '0.4em 0.8em'}}>E2E Tests</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style={{padding: '0.4em 0.8em'}}>Time to run</td>
+      <td style={{padding: '0.4em 0.8em', color: '#060'}}>~150ms total</td>
+      <td style={{padding: '0.4em 0.8em', color: '#c00'}}>~15 minutes</td>
+    </tr>
+    <tr>
+      <td style={{padding: '0.4em 0.8em'}}>Flakiness</td>
+      <td style={{padding: '0.4em 0.8em', color: '#060'}}>None</td>
+      <td style={{padding: '0.4em 0.8em', color: '#c00'}}>Frequent</td>
+    </tr>
+    <tr>
+      <td style={{padding: '0.4em 0.8em'}}>Debug time</td>
+      <td style={{padding: '0.4em 0.8em', color: '#060'}}>Seconds</td>
+      <td style={{padding: '0.4em 0.8em', color: '#c00'}}>Hours</td>
+    </tr>
+  </tbody>
+</table>
+
+<aside class="notes">
+**The math doesn't work:**
+- 15 edge cases × 1 minute each = 15 minutes
+- Unit tests: 15 edge cases × 10ms = 150ms
+- Run unit tests on every save; E2E tests nightly
+
+**The right balance:**
+- Many unit tests for edge cases and logic
+- Some integration tests for component interaction
+- Few E2E tests for critical user journeys
+
+**Today's focus:** Unit testing—specifically, how to achieve isolation.
+
+→ **Transition:** Let's look at a concrete example of the dependency problem...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* THE DEPENDENCY PROBLEM */}
+{/* ============================================ */}
+
+<Slide>
+
+## The Dependency Problem
+
+<p style={{fontSize: '0.95em'}}>
+  Consider a <code>ThermostatController</code> in a smart home system:
+</p>
+
+```java
+public class ThermostatController {
+    private final TemperatureSensor sensor;
+    private final HVACService hvacService;
+    private final NotificationService notifier;
+
+    public ThermostatController(TemperatureSensor sensor,
+                                 HVACService hvacService,
+                                 NotificationService notifier) {
+        this.sensor = sensor;
+        this.hvacService = hvacService;
+        this.notifier = notifier;
+    }
+    // ...
+}
+```
+
+<aside class="notes">
+**Notice the dependencies:**
+- TemperatureSensor — reads from hardware
+- HVACService — controls actual heating/cooling
+- NotificationService — sends real messages to users
+
+**Design for change connection (L7-8):** This is dependency injection! We designed for testability.
+
+**The question:** How do we unit test this without real hardware?
+
+→ **Transition:** Let's see the method we want to test...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Method Under Test
+
+```java
+public void adjustToTargetTemperature(double targetTemp, String zoneId) {
+    double currentTemp = sensor.readTemperature(zoneId);
+    double delta = targetTemp - currentTemp;
+
+    if (Math.abs(delta) > 0.5) {
+        HVACMode mode = delta > 0 ? HVACMode.HEATING : HVACMode.COOLING;
+        hvacService.setMode(mode, zoneId);
+        hvacService.activate(zoneId);
+        notifier.send("HVAC activated in " + zoneId, NotificationLevel.INFO);
+    }
+}
+```
+
+<p style={{marginTop: '0.5em', fontSize: '0.85em', color: '#c00'}}>
+  To test this, we'd need real sensors, real HVAC, real notifications!
+</p>
+
+<aside class="notes">
+**What we want to test:**
+- If current temp is below target, activate heating
+- If current temp is above target, activate cooling
+- If within 0.5 degrees, do nothing
+- Correct zone is used
+
+**What we DON'T want:**
+- Real temperature sensors (need hardware)
+- Real HVAC activation (would heat/cool the building!)
+- Real notifications (spam real users)
+
+**The solution:** Replace dependencies with test doubles
+
+→ **Transition:** Enter test doubles...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* TEST DOUBLES */}
+{/* ============================================ */}
+
+<Slide>
+
+## Test Doubles: Stand-Ins for Real Dependencies
+
+<Img
+  src="/img/lectures/web/l15-stunt-double.png"
+  alt="Stunt double concept applied to software testing"
+  prompt="A split-screen cinematic illustration showing the stunt double concept applied to software. LEFT SIDE ('The Real Thing'): A dramatic movie set with a real actor about to do a dangerous stunt—jumping off a building, with complex rigging, safety teams, expensive equipment, and a sign reading 'REAL TemperatureSensor: Requires actual hardware, network access, calibration'. RIGHT SIDE ('The Double'): The same scene but with a confident stunt double (a simple mannequin figure) easily performing the action, with minimal setup, and a sign reading 'StubTemperatureSensor: Returns 65.0, always'. The stunt double has a tag that says 'Does exactly what the scene needs—nothing more'. A director's chair in the corner has a clapperboard labeled 'TEST SCENE 47: activatesHeatingWhenCold'. The visual style should feel like a behind-the-scenes movie documentary, emphasizing that the double is simpler but perfectly adequate for the test's needs. Tagline: 'A test double doesn't need to be real—it just needs to be good enough for the test.'"
+/>
+
+<aside class="notes">
+**The film industry analogy:**
+- Stunt doubles stand in for actors
+- Don't need to act—just fall off buildings convincingly
+- Simpler than the real thing, adequate for the scene
+
+**Test doubles:**
+- Stand in for real dependencies during testing
+- Don't need full functionality—just enough for the test
+- Enable testing in isolation
+
+→ **Transition:** There are several types of test doubles...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Three Types of Test Doubles
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1em', marginTop: '0.5em'}}>
+  <div style={{textAlign: 'center'}}>
+    <p style={{fontSize: '1.1em', color: '#9370DB'}}><strong>Stubs</strong></p>
+    <p style={{fontSize: '0.8em'}}>Return canned answers</p>
+  </div>
+  <div style={{textAlign: 'center'}}>
+    <p style={{fontSize: '1.1em', color: '#9370DB'}}><strong>Fakes</strong></p>
+    <p style={{fontSize: '0.8em'}}>Simplified implementations</p>
+  </div>
+  <div style={{textAlign: 'center'}}>
+    <p style={{fontSize: '1.1em', color: '#9370DB'}}><strong>Spies</strong></p>
+    <p style={{fontSize: '0.8em'}}>Record what happened</p>
+  </div>
+</div>
+
+<p style={{marginTop: '1.5em', fontSize: '0.9em', color: '#666'}}>
+  From simplest to most sophisticated
+</p>
+
+<aside class="notes">
+**The spectrum:**
+- **Stubs:** Dumbest—just return a value
+- **Fakes:** Actually work, but simpler than real thing
+- **Spies:** Record interactions for verification
+
+**Interview note:** Some testing purists have precise definitions for these terms. The distinctions matter less than understanding when to use each.
+
+→ **Transition:** Let's see each in action...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Stubs: Return Canned Answers
+
+```java
+class StubTemperatureSensor implements TemperatureSensor {
+    private final double fixedTemperature;
+
+    public StubTemperatureSensor(double temperature) {
+        this.fixedTemperature = temperature;
+    }
+
+    @Override
+    public double readTemperature(String zoneId) {
+        return fixedTemperature;  // Always returns the same value
+    }
+}
+```
+
+<p style={{marginTop: '0.5em', fontSize: '0.85em'}}>
+  Ignores the zone, always returns 65.0 — <strong>that's fine!</strong>
+</p>
+
+<aside class="notes">
+**Stubs are simple:**
+- Configure with a value
+- Return that value when asked
+- Ignore parameters we don't care about
+
+**Why this works:**
+- For testing "activate heating when cold"
+- We just need the sensor to say "it's cold"
+- Don't care about zones, precision, calibration
+
+**Readability (L5):** The stub makes the test's intent clear—we're testing the "cold" case.
+
+→ **Transition:** What about verifying side effects?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Spies: Record What Happened
+
+```java
+class SpyHVACService implements HVACService {
+    private boolean activateCalled = false;
+    private String activatedZone = null;
+    private HVACMode setMode = null;
+
+    @Override
+    public void activate(String zoneId) {
+        this.activateCalled = true;
+        this.activatedZone = zoneId;
+    }
+
+    @Override
+    public void setMode(HVACMode mode, String zoneId) {
+        this.setMode = mode;
+    }
+
+    // Query methods for tests
+    public boolean wasActivateCalled() { return activateCalled; }
+    public String getActivatedZone() { return activatedZone; }
+    public HVACMode getSetMode() { return setMode; }
+}
+```
+
+<aside class="notes">
+**Spies record:**
+- Which methods were called
+- With what arguments
+- How many times
+
+**Why we need this:**
+- adjustToTargetTemperature() returns void
+- Can't test by checking return value
+- Must verify it called hvacService.activate()
+
+→ **Transition:** Now we can write a complete test...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## A Complete Test with Hand-Rolled Doubles
+
+```java
+@Test
+public void activatesHeatingWhenBelowTarget() {
+    StubTemperatureSensor stubSensor = new StubTemperatureSensor(65.0);
+    SpyHVACService spyHVAC = new SpyHVACService();
+    StubNotificationService stubNotifier = new StubNotificationService();
+
+    ThermostatController controller = new ThermostatController(
+        stubSensor, spyHVAC, stubNotifier);
+
+    controller.adjustToTargetTemperature(72.0, "livingRoom");
+
+    assertTrue(spyHVAC.wasActivateCalled());
+    assertEquals("livingRoom", spyHVAC.getActivatedZone());
+    assertEquals(HVACMode.HEATING, spyHVAC.getSetMode());
+}
+```
+
+<aside class="notes">
+**Trace through the test:**
+1. Stub says temperature is 65°F
+2. Controller sees target is 72°F (7° delta)
+3. Controller should activate heating
+4. Spy records that activate() was called
+
+**This test is:**
+- Fast (no I/O)
+- Focused (tests one behavior)
+- Clear (the stubs make the scenario obvious)
+
+**But there's a problem...**
+
+→ **Transition:** Look at how much code we wrote!
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Pain of Hand-Rolling Test Doubles
+
+<p style={{fontSize: '1em'}}>
+  We wrote <strong>three separate classes</strong> just to test one method!
+</p>
+
+<ul style={{marginTop: '1em', fontSize: '0.9em'}}>
+  <li>StubTemperatureSensor</li>
+  <li>SpyHVACService</li>
+  <li>StubNotificationService</li>
+</ul>
+
+<p style={{marginTop: '1em', fontSize: '0.95em', color: '#c00'}}>
+  And we haven't tested cooling, error cases, edge cases...
+</p>
+
+<p style={{marginTop: '0.5em', fontSize: '0.85em', color: '#666'}}>
+  Do we need a new stub class for every temperature?
+</p>
+
+<aside class="notes">
+**The boilerplate explosion:**
+- Each new test scenario might need different stub values
+- Different spy recording for different verifications
+- Lots of repetitive code
+
+**This is where mocking frameworks shine.**
+
+→ **Transition:** Enter Mockito...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* MOCKITO */}
+{/* ============================================ */}
+
+<Slide>
+
+## Mockito: Test Doubles Without the Boilerplate
+
+<p style={{fontSize: '0.95em'}}>
+  A <strong>mocking framework</strong> generates test doubles at runtime
+</p>
+
+```java
+@Test
+public void activatesHeatingWhenBelowTarget() {
+    // Create test doubles — Mockito generates these at runtime
+    TemperatureSensor mockSensor = mock(TemperatureSensor.class);
+    HVACService mockHVAC = mock(HVACService.class);
+    NotificationService mockNotifier = mock(NotificationService.class);
+
+    // Configure stub behavior
+    when(mockSensor.readTemperature("livingRoom")).thenReturn(65.0);
+
+    ThermostatController controller = new ThermostatController(
+        mockSensor, mockHVAC, mockNotifier);
+
+    controller.adjustToTargetTemperature(72.0, "livingRoom");
+
+    // Verify spy recordings
+    verify(mockHVAC).setMode(HVACMode.HEATING, "livingRoom");
+    verify(mockHVAC).activate("livingRoom");
+}
+```
+
+<aside class="notes">
+**Notice the difference:**
+- No separate stub/spy classes
+- Configure behavior inline with when().thenReturn()
+- Verify interactions with verify()
+
+**A Mockito "mock" is really:**
+- A stub (when().thenReturn())
+- AND a spy (verify())
+- Combined into one object
+
+→ **Transition:** Let's break down the key Mockito operations...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Mockito: Create, Configure, Verify
+
+<table style={{margin: '0 auto', fontSize: '0.85em'}}>
+  <tbody>
+    <tr>
+      <td style={{padding: '0.5em 0.8em'}}><code>mock(Class.class)</code></td>
+      <td style={{padding: '0.5em 0.8em'}}>Create a test double</td>
+    </tr>
+    <tr>
+      <td style={{padding: '0.5em 0.8em'}}><code>when(...).thenReturn(...)</code></td>
+      <td style={{padding: '0.5em 0.8em'}}>Configure stub behavior</td>
+    </tr>
+    <tr>
+      <td style={{padding: '0.5em 0.8em'}}><code>verify(mock).method(...)</code></td>
+      <td style={{padding: '0.5em 0.8em'}}>Check spy recordings</td>
+    </tr>
+    <tr>
+      <td style={{padding: '0.5em 0.8em'}}><code>when(...).thenThrow(...)</code></td>
+      <td style={{padding: '0.5em 0.8em'}}>Simulate exceptions</td>
+    </tr>
+  </tbody>
+</table>
+
+<p style={{marginTop: '1em', fontSize: '0.85em', color: '#666'}}>
+  Mockito uses reflection to generate implementations at runtime
+</p>
+
+<aside class="notes">
+**The four operations you'll use most:**
+1. **mock()** — create the double
+2. **when().thenReturn()** — "when someone calls this, return that"
+3. **verify()** — "assert this method was called"
+4. **when().thenThrow()** — simulate failures
+
+**How Mockito works (simplified):**
+1. Uses Java reflection to examine the interface
+2. Generates a new class implementing all methods
+3. Default: methods return null/0/false
+4. Records every call (spy)
+5. Lets you configure returns (stub)
+
+→ **Transition:** Argument matchers add flexibility...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Argument Matchers: Flexible Matching
+
+```java
+// Return 65.0 for ANY zone
+when(mockSensor.readTemperature(anyString())).thenReturn(65.0);
+
+// Verify activate was called with any string
+verify(mockHVAC).activate(anyString());
+
+// Verify with custom condition
+verify(mockNotifier).send(
+    argThat(message -> message.contains("HVAC activated")),
+    eq(NotificationLevel.INFO)
+);
+```
+
+<p style={{marginTop: '0.5em', fontSize: '0.85em', color: '#666'}}>
+  <code>anyString()</code>, <code>any()</code>, <code>eq()</code>, <code>argThat()</code>
+</p>
+
+<aside class="notes">
+**Common matchers:**
+- anyString(), anyInt(), any() — match any value
+- eq(value) — match exactly this value
+- argThat(predicate) — match if predicate returns true
+
+**When to use argThat:**
+- Don't care about exact message, just that it contains key info
+- Testing that a timestamp is "recent" rather than exact
+
+**Rule:** If you use any matcher in a call, ALL arguments must use matchers.
+
+→ **Transition:** What about fakes?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Fakes: When You Need Real Behavior
+
+```java
+class FakeUserRepository implements UserRepository {
+    private final Map<String, User> users = new HashMap<>();
+
+    @Override
+    public void save(User user) {
+        users.put(user.getId(), user);
+    }
+
+    @Override
+    public User findById(String id) {
+        return users.get(id);
+    }
+
+    @Override
+    public List<User> findAll() {
+        return new ArrayList<>(users.values());
+    }
+}
+```
+
+<p style={{marginTop: '0.5em', fontSize: '0.85em'}}>
+  A working implementation — just simpler than the real database
+</p>
+
+<aside class="notes">
+**When fakes are useful:**
+- Need to save and then retrieve (can't stub that easily)
+- Testing multi-step workflows
+- Repository patterns (your A4 uses this!)
+
+**Stub vs Fake:**
+- Stub: returns canned value, doesn't "work"
+- Fake: actually stores/retrieves, but in-memory
+
+**A4 connection:** You'll use fakes for in-memory repositories, mocks for OcrPort.
+
+→ **Transition:** Let's talk about tradeoffs...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* TRADEOFFS */}
+{/* ============================================ */}
+
+<Slide>
+
+## The Good: Why Test Doubles Work
+
+<ul style={{fontSize: '0.9em'}}>
+  <li><span style={{color: '#060'}}>✓</span> <strong>Speed:</strong> Tests run in milliseconds</li>
+  <li><span style={{color: '#060'}}>✓</span> <strong>Determinism:</strong> No flaky tests from real sensors</li>
+  <li><span style={{color: '#060'}}>✓</span> <strong>Isolation:</strong> Failures point to the code under test</li>
+  <li><span style={{color: '#060'}}>✓</span> <strong>Edge cases:</strong> Easy to simulate errors</li>
+</ul>
+
+```java
+// Simulating a sensor failure — one line!
+when(mockSensor.readTemperature(anyString()))
+    .thenThrow(new SensorException("Connection lost"));
+```
+
+<aside class="notes">
+**Speed:** Thousands of tests in seconds. Run on every save.
+
+**Determinism:** A stub always returns 65.0. The real sensor might return 65.001 or timeout.
+
+**Isolation:** When the test fails, the bug is in ThermostatController, not in network code.
+
+**Edge cases:** How do you test sensor failure with real hardware? Unplug it? With a stub, one line.
+
+**But there are dangers...**
+
+→ **Transition:** The dark side of mocking...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Dangerous: False Confidence
+
+<Img
+  src="/img/lectures/web/l15-false-confidence.png"
+  alt="False confidence from testing with mocks"
+  prompt="A cautionary illustration showing a software developer celebrating a 'ALL TESTS PASS!' screen while behind them, through a window, the real system is on fire. The developer's screen shows green checkmarks for 'MockSensor returns 72.0 ✓' and 'MockHVAC.activate() called ✓'. But through the window, we see the REAL temperature sensor displaying '72.4823017' (different precision), the REAL HVAC system throwing sparks and displaying 'ERROR: Protocol mismatch', and the REAL notification service showing 'Connection refused'. A small note in the corner reads: 'Your tests proved your code works with YOUR test doubles.' The style should be slightly comedic but with a serious undertone—the 'celebration meets disaster' visual metaphor. Colors should contrast: the indoor test environment is calm greens and blues, while the outdoor reality is oranges and reds."
+/>
+
+<aside class="notes">
+**The core danger:**
+- Tests prove code works with YOUR test doubles
+- The real sensor might have different precision
+- The real HVAC might have a different protocol
+- The real notification service might require auth
+
+**Example:**
+- Your stub returns 72.0
+- Real sensor returns 72.4823017
+- Does your code handle that?
+
+→ **Transition:** Another danger: brittle tests...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Dangerous: Brittle Tests
+
+```java
+// This test breaks if you rename activate() to start()
+verify(mockHVAC).activate("livingRoom");
+
+// This test breaks if you change the message format
+verify(mockNotifier).send(
+    "HVAC activated in livingRoom",
+    NotificationLevel.INFO
+);
+```
+
+<p style={{marginTop: '1em', fontSize: '0.95em', color: '#c00'}}>
+  Tests coupled to implementation details break on every refactor
+</p>
+
+<aside class="notes">
+**Brittle test symptoms:**
+- Tests break when you refactor, even though behavior is unchanged
+- Spend more time fixing tests than writing features
+- Developers avoid refactoring because tests will break
+
+**The deeper problem:**
+- Are you testing BEHAVIOR or IMPLEMENTATION?
+- "It should heat the room" vs "It should call activate()"
+- The first is behavior; the second is implementation
+
+**Readability connection (L5):** Tests are documentation. If you're documenting implementation details, you're documenting the wrong thing.
+
+→ **Transition:** Guidelines for when to use test doubles...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## When to Use Test Doubles
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', marginTop: '0.5em'}}>
+  <div>
+    <p style={{fontSize: '0.95em', color: '#060'}}><strong>Use test doubles when:</strong></p>
+    <ul style={{fontSize: '0.8em'}}>
+      <li>Dependency is slow or unreliable</li>
+      <li>Need to simulate error conditions</li>
+      <li>Dependency has side effects (emails, charges)</li>
+      <li>Want to verify interactions</li>
+    </ul>
+  </div>
+  <div>
+    <p style={{fontSize: '0.95em', color: '#c00'}}><strong>Be cautious when:</strong></p>
+    <ul style={{fontSize: '0.8em'}}>
+      <li>Mock setup is more complex than code</li>
+      <li>Verifying implementation, not behavior</li>
+      <li>Mocking types you don't own</li>
+    </ul>
+  </div>
+</div>
+
+<p style={{marginTop: '1em', fontSize: '0.85em', color: '#9370DB'}}>
+  If mock setup is getting elaborate, consider an integration test instead
+</p>
+
+<aside class="notes">
+**Good uses:**
+- Database, network, hardware
+- Simulating timeouts, exceptions
+- Verifying notifications were sent
+- Avoiding side effects (charges, emails)
+
+**Bad signs:**
+- Mock setup longer than the test
+- Mocking every little thing
+- Mocking third-party libraries (you don't know their contract!)
+
+**The heuristic:** If the mock setup is getting complex, that's a sign to write an integration test instead.
+
+→ **Transition:** How does this connect to your assignments?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Connection to Your Assignments
+
+<p style={{fontSize: '1em'}}>
+  Your test suites are graded by <strong>mutation testing</strong>
+</p>
+
+<ul style={{marginTop: '1em', fontSize: '0.9em'}}>
+  <li>We introduce bugs (mutations) into your code</li>
+  <li>Your tests should <strong>catch</strong> those bugs</li>
+  <li>A test that passes with the bug present = weak test</li>
+</ul>
+
+<p style={{marginTop: '1em', fontSize: '0.95em', color: '#9370DB'}}>
+  It's not enough for tests to pass — they must detect bugs!
+</p>
+
+<aside class="notes">
+**Mutation testing explained:**
+- We change ">" to ">="
+- We delete a line
+- We change a constant
+- Do your tests catch it?
+
+**Why this matters:**
+- You can have 100% coverage with useless tests
+- Tests that just call methods without asserting = useless
+- Tests that verify the wrong thing = useless
+
+**A4 connection:**
+- Test your services with mocks
+- But make sure tests actually verify behavior
+- Ask: "If this line were wrong, would my test catch it?"
+
+→ **Transition:** AI can help with test generation...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* AI FOR TESTING */}
+{/* ============================================ */}
+
+<Slide>
+
+## AI Coding Assistants for Testing
+
+<p style={{fontSize: '0.95em'}}>
+  AI assistants are particularly good at:
+</p>
+
+<ul style={{marginTop: '0.75em', fontSize: '0.9em'}}>
+  <li>Generating stub implementations from interfaces</li>
+  <li>Suggesting edge cases you might have missed</li>
+  <li>Converting hand-written doubles to Mockito syntax</li>
+  <li>Creating test data and fixtures</li>
+</ul>
+
+<p style={{marginTop: '1em', fontSize: '0.85em', color: '#c60'}}>
+  But remember: only ask AI to produce what you can review!
+</p>
+
+<aside class="notes">
+**AI strengths for testing:**
+- Given an interface, generate a stub/fake
+- "What edge cases should I test for this method?"
+- "Convert this hand-rolled mock to Mockito"
+- Generate realistic test data
+
+**AI weaknesses:**
+- Might write tests that pass but don't verify correctly
+- Mock configurations might not reflect reality
+- Can generate tests that look good but test nothing
+
+→ **Transition:** A workflow for AI-assisted testing...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## AI Testing Workflow
+
+<ol style={{fontSize: '0.9em'}}>
+  <li><strong>Plan first:</strong> Describe behaviors to test in plain English</li>
+  <li><strong>Generate:</strong> Ask AI to create tests from your plan</li>
+  <li><strong>Review:</strong> Does it actually test what it claims?</li>
+  <li><strong>Break it:</strong> Introduce a bug—does the test fail?</li>
+  <li><strong>Validate mocks:</strong> Do configurations reflect reality?</li>
+</ol>
+
+<p style={{marginTop: '1em', fontSize: '0.85em', color: '#666'}}>
+  The "break it" step is crucial — if the test doesn't fail when code is wrong, it's worthless
+</p>
+
+<aside class="notes">
+**Step 1 - Plan:**
+- "Test that heating activates when temp is below target by more than 0.5"
+- "Test that nothing happens when temp is within 0.5 of target"
+- "Test that cooling activates when temp is above target"
+
+**Step 4 - Break it:**
+- Change ">" to ">=" in your code
+- Run the test
+- If it still passes, the test is bad
+
+**This is manual mutation testing!**
+
+→ **Transition:** Example of AI-generated test review...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Reviewing AI-Generated Tests
+
+```java
+// AI generated this — is it good?
+@Test
+public void testAdjustTemperature() {
+    when(mockSensor.readTemperature(any())).thenReturn(70.0);
+    controller.adjustToTargetTemperature(75.0, "room1");
+    verify(mockHVAC).activate(any());
+}
+```
+
+<div class="fragment">
+<p style={{marginTop: '1em', fontSize: '0.9em', color: '#c00'}}>
+  Problems:
+</p>
+<ul style={{fontSize: '0.8em'}}>
+  <li>Doesn't verify heating mode (could be cooling!)</li>
+  <li>Uses <code>any()</code> instead of checking zone</li>
+  <li>Vague test name doesn't describe expected behavior</li>
+</ul>
+</div>
+
+<aside class="notes">
+**The AI's test passes, but:**
+- Doesn't check if it's HEATING vs COOLING
+- Doesn't verify the correct zone
+- Name is meaningless
+
+**How to fix:**
+- Rename: "activatesHeatingWhenBelowTargetByMoreThanHalfDegree"
+- Verify: setMode(HVACMode.HEATING, "room1")
+- Verify: activate("room1")
+
+**Readability (L5):** Test names are documentation. "testAdjustTemperature" tells you nothing.
+
+→ **Transition:** Let's summarize...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* SUMMARY */}
+{/* ============================================ */}
+
+<Slide>
+
+## Summary
+
+<ul style={{fontSize: '0.9em'}}>
+  <li><strong>Test scope spectrum:</strong> Unit (fast/focused) → Integration → E2E (slow/complete)</li>
+  <li><strong>Test doubles</strong> stand in for real dependencies</li>
+  <li><strong>Stubs</strong> return canned answers; <strong>spies</strong> record interactions; <strong>fakes</strong> are simplified implementations</li>
+  <li><strong>Mockito</strong> generates test doubles at runtime</li>
+  <li><strong>Tradeoffs:</strong> Speed/isolation vs false confidence/brittleness</li>
+  <li><strong>Mutation testing:</strong> Tests must detect bugs, not just pass</li>
+</ul>
+
+<aside class="notes">
+**Key takeaways for A4:**
+- Use Mockito to test services in isolation
+- Mock repositories and external services (OcrPort)
+- Verify behavior, not implementation details
+- Ask: "Would this test catch a bug?"
+
+**Connection to larger themes:**
+- L5 Readability: Tests are documentation
+- L7-8 Design for change: DI enables testability
+- Mutation testing: Quality over coverage
+
+→ **Transition:** What's next...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Next Steps
+
+<ul style={{fontSize: '0.9em'}}>
+  <li><strong>A4:</strong> Test your services with Mockito</li>
+  <li><strong>Reading:</strong> Mockito documentation (linked on course site)</li>
+  <li><strong>Next lectures:</strong> Scaling up to larger systems</li>
+</ul>
+
+<p style={{marginTop: '1.5em', fontSize: '1.1em'}}>
+  Questions?
+</p>
+
+<aside class="notes">
+**A4 specifics:**
+- Mock RecipeRepository, RecipeCollectionRepository, OcrPort
+- Use fakes for in-memory storage if needed
+- Your test suite is graded by mutation testing!
+
+**Coming up:**
+- Larger codebases with more dependencies
+- Design patterns that make testing easier
+- GUI testing (L30)
+
+**Office hours:** Bring your A4 test questions!
+</aside>
+
+</Slide>
+
+</RevealJS>
