@@ -89,12 +89,101 @@ Style: Retro pixel art with deep blues, oranges, and purple accents. The mood is
 </p>
 
 <aside className="notes">
-**Context from prior lectures:**
-- L5: Students learned that readability is the primary goal—code is read far more than written
-- L13: Students learned a systematic workflow for using AI coding assistants
-- This lecture applies both: readable code is easier to debug, and AI can help debug systematically
+Quick title slide, move on to the hook.
 
-**Key message:** Debugging isn't about being smart—it's about being systematic.
+→ **Transition:** Let's talk about what's coming...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* OPENING HOOK */}
+{/* ============================================ */}
+
+<Slide>
+
+## Coming Soon: Much Bigger Codebases
+
+<div style={{fontSize: '0.85em'}}>
+
+**Where you are now:**
+- Individual assignments, ~500-1000 lines of code
+- You wrote most of it yourself
+- Structure fits in your head
+
+**Where you're heading:**
+- Group project with teammates' code
+- Open-source libraries with thousands of files
+- Unfamiliar codebases you need to modify or debug
+
+</div>
+
+<p style={{fontSize: '1.1em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
+"How do I even start understanding this codebase?"
+</p>
+
+<aside className="notes">
+**The reality check:**
+- Assignment 4 is coming—more complex model with library, cookbooks
+- Group project in March—you'll inherit teammates' code
+- Future jobs—you'll rarely start from scratch
+
+**The fear is real:**
+- "There's so much code, where do I even begin?"
+- "I don't understand what this does"
+- "Something is broken and I have no idea why"
+
+**Today's promise:** We're going to learn the fundamental skills for tackling unfamiliar code. We'll practice at small scale so you're ready when the big codebases arrive.
+
+→ **Transition:** These are learnable skills...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Program Understanding Is a Skill
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.85em'}}>
+
+<div>
+
+**Not magic or "talent":**
+- Systematic techniques exist
+- Tools can help enormously
+- Practice makes you faster
+
+</div>
+
+<div>
+
+**Two core questions:**
+1. **Control flow:** What *path* does execution take?
+2. **Data flow:** What *values* exist at each point?
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.9em', marginTop: '1em'}}>
+Today we'll learn these techniques at a small scale—so they become second nature when you need them on large codebases.
+</p>
+
+<aside className="notes">
+**The mindset shift:**
+- Some students think "I'm just not good at reading code"
+- Wrong! It's a skill like any other
+- The techniques we'll learn today work at ANY scale
+
+**Connection to L5 (Readability):**
+- Good naming and structure make understanding easier
+- But you still need techniques for when code ISN'T well-written
+- (And let's be honest—you'll encounter plenty of that)
+
+**Connection to L13 (AI Assistants):**
+- AI can help explain code—but YOU need to verify
+- AI can suggest fixes—but YOU need to understand the bug first
+- The 6-step workflow applies directly to debugging
 
 → **Transition:** Here's what you'll be able to do after today...
 </aside>
@@ -114,81 +203,28 @@ After this lecture, you will be able to:
 </p>
 
 <ol style={{fontSize: '0.75em', textAlign: 'left'}}>
-  <li>Situate debugging within the software development lifecycle</li>
   <li>Utilize control flow and data flow analysis to understand a program</li>
   <li>Utilize diagrams (call graphs, sequence diagrams) to visualize program behavior</li>
-  <li>Describe the scientific method of debugging</li>
+  <li>Apply the scientific method to debugging</li>
   <li>Utilize a debugger to step through a program and inspect state</li>
   <li>Utilize an AI programming agent to assist with debugging</li>
 </ol>
 
 <aside className="notes">
 **Time allocation:**
-- Objective 1: Debugging in SDLC (~5 min)
-- Objective 2: Control/data flow analysis (~10 min)
-- Objective 3: Diagrams and Mermaid (~8 min)
-- Objective 4: Scientific method of debugging (~15 min)
-- Objective 5: Debugger usage (~8 min)
-- Objective 6: AI for debugging (~9 min)
+- Control/data flow analysis (~10 min)
+- Diagrams and Mermaid (~8 min)
+- Scientific method of debugging (~15 min)
+- Debugger usage (~10 min)
+- AI for debugging (~9 min)
 
 **The thread:** Build from understanding code → visualizing it → systematically debugging it → using tools to accelerate the process.
 
-→ **Transition:** Let's start by situating debugging in the bigger picture...
+→ **Transition:** Let's start with the two fundamental lenses...
 </aside>
 
 </Slide>
 
-{/* ============================================ */}
-{/* ARC 1: DEBUGGING IN THE SDLC (5 min) */}
-{/* ============================================ */}
-
-<Slide>
-
-## Debugging Is Not a Separate Phase
-
-<p style={{fontSize: '0.9em'}}>
-Debugging is an integral part of <strong>Implementation</strong> and <strong>Validation</strong>:
-</p>
-
-```mermaid
-flowchart LR
-    R[Requirements] --> D[Design]
-    D --> I[Implementation]
-    I --> V[Validation]
-    V -->|bugs found| I
-    I -->|"understanding needed"| D
-
-    style I fill:#9370DB,color:white
-    style V fill:#9370DB,color:white
-```
-
-<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
-When we encounter unexpected behavior, we need to understand:
-</p>
-
-<ul style={{fontSize: '0.8em'}}>
-  <li><strong>What the program is actually doing</strong> (Program Understanding)</li>
-  <li><strong>What the program should be doing</strong> (Requirements & Design)</li>
-  <li><strong>Why there's a mismatch</strong> (Debugging)</li>
-</ul>
-
-<aside className="notes">
-**The key insight:**
-- Debugging isn't something you do "after" development
-- It's woven throughout implementation and validation
-- Every bug is a gap between actual and expected behavior
-
-**Connection to prior lectures:**
-- Requirements (L9): You need to know what "correct" means
-- Design (L6-L8): Good design makes bugs easier to find and fix
-- Testing (L10): Tests reveal bugs; debugging finds the root cause
-
-**Why this matters:** Treating debugging as a "phase" leads to panic when bugs appear. Treating it as a skill leads to calm, systematic problem-solving.
-
-→ **Transition:** Before we can debug, we need to understand what the code is doing...
-</aside>
-
-</Slide>
 
 <Slide>
 
