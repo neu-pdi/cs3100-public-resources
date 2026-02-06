@@ -1607,32 +1607,58 @@ Style notes: This is the 'aha!' visual that ties together the example. Students 
   prompt="A side-by-side comparison of two debugging approaches. NO text labels or titles.
 
 LEFT SIDE - PRINTLN DEBUGGING (cluttered, tedious):
-- Code file with many print statements scattered throughout, highlighted in yellow
-- A developer adding yet another println, looking frustrated
-- Below: A massive scrolling terminal/log output with hundreds of lines
-- Developer squinting at the log, trying to find the relevant line
-- Magnifying glass searching through noise
-- Multiple run cycles shown (edit → run → read logs → repeat)
-- Visual feeling: cluttered, noisy, indirect, guessing
+Show this code with print statements scattered throughout:
+```java
+for (char c : s.toCharArray()) {
+    System.out.println('c=' + c);
+    System.out.println('tag=' + tag);
+    System.out.println('quote=' + quote);
+    if (c == '<') {
+        System.out.println('entering tag');
+        tag = true;
+    } else if (c == '>') {
+        System.out.println('exiting tag');
+        tag = false;
+    } else if (!tag) {
+        System.out.println('adding: ' + c);
+        out.append(c);
+    }
+    System.out.println('out so far: ' + out);
+}
+```
+- Print statements highlighted in yellow, cluttering the logic
+- Below the code: massive terminal output with dozens of lines like:
+  c=<  tag=false  quote=false  entering tag  c=b  tag=true...
+- Developer squinting at the log trying to find the relevant moment
+- Visual feeling: cluttered, noisy, indirect
 
 RIGHT SIDE - DEBUGGER (clean, direct):
-- Same code but clean, no print statements added
-- A clear breakpoint marker (red dot) on one line
-- Execution paused at that line (highlighted)
-- A clean variables panel showing ALL values: tag=true, quote=false, out='foo', c='>'
-- Step controls visible (step over, step into, continue)
-- Developer looking directly at the state, confident expression
-- Single workflow: set breakpoint → run → inspect
+Show this SAME code but clean, no print statements:
+```java
+for (char c : s.toCharArray()) {
+    if (c == '<') {
+        tag = true;           // ← breakpoint here (red dot)
+    } else if (c == '>') {
+        tag = false;
+    } else if (!tag) {
+        out.append(c);
+    }
+}
+```
+- One red breakpoint dot on the 'tag = true' line
+- Current line highlighted (execution paused)
+- Variables panel showing: c='<', tag=false, quote=false, out=''
+- Step controls visible (step over, step into, continue buttons)
 - Visual feeling: focused, direct, complete visibility
 
-CENTER - Arrow or VS symbol between them
+CENTER - 'VS' between them
 
 VISUAL CONTRAST:
-- Left: messy, many artifacts, indirect observation
-- Right: clean, focused, direct observation
-- The debugger side should look obviously better/easier
+- Left: code is cluttered with print statements, output is a wall of text
+- Right: code is clean, state is shown directly in a panel
+- The debugger side should look obviously simpler and more direct
 
-Style: Clean educational illustration. The contrast should be immediately obvious - println is noisy and indirect, debugger is clean and direct."
+Style: Clean educational illustration. The code should be readable."
 />
 
 <aside className="notes">
