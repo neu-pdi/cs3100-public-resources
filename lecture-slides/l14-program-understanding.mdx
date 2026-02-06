@@ -106,10 +106,6 @@ Quick title slide, move on to the hook.
 
 <div style={{fontSize: '0.85em'}}>
 
-**Where you are now:**
-- A1/A2: ~500 lines, you wrote it all
-- Structure fits in your head
-
 **A3 (this week!):**
 - Starter code with 10+ interfaces: `RecipeCollection`, `Cookbook`, `UserLibrary`...
 - Inheritance hierarchies you didn't design
@@ -223,7 +219,7 @@ Same process for debugging: "I think the bug is in X" → test → refine
 </div>
 
 <p style={{fontSize: '0.85em', marginTop: '1em'}}>
-Today we'll practice these techniques at small scale—so they're second nature when you hit big codebases.
+Today we'll practice these techniques at small scale—so they're second nature when you hit big codebases when we trace the flow of data between services.
 </p>
 
 <aside className="notes">
@@ -413,63 +409,6 @@ Style: Clean educational diagram. The code should be clearly readable. The overl
 
 <Slide>
 
-## Two Fundamental Questions About Any Code
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', marginTop: '1em'}}>
-
-<div style={{backgroundColor: 'rgba(66, 165, 245, 0.1)', padding: '1em', borderRadius: '8px', borderLeft: '4px solid #42A5F5'}}>
-
-### Control Flow
-**"What path does execution take?"**
-
-- Which statements execute?
-- Which branches are taken?
-- How many loop iterations?
-- What's the call sequence?
-
-</div>
-
-<div style={{backgroundColor: 'rgba(255, 152, 0, 0.1)', padding: '1em', borderRadius: '8px', borderLeft: '4px solid #FF9800'}}>
-
-### Data Flow
-**"How do values change?"**
-
-- Where are variables assigned?
-- Where are they read?
-- What transformations occur?
-- What are possible values here?
-
-</div>
-
-</div>
-
-<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB'}}>
-Most bugs involve <strong>both</strong>: wrong path taken due to wrong data, or wrong data due to wrong path.
-</p>
-
-<aside className="notes">
-**The two lenses:**
-- Control flow: The ORDER of execution
-- Data flow: The VALUES being computed
-- Both are essential for understanding behavior
-
-**Connection to L5 Readability:**
-- Good naming makes BOTH easier to follow
-- `isConnected` tells you the branch condition's meaning
-- `brightnessPercent` tells you the data's meaning and units
-- Bad names force you to trace implementations
-
-**Real bugs often combine both:**
-- "The loop runs one too many times" (control) → "and overwrites the wrong value" (data)
-- "The null check is missing" (control) → "so we get NPE" (data)
-
-→ **Transition:** Let's see control flow analysis in action...
-</aside>
-
-</Slide>
-
-<Slide>
-
 ## Control Flow: Tracing Execution Paths
 
 ```java
@@ -567,7 +506,7 @@ public int calculateAverageBrightness(List<Light> lights) {
 
 ```java
 public void activateAreaScene(Area area, String sceneName) {
-    Scene scene = findScene(sceneName);  // Data: scene assigned (could be null!)
+    Scene scene = findScene(sceneName);  // Data: scene assigned (could be null?)
 
     if (scene != null) {                  // Control: branch point
         scene.activate();
@@ -578,8 +517,8 @@ public void activateAreaScene(Area area, String sceneName) {
             }
         }
     }
-    // Bug: What if scene is null? Silent failure - no error, no logging!
-    // Bug: What if child areas don't have this scene? Could fail silently too.
+    // Potential bug: What if scene is null? Silent failure - no error, no logging!
+    // Potential bug: What if child areas don't have this scene? Could fail silently too.
 }
 ```
 
@@ -1024,11 +963,101 @@ Client → AreaScene.activate()
 
 ## Debugging Is Critical Thinking Applied to Code
 
-<QuoteSlide
-  quote="Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it."
-  attribution="Brian Kernighan"
-  accentColor="#9370DB"
+{/* VISUAL OPTION A: Brain Capacity Meter */}
+<Img
+  src="/img/lectures/web/l14-kernighan-brain.png"
+  alt="Brain capacity visualization showing writing code uses 50% capacity while debugging the same code requires 100%+"
+  prompt="Visual concept for Kernighan quote: 'Debugging is twice as hard as writing code'
+
+THE METAPHOR: Brain Capacity Meter
+
+SCENE LAYOUT (left to right):
+A developer's head shown twice, with a 'brain power meter' gauge visible inside each.
+
+LEFT SIDE - 'WRITING CODE':
+- Developer happily typing at keyboard, relaxed posture
+- Brain meter showing needle at 50% (comfortable zone, green)
+- Code appearing on screen, labeled 'Clever Code'
+- Speech bubble or thought: 'This is elegant!'
+- The meter has clear markings: 0%, 25%, 50%, 75%, 100%
+
+RIGHT SIDE - 'DEBUGGING THAT CODE':
+- Same developer, now stressed, scratching head, confused expression
+- Brain meter showing needle PAST 100% (in the red zone, breaking the gauge)
+- The gauge is cracking/overheating, steam coming out
+- Same code on screen but now with red error markers
+- Thought bubble: '???' or 'What was I thinking?'
+- The meter literally cannot go high enough
+
+CENTER CONNECTION:
+- Arrow or equals sign showing: 'Same code, twice the mental effort'
+- Or a '2x' multiplier symbol
+
+BOTTOM TEXT (the punchline):
+'If writing this code used 100% of your brainpower...'
+'...you're mathematically incapable of debugging it.'
+
+VISUAL STYLE:
+- Clean, educational illustration style
+- The brain meters should be prominent and easy to read
+- The contrast between relaxed-writing and stressed-debugging should be clear
+- Could use pixel art or modern clean illustration
+- Colors: greens for comfortable zone, reds for overload zone
+
+The humor comes from the literal interpretation: your brain literally overheats trying to debug clever code."
 />
+
+{/* VISUAL OPTION B: Mountain Climbing */}
+{/*
+<Img
+  src="/img/lectures/web/l14-kernighan-mountain.png"
+  alt="Developer who built a steep mountain of clever code now struggling to climb it for debugging"
+  prompt="Visual concept for Kernighan quote: 'Debugging is twice as hard as writing code'
+
+THE METAPHOR: Building vs Climbing Your Own Mountain
+
+SCENE: A dramatic split showing the same mountain from two perspectives.
+
+BOTTOM HALF - 'WRITING CODE' (looking up):
+- A developer at the base, happily stacking blocks/bricks upward
+- Each block is labeled with clever code concepts: 'nested ternary', 'one-liner', 'regex magic', 'implicit conversion'
+- The developer is smiling, feeling accomplished
+- They're building the mountain higher and higher
+- Caption: 'Building the mountain feels easy when you're at the bottom'
+- Arrows pointing UP showing the direction of building
+
+TOP HALF - 'DEBUGGING' (looking down):
+- The SAME developer, now tiny, exhausted, clinging to the steep mountainside
+- They're trying to climb UP what they built, but it's impossibly steep
+- The clever code blocks are now obstacles: slippery, crumbling, no handholds
+- Vertigo lines showing how high and dangerous it is
+- A sign at the top says 'THE BUG' with a little bug icon
+- Caption: 'But you have to climb it to find the bug'
+- The developer thinking: 'Why did I build it so steep?!'
+
+KEY VISUAL ELEMENTS:
+- The mountain should look MUCH harder to climb than it was to build
+- The steepness represents code complexity
+- Each 'clever' block that was easy to place is now a treacherous foothold
+- The bug at the top is tiny but the path to reach it is brutal
+
+BOTTOM INSIGHT:
+'Every clever trick you add while writing makes the climb harder when debugging.'
+'Build mountains you can actually climb.'
+
+VISUAL STYLE:
+- Side-view showing the full mountain
+- Dramatic perspective emphasizing height and steepness
+- The contrast between the easy building and hard climbing should be visceral
+- Could be pixel art adventure game style or illustrated style
+
+The message: You're building your own future obstacle course."
+/>
+*/}
+
+<p style={{fontSize: '0.75em', textAlign: 'center', marginTop: '0.5em', fontStyle: 'italic'}}>
+"Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it." — Brian Kernighan
+</p>
 
 <aside className="notes">
 **The Kernighan quote:**
