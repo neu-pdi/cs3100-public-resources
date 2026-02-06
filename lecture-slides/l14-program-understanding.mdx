@@ -1007,54 +1007,6 @@ VISUAL STYLE:
 The humor comes from the literal interpretation: your brain literally overheats trying to debug clever code."
 />
 
-{/* VISUAL OPTION B: Mountain Climbing */}
-{/*
-<Img
-  src="/img/lectures/web/l14-kernighan-mountain.png"
-  alt="Developer who built a steep mountain of clever code now struggling to climb it for debugging"
-  prompt="Visual concept for Kernighan quote: 'Debugging is twice as hard as writing code'
-
-THE METAPHOR: Building vs Climbing Your Own Mountain
-
-SCENE: A dramatic split showing the same mountain from two perspectives.
-
-BOTTOM HALF - 'WRITING CODE' (looking up):
-- A developer at the base, happily stacking blocks/bricks upward
-- Each block is labeled with clever code concepts: 'nested ternary', 'one-liner', 'regex magic', 'implicit conversion'
-- The developer is smiling, feeling accomplished
-- They're building the mountain higher and higher
-- Caption: 'Building the mountain feels easy when you're at the bottom'
-- Arrows pointing UP showing the direction of building
-
-TOP HALF - 'DEBUGGING' (looking down):
-- The SAME developer, now tiny, exhausted, clinging to the steep mountainside
-- They're trying to climb UP what they built, but it's impossibly steep
-- The clever code blocks are now obstacles: slippery, crumbling, no handholds
-- Vertigo lines showing how high and dangerous it is
-- A sign at the top says 'THE BUG' with a little bug icon
-- Caption: 'But you have to climb it to find the bug'
-- The developer thinking: 'Why did I build it so steep?!'
-
-KEY VISUAL ELEMENTS:
-- The mountain should look MUCH harder to climb than it was to build
-- The steepness represents code complexity
-- Each 'clever' block that was easy to place is now a treacherous foothold
-- The bug at the top is tiny but the path to reach it is brutal
-
-BOTTOM INSIGHT:
-'Every clever trick you add while writing makes the climb harder when debugging.'
-'Build mountains you can actually climb.'
-
-VISUAL STYLE:
-- Side-view showing the full mountain
-- Dramatic perspective emphasizing height and steepness
-- The contrast between the easy building and hard climbing should be visceral
-- Could be pixel art adventure game style or illustrated style
-
-The message: You're building your own future obstacle course."
-/>
-*/}
-
 <p style={{fontSize: '0.75em', textAlign: 'center', marginTop: '0.5em', fontStyle: 'italic'}}>
 "Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it." — Brian Kernighan
 </p>
@@ -2037,7 +1989,60 @@ flowchart LR
 - Explaining complex code
 - Mermaid diagrams from code!
 
-→ **Transition:** Let's see effective vs ineffective prompts...
+→ **Transition:** Remember from L13—some things are harder to evaluate than others...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Callback: How Hard Is It to Evaluate?
+
+<p style={{fontSize: '0.85em'}}>
+From <strong>L13</strong>: AI can generate for any task, but evaluation difficulty varies:
+</p>
+
+<div style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+
+| Easy to Evaluate | Hard to Evaluate |
+|------------------|------------------|
+| Does the test pass now? ✓ | Did we fix the *root cause*? |
+| Does the code compile? ✓ | Will this fix cause other bugs? |
+| Does output match expected? ✓ | Is this the *right* approach? |
+
+</div>
+
+<p style={{fontSize: '0.9em', marginTop: '1em', color: '#e74c3c', fontWeight: 'bold'}}>
+AI might "fix" your bug in a way that passes the test but breaks something else.
+</p>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+Your job: <strong>Understand the fix</strong>, not just accept it.
+</p>
+
+<aside className="notes">
+**From L13 - evaluation difficulty:**
+- AI can generate fixes for ANY bug
+- But some evaluations are trivial, others are hard
+- "Test passes" ≠ "Bug is correctly fixed"
+
+**Why this matters for debugging:**
+- AI fix might introduce NEW bugs
+- AI fix might address symptom, not cause
+- AI fix might work for THIS test but fail edge cases
+- Only YOU can evaluate root cause
+
+**The trap:**
+- Test was failing → AI suggested change → test passes → SHIP IT!
+- But did you understand WHY? Can you verify it's correct?
+- "It works" is easy to check; "It's the right fix" is hard
+
+**Key insight:**
+- Use AI to generate hypotheses and explanations
+- But YOUR understanding determines if the fix is correct
+- Don't outsource the EVALUATION step
+
+→ **Transition:** This shapes how we should prompt AI for debugging help...
 </aside>
 
 </Slide>
