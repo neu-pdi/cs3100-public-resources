@@ -906,7 +906,7 @@ classDiagram
 
 **While Debugging: Hand-Sketch**
 
-Quick ASCII art is fastest:
+Quick ASCII art (or *gasp* paper and pencil) is fastest:
 ```
 Test → JsonRecipeCollectionRepository.save(cookbook)
   Repo → ObjectMapper.writeValueAsString()
@@ -962,8 +962,7 @@ When sharing or preserving:
 
 ```
 Prompt: "Create a sequence diagram showing how CookbookImpl is created 
-from JSON using Jackson. Include the @JsonCreator constructor, the 
-isBlank() validation for optional fields, and List.copyOf() for recipes."
+from JSON using Jackson."
 ```
 
 ✅ **Good use of AI:** Complex flow with multiple steps, saves time on Mermaid syntax
@@ -976,8 +975,7 @@ isBlank() validation for optional fields, and List.copyOf() for recipes."
 
 ```
 Prompt: "Show the data flow when UserLibraryImpl.findRecipesByTitle() 
-searches across collections. Include the stream operations: stream(), 
-flatMap(), filter(), and toList()."
+searches across collections."
 ```
 
 ✅ **Good use of AI:** Multi-step pipeline, AI can visualize the stream transformations
@@ -1045,6 +1043,7 @@ flatMap(), filter(), and toList()."
 
 - **Documenting for others:**
   - AI generates shareable Mermaid diagrams
+  - You validate them, others can trust them
 
 </div>
 
@@ -1081,30 +1080,115 @@ flatMap(), filter(), and toList()."
 
 <Slide>
 
-## Effective AI Prompts for A3 Diagrams
+## AI Generated This Diagram. Now What?
 
 <div style={{fontSize: '0.7em'}}>
 
-**Effective Prompt (specific, with context):**
+**Prompt used:**
 
-> "I'm working on A3's JsonRecipeCollectionRepository. Create a sequence diagram showing:
-> 1. The `save(collection)` method
-> 2. How it uses ObjectMapper to serialize to JSON
-> 3. How @JsonTypeInfo adds the 'type' field to distinguish CookbookImpl vs PersonalCollectionImpl
-> 4. Writing to file with Files.writeString()
->
-> Use Mermaid syntax with participants: Test, Repository, ObjectMapper, FileSystem"
+> "I'm working on implementing JsonRecipeCollectionRepository. Create a mermaid sequence
+>  diagram showing the save() method, from here to disk."
 
 </div>
 
-<div style={{fontSize: '0.7em', marginTop: '0.8em'}}>
+```mermaid
+sequenceDiagram
+    actor Client
+    participant Repo as JsonRecipeCollectionRepository
+    participant Collection as CookbookImpl
+    participant OM as ObjectMapper
+    participant Jackson as Jackson<br/>Serializer
+    participant RC as RecipeCollection<br/>Interface
+    participant Path as Path/File
+    participant Disk as File System
+    
+    Client->>+Repo: save(collection)
+    Note over Repo: Collection is a CookbookImpl instance
+    
+    rect rgb(245, 245, 255)
+    Note over Repo,Collection: Step 1: Determine file path
+    Repo->>+Collection: getId()
+    Collection-->>-Repo: "cookbook-123"
+    Repo->>Repo: Create file path:<br/>storageDirectory / "cookbook-123.json"
+    end
+    
+    rect rgb(255, 250, 240)
+    Note over Repo,Jackson: Step 2: Serialize to JSON
+    Repo->>+OM: writeValueAsString(collection)
+    
+    OM->>+Jackson: Serialize object
+    
+    Jackson->>+Collection: Get runtime type
+    Collection-->>-Jackson: CookbookImpl.class
+    
+    Jackson->>+RC: Read @JsonTypeInfo annotation
+    Note over RC: Use "type" property for polymorphism
+    RC-->>-Jackson: Property name: "type"
+    
+    Jackson->>+RC: Read @JsonSubTypes annotation
+    Note over RC: Lookup type name for CookbookImpl
+    RC-->>-Jackson: CookbookImpl → "cookbook"
+    
+    rect rgb(230, 255, 240)
+    Note over Jackson,Collection: Serialize all fields
+    Jackson->>+Collection: getId()
+    Collection-->>-Jackson: "cookbook-123"
+    Jackson->>Jackson: Add field: "id": "cookbook-123"
+    
+    Jackson->>+Collection: getTitle()
+    Collection-->>-Jackson: "The Joy of Cooking"
+    Jackson->>Jackson: Add field: "title": "The Joy of Cooking"
+    
+    Jackson->>+Collection: getAuthor()
+    Collection-->>-Jackson: Optional["Irma Rombauer"]
+    Jackson->>Jackson: Add field: "author": "Irma Rombauer"
+    
+    Jackson->>+Collection: getIsbn()
+    Collection-->>-Jackson: Optional["978-1501169717"]
+    Jackson->>Jackson: Add field: "isbn": "978-1501169717"
+    
+    Jackson->>+Collection: getPublicationYear()
+    Collection-->>-Jackson: Optional[1931]
+    Jackson->>Jackson: Add field: "publicationYear": 1931
+    
+    Jackson->>+Collection: getRecipes()
+    Collection-->>-Jackson: List[Recipe, ...]
+    Jackson->>Jackson: Add field: "recipes": [...]<br/>(recursively serialize recipes)
+    end
+    
+    Jackson->>Jackson: Build JSON object with<br/>"type": "cookbook" + all fields
+    
+    Jackson-->>-OM: JSON string
+    OM-->>-Repo: JSON string
+    end
+    
+    rect rgb(255, 245, 245)
+    Note over Repo,Disk: Step 3: Write to disk
+    Repo->>+Path: Create/overwrite file
+    Note over Path: Path: storageDirectory/cookbook-123.json
+    
+    Path->>+Disk: Write JSON to file
+    Note over Disk: File contents:<br/>{<br/>  "type": "cookbook",<br/>  "id": "cookbook-123",<br/>  "title": "The Joy of Cooking",<br/>  "author": "Irma Rombauer",<br/>  "isbn": "978-1501169717",<br/>  "publicationYear": 1931,<br/>  "recipes": [...]<br/>}
+    
+    Disk-->>-Path: Write complete
+    Path-->>-Repo: Success
+    end
+    
+    Repo-->>-Client: void (success)
+    
+    Note over Client: Collection saved to:<br/>cookbook-123.json
+```
 
-**What to do with AI's response:**
+
+<aside className="notes">
+**Pause here and ask students: "What would you do with this?"**
+
+**Key points to draw out:**
 
 1. **Verify against actual code:**
    - Does it call `writeValueAsString()` or something else?
    - Is the @JsonTypeInfo behavior correct?
-   - Check the actual implementation
+   - Check the actual implementation—AI may have hallucinated details
 
 2. **Test your understanding:**
    - Can you explain each step?
@@ -1115,9 +1199,8 @@ flatMap(), filter(), and toList()."
    - "This diagram shows X, but the actual code does Y. Please fix it."
    - Include the actual method signature if AI hallucinated
 
-</div>
+**The meta-lesson:** AI can generate impressive-looking diagrams, but YOU must verify them. The diagram is only useful if it's accurate AND you understand it.
 
-<aside className="notes">
 **Why this prompt is effective:**
 - **Specific context:** "A3's JsonRecipeCollectionRepository" (not generic)
 - **Numbered steps:** Clear what to include
@@ -1152,69 +1235,43 @@ flatMap(), filter(), and toList()."
 
 ## AI for Diagrams: What Works vs What Doesn't
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.7em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8em', fontSize: '0.65em'}}>
 
-<div style={{backgroundColor: 'rgba(244, 67, 54, 0.1)', padding: '0.8em', borderRadius: '8px'}}>
+<div style={{backgroundColor: 'rgba(244, 67, 54, 0.1)', padding: '0.6em', borderRadius: '6px'}}>
 
-**❌ Ineffective: Vague prompt**
+**❌ Vague:** "Diagram the repository pattern"
 
-> "Diagram the repository pattern"
-
-**Result:**
-- Generic UML with Repository interface
-- Not specific to YOUR codebase
-- Doesn't help understand A3
-
-**Time wasted:** 5 minutes back-and-forth
+- No diagram type (sequence? class?)
+- No format → ASCII art 🤮
+- Generic, not your code
 
 </div>
 
-<div style={{backgroundColor: 'rgba(76, 175, 80, 0.1)', padding: '0.8em', borderRadius: '8px'}}>
+<div style={{backgroundColor: 'rgba(76, 175, 80, 0.1)', padding: '0.6em', borderRadius: '6px'}}>
 
-**✅ Effective: Specific prompt**
+**✅ Specific:** "Create a **mermaid flowchart** showing data flow through CookbookImpl constructor"
 
-> "Show data flow through CookbookImpl constructor: `@JsonProperty` parameters → blank string normalization → `List.copyOf()` defensive copy → field assignment"
-
-**Result:**
-- Diagram matches YOUR code
-- Shows the blank string edge case
-- Explains defensive copying
-
-**Time saved:** Got useful diagram first try
+- Diagram type ✓ Format ✓ Your class ✓
 
 </div>
 
-</div>
+<div style={{backgroundColor: 'rgba(244, 67, 54, 0.1)', padding: '0.6em', borderRadius: '6px'}}>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.7em', marginTop: '1em'}}>
+**❌ Wrong tool:** "What does `addRecipe` do?"
 
-<div style={{backgroundColor: 'rgba(244, 67, 54, 0.1)', padding: '0.8em', borderRadius: '8px'}}>
-
-**❌ Wrong tool: AI for simple lookup**
-
-> "What does the `addRecipe` method do?"
-
-**Result:**
-- AI reads the code and explains it
-- You could have just read it yourself
+- AI reads code, explains it
+- You could just read it yourself
 - Slower than Ctrl+Click
 
-**Why wrong:** Simple navigation task
-
 </div>
 
-<div style={{backgroundColor: 'rgba(76, 175, 80, 0.1)', padding: '0.8em', borderRadius: '8px'}}>
+<div style={{backgroundColor: 'rgba(76, 175, 80, 0.1)', padding: '0.6em', borderRadius: '6px'}}>
 
-**✅ Right tool: IDE for navigation**
+**✅ Right tool:** Press F12 on `addRecipe`
 
-> Press F12 on `addRecipe`
-
-**Result:**
-- Instantly see implementation
-- See all parameters and return type
-- Can step through with debugger
-
-**Why right:** Direct, instant, accurate
+- Instant definition
+- See params and return type
+- Can step through in debugger
 
 </div>
 
@@ -1385,47 +1442,6 @@ flowchart LR
 
 <Slide>
 
-## Connection: L13's 6-Step Workflow = Scientific Debugging
-
-<p style={{fontSize: '0.85em'}}>
-Remember the 6-step workflow from <strong>L13: AI Coding Assistants</strong>? It maps directly to scientific debugging:
-</p>
-
-<div style={{fontSize: '0.75em', marginTop: '0.5em'}}>
-
-| L13 Workflow Step | Debugging Equivalent |
-|-------------------|---------------------|
-| **1. Identify** context AI needs | **Observe** the bug, gather symptoms and context |
-| **2. Engage** with effective prompts | **Hypothesize** about the root cause |
-| **3. Evaluate** AI output critically | **Predict** what evidence would support/refute hypothesis |
-| **4. Calibrate** toward better results | **Test** your hypothesis with debugger or tests |
-| **5. Tweak** generated artifacts | **Analyze** results, refine hypothesis if needed |
-| **6. Finalize** and document | **Fix** and verify, document the root cause |
-
-</div>
-
-<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB', fontWeight: 'bold'}}>
-Same framework, same discipline: <strong>systematic thinking beats guessing</strong>.
-</p>
-
-<aside className="notes">
-**The key connection:**
-- L13's workflow isn't just for AI—it's a general problem-solving framework
-- Debugging IS hypothesis-driven problem solving
-- The skills transfer directly
-
-**Why this matters:**
-- You're not learning separate techniques—you're mastering ONE systematic approach
-- This same framework applies to: debugging, AI collaboration, requirements gathering, design exploration
-- Software engineering is about disciplined thinking, not memorizing tricks
-
-→ **Transition:** Let's work through a concrete debugging example...
-</aside>
-
-</Slide>
-
-<Slide>
-
 ## Quick Background: What Is HTML?
 
 <p style={{fontSize: '0.9em'}}>
@@ -1494,10 +1510,19 @@ Welcome!
 
 ## Example: Debugging HTML Markup Removal
 
-<p style={{fontSize: '0.9em'}}>
-Here's a function that attempts to remove HTML tags:
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+<strong>The task:</strong> Write a function that extracts just the text, removing all tags.
 </p>
 
+<div style={{fontSize: '0.8em'}}>
+
+| Input | Expected Output |
+|-------|-----------------|
+| `<b>Hello</b>` | `Hello` |
+| `Click <a href="url">here</a>` | `Click here` |
+
+</div>
 ```java
 public static String removeHtmlMarkup(String s) {
     boolean tag = false;
@@ -1566,6 +1591,8 @@ Both failures involve quotes. Pattern emerging!
 </p>
 
 <aside className="notes">
+**Why no code on this slide?** Intentional! At this point we're focusing on **patterns in input/output**, not trying to spot the bug by staring at code. The observation table IS the technique—we let the data guide us to hypotheses.
+
 **Building the table:**
 - Test with simple cases first
 - Include edge cases (quotes in content, quotes around tags)
@@ -2000,7 +2027,120 @@ Style notes: This is the 'aha!' visual that ties together the example. Students 
 - Bugs in unfamiliar code
 - When you're confused and frustrated
 
-→ **Transition:** Let's see how debuggers accelerate this process...
+→ **Transition:** Let's see why the log matters so much...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Why Keep a Debugging Log?
+
+<Img
+  src="/img/lectures/web/l14-debugging-log.png"
+  alt="Split image showing a developer's memory fading over time without a log versus maintaining clarity with a written debugging log"
+  prompt="A split-panel illustration showing the same developer debugging the same bug, with and without a debugging log.
+
+LEFT PANEL - 'WITHOUT A LOG' (Chaos, frustration):
+Header: '15 Minutes In...'
+
+Show a developer at their computer with visual representations of their fading memory:
+
+THOUGHT BUBBLES becoming increasingly faded/ghostly:
+- A clear bubble: 'Hypothesis 1: tag variable wrong' (but crossed out, they tested this)
+- A fading bubble: 'Wait, did I check if tag was ever true?' 
+- An even fainter bubble: 'I think I tried something with single quotes...'
+- A nearly invisible bubble: '???'
+
+The developer's expression: frustrated, hand on forehead, eyes showing confusion
+
+Around their head: swirling question marks, fragmented thoughts
+
+A CLOCK showing 15+ minutes have passed
+
+Speech/thought: 'I feel like I already tried this... but I can't remember what happened'
+
+Visual metaphor: Their working memory represented as a small container that's OVERFLOWING - old hypotheses spilling out as new ones come in
+
+Key elements to show:
+- Repeated work (going in circles)
+- Lost insights (discoveries that faded)
+- Growing frustration
+- Time wasted
+
+RIGHT PANEL - 'WITH A LOG' (Organized, progressing):
+Header: '15 Minutes In...'
+
+Same developer, same bug, but with a simple text file open alongside their code
+
+THE LOG (clearly visible, simple plain-text format):
+
+  Debugging: quotes being stripped
+  
+  H1: Double quotes stripped even without tags
+      Test: input 'foo' with quotes → output foo without quotes
+      Result: CONFIRMED ✓
+      → Bug is in quote handling, not tag handling
+  
+  H2: Tag variable being set wrong?  
+      Test: assert !tag for quoted input
+      Result: REFUTED (assertion passes)
+      → Tag is always false, yet quotes stripped
+  
+  H3: Quote condition triggers incorrectly
+      Test: assert false in quote branch
+      Result: CONFIRMED (assertion fails!)
+      → The condition itself is wrong
+  
+  NEXT: Why does condition trigger when tag=false?
+
+The developer's expression: focused, confident, making progress
+
+Visual elements:
+- Clear trail of breadcrumbs showing their path
+- Each hypothesis visually 'checked off' or 'X'd out'
+- Arrow pointing to 'NEXT' showing clear direction
+- Brain icon that's NOT overflowing - the log is external memory
+
+Speech/thought: 'H3 confirmed. Now I know exactly where to look next.'
+
+BOTTOM TEXT:
+'After 2 minutes, you WILL forget what you tried. After 5 minutes, you WILL repeat work. The log prevents both.'
+
+VISUAL STYLE:
+- Clean educational illustration
+- Clear contrast between chaos (left) and order (right)
+- The log itself should be simple/readable - not fancy, just effective
+- Memory/thought bubbles should clearly show fading on left, preserved on right
+- Time element important: same amount of time, very different outcomes
+- The developer should be recognizably the same person in both panels
+
+The key insight: The debugging log isn't bureaucracy - it's a TOOL that prevents you from wasting time rediscovering things you already learned. After just a few minutes of debugging, your brain WILL start dropping information. The log catches it."
+/>
+
+<aside className="notes">
+**The science behind this:**
+- Working memory holds roughly 4 items at once
+- Each hypothesis, test, and observation is an "item"
+- A 15-minute debug session easily generates 20+ items
+- Without external storage, you WILL lose information
+
+**The practical reality:**
+- "I feel like I already tried this" → you probably did
+- "Let me just try one more thing" → you're going in circles
+- "Wait, what did that test tell me?" → lost insight
+
+**The log doesn't have to be fancy:**
+- Plain text file, markdown, even paper
+- Just: hypothesis, test, result, next step
+- 30 seconds to write, saves 5 minutes of repeated work
+
+**When students resist:**
+- "It slows me down" → It speeds you up after minute 2
+- "I can remember" → You can't. Nobody can. That's the point.
+- "It's overkill for small bugs" → Then you'll fix it in 2 tries and never need the log
+
+→ **Transition:** Now let's see how debuggers accelerate hypothesis testing...
 </aside>
 
 </Slide>
@@ -2011,88 +2151,54 @@ Style notes: This is the 'aha!' visual that ties together the example. Students 
 
 <Slide>
 
-## Two Approaches to Debugging
+## Tools for Debugging
 
-<Img
-  src="/img/lectures/web/l14-println-vs-debugger.png"
-  alt="Side-by-side comparison: println debugging with scattered print statements and log files vs debugger with live variable inspection"
-  prompt="A side-by-side comparison of two debugging approaches. NO text labels or titles.
+<div style={{fontSize: '0.85em', width: '100%'}}>
 
-LEFT SIDE - PRINTLN DEBUGGING (cluttered, tedious):
-Show this code with print statements scattered throughout:
-```java
-for (char c : s.toCharArray()) {
-    System.out.println('c=' + c);
-    System.out.println('tag=' + tag);
-    System.out.println('quote=' + quote);
-    if (c == '<') {
-        System.out.println('entering tag');
-        tag = true;
-    } else if (c == '>') {
-        System.out.println('exiting tag');
-        tag = false;
-    } else if (!tag) {
-        System.out.println('adding: ' + c);
-        out.append(c);
-    }
-    System.out.println('out so far: ' + out);
-}
-```
-- Print statements highlighted in yellow, cluttering the logic
-- Below the code: massive terminal output with dozens of lines like:
-  c=<  tag=false  quote=false  entering tag  c=b  tag=true...
-- Developer squinting at the log trying to find the relevant moment
-- Visual feeling: cluttered, noisy, indirect
+**1. Write an automated test first**
+- You may need to reproduce the bug **100+ times** to pinpoint it and confirm the fix
+- Manual reproduction = slow feedback loop = frustration
+- A failing test makes each hypothesis test instant
 
-RIGHT SIDE - DEBUGGER (clean, direct):
-Show this SAME code but clean, no print statements:
-```java
-for (char c : s.toCharArray()) {
-    if (c == '<') {
-        tag = true;           // ← breakpoint here (red dot)
-    } else if (c == '>') {
-        tag = false;
-    } else if (!tag) {
-        out.append(c);
-    }
-}
-```
-- One red breakpoint dot on the 'tag = true' line
-- Current line highlighted (execution paused)
-- Variables panel showing: c='<', tag=false, quote=false, out=''
-- Step controls visible (step over, step into, continue buttons)
-- Visual feeling: focused, direct, complete visibility
+**2. Reason through the code** (rubber duck debugging)
+- Explain the code out loud, line by line
+- "The variable `tag` starts false, then when we see `<`..."
+- Often reveals assumptions you didn't know you were making
 
-CENTER - 'VS' between them
+**3. Add logging statements** (cautiously)
+- Useful when you can't attach a debugger (production, distributed systems)
+- But: clutters code, requires guessing what to log, noisy output
+- Remove or use proper logging levels when done
 
-VISUAL CONTRAST:
-- Left: code is cluttered with print statements, output is a wall of text
-- Right: code is clean, state is shown directly in a panel
-- The debugger side should look obviously simpler and more direct
+**4. Use a debugger** ← next slide!
 
-Style: Clean educational illustration. The code should be readable."
-/>
+</div>
 
 <aside className="notes">
-**Two fundamentally different approaches:**
+**Why automated tests first:**
+- The #1 time sink in debugging is REPRODUCING the bug
+- If it takes 30 seconds to reproduce manually, and you test 50 hypotheses, that's 25 minutes just clicking around
+- A test that runs in 100ms means 50 hypotheses = 5 seconds of reproduction time
+- This is why TDD practitioners often debug faster—they already have the reproduction step automated
 
-**Println debugging:**
-- Add print statements, guess what to print
-- Run program, read through log output
-- Didn't print the right thing? Add more, run again
-- Indirect: you see what you THOUGHT to print
+**Rubber duck debugging:**
+- Named after a programmer who carried a rubber duck and explained code to it
+- Works because explaining forces you to be explicit about assumptions
+- Often you'll say "and then X happens" and realize you never verified X actually happens
+- Can use AI as a rubber duck too: "Let me explain this code to you..."
 
-**Debugger:**
-- Set breakpoint, run program
-- Execution stops, you see EVERYTHING
-- Step through line by line if needed
-- Direct: you see the actual state
+**Logging vs debugger tradeoffs:**
+- Logging: works in production, persists across runs, good for intermittent bugs
+- Debugger: immediate visibility, no code changes, but requires setup and can't always attach
 
-**Tradeoffs:**
-- Println: Works anywhere, no tools needed, good for production logs
-- Debugger: Much faster for finding bugs, but need IDE/setup
+**The key insight:**
+- These tools serve different purposes
+- Tests = fast reproduction
+- Rubber duck = surface assumptions  
+- Logging = production/distributed debugging
+- Debugger = deep inspection
 
-**Key insight:** Debugger is like having X-ray vision vs. taking photos blindfolded.
+→ **Transition:** Let's see the debugger in action...
 </aside>
 
 </Slide>
@@ -2322,7 +2428,7 @@ From <strong>L13</strong>: AI can generate for any task, but evaluation difficul
 | Easy to Evaluate | Hard to Evaluate |
 |------------------|------------------|
 | Does the test pass now? ✓ | Did we fix the *root cause* or just the symptom? |
-| Does the error message disappear? ✓ | Will this fix cause regressions elsewhere? |
+| Does the error message disappear? ✓ | Will this fix cause bugs elsewhere? |
 | Does output match expected? ✓ | Is this the *right* fix or a workaround? |
 
 </div>
@@ -2358,106 +2464,6 @@ Your job: <strong>Understand the fix</strong>, not just accept it.
 - Don't outsource the EVALUATION step
 
 → **Transition:** And just like L13 warned about "vibe coding", we have "vibe debugging"...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## The "Vibe Debugging" Trap
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.8em'}}>
-
-<div style={{backgroundColor: 'rgba(244, 67, 54, 0.1)', padding: '1em', borderRadius: '8px'}}>
-
-**The Pattern:**
-1. Ask AI "why doesn't this work?"
-2. AI suggests a change
-3. Try it, see if error changes
-4. Repeat until it "works"
-5. Never understand what the bug was
-
-</div>
-
-<div style={{backgroundColor: 'rgba(76, 175, 80, 0.1)', padding: '1em', borderRadius: '8px'}}>
-
-**The Problem:**
-- You've hidden the bug, not fixed it
-- You can't explain the fix to anyone
-- Similar bugs will stump you again
-- The "fix" may introduce new bugs
-- You've created maintenance debt
-
-</div>
-
-</div>
-
-<p style={{fontSize: '0.9em', marginTop: '1em', color: '#e74c3c', fontWeight: 'bold'}}>
-Just like vibe coding: code you don't understand becomes debt you can't repay.
-</p>
-
-<aside className="notes">
-**Connection to L13's "vibe coding":**
-- Same trap, different context
-- Accepting AI output without understanding
-- Works short-term, fails long-term
-
-**Why this happens:**
-- It's tempting when you're stuck
-- AI can make errors disappear without explaining why
-- You feel productive ("I'm making progress!")
-- But you're not learning, just accumulating debt
-
-**The alternative:**
-- Use AI to UNDERSTAND, not just to "fix"
-- Ask "why might this be happening?" not "fix this"
-- Verify you can explain the fix before accepting it
-
-→ **Transition:** So how DO you use AI effectively for debugging?
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Effective Prompts for Debugging
-
-<div style={{fontSize: '0.8em'}}>
-
-<div style={{backgroundColor: 'rgba(244, 67, 54, 0.1)', padding: '0.75em', borderRadius: '8px', marginBottom: '1em'}}>
-
-**❌ Ineffective:**
-> "This code doesn't work. Fix it."
-
-</div>
-
-<div style={{backgroundColor: 'rgba(76, 175, 80, 0.1)', padding: '0.75em', borderRadius: '8px'}}>
-
-**✓ Effective:**
-> "I'm debugging an HTML tag removal function. When I pass `"foo"` (just quotes, no tags), the quotes are removed. Expected: `"foo"`. Actual: `foo`.
->
-> Here's the code: [paste code]
->
-> My hypothesis: the quote-handling condition triggers incorrectly. Can you analyze whether operator precedence could cause `c == '"' || c == '\'' && tag` to behave unexpectedly when `tag` is false?"
-
-</div>
-
-</div>
-
-<aside className="notes">
-**Why the second prompt is better:**
-- Specific behavior (not "doesn't work")
-- Expected vs actual
-- Includes the code
-- States YOUR hypothesis
-- Asks for analysis, not just a fix
-
-**Key principle:**
-- AI should support YOUR debugging
-- Not replace your thinking
-- You're still the detective; AI is a tool
-
-→ **Transition:** Let's talk about when NOT to use AI...
 </aside>
 
 </Slide>
@@ -2571,53 +2577,6 @@ Style notes: This should feel like a 'choose your own adventure' with an obvious
 
 </Slide>
 
-<Slide>
-
-## AI + Debugger + Scientific Method = Powerful Combination
-
-<div style={{fontSize: '0.85em'}}>
-
-```mermaid
-flowchart TD
-    B[Bug Observed] --> U[Understand: Control + Data Flow]
-    U --> D[Diagram if needed]
-    D --> H[Hypothesize]
-    H --> T{Test Hypothesis}
-    T -->|Use Debugger| DB[Set breakpoints, watch variables]
-    T -->|Use AI| AI[Ask for analysis, patterns]
-    DB --> A[Analyze Results]
-    AI --> A
-    A -->|Confirmed| F[Fix + Verify]
-    A -->|Refuted| H
-
-    style B fill:#e74c3c,color:white
-    style F fill:#27ae60,color:white
-```
-
-</div>
-
-<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
-Each tool serves a purpose. The scientific method ties them together.
-</p>
-
-<aside className="notes">
-**The integration:**
-- Scientific method provides the FRAMEWORK
-- Understanding provides the FOUNDATION
-- Diagrams provide VISUALIZATION
-- Debugger provides EXECUTION INSIGHT
-- AI provides PATTERN RECOGNITION
-
-**The key:**
-- Don't use tools randomly
-- Use them purposefully within the scientific method
-- Each serves a specific role in hypothesis testing
-
-→ **Transition:** Let's summarize...
-</aside>
-
-</Slide>
-
 {/* ============================================ */}
 {/* SUMMARY */}
 {/* ============================================ */}
@@ -2694,6 +2653,39 @@ Each tool serves a purpose. The scientific method ties them together.
 - Free, online, excellent
 - Goes much deeper than we could today
 - Highly recommended for complex debugging
+
+→ **Transition:** What's coming up...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Next Steps
+
+<div style={{fontSize: '0.9em'}}>
+
+**Today:** AI Coding Assistants Lab
+- Practice the prompting techniques from L13 and today
+
+**Thursday:** HW3 Due
+- If you haven't started, **start NOW**
+- Recipe collections, JSON serialization, polymorphic types
+- Use the debugging techniques from today when you get stuck!
+
+**Wednesday:** Testing
+</div>
+
+<aside className="notes">
+**HW3 reminder:**
+- This is the assignment with JsonRecipeCollectionRepository
+- The diagrams we showed today are directly relevant
+- If you're stuck on polymorphic serialization, re-watch the sequence diagram walkthrough
+
+**Lab today:**
+- Hands-on practice with AI coding assistants
+- Try generating diagrams for your own code
+- Practice the 6-step workflow from L13
 
 → **End of lecture.**
 </aside>
