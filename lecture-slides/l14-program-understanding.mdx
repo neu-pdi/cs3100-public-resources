@@ -89,7 +89,42 @@ Style: Retro pixel art with deep blues, oranges, and purple accents. The mood is
 </p>
 
 <aside className="notes">
-Quick title slide, move on to the hook.
+Quick title slide, move on to learning objectives.
+
+→ **Transition:** Here's what you'll be able to do after today...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* LEARNING OBJECTIVES */}
+{/* ============================================ */}
+
+<Slide>
+
+## Learning Objectives
+
+<p style={{fontSize: '0.85em', textAlign: 'left'}}>
+After this lecture, you will be able to:
+</p>
+
+<ol style={{fontSize: '0.75em', textAlign: 'left'}}>
+  <li>Utilize control flow and data flow analysis to understand a program</li>
+  <li>Utilize diagrams (call graphs, sequence diagrams) to visualize program behavior</li>
+  <li>Apply the scientific method to debugging</li>
+  <li>Utilize a debugger to step through a program and inspect state</li>
+  <li>Utilize an AI programming agent to assist with debugging</li>
+</ol>
+
+<aside className="notes">
+**Time allocation:**
+- Control/data flow analysis (~10 min)
+- Diagrams and Mermaid (~8 min)
+- Scientific method of debugging (~15 min)
+- Debugger usage (~10 min)
+- AI for debugging (~9 min)
+
+**The thread:** Build from understanding code → visualizing it → systematically debugging it → using tools to accelerate the process.
 
 → **Transition:** Let's talk about what's coming...
 </aside>
@@ -134,150 +169,10 @@ Quick title slide, move on to the hook.
 
 **Today's promise:** We're learning the skills to tackle A3's codebase systematically—and these same skills scale to any codebase you'll ever work with.
 
-→ **Transition:** This is a learnable skill...
+→ **Transition:** First, let's see what your debugging instincts are...
 </aside>
 
 </Slide>
-
-<Slide>
-
-## Building Mental Models
-
-<div style={{fontSize: '0.85em'}}>
-
-Understanding code = building a **mental model** of what it does.
-
-<div style={{marginTop: '0.8em', marginLeft: '1em'}}>
-
-1. **Form a hypothesis:** "I think `UserLibrary` stores recipes directly"
-2. **Test it:** Look at the interface—it has `getCollections()`, not `getRecipes()`
-3. **Refine:** "Actually, it stores *collections* that contain recipes"
-
-</div>
-
-</div>
-
-<p style={{fontSize: '0.9em', marginTop: '1em', color: '#9370DB', fontWeight: 'bold'}}>
-Same process for debugging: "I think the bug is in X" → test → refine
-</p>
-
-<aside className="notes">
-**The key insight:**
-- Understanding code and debugging are the SAME skill
-- Both involve forming and testing hypotheses about behavior
-- Both require building accurate mental models
-
-**A3 example:**
-- First hypothesis: "UserLibrary holds recipes"
-- Test: Look at the interface methods
-- Refined model: "UserLibrary holds RecipeCollections, which hold Recipes"
-- This is EXACTLY how you'd approach a new codebase at a job
-
-**Connection to patterns (L7-L8):**
-- Patterns are reusable mental models!
-- When you see `CookbookImpl.builder()`, you instantly know it's the Builder pattern
-- Pattern recognition accelerates understanding
-
-**Why mental models matter:**
-- You can't hold entire codebase in your head
-- You need accurate models of how pieces interact
-- Wrong mental model = wrong assumptions = bugs
-
-→ **Transition:** Two lenses help us build these models...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Two Lenses for Mental Models
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.85em'}}>
-
-<div style={{backgroundColor: 'rgba(66, 165, 245, 0.1)', padding: '1em', borderRadius: '8px'}}>
-
-**Control Flow:**
-*What path does execution take?*
-
-- Which branch was taken?
-- How many loop iterations?
-- What methods get called?
-
-</div>
-
-<div style={{backgroundColor: 'rgba(255, 152, 0, 0.1)', padding: '1em', borderRadius: '8px'}}>
-
-**Data Flow:**
-*What values exist at each point?*
-
-- What is `x` here?
-- Where did this value come from?
-- How did it become null?
-
-</div>
-
-</div>
-
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
-Today we'll practice these techniques at small scale—so they're second nature when you hit big codebases when we trace the flow of data between services.
-</p>
-
-<aside className="notes">
-**Two complementary questions:**
-- Control flow alone misses: "right path, but wrong value"
-- Data flow alone misses: "right value at wrong time"
-- You need BOTH to build accurate mental models
-
-**Connection to L5 (Readability):**
-- Good naming makes control flow obvious ("handleLogin" vs "process")
-- Good structure makes data flow traceable
-- Readable code = easier mental models
-
-**Connection to L13 (AI Assistants):**
-- AI can help explain code—but YOU verify against your mental model
-- AI can suggest fixes—but YOU need to understand the bug first
-- The 6-step workflow applies directly to debugging
-
-→ **Transition:** Here's what you'll be able to do after today...
-</aside>
-
-</Slide>
-
-{/* ============================================ */}
-{/* LEARNING OBJECTIVES */}
-{/* ============================================ */}
-
-<Slide>
-
-## Learning Objectives
-
-<p style={{fontSize: '0.85em', textAlign: 'left'}}>
-After this lecture, you will be able to:
-</p>
-
-<ol style={{fontSize: '0.75em', textAlign: 'left'}}>
-  <li>Utilize control flow and data flow analysis to understand a program</li>
-  <li>Utilize diagrams (call graphs, sequence diagrams) to visualize program behavior</li>
-  <li>Apply the scientific method to debugging</li>
-  <li>Utilize a debugger to step through a program and inspect state</li>
-  <li>Utilize an AI programming agent to assist with debugging</li>
-</ol>
-
-<aside className="notes">
-**Time allocation:**
-- Control/data flow analysis (~10 min)
-- Diagrams and Mermaid (~8 min)
-- Scientific method of debugging (~15 min)
-- Debugger usage (~10 min)
-- AI for debugging (~9 min)
-
-**The thread:** Build from understanding code → visualizing it → systematically debugging it → using tools to accelerate the process.
-
-→ **Transition:** Let's start with the two fundamental lenses...
-</aside>
-
-</Slide>
-
 
 <Slide>
 
@@ -304,7 +199,80 @@ After this lecture, you will be able to:
 
 **Key message:** The goal is to move from reactive (panic, random changes) to proactive (systematic investigation).
 
-→ **Transition:** Let's learn systematic techniques for understanding code...
+→ **Transition:** This is a learnable skill...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Building Mental Models
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em'}}>
+
+<div style={{fontSize: '0.8em'}}>
+
+Understanding code = building a **mental model**.
+
+1. **Form a hypothesis:** "I think `UserLibrary` stores recipes directly"
+2. **Test it:** Look at the interface—`getCollections()`, not `getRecipes()`
+3. **Refine:** "It stores *collections* that contain recipes"
+
+<p style={{marginTop: '0.8em', color: '#9370DB', fontWeight: 'bold'}}>
+Same process for debugging: hypothesis → test → refine
+</p>
+
+</div>
+
+<div style={{fontSize: '0.65em'}}>
+
+```mermaid
+classDiagram
+    direction TB
+    UserLibrary --> "*" RecipeCollection : contains
+    RecipeCollection --> "*" Recipe : contains
+    RecipeCollection <|-- Cookbook
+    RecipeCollection <|-- PersonalCollection
+    RecipeCollection <|-- WebCollection
+
+    class UserLibrary {
+        +getCollections()
+        +findRecipeById()
+    }
+    class RecipeCollection {
+        <<interface>>
+        +getRecipes()
+        +addRecipe()
+    }
+```
+
+</div>
+
+</div>
+
+<aside className="notes">
+**The key insight:**
+- Understanding code and debugging are the SAME skill
+- Both involve forming and testing hypotheses about behavior
+- Both require building accurate mental models
+
+**A3 example (point to diagram):**
+- First hypothesis: "UserLibrary holds recipes"
+- Test: Look at the interface methods → getCollections(), not getRecipes()
+- Refined model: "UserLibrary holds RecipeCollections, which hold Recipes"
+- The diagram SHOWS this—follow the arrows!
+
+**Connection to patterns (L7-L8):**
+- Patterns are reusable mental models!
+- When you see `CookbookImpl.builder()`, you instantly know it's the Builder pattern
+- Pattern recognition accelerates understanding
+
+**Why mental models matter:**
+- You can't hold entire codebase in your head
+- You need accurate models of how pieces interact
+- Wrong mental model = wrong assumptions = bugs
+
+→ **Transition:** Two lenses help us build these models...
 </aside>
 
 </Slide>
@@ -399,8 +367,8 @@ Style: Clean educational diagram. The code should be clearly readable. The overl
 
 **Connection to L5 Readability:**
 - Good naming makes both lenses clearer
-- `isConnected` immediately tells you what the branch means
-- `brightnessPercent` tells you what the data represents
+- `containsRecipe` immediately tells you what the branch checks
+- `isBlank(author)` clearly documents the data transformation
 
 → **Transition:** Let's look at each lens in detail...
 </aside>
@@ -412,41 +380,40 @@ Style: Clean educational diagram. The code should be clearly readable. The overl
 ## Control Flow: Tracing Execution Paths
 
 ```java
-public void processLights(List<Light> lights, boolean useDefaults) {
-    for (Light light : lights) {           // Loop entry point
-        if (light.isConnected()) {          // Branch point 1
-            if (useDefaults) {              // Branch point 2
-                light.setBrightness(50);
-                // Only executes if BOTH conditions true
-            } else {
-                light.setBrightness(getUserPreference());
-            }
-        } else {
-            logDisconnectedDevice(light);
-            // Only executes if light is NOT connected
-        }
+// From A3: CookbookImpl.addRecipe()
+@Override
+public Cookbook addRecipe(Recipe recipe) {
+    if (containsRecipe(recipe.getId())) {        // Branch point
+        throw new IllegalArgumentException(
+            "Recipe with ID '" + recipe.getId() + "' already exists");
     }
+    List<Recipe> newRecipes = new ArrayList<>(recipes);
+    newRecipes.add(recipe);
+    return new CookbookImpl(id, title, newRecipes, author, isbn, publisher, publicationYear);
 }
 ```
 
 <p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
-<strong>Questions to ask:</strong> Which paths are possible? Are there paths that never execute? What are the loop termination conditions?
+<strong>Questions to ask:</strong> Which paths are possible? What happens if the recipe ID already exists? What happens on the "happy path"?
 </p>
 
 <aside className="notes">
+**This is code from A3 you'll work with this week!**
+
 **Reading control flow:**
-- Identify branch points (if/else, switch)
-- Identify loops (for, while, recursion)
-- Trace paths for different inputs
+- Identify branch points: `containsRecipe` check
+- Path 1: Recipe exists → exception thrown (error path)
+- Path 2: Recipe doesn't exist → add to list, return new cookbook (happy path)
+
+**Why this matters for A3:**
+- This demonstrates immutability: returns NEW cookbook, doesn't modify existing
+- The duplicate check prevents bugs from having two recipes with same ID
+- Understanding this helps you implement PersonalCollectionImpl and WebCollectionImpl
 
 **Common control flow bugs:**
-- Off-by-one errors in loops
-- Incorrect boolean logic (`&&` vs `||`)
-- Early returns preventing cleanup
-- Missing else branches for edge cases
-- Infinite loops or recursion without base case
-
-**The skill:** Before debugging, ask "what paths are POSSIBLE?" Then ask "which path did THIS execution take?"
+- Forgetting the duplicate check → silent data corruption
+- Missing the "return new instance" → accidentally mutating
+- Not preserving other fields (author, isbn, etc.) when creating new instance
 
 → **Transition:** Now let's look at data flow...
 </aside>
@@ -458,42 +425,53 @@ public void processLights(List<Light> lights, boolean useDefaults) {
 ## Data Flow: Tracking How Values Change
 
 ```java
-public int calculateAverageBrightness(List<Light> lights) {
-    int total = 0;   // Defined
-    int count = 0;   // Defined
-
-    for (Light light : lights) {
-        if (light.isConnected()) {
-            total += light.getBrightness();  // total modified
-            count++;                          // count modified
-        }
-    }
-
-    return total / count;  // Both read - potential divide by zero!
+// From A3: CookbookImpl constructor (used by Jackson for JSON deserialization)
+@JsonCreator
+private CookbookImpl(
+    @JsonProperty("id") @Nullable String id,
+    @JsonProperty("title") String title,
+    @JsonProperty("recipes") List<Recipe> recipes,
+    @JsonProperty("author") @Nullable String author,
+    @JsonProperty("isbn") @Nullable String isbn,
+    @JsonProperty("publisher") @Nullable String publisher,
+    @JsonProperty("publicationYear") @Nullable Integer publicationYear) {
+  this.id = (id != null) ? id : UUID.randomUUID().toString();  // Data: id assigned
+  this.title = title;                                          // Data: title assigned
+  this.recipes = List.copyOf(recipes);                         // Data: defensive copy
+  this.author = isBlank(author) ? null : author;               // Data: normalization!
+  this.isbn = isBlank(isbn) ? null : isbn;
+  this.publisher = isBlank(publisher) ? null : publisher;
+  this.publicationYear = publicationYear;
 }
 ```
 
 <p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
-<strong>Questions to ask:</strong> Where is each variable assigned? Where is it read? What values are possible at each point?
+<strong>Questions to ask:</strong> What happens if `author = "   "` (whitespace)? Trace how the data flows through `isBlank()` to `this.author`.
 </p>
 
 <aside className="notes">
+**This is code from A3!** Understanding this data flow helps debug serialization issues.
+
 **Reading data flow:**
-- Track where variables are DEFINED (assigned)
-- Track where they are USED (read)
-- Consider ALL possible values at each point
+- Track where variables are DEFINED: constructor parameters → fields
+- Track transformations: `isBlank(author)` changes data in transit
+- Consider ALL possible values: null, blank string, valid string
 
-**The bug in this code:**
-- If no lights are connected, count stays 0
-- Division by zero!
-- Data flow analysis reveals: count can be 0 at return
+**The normalization pattern:**
+- Input: `author` could be null, `""`, `"   "`, or `"Julia Child"`
+- Flow: `isBlank(author) ? null : author`
+- Result: blank strings become null (so `getAuthor()` returns `Optional.empty()`)
+- Why? Consistent representation: "not specified" is always null, never blank string
 
-**Common data flow bugs:**
-- Uninitialized variables
-- Divide by zero from unchecked denominators
-- Null pointer from missing null checks
-- Off-by-one from incorrect index math
-- Unintended mutation of shared state
+**Why this matters for A3:**
+- Jackson deserializes JSON → calls this constructor with `@JsonCreator`
+- The `@JsonProperty` annotations tell Jackson which JSON fields map to parameters
+- You'll use this same pattern for PersonalCollectionImpl and WebCollectionImpl
+
+**Common data flow bugs in serialization:**
+- Forgetting defensive copy → mutable collections leak out
+- Not normalizing blank strings → inconsistent Optional behavior
+- Missing null checks before calling methods
 
 → **Transition:** Let's see how control and data flow combine...
 </aside>
@@ -505,20 +483,19 @@ public int calculateAverageBrightness(List<Light> lights) {
 ## Combining Control and Data Flow Analysis
 
 ```java
-public void activateAreaScene(Area area, String sceneName) {
-    Scene scene = findScene(sceneName);  // Data: scene assigned (could be null?)
-
-    if (scene != null) {                  // Control: branch point
-        scene.activate();
-
-        if (area.hasCascadeEnabled()) {   // Control: nested branch
-            for (Area child : area.getChildren()) {  // Control: loop
-                activateAreaScene(child, sceneName); // Recursive call
-            }
-        }
-    }
-    // Potential bug: What if scene is null? Silent failure - no error, no logging!
-    // Potential bug: What if child areas don't have this scene? Could fail silently too.
+// From A3: UserLibraryImpl.findRecipesByTitle() - YOU must implement this!
+public List<Recipe> findRecipesByTitle(String title) {
+    // Control: iterate through all collections
+    // Data: title parameter flows into comparison
+    return collections.stream()                              // Data: collections read
+        .flatMap(c -> c.getRecipes().stream())              // Control: flatten nested lists
+        .filter(r -> r.getTitle().equalsIgnoreCase(title))  // Data: title compared
+        .toList();                                           // Control: collect results
+    
+    // What could go wrong?
+    // - If collections is modified during iteration? → Immutability prevents this!
+    // - If title is null? → NullPointerException (should validate at method entry)
+    // - If no matches? → Returns empty list (correct behavior)
 }
 ```
 
@@ -527,20 +504,29 @@ Real bugs often involve <strong>both</strong> control and data flow issues inter
 </p>
 
 <aside className="notes">
-**The interplay:**
-- Data: `scene` might be null (from `findScene`)
-- Control: We check for null, but...
-- What happens if it IS null? Silent failure!
-- No logging, no error, just... nothing happens
+**This is code YOU'LL implement for A3!**
 
-**Questions this raises:**
-- Should we throw an exception?
-- Should we log a warning?
-- Is silent failure intentional?
+**The interplay of control and data flow:**
+- **Control flow:** Stream operations create a pipeline of transformations
+  - `stream()` → `flatMap()` → `filter()` → `toList()` is the execution path
+  - Each operation processes elements in sequence
+- **Data flow:** The `title` parameter flows through the entire pipeline
+  - Read from parameter → flows into `equalsIgnoreCase()` for each recipe
+  - Recipe objects flow from collections → through flatMap → through filter → into result list
 
-**Connection to L5:**
-- If `findScene` were named `findSceneOrNull`, the potential null would be clearer
-- Good naming is documentation for data flow
+**Why this is safe:**
+- `collections` is immutable (from `List.copyOf()` in constructor)
+- Can't be modified during iteration → no ConcurrentModificationException
+- Each recipe's title is also immutable → consistent comparisons
+
+**Common bugs to watch for:**
+- Forgetting case-insensitive comparison → `equals()` instead of `equalsIgnoreCase()`
+- Not handling null title → should add null check at method entry
+- Accidentally mutating collections during iteration (prevented by immutability here!)
+
+**Connection to L5 Readability:**
+- Stream operations make control flow explicit and linear
+- Method name `findRecipesByTitle` clearly documents what data flows in/out
 
 → **Transition:** For complex code, we need visualization tools...
 </aside>
@@ -606,29 +592,33 @@ These tools become essential as codebases grow beyond what you can hold in your 
 ## Don't Forget: Dynamic Dispatch Affects Control Flow
 
 <p style={{fontSize: '0.9em'}}>
-When you see <code>device.setState()</code>, which <code>setState</code> runs?
+From A3: When you see <code>collection.addRecipe(recipe)</code>, which <code>addRecipe</code> runs?
 </p>
 
 ```mermaid
 classDiagram
-    class Device {
+    class RecipeCollection {
         <<interface>>
-        +setState(State)*
+        +getSourceType() SourceType*
+        +addRecipe(Recipe) RecipeCollection*
     }
-    class DimmableLight {
-        +setState(State)
+    class CookbookImpl {
+        +getSourceType() SourceType
+        +addRecipe(Recipe) Cookbook
     }
-    class SmartPlug {
-        +setState(State)
+    class PersonalCollectionImpl {
+        +getSourceType() SourceType
+        +addRecipe(Recipe) PersonalCollection
     }
-    class Thermostat {
-        +setState(State)
+    class WebCollectionImpl {
+        +getSourceType() SourceType
+        +addRecipe(Recipe) WebCollection
     }
-    Device <|.. DimmableLight
-    Device <|.. SmartPlug
-    Device <|.. Thermostat
+    RecipeCollection <|.. CookbookImpl
+    RecipeCollection <|.. PersonalCollectionImpl
+    RecipeCollection <|.. WebCollectionImpl
 
-    style Device fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style RecipeCollection fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
 ```
 
 <p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#FF9800'}}>
@@ -636,22 +626,31 @@ classDiagram
 </p>
 
 <aside className="notes">
+**This is the A3 collection hierarchy you'll implement!**
+
 **This was tricky on Quiz 1!**
 - Many students struggled with dynamic dispatch questions
 - Static analysis shows what COULD be called
 - Runtime behavior depends on actual object type
 
-**When tracing control flow:**
-- `Device device = getDevice();` — declared type is Device
-- `device.setState(...)` — but which setState?
-- Depends on runtime type: DimmableLight? SmartPlug? Thermostat?
+**When tracing control flow in A3:**
+- `RecipeCollection collection = repository.findById(id).get();` — declared type is RecipeCollection
+- `collection.addRecipe(recipe)` — but which addRecipe?
+- Depends on runtime type: CookbookImpl? PersonalCollectionImpl? WebCollectionImpl?
+- Each returns its own specific type (Cookbook, PersonalCollection, WebCollection)
+
+**Why this matters for serialization:**
+- Jackson uses `@JsonTypeInfo` to add a `"type"` field in JSON
+- When deserializing, Jackson reads `"type": "cookbook"` and creates CookbookImpl
+- Dynamic dispatch ensures the right `addRecipe` implementation runs
+- This is why polymorphic serialization is crucial!
 
 **Debugging implication:**
 - Can't always know statically which method runs
-- May need to use debugger to see actual runtime type
-- Or add logging to identify which implementation executed
+- Use debugger to see actual runtime type
+- Or check the JSON file to see `"type"` field
 
-**Key skill:** When "Go to Definition" shows an interface, remember to check which implementation is actually being used at runtime.
+**Key skill:** When "Go to Definition" shows RecipeCollection interface, remember to check which implementation is actually being used at runtime.
 
 → **Transition:** Diagrams can help visualize these relationships...
 </aside>
@@ -667,7 +666,7 @@ classDiagram
 ## Diagrams Help You See the Big Picture
 
 <p style={{fontSize: '0.9em'}}>
-Reading code line-by-line works for simple methods. Complex systems require <strong>higher-level abstractions</strong>.
+Complex systems require <strong>visualization</strong>. Three key diagram types:
 </p>
 
 <div style={{fontSize: '0.85em', marginTop: '1em'}}>
@@ -680,24 +679,18 @@ Reading code line-by-line works for simple methods. Complex systems require <str
 
 </div>
 
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
-<strong>Mermaid</strong> lets you create these diagrams in plain text—perfect for documentation, notes, and AI collaboration.
-</p>
-
 <aside className="notes">
 **Why diagrams matter:**
 - Code is linear; systems are not
 - Diagrams show relationships at a glance
-- Essential for communication with others
-- Great for rubber-duck debugging
+- **Hand-sketching** is often fastest while debugging—formalize later for documentation
 
-**Mermaid advantages:**
-- Text-based: version control friendly
-- Simple syntax: quick to write
-- Renders nicely: Markdown, GitHub, IDEs
-- AI can generate and modify: great for collaboration
+**Mermaid for formal diagrams:**
+- Text-based, version control friendly
+- AI can generate and modify diagrams for you
+- Great for documentation and collaboration
 
-→ **Transition:** Let's see each diagram type...
+→ **Transition:** Let's see examples...
 </aside>
 
 </Slide>
@@ -708,40 +701,54 @@ Reading code line-by-line works for simple methods. Complex systems require <str
 
 ```mermaid
 graph LR
-    A[Client.activateNighttime] --> B[AreaScene.activate]
-    B --> C[Scene.activate]
-    C --> D[Device.setState]
-    B --> E[Area.getChildren]
-    B --> F[AreaScene.activate]
-    F --> C
-    F --> E
-    F --> F
-
-    style F fill:#ffcccc,stroke:#cc0000
+    A[save] --> B[objectMapper.writeValueAsString]
+    B --> C["@JsonTypeInfo adds 'type' field"]
+    B --> D[Serialize Recipe objects]
+    D --> E[Serialize Ingredients]
+    E --> F[MeasuredIngredient or VagueIngredient?]
+    D --> G[Serialize Quantities]
+    G --> H[ExactQuantity, Fractional, or Range?]
+    A --> I[Files.writeString]
+    
+    style B fill:#d4edda,stroke:#28a745
+    style C fill:#fff3cd,stroke:#856404
+    style F fill:#d1ecf1,stroke:#0c5460
+    style H fill:#d1ecf1,stroke:#0c5460
 ```
 
 <p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
-The recursive call (<code>AreaScene.activate</code> → itself) is immediately visible. Recursion bugs are easier to spot in diagrams than in code.
+From A3: JSON serialization involves many method calls under the hood. Understanding this call graph helps debug serialization issues.
 </p>
 
 <aside className="notes">
+**This is the A3 JSON serialization flow!**
+
 **What call graphs reveal:**
-- Entry points and dependencies
-- Recursive calls (highlighted in red)
-- Potential for infinite loops
-- Which methods are "hubs" (called by many)
+- Entry point: `save(collection)` in your repository implementation
+- Jackson's `ObjectMapper` does the heavy lifting
+- `@JsonTypeInfo` annotation adds type discrimination
+- Polymorphic serialization: Jackson must figure out concrete types
+  - Is this Ingredient a MeasuredIngredient or VagueIngredient?
+  - Is this Quantity an ExactQuantity, FractionalQuantity, or RangeQuantity?
+- Finally writes to file via `Files.writeString()`
+
+**Why this matters for debugging:**
+- If JSON is missing a field → check if getter exists
+- If JSON has wrong type → check `@JsonTypeInfo` annotations
+- If serialization fails → check which object in the graph is problematic
+- Understanding the call flow helps you identify where things break
 
 **How to create:**
-1. Start with the entry point you're investigating
+1. Start with the entry point (`save`)
 2. Add direct calls as arrows
-3. Expand selectively—focus on the path you care about
-4. Highlight suspicious patterns (recursion, cycles)
+3. Highlight key decision points (polymorphism in blue)
+4. Jackson internals (green) vs your code (starting point)
 
 **The Mermaid syntax:**
 - `graph LR` = left-to-right flow
 - `A[text]` = node with label
 - `A --> B` = arrow from A to B
-- `style F fill:#ffcccc` = highlight node F
+- `style B fill:#color` = highlight node
 
 → **Transition:** Sequence diagrams show the ORDER of execution...
 </aside>
@@ -754,46 +761,62 @@ The recursive call (<code>AreaScene.activate</code> → itself) is immediately v
 
 ```mermaid
 sequenceDiagram
-    participant Client
-    participant AreaScene
-    participant Scene
-    participant Device
+    participant Test
+    participant Repo as JsonRecipeCollectionRepository
+    participant Mapper as ObjectMapper
+    participant FS as FileSystem
 
-    Client->>AreaScene: activate()
-    AreaScene->>Scene: activate()
-    Scene->>Device: setState(newState)
-    Device-->>Scene: success
-    Scene-->>AreaScene: done
+    Test->>Repo: save(cookbook)
+    Repo->>Mapper: writeValueAsString(cookbook)
+    Note over Mapper: @JsonTypeInfo adds "type": "cookbook"
+    Mapper-->>Repo: JSON string
+    Repo->>FS: Files.writeString(path, json)
+    FS-->>Repo: success
+    Repo-->>Test: void
 
-    AreaScene->>AreaScene: hasCascadeEnabled()
+    Note over Test,FS: Later, loading the cookbook back...
 
-    loop for each child area
-        AreaScene->>AreaScene: activate(child, sceneName)
-        Note over AreaScene: Recursive call
-    end
-
-    AreaScene-->>Client: complete
+    Test->>Repo: findById(id)
+    Repo->>FS: Files.readString(path)
+    FS-->>Repo: JSON string
+    Repo->>Mapper: readValue(json, RecipeCollection.class)
+    Note over Mapper: Reads "type": "cookbook"<br/>Creates CookbookImpl
+    Mapper-->>Repo: CookbookImpl instance
+    Repo-->>Test: Optional<RecipeCollection>
 ```
 
 <aside className="notes">
+**This is the A3 JSON round-trip sequence!**
+
 **What sequence diagrams reveal:**
 - The ORDER of method calls (top to bottom = time)
-- Which object is active at each point
-- Loops and conditionals in the interaction
-- Return values and how they affect flow
-- Where bugs might occur in the chain
+- **SAVE operation:**
+  - Test calls `save(cookbook)`
+  - Repository uses Jackson to serialize: `writeValueAsString()`
+  - Jackson adds type info via `@JsonTypeInfo`
+  - Result written to file via `Files.writeString()`
+- **LOAD operation:**
+  - Test calls `findById(id)`
+  - Repository reads file via `Files.readString()`
+  - Jackson deserializes: `readValue(json, RecipeCollection.class)`
+  - Jackson reads `"type": "cookbook"` field and creates CookbookImpl
+  - Returns as `Optional<RecipeCollection>`
+
+**Key insight:**
+- The `"type"` field is CRITICAL for polymorphism
+- Without it, Jackson wouldn't know to create CookbookImpl vs PersonalCollectionImpl
+- This is why `@JsonTypeInfo` and `@JsonSubTypes` are essential
 
 **When to use sequence diagrams:**
-- Debugging issues involving multiple objects
-- Understanding asynchronous operations
-- Clarifying callback sequences
-- Documenting complex workflows
+- Debugging serialization issues: "Where in this sequence did it fail?"
+- Understanding round-trip behavior: "Does the loaded object equal the saved one?"
+- Clarifying Jackson's role: "What does the library do vs what we do?"
 
 **The Mermaid syntax:**
 - `participant X` = declare an actor
 - `A->>B: message` = synchronous call
 - `A-->>B: response` = return/response
-- `loop` / `alt` / `opt` = control flow
+- `Note over` = add annotations
 
 → **Transition:** Class diagrams show data relationships...
 </aside>
@@ -806,48 +829,67 @@ sequenceDiagram
 
 ```mermaid
 classDiagram
-    class Area {
+    class RecipeCollection {
+        <<interface>>
+        -String id
+        -String title
+        +getRecipes() List~Recipe~
+        +addRecipe(Recipe) RecipeCollection
+        +removeRecipe(String) RecipeCollection
+    }
+
+    class Recipe {
+        -String id
+        -String title
+        -Quantity servings
+        -List~Ingredient~ ingredients
+        -List~Instruction~ instructions
+    }
+
+    class Ingredient {
+        <<abstract>>
         -String name
-        -List~Area~ children
-        -boolean cascadeEnabled
-        +getChildren() List~Area~
-        +hasCascadeEnabled() boolean
+        -String preparation
+        +toString() String
     }
 
-    class Scene {
-        -String name
-        -List~Device~ devices
-        +activate()
-    }
-
-    class AreaScene {
-        +activate(Area, String)
-    }
-
-    Area "1" --> "*" Area : contains
-    Area "1" --> "*" Scene : has
-    AreaScene ..> Area : uses
-    AreaScene ..> Scene : uses
+    RecipeCollection "1" --> "*" Recipe : contains
+    Recipe "1" --> "*" Ingredient : has
+    Recipe "1" --> "0..1" Quantity : servings
 ```
 
 <aside className="notes">
-**What class diagrams reveal:**
-- Fields and their types
-- Methods and their signatures
-- Relationships between classes
-- Inheritance and composition
+**This is the core A3 data model!**
 
-**When to use class diagrams:**
-- Understanding data models
-- Seeing how objects relate
-- Finding where data lives
-- Planning refactoring
+**What class diagrams reveal:**
+- **RecipeCollection:** Interface with id, title, list of recipes
+  - Methods return NEW collections (immutability)
+- **Recipe:** Has ingredients, instructions, optional servings
+- **Ingredient:** Abstract base class (MeasuredIngredient and VagueIngredient extend it)
+- **Quantity:** Also abstract (ExactQuantity, FractionalQuantity, RangeQuantity)
 
 **Key relationships:**
+- `"1" --> "*"` = one-to-many: One collection contains many recipes
+- `"1" --> "*"` = one-to-many: One recipe has many ingredients
+- `"1" --> "0..1"` = optional: Recipe may have servings (or not)
+
+**When to use class diagrams:**
+- Understanding domain model structure
+- Seeing containment relationships (what holds what?)
+- Planning implementations: "What fields do I need?"
+- Debugging: "Where should this data live?"
+
+**Why this matters for A3:**
+- You need to serialize/deserialize this entire object graph
+- Jackson handles nested objects automatically
+- Understanding the structure helps debug JSON issues
+- When JSON is missing data, check: "Which relationship broke?"
+
+**The symbols:**
+- `<<interface>>` = interface (not concrete class)
+- `<<abstract>>` = abstract class
 - `-->` = association (has-a)
-- `--|>` = inheritance (is-a)
-- `..>` = dependency (uses)
-- `"1" --> "*"` = multiplicity (one-to-many)
+- Numbers = multiplicity (how many)
 
 → **Transition:** Let's talk about practical Mermaid usage...
 </aside>
@@ -856,101 +898,355 @@ classDiagram
 
 <Slide>
 
-## Mermaid: Practical Tips for Debugging
+## Practical Diagram Workflow
 
-<div style={{fontSize: '0.85em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.8em'}}>
 
-**VS Code Setup:**
-- Install the **"Markdown Preview Mermaid Support"** extension
-- Or use **"Mermaid Editor"** for live preview
-- Write diagrams in `.md` files and preview instantly
+<div style={{backgroundColor: 'rgba(147, 112, 219, 0.1)', padding: '1em', borderRadius: '8px'}}>
 
-**Online Tools:**
-- [mermaid.live](https://mermaid.live) — Live editor with instant preview
-- GitHub/GitLab render Mermaid in Markdown automatically
+**While Debugging: Hand-Sketch**
 
-**Quick Reference:**
+Quick ASCII art is fastest:
 ```
-graph LR          <!-- Flowchart, left-to-right -->
-graph TD          <!-- Flowchart, top-down -->
-sequenceDiagram   <!-- Sequence diagram -->
-classDiagram      <!-- Class diagram -->
+Test → JsonRecipeCollectionRepository.save(cookbook)
+  Repo → ObjectMapper.writeValueAsString()
+    → adds "type": "cookbook"
+    → serializes Recipe[]
+  Repo → Files.writeString() ⚠️ IO Exception?
 ```
+
+- Faster than looking up syntax
+- Forces you to understand flow
+- Easy to annotate with hypotheses
 
 </div>
 
-<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
-<strong>Pro tip:</strong> Ask AI to generate Mermaid diagrams from code, then verify and tweak them yourself.
+<div style={{backgroundColor: 'rgba(76, 175, 80, 0.1)', padding: '1em', borderRadius: '8px'}}>
+
+**For Documentation: Use Mermaid**
+
+When sharing or preserving:
+- [mermaid.live](https://mermaid.live) for live editing
+- Ask AI to generate from code
+- Verify and tweak the output
+- See Tools & Resources for syntax
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB'}}>
+<strong>Pro tip:</strong> Ask AI to generate Mermaid diagrams from code, then verify them yourself.
 </p>
 
 <aside className="notes">
-**Recommended workflow:**
-1. Paste code into AI, ask for a Mermaid diagram
-2. Review the diagram—is it accurate?
-3. Tweak the diagram manually (add highlights, simplify)
-4. Use the diagram to guide your debugging
-
-**Common tweaks:**
-- `style NodeName fill:#color` — highlight a node
-- Add `Note over X: text` — annotate important points
-- Remove unnecessary details—focus on what matters
-
-**Resources:**
-- Official docs: mermaid.js.org/syntax
-- Cheat sheet: Search "mermaid cheat sheet"
-- AI is great at generating starter diagrams
+**The workflow:**
+1. **Hand-sketch** while debugging (fast, flexible)
+2. **Formalize with Mermaid** when documenting (shareable, version-controlled)
+3. **Use AI** to convert sketches to Mermaid (saves time on syntax)
 
 **Key message:** Don't memorize syntax—use references and AI. Focus on WHAT to diagram, not HOW.
 
-→ **Transition:** Now that we can visualize, let's learn systematic debugging...
+→ **Transition:** Let's see concrete examples of using AI for diagram generation...
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Hand-Sketching Is Faster for Debugging
+## Using AI to Generate Diagrams: Concrete Examples
 
-<p style={{fontSize: '0.9em'}}>
-You don't need perfect Mermaid syntax while actively debugging. A quick sketch works:
-</p>
+<div style={{fontSize: '0.75em'}}>
 
-<div style={{backgroundColor: 'rgba(147, 112, 219, 0.1)', padding: '1em', borderRadius: '8px', fontFamily: 'monospace', fontSize: '0.8em'}}>
+**Example 1: Understanding CookbookImpl construction flow**
 
 ```
-Client → AreaScene.activate()
-  AreaScene → Scene.activate()
-    Scene → Device.setState()
-  AreaScene → Area.getChildren() → [child1, child2]
-  AreaScene → AreaScene.activate(child1)  ⚠️ RECURSIVE
-    ...
+Prompt: "Create a sequence diagram showing how CookbookImpl is created 
+from JSON using Jackson. Include the @JsonCreator constructor, the 
+isBlank() validation for optional fields, and List.copyOf() for recipes."
 ```
+
+✅ **Good use of AI:** Complex flow with multiple steps, saves time on Mermaid syntax
 
 </div>
 
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
-<strong>When to formalize:</strong> Convert sketches to Mermaid when you need to share with others, document for the future, or think through complex interactions.
-</p>
+<div style={{fontSize: '0.75em', marginTop: '0.5em'}}>
+
+**Example 2: Tracing data flow through UserLibraryImpl**
+
+```
+Prompt: "Show the data flow when UserLibraryImpl.findRecipesByTitle() 
+searches across collections. Include the stream operations: stream(), 
+flatMap(), filter(), and toList()."
+```
+
+✅ **Good use of AI:** Multi-step pipeline, AI can visualize the stream transformations
+
+</div>
 
 <aside className="notes">
-**The debugging workflow:**
-1. **Sketch quickly** while investigating
-2. **Formalize later** if worth preserving
-3. **Share with AI** to get help generating proper diagrams
+**These are GOOD uses of AI for diagrams:**
+- Complex multi-step flows (Jackson serialization)
+- Stream pipelines (multiple transformations)
+- Call sequences across multiple methods
+- When you need formal documentation
 
-**Hand-sketching advantages:**
-- Faster than looking up syntax
-- Forces you to understand the flow
-- Easy to annotate with hypotheses
-- Can be done on paper/whiteboard
+**AI saves time on:**
+- Mermaid syntax (you don't need to memorize it)
+- Consistent formatting
+- Iterating on the diagram structure
 
-**When to use Mermaid:**
-- Committing to documentation
-- Sharing in pull requests/issues
-- Complex diagrams worth preserving
-- When AI can help generate/refine
+**But YOU must:**
+- Verify the diagram is correct
+- Check it matches the actual code
+- Understand what each step does
 
-→ **Transition:** Now let's talk about the scientific method of debugging...
+→ **Transition:** But when should you NOT use AI?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## When to Navigate Manually Instead
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.8em'}}>
+
+<div style={{backgroundColor: 'rgba(244, 67, 54, 0.1)', padding: '1em', borderRadius: '8px'}}>
+
+**❌ Don't use AI when:**
+
+- **Single method lookup:** "What does `containsRecipe()` do?"
+  - Just Ctrl+Click in your IDE (F12 in VS Code)
+  - AI is slower and might hallucinate
+
+- **Finding where a method is called:**
+  - Use IDE's "Find Usages" (Alt+F7 in IntelliJ)
+  - Shows ALL call sites instantly
+
+- **Checking a simple branch:**
+  - Just read the code: `if (containsRecipe(id)) { throw... }`
+  - No diagram needed
+
+</div>
+
+<div style={{backgroundColor: 'rgba(76, 175, 80, 0.1)', padding: '1em', borderRadius: '8px'}}>
+
+**✅ Use AI when:**
+
+- **Complex call chains:** Multiple methods across classes
+  - "Show how `save()` calls Jackson which calls getters"
+
+- **Understanding polymorphism:**
+  - "Diagram the RecipeCollection hierarchy and show which addRecipe runs for each type"
+
+- **Stream pipelines:**
+  - "Visualize the data transformations in findRecipesByTitle"
+
+- **Documenting for others:**
+  - AI generates shareable Mermaid diagrams
+
+</div>
+
+</div>
+
+<aside className="notes">
+**The key principle: Use the right tool for the job**
+
+**IDE navigation is ALWAYS faster for:**
+- Go to definition (one hop)
+- Find all usages (comprehensive list)
+- Type hierarchy (shows implementations)
+- These are instant and accurate
+
+**AI is better for:**
+- Generating formal diagrams for documentation
+- Understanding complex flows you haven't seen before
+- Creating visual aids for team discussion
+- Saving time on Mermaid syntax
+
+**Real example from A3:**
+- ❌ "How do I add a recipe to a cookbook?" → Just read `CookbookImpl.addRecipe()` (10 lines)
+- ✅ "How does JSON deserialization work end-to-end?" → AI can diagram the full Jackson flow
+
+**The workflow:**
+1. Use IDE to navigate and understand
+2. Hand-sketch if needed for your own notes
+3. Ask AI to formalize into Mermaid when sharing/documenting
+
+→ **Transition:** Let's see what effective AI prompts look like...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Effective AI Prompts for A3 Diagrams
+
+<div style={{fontSize: '0.7em'}}>
+
+**Effective Prompt (specific, with context):**
+
+> "I'm working on A3's JsonRecipeCollectionRepository. Create a sequence diagram showing:
+> 1. The `save(collection)` method
+> 2. How it uses ObjectMapper to serialize to JSON
+> 3. How @JsonTypeInfo adds the 'type' field to distinguish CookbookImpl vs PersonalCollectionImpl
+> 4. Writing to file with Files.writeString()
+>
+> Use Mermaid syntax with participants: Test, Repository, ObjectMapper, FileSystem"
+
+</div>
+
+<div style={{fontSize: '0.7em', marginTop: '0.8em'}}>
+
+**What to do with AI's response:**
+
+1. **Verify against actual code:**
+   - Does it call `writeValueAsString()` or something else?
+   - Is the @JsonTypeInfo behavior correct?
+   - Check the actual implementation
+
+2. **Test your understanding:**
+   - Can you explain each step?
+   - Do you know WHY @JsonTypeInfo is needed?
+   - What would break if you removed it?
+
+3. **Iterate if wrong:**
+   - "This diagram shows X, but the actual code does Y. Please fix it."
+   - Include the actual method signature if AI hallucinated
+
+</div>
+
+<aside className="notes">
+**Why this prompt is effective:**
+- **Specific context:** "A3's JsonRecipeCollectionRepository" (not generic)
+- **Numbered steps:** Clear what to include
+- **Mentions key concepts:** @JsonTypeInfo, polymorphism
+- **Specifies format:** Mermaid sequence diagram with named participants
+- **Purpose-driven:** Understanding serialization flow
+
+**Common mistakes to avoid:**
+- ❌ "Make a diagram of my code" → too vague
+- ❌ Pasting 500 lines of code → AI will summarize poorly
+- ❌ Accepting diagram without verification → might be wrong
+- ❌ Using AI for simple lookups → IDE is faster
+
+**The verification step is CRITICAL:**
+- AI might hallucinate method names
+- AI might not know about @JsonTypeInfo if not told
+- AI might oversimplify complex logic
+- YOU are responsible for correctness
+
+**Real A3 scenario:**
+- You're confused about polymorphic serialization
+- AI helps you visualize the flow
+- You verify against CookbookImpl's annotations
+- Now you understand how to implement PersonalCollectionImpl
+
+→ **Transition:** Let's compare good vs bad AI usage...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## AI for Diagrams: What Works vs What Doesn't
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.7em'}}>
+
+<div style={{backgroundColor: 'rgba(244, 67, 54, 0.1)', padding: '0.8em', borderRadius: '8px'}}>
+
+**❌ Ineffective: Vague prompt**
+
+> "Diagram the repository pattern"
+
+**Result:**
+- Generic UML with Repository interface
+- Not specific to YOUR codebase
+- Doesn't help understand A3
+
+**Time wasted:** 5 minutes back-and-forth
+
+</div>
+
+<div style={{backgroundColor: 'rgba(76, 175, 80, 0.1)', padding: '0.8em', borderRadius: '8px'}}>
+
+**✅ Effective: Specific prompt**
+
+> "Show data flow through CookbookImpl constructor: `@JsonProperty` parameters → blank string normalization → `List.copyOf()` defensive copy → field assignment"
+
+**Result:**
+- Diagram matches YOUR code
+- Shows the blank string edge case
+- Explains defensive copying
+
+**Time saved:** Got useful diagram first try
+
+</div>
+
+</div>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.7em', marginTop: '1em'}}>
+
+<div style={{backgroundColor: 'rgba(244, 67, 54, 0.1)', padding: '0.8em', borderRadius: '8px'}}>
+
+**❌ Wrong tool: AI for simple lookup**
+
+> "What does the `addRecipe` method do?"
+
+**Result:**
+- AI reads the code and explains it
+- You could have just read it yourself
+- Slower than Ctrl+Click
+
+**Why wrong:** Simple navigation task
+
+</div>
+
+<div style={{backgroundColor: 'rgba(76, 175, 80, 0.1)', padding: '0.8em', borderRadius: '8px'}}>
+
+**✅ Right tool: IDE for navigation**
+
+> Press F12 on `addRecipe`
+
+**Result:**
+- Instantly see implementation
+- See all parameters and return type
+- Can step through with debugger
+
+**Why right:** Direct, instant, accurate
+
+</div>
+
+</div>
+
+<aside className="notes">
+**Key lessons:**
+
+**For AI prompts:**
+- ✅ Be specific: mention class names, method names, annotations
+- ✅ Describe what you want to understand (the WHY)
+- ✅ Specify the diagram type (sequence, class, flow)
+- ❌ Don't be generic: "explain this code"
+- ❌ Don't paste huge code blocks without context
+
+**Tool selection:**
+- **IDE navigation (instant):** Go to definition, find usages, type hierarchy
+- **Hand sketching (fast):** Quick flow while debugging
+- **AI diagrams (formal):** Complex flows, documentation, sharing
+
+**The meta-skill:**
+- Knowing WHEN to use each tool is as important as knowing HOW
+- Use AI to amplify your understanding, not replace it
+- Always verify AI output against actual code
+
+**A3 specific examples:**
+- ❌ AI: "What fields does Recipe have?" → Just open Recipe.java
+- ✅ AI: "Diagram how Recipe with nested Ingredients serializes to JSON"
+- ❌ AI: "Where is Cookbook used?" → IDE Find Usages
+- ✅ AI: "Show the call sequence when deserializing polymorphic collections"
+
+→ **Transition:** Now that we can visualize effectively, let's learn systematic debugging...
 </aside>
 
 </Slide>
@@ -1082,7 +1378,48 @@ flowchart LR
 - If you're not quickly converging, slow down and get systematic
 - Open a text file as a debugging log
 
-→ **Transition:** Let's work through a concrete example...
+→ **Transition:** This should sound familiar from L13...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Connection: L13's 6-Step Workflow = Scientific Debugging
+
+<p style={{fontSize: '0.85em'}}>
+Remember the 6-step workflow from <strong>L13: AI Coding Assistants</strong>? It maps directly to scientific debugging:
+</p>
+
+<div style={{fontSize: '0.75em', marginTop: '0.5em'}}>
+
+| L13 Workflow Step | Debugging Equivalent |
+|-------------------|---------------------|
+| **1. Identify** context AI needs | **Observe** the bug, gather symptoms and context |
+| **2. Engage** with effective prompts | **Hypothesize** about the root cause |
+| **3. Evaluate** AI output critically | **Predict** what evidence would support/refute hypothesis |
+| **4. Calibrate** toward better results | **Test** your hypothesis with debugger or tests |
+| **5. Tweak** generated artifacts | **Analyze** results, refine hypothesis if needed |
+| **6. Finalize** and document | **Fix** and verify, document the root cause |
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB', fontWeight: 'bold'}}>
+Same framework, same discipline: <strong>systematic thinking beats guessing</strong>.
+</p>
+
+<aside className="notes">
+**The key connection:**
+- L13's workflow isn't just for AI—it's a general problem-solving framework
+- Debugging IS hypothesis-driven problem solving
+- The skills transfer directly
+
+**Why this matters:**
+- You're not learning separate techniques—you're mastering ONE systematic approach
+- This same framework applies to: debugging, AI collaboration, requirements gathering, design exploration
+- Software engineering is about disciplined thinking, not memorizing tricks
+
+→ **Transition:** Let's work through a concrete debugging example...
 </aside>
 
 </Slide>
@@ -1926,7 +2263,7 @@ Instead of adding print statements and re-running, the debugger lets you test hy
 ## AI + Scientific Debugging Workflow
 
 <p style={{fontSize: '0.85em'}}>
-AI can assist at <strong>each step</strong> of the scientific method—but YOU lead:
+From <strong>L13</strong>, we learned a 6-step workflow for AI collaboration. That same framework applies to debugging—AI can assist at <strong>each step</strong> of the scientific method, but YOU lead:
 </p>
 
 <div style={{fontSize: '0.75em'}}>
@@ -1984,9 +2321,9 @@ From <strong>L13</strong>: AI can generate for any task, but evaluation difficul
 
 | Easy to Evaluate | Hard to Evaluate |
 |------------------|------------------|
-| Does the test pass now? ✓ | Did we fix the *root cause*? |
-| Does the code compile? ✓ | Will this fix cause other bugs? |
-| Does output match expected? ✓ | Is this the *right* approach? |
+| Does the test pass now? ✓ | Did we fix the *root cause* or just the symptom? |
+| Does the error message disappear? ✓ | Will this fix cause regressions elsewhere? |
+| Does output match expected? ✓ | Is this the *right* fix or a workaround? |
 
 </div>
 
@@ -2020,7 +2357,63 @@ Your job: <strong>Understand the fix</strong>, not just accept it.
 - But YOUR understanding determines if the fix is correct
 - Don't outsource the EVALUATION step
 
-→ **Transition:** This shapes how we should prompt AI for debugging help...
+→ **Transition:** And just like L13 warned about "vibe coding", we have "vibe debugging"...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The "Vibe Debugging" Trap
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.8em'}}>
+
+<div style={{backgroundColor: 'rgba(244, 67, 54, 0.1)', padding: '1em', borderRadius: '8px'}}>
+
+**The Pattern:**
+1. Ask AI "why doesn't this work?"
+2. AI suggests a change
+3. Try it, see if error changes
+4. Repeat until it "works"
+5. Never understand what the bug was
+
+</div>
+
+<div style={{backgroundColor: 'rgba(76, 175, 80, 0.1)', padding: '1em', borderRadius: '8px'}}>
+
+**The Problem:**
+- You've hidden the bug, not fixed it
+- You can't explain the fix to anyone
+- Similar bugs will stump you again
+- The "fix" may introduce new bugs
+- You've created maintenance debt
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.9em', marginTop: '1em', color: '#e74c3c', fontWeight: 'bold'}}>
+Just like vibe coding: code you don't understand becomes debt you can't repay.
+</p>
+
+<aside className="notes">
+**Connection to L13's "vibe coding":**
+- Same trap, different context
+- Accepting AI output without understanding
+- Works short-term, fails long-term
+
+**Why this happens:**
+- It's tempting when you're stuck
+- AI can make errors disappear without explaining why
+- You feel productive ("I'm making progress!")
+- But you're not learning, just accumulating debt
+
+**The alternative:**
+- Use AI to UNDERSTAND, not just to "fix"
+- Ask "why might this be happening?" not "fix this"
+- Verify you can explain the fix before accepting it
+
+→ **Transition:** So how DO you use AI effectively for debugging?
 </aside>
 
 </Slide>
@@ -2065,45 +2458,6 @@ Your job: <strong>Understand the fix</strong>, not just accept it.
 - You're still the detective; AI is a tool
 
 → **Transition:** Let's talk about when NOT to use AI...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## When NOT to Use AI for Debugging
-
-<ul style={{fontSize: '0.85em'}}>
-  <li>You don't understand the codebase enough to <strong>evaluate</strong> AI's suggestions</li>
-  <li>The bug involves <strong>environment</strong> issues (config, dependencies, hardware)</li>
-  <li>You find yourself in a <strong>"vibe debugging" loop</strong> — trying AI suggestions without understanding</li>
-  <li>The domain requires <strong>expertise</strong> the AI doesn't have</li>
-</ul>
-
-<p style={{fontSize: '0.9em', marginTop: '1em', color: '#9370DB'}}>
-<strong>The learning tax:</strong> Sometimes debug manually even when AI could help. This builds the expertise that makes you effective WHEN using AI.
-</p>
-
-<aside className="notes">
-**The "vibe debugging" trap:**
-- AI suggests a change
-- You try it without understanding
-- It doesn't work
-- You ask AI again
-- Repeat forever...
-
-**When to step back:**
-- If you can't evaluate AI's suggestions, STOP
-- Go back to program understanding
-- Ask AI to EXPLAIN, not fix
-- Build understanding first
-
-**The learning tax:**
-- Debugging skill comes from practice
-- Sometimes do it manually
-- The intuition you build helps you use AI better later
-
-→ **Transition:** There's a RIGHT way and a WRONG way to use AI for debugging...
 </aside>
 
 </Slide>
@@ -2276,14 +2630,18 @@ Each tool serves a purpose. The scientific method ties them together.
   <li><strong>Debugging is integral</strong> to implementation and validation — not a separate phase</li>
   <li><strong>Control flow + data flow</strong> — trace execution paths AND how values change</li>
   <li><strong>Diagrams</strong> (call graphs, sequence, class) — visualize what code can't show linearly</li>
-  <li><strong>Mermaid</strong> — text-based diagrams, AI-friendly, great for documentation</li>
-  <li><strong>Scientific method</strong> — observe, hypothesize, predict, test, analyze, iterate</li>
+  <li><strong>Scientific method</strong> — observe, hypothesize, predict, test, analyze, iterate (same as L13's 6-step workflow!)</li>
   <li><strong>Debuggers</strong> — accelerate hypothesis testing without modifying code</li>
-  <li><strong>AI assistants</strong> — pattern recognition and analysis, but YOU must verify</li>
+  <li><strong>AI assistants</strong> — use the same 6-step workflow; YOU must evaluate the fix</li>
+  <li><strong>Avoid "vibe debugging"</strong> — if you can't explain the fix, you haven't fixed it</li>
 </ol>
 
 <p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#9370DB'}}>
-<strong>Connection to L5:</strong> Readable code is debuggable code. Good names = faster understanding.
+<strong>From L13:</strong> Task familiarity determines AI appropriateness. If you can't evaluate whether a bug fix is correct, you shouldn't accept AI's suggestion blindly.
+</p>
+
+<p style={{fontSize: '0.8em', marginTop: '0.3em'}}>
+<strong>From the syllabus:</strong> "The hardest parts of building software have never been typing code." Debugging is where understanding proves its value.
 </p>
 
 <aside className="notes">
