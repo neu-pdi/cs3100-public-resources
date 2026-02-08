@@ -26,7 +26,7 @@ import QuoteSlide from '@site/src/components/QuoteSlide';
 <Slide>
 
 <Img
-  src="/img/lectures/web/l17.png"
+  src="/img/lectures/web/l17.jpg"
   prompt="Concept: 'Teams and Collaboration: Many Minds, One Mission'
 Tagline: 'No One Builds Alone.'
 
@@ -153,7 +153,7 @@ Autonomous Vehicles require:
 </Slide>
 
 {/* ============================================ */}
-{/* ARC 2: TEAM SIZE */}
+{/* ARC 2: TEAM SIZE AND BROOKS' LAW */}
 {/* ============================================ */}
 
 <Slide>
@@ -303,6 +303,367 @@ Good documentation isn't just nice to have—it's a force multiplier for the ent
 - Every documented solution is one less interruption for your teammates
 - That future team member might be you in six months
 - Transition: Beyond knowledge sharing, teams need to work through stages of development...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 3: TEAM FORMATION AND STRATEGIES */}
+{/* ============================================ */}
+
+<Slide>
+<Img
+  src="/img/lectures/web/l17-team-formation.jpg"
+  prompt="Concept: 'Tuckman's Stages of Team Formation'
+Visual metaphor: A team's journey from strangers to high-performing unit
+
+A pixel art illustration showing four distinct stages of team development, presented as a progressive journey.
+
+STAGE 1 - FORMING (leftmost, cool/neutral tones):
+Four diverse pixel art developers meeting for the first time. Awkward body language - standing apart, hands in pockets or crossed arms. Thought bubbles show polite but guarded thoughts: '?', 'Nice to meet you...', 'I wonder if...'. A welcome sign or project kickoff board in background. Muted blues and grays. Characters look formal, professional but distant.
+
+STAGE 2 - STORMING (second panel, warm/tense colors):
+Same four developers, now closer but in visible conflict. Lightning bolts or storm clouds above. Contrasting speech bubbles: 'We should do it THIS way!', 'But that won't work!', 'I prefer...', 'That's not how I...'. Clashing work style symbols float around: early bird vs night owl clocks, detailed planner vs quick iteration icons. Red and orange tension colors. This looks uncomfortable but NORMAL - a 'Storm clouds = growth' banner reminds us this is necessary.
+
+STAGE 3 - NORMING (third panel, warm collaborative colors):
+Same developers now working it out together. A visible 'Team Contract' document on table between them. Friendly discussion bubbles: 'So we agree...', 'I can work with that', 'Let's try both approaches'. Handshake or high-five moments. Color-coded calendar showing agreed meeting times. Shared expectations visible: 'Definition of Done' checklist, communication preferences chart. Golden/amber collaborative tones. Trust building visibly.
+
+STAGE 4 - PERFORMING (rightmost, vibrant success colors):
+Same developers now in perfect sync. Working together seamlessly - one coding, one reviewing, one documenting, one planning - all coordinated like a well-oiled machine. Glowing connection lines between them (but organized, not chaotic like Brooks' Law). Completed features flying off their workspace. Speech bubbles show efficient communication: 'Got it!', 'On it!', 'Merged!'. Trophy or success symbols. Bright teals, purples, greens. They're crushing it.
+
+VISUAL FLOW:
+- Arrow path connecting all four stages, showing progression
+- IMPORTANT: NO TEXT on the arrows themselves
+- Same four characters throughout (so we see THEIR journey)
+- Visual indicators of time passing (maybe subtle calendar dates)
+- Color shift from cool/tense → warm/collaborative → vibrant/successful
+
+Bottom text:
+'Conflict isn't failure - it's the path to high performance'
+Or: 'Every great team starts as strangers'
+
+Style: Retro 8-bit pixel art with clean lines and vibrant colors. Similar aesthetic to classic educational games or early computer graphics. Clear emotional progression through color and body language."
+  alt="Four-panel pixel art illustration showing Tuckman's stages of team formation. Stage 1 - Forming (blue-gray tones): Four diverse developers standing apart awkwardly with 'Welcome Project Kickoff' sign, speech bubbles saying '?', 'Nice to meet you...', 'Hello', 'I wonder if...', Day 1 indicator. Stage 2 - Storming (red-orange tones): Same developers in conflict under storm clouds with lightning, 'Storm Clouds = Growth' banner, clashing symbols (early bird vs night owl clocks, planner vs iteration icons), Week 2 indicator, speech bubbles: 'We should do it THIS way!', 'But that won't work!', 'I prefer...', 'That's not how I...'.
+  Stage 3 - Norming (golden-amber tones): Developers working together around table with Team Contract document, Week 6 calendar showing daily standup/code review/pairing schedule, 'Definition of Done' checklist (tested, reviewed, documented), communication preferences chart, speech bubbles: 'I can work with that', 'So we agree...', 'Let's try both approaches'. Stage 4 - Performing (teal-purple-green tones): Developers in perfect sync, one coding, one reviewing, one documenting, one planning, 'Success' banner with trophy, organized glowing connection lines, completed features flying off, speech bubbles: 'Got it!', 'On it!', 'Merged!', 'Documented!', 'Feature Complete', progress chart showing high performance. Gray arrows connect stages. Bottom tagline: 'Every great team starts as strangers'."
+/>
+</Slide>
+
+<Slide>
+
+## Poll: What characteristics would you like groupmates to have?
+
+<PollSlide />
+
+Answers should be one or two words for a word cloud.
+
+<aside className="notes">
+We will be forming groups for the last part of the semester.
+</aside>
+{/* TODO: Find out how groups will be formed. Students want to know. */}
+
+</Slide>
+
+<Slide>
+
+## Poll: What questions will you ask your groupmates to get started?
+
+<PollSlide />
+
+<aside className="notes">
+We will be forming groups for the last part of the semester.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Team Contracts
+
+When forming a new team, explicitly discuss and document expectations:
+
+<div className="fragment">
+
+**Availability & Communication:**
+- When are we available to work together?
+- How do we prefer to communicate? (Text, video call, in-person?)
+
+</div>
+
+<div className="fragment">
+
+**Work Style:**
+- How do we handle deadlines? (Head start vs. last-minute?)
+- What does "done" mean for our work?
+
+</div>
+
+<div className="fragment">
+
+**Process & Support:**
+- How will we divide work and make decisions?
+- What do we do when someone is blocked or struggling?
+
+</div>
+
+<aside className="notes">
+- These conversations surface potential conflicts BEFORE they become problems
+- Example: Early starter vs deadline worker can negotiate upfront
+- Better to discover mismatches at week 1 than mid-project
+- Transition: GitHub provides tools to track this work
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Tracking Progress: GitHub Issues
+
+**Issues** are the fundamental unit of work tracking:
+
+- Each issue represents a bug, feature, or task
+- Issues can be assigned to team members
+- Labels help categorize and filter (bug, enhancement, documentation, etc.)
+- Milestones group issues into releases or sprints
+
+Let's look at [Pawtograder issues](https://github.com/pawtograder/platform/issues)...
+
+<aside className="notes">
+- Issues make work visible and trackable
+- Good for: knowing what needs to be done, who's working on what
+- Transition: Projects help visualize workflow
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Tracking Progress: GitHub Projects
+
+**Projects** provide kanban-style boards:
+
+- Columns represent workflow stages (To Do, In Progress, In Review, Done)
+- Cards can be linked to issues and pull requests
+- Automation can move cards as issues progress
+
+Let's look at [Kubernetes projects](https://github.com/orgs/kubernetes/projects)...
+
+<aside className="notes">
+- Visual representation of team's work
+- Easy to see bottlenecks (too many things in "In Review")
+- Transition: Pull requests connect code changes to issues
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Tracking Progress: Pull Requests
+
+**Pull Requests** are proposals to copy changes from one repo or branch
+into another (usually the main branch of the parent repository).
+
+They can connect code (or documentation) changes to issues:
+
+- Reference issues with "Fixes #123" or "Closes #456"
+- Request reviews from specific team members
+- Discussion threads capture design decisions
+
+Regular check-ins (daily standups, weekly syncs) help surface blockers early.
+
+Let's look at [Pawtograder PRs](https://github.com/pawtograder/platform/pulls)...
+
+<aside className="notes">
+- PRs are where knowledge sharing happens through code review
+- Research shows weekly surveys effectively identify struggling teams before problems become critical
+- Transition: Even with good structure, conflicts happen. How do we handle them?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Poll: What traits do you think are the pillars of social interaction and teamwork?
+
+<PollSlide
+  choices={["Confidence", "Expertise", "Humility", "Independence", "Perfectionism", "Respect", "Trust" ]}
+/>
+
+Choose 3.
+
+<aside className="notes">
+- You can ask what other traits they think are important.
+- Transition: The book "Team Geek" identifies three key pillars
+</aside>
+</Slide>
+
+
+<Slide>
+
+## The HRT Framework
+
+**HRT** (pronounced "heart") are the three pillars of effective team collaboration:
+
+<div className="fragment">
+
+* **Humility**: You are not the center of the universe (nor is your code!). You're open to self-improvement.
+
+</div>
+
+<div className="fragment">
+
+* **Respect**: You genuinely care about others you work with. You treat them kindly and appreciate their abilities.
+
+</div>
+
+<div className="fragment">
+
+* **Trust**: You believe others are competent and will do the right thing. You're OK with letting them drive when appropriate.
+
+</div>
+
+Source: [*Team Geek*](https://learning.oreilly.com/library/view/team-geek/9781449329839/) (later [*Debugging Teams*](https://www.debuggingteams.com/)) by Brian Fitzpatrick and Ben Collins-Sussman,
+former Google engineers.
+
+<aside className="notes">
+- These are pillars we will hold you accountable to in group work
+- Transition: Let's look at what each means in practice
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Humility in Practice
+
+You are not the center of the universe (nor is your code!). You're neither omniscient nor infallible. You're open to self-improvement.
+
+**This means:**
+- Admitting when you don't know something
+- Accepting that your code can be improved
+- Being willing to change your mind when presented with better arguments
+- Recognizing that others have valuable perspectives
+
+<aside className="notes">
+- Opposite: "I'm the expert, my way is best"
+- Humility doesn't mean lacking confidence in your abilities
+- It means being open to learning and improvement
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Respect in Practice
+
+You genuinely care about others you work with. You treat them kindly and appreciate their abilities and accomplishments.
+
+**This means:**
+- Giving credit where it's due
+- Listening to understand, not just to respond
+- Assuming competence and good intentions
+- Valuing contributions different from your own
+
+<aside className="notes">
+- Opposite: Dismissing others' ideas, taking credit for joint work
+- Respect is shown through actions, not just words
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Trust in Practice
+
+You believe others are competent and will do the right thing, and you're OK with letting them drive when appropriate.
+
+**This means:**
+- Delegating without micromanaging
+- Giving people space to make (and learn from) mistakes
+- Not rewriting others' code without discussion
+- Trusting teammates to ask for help when needed
+
+<aside className="notes">
+- Opposite: Micromanaging, redoing others' work without asking
+- Trust is built over time through consistent behavior
+- Transition: Let's see HRT in action during code review
+</aside>
+
+</Slide>
+
+<Slide>
+
+## HRT in Code Review
+
+**Without HRT:**
+> "This is wrong. Use a HashMap instead."
+>
+> "Why would you do it this way?"
+>
+> "This whole function needs to be rewritten."
+
+<div className="fragment">
+
+**With HRT:**
+> "Have you considered using a HashMap here? It would give us O(1) lookups instead of O(n)."
+>
+> "I'm curious about this approach—what led you to this design?"
+>
+> "I'm having trouble following the logic in this function. Could we pair on simplifying it?"
+
+</div>
+
+<aside className="notes">
+- Same technical goals, different approach
+- HRT version treats author as capable colleague, not subordinate
+- Transition: Even with HRT, conflicts happen
+</aside>
+
+</Slide>
+
+<Slide>
+
+## When Conflicts Arise
+
+Even with HRT, conflicts happen. When they do:
+
+1. **Work from the same set of facts** - Establish what everyone actually knows
+2. **Talk about feelings** - "I felt frustrated when..." vs. "You always..."
+3. **Never presume intent** - Assume good faith until proven otherwise
+4. **Remain calm** - Step away if triggered, return later
+5. **Fight forward, not back** - Focus on solutions, not blame
+6. **Escalate appropriately** - Bring in neutral third party if needed
+
+<aside className="notes">
+- Conflicts often stem from different assumptions or information
+- Decisions made in anger rarely improve the situation
+- When escalating, don't expect others to solve it for you
+- Transition: Beyond handling conflict, teams need accountability
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Accountability: Being Someone Your Team Can Rely On
+
+Accountability isn't about blame—it's about being dependable.
+
+**Owning your commitments:**
+- If you say you'll do something, do it—or communicate early if you can't
+- Don't wait until the deadline to reveal you're stuck
+
+**Taking responsibility for outcomes:**
+- "I worked hard" ≠ "it's done and working"
+- Ask for help when you need it—struggling silently isn't heroic
+
+**Supporting team outcomes:**
+- If a teammate is struggling, offer help before being asked
+- The team succeeds or fails together
+
+<aside className="notes">
+- Accountability builds trust
+- When teammates can count on you, team moves faster
+- No need to constantly check in or build redundancy
 </aside>
 
 </Slide>
