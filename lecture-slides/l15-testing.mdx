@@ -16,9 +16,44 @@ import Img from '@site/src/components/Img';
 
 <Slide>
   <Img
-    src="/img/lectures/web/l15.png"
-    alt="A pixel art illustration showing test doubles as stunt performers standing in for complex systems. On the left, 'real' systems like GitHub servers and databases are shown as imposing, complex machines. On the right, simple mannequin-like 'doubles' labeled StubGitHub, SpyDatabase, and FakeAutograder perform the same roles with ease. A developer in the center runs fast tests on a retro computer showing green checkmarks. Tagline: Stand-ins for the Real World."
-    prompt="Concept: 'Test Doubles and Isolation' (Program Design & Implementation 2). A pixel art educational illustration showing the stunt double concept in software testing. On the left side, imposing 'real' systems are shown as complex, intimidating machines: a GitHub server rack with blinking lights, a database tower with spinning disks, an email notification cannon. On the right side, simple mannequin-like 'test doubles' stand in for each system - labeled 'StubGitHub' (holding a static code scroll), 'SpyDatabase' (with a notepad recording calls), 'FakeAutograder' (a simplified robot). In the center, a developer at a retro computer screen shows tests completing in '3ms' with green checkmarks. The contrast emphasizes: real systems are slow and complex, doubles are fast and simple. The tagline reads 'Stand-ins for the Real World.' in a retro pixel art style with teals, blues, purples, and warm accents."
+    src="/img/lectures/web/l15-3.png"
+    alt="A pixel art noir detective examining code with a magnifying glass. Good tests (green) catch hidden bugs while bad tests (red) walk right past them despite showing 100% coverage. Tagline: Coverage Finds Untested Code. Good Tests Find Bugs."
+    prompt="Cover art for a lecture on Test Doubles and Isolation.
+
+TEXT AT TOP:
+'CS3100: Program Design & Implementation 2'
+Below it: 'The Bug Detective'
+
+THE SCENE:
+A pixel art noir illustration showing a detective character examining code like a crime scene. The detective wears a classic trench coat and fedora, holding a magnifying glass up to glowing lines of code. Rain falls softly in the background. They're investigating a codebase where bugs are hiding in the shadows.
+
+BUGS HIDING IN CODE (shown as shady characters lurking):
+- A sneaky bug where '>' has been changed to '>=' (the operator is visibly altered)
+- A bug lurking in a deleted line (shown as a suspicious gap, like a missing person)
+- A bug hiding behind a wrong constant (showing '42' instead of '100')
+
+THE TWO TYPES OF TESTS (shown as other detectives):
+
+Good Tests (Green Glow):
+Alert detective figures with magnifying glasses, successfully spotting bugs. Glowing green with checkmarks. Speech bubbles: 'Bug Detected!' They're examining assertions carefully.
+
+Bad Tests (Red Glow):
+Lazy detective figures walking right past bugs, who wave mockingly from the shadows. Glowing red with X marks. One proudly holds a badge showing '100% Coverage!' while bugs escape behind them. Speech bubble: 'Case Closed!' (ironically, it isn't)
+
+EVIDENCE BOARD IN CORNER:
+'Bugs Found: 47' (green, with mugshots)
+'Bugs At Large: 3' (red, with 'WANTED' posters)
+
+THE DETECTIVE'S TOOLS:
+- Magnifying glass (revealing hidden bugs)
+- Notebook labeled 'Test Cases'
+- Case file showing 'assertEquals'
+- A wanted poster on the wall: 'HAVE YOU SEEN THIS BUG?'
+
+TAGLINE AT BOTTOM:
+'Coverage Finds Untested Code. Good Tests Find Bugs.'
+
+Style: Retro pixel art with noir atmosphere—deep blues, purples, and amber streetlight accents. The mood is classic detective mystery meets playful education. Bugs are mischievous cartoon characters hiding in shadows, not scary. The message is clear: tests that don't catch bugs aren't really solving the case."
   />
 
 <aside class="notes">
@@ -100,38 +135,123 @@ After this lecture, you will be able to:
 **Why this matters now:**
 - Next lectures scale up to larger codebases with more dependencies
 - A4 requires Mockito for testing services with repository dependencies
-- Your test suites are graded by mutation testing—tests must actually detect bugs!
+- Your test suites are graded on bug detection—tests must actually catch bugs!
 
-→ **Transition:** Let's start by understanding the spectrum of test types...
+→ **Transition:** First, what makes a test suite "good"?
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Code Coverage: A Starting Point, Not the Goal
+## What Makes a Good Test Suite?
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1.5em', marginTop: '1em'}}>
+  <div style={{textAlign: 'center'}}>
+    <p style={{fontSize: '2em', marginBottom: '0.2em'}}>🎯</p>
+    <p style={{fontSize: '1.1em', color: '#9370DB'}}><strong>Finds Bugs</strong></p>
+    <p style={{fontSize: '0.8em'}}>Actually detects defects in the code</p>
+  </div>
+  <div style={{textAlign: 'center'}}>
+    <p style={{fontSize: '2em', marginBottom: '0.2em'}}>🔒</p>
+    <p style={{fontSize: '1.1em', color: '#9370DB'}}><strong>Is Reliable</strong></p>
+    <p style={{fontSize: '0.8em'}}>Passes when code is correct, fails when it's not</p>
+  </div>
+  <div style={{textAlign: 'center'}}>
+    <p style={{fontSize: '2em', marginBottom: '0.2em'}}>⚡</p>
+    <p style={{fontSize: '1.1em', color: '#9370DB'}}><strong>Is Fast</strong></p>
+    <p style={{fontSize: '0.8em'}}>Runs quickly so you actually run it</p>
+  </div>
+</div>
+
+<p style={{marginTop: '1.5em', fontSize: '0.9em', color: '#666', textAlign: 'center'}}>
+  Today: techniques to maximize all three
+</p>
+
+<aside class="notes">
+**The three pillars of a good test suite:**
+
+**1. Finds Bugs:**
+- A test that passes regardless of bugs is useless
+- 100% coverage with no assertions = 0% bug detection
+- We need tests that actually verify correct behavior
+
+**2. Is Reliable:**
+- No "flaky" tests that randomly pass or fail
+- Deterministic: same code → same result
+- When it fails, you trust it found a real bug
+
+**3. Is Fast:**
+- If tests take 10 minutes, you won't run them often
+- Fast feedback = catch bugs early
+- Slow tests = bugs slip through
+
+**The challenge:** These goals can conflict! E2E tests find real bugs but are slow and flaky. Unit tests are fast and reliable but might miss integration bugs.
+
+→ **Transition:** How do we measure bug-finding ability?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Measuring Bug-Finding: Coverage
+
+<p style={{fontSize: '0.95em'}}>
+  <strong>Code coverage</strong> measures what code your tests execute
+</p>
+
+<ul style={{marginTop: '0.75em', fontSize: '0.85em'}}>
+  <li><strong>Statement coverage:</strong> % of lines executed</li>
+  <li><strong>Branch coverage:</strong> % of decision paths taken (if/else, loops)</li>
+</ul>
+
+<p style={{marginTop: '1em', fontSize: '0.95em', color: '#c60'}}>
+  But coverage has a fatal flaw...
+</p>
+
+<aside class="notes">
+**Coverage is a starting point:**
+- Helps find code that's never tested
+- If a line is never executed, bugs there can't be found
+- Higher coverage = more code exercised
+
+**But coverage doesn't guarantee bug detection:**
+- You can execute code without checking if it's correct
+- A test with no assertions achieves coverage but catches nothing
+
+→ **Transition:** Let's see why coverage alone isn't enough...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Coverage ≠ Bug Detection
 
 <Img
   src="/img/lectures/web/l15-coverage.png"
-  alt="Code coverage diagram showing statement and branch coverage"
-  prompt="A technical illustration showing code coverage concepts. LEFT SIDE: A code snippet with some lines highlighted in green (covered) and some in red (uncovered), showing statement coverage at 75%. CENTER: A flowchart showing decision branches, with some paths highlighted as taken and others not, showing branch coverage at 60%. RIGHT SIDE: A warning callout showing a test that achieves 100% coverage but has NO assertions—just calls methods without checking results. The callout reads 'Coverage tells you what code RAN, not what code WORKS.' BOTTOM: A scaling diagram showing that as code grows (small box → medium box → large box), the test suite must grow proportionally, with exponentially more possible paths. Style: clean technical diagram with clear labels, using green for covered/good and red/orange for uncovered/warning areas."
+  alt="Code coverage showing 100% but tests have no assertions, bugs escape"
+  prompt="A technical illustration showing the coverage trap. LEFT SIDE: A test file with 'service.processSubmission()' called but NO assertions - just calls methods. A coverage badge shows '100%' in green. RIGHT SIDE: The same code with bugs hiding in plain sight (a '>' changed to '>=', a wrong constant). The bugs are waving and escaping because the test never checked the results. A large warning banner reads: 'Coverage tells you what code RAN, not what code WORKS.' BOTTOM: A simple equation: '100% Coverage + 0 Assertions = 0 Bugs Detected'. Style: clean technical diagram with clear labels, using green for coverage metrics but red/orange warnings about the false confidence."
 />
 
 <aside class="notes">
-**Key concepts:**
-- **Statement coverage:** % of lines executed by tests
-- **Branch coverage:** % of decision paths taken (if/else, loops)
-- Coverage helps find untested code, but doesn't guarantee bug detection
-
-**The assertion problem:**
+**The fatal flaw of coverage:**
 - A test can execute 100% of code and catch 0% of bugs
 - If there are no assertions, the test just "exercises" the code
-- Mutation testing catches this—tests must actually verify behavior
+- Coverage tells you what RAN, not what WORKS
+
+**Example of a useless test:**
+```java
+@Test void testSubmission() {
+    service.processSubmission(submission);
+    // No assertions! 100% coverage, 0% bug detection
+}
+```
 
 **The scaling challenge:**
-- 10 lines of code: maybe 2-3 paths to test
-- 1000 lines of code: potentially thousands of paths
-- Can't test everything—need to be strategic
+- As code grows, the number of possible paths explodes
+- Can't test everything—need to be strategic about what matters
 
 → **Transition:** This is why we need to understand test scope...
 </aside>
