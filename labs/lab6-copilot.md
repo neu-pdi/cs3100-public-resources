@@ -16,12 +16,6 @@ By the end of this lab, you will be able to:
 
 ![Lo-fi pixel art showing a cozy hilltop weather observation station where students and an instructor monitor 'AI Weather' together. A large board displays forecast predictions from pre-surveys: sunny icons next to quotes like 'AI will solve everything!' and 'Instant perfect code!'. Next to it, actual weather readings roll in: partly cloudy, scattered errors, occasional breakthroughs. One student adjusts a barometer labeled 'Expectations', another logs results in a shared journal. The instructor squints at conflicting instruments, equally uncertain. Through the window, the AI sky is a mix of sunshine and storm clouds—genuinely unpredictable. Sticky notes everywhere: 'Your data helps us calibrate!', 'Forecast improves with more observations'. A radar screen shows incoming survey responses as blips. A cozy mug of coffee, vintage weather instruments, warm lamp light against a moody sky. Banner: 'Prediction is hard—especially about AI.' Title: 'Lab 6: AI Coding Agents'.](/img/labs/web/lab6.png)
 
-
-## Pre-Lab Preparation
-- Install GitHub Copilot [see tutorial](adding_copilot_to_vscode.md)
-- Review your IDE setup for compiling and running Java programs (Java 21)
-- Download your lab repo from [pawtograder](https://app.pawtograder.com/)
-
 ## Lab Structure (75 minutes)
 1. Pre-workshop survey (10 minutes)
 2. Understanding effective AI use (10 minutes)
@@ -111,13 +105,9 @@ You will work with a blank repo that only has JUnit tests and practice different
 ### Part 3.1.A: Basic Code Generation (10 minutes)
 
 **Your Task:**
-1. Create a directory in src/main/java called `part1_buggy_code_practice`
-2. Navigate to the `part1_buggy_code_practice` folder in your lab repo
-3. Copy and paste the assignment prompt into GitHub Copilot: "Please complete this assignment so that all tests fail in ExpectedFail Tests"
-4. Supply the tests from part1 ExpectedFailTests
-5. Ask AI to complete the assignment so that these tests will fail
-6. Did it work?
-7. What additional prompts did you require to complete this task? Please list them.
+1. Navigate to the `part1_buggy_code_practice` folder in your lab repo
+2. Ask Copilot Chat to complete the assignment so that all tests fail in `ExpectedFailTests.java`
+3. Did it work? What additional prompts did you require? List them.
 
 **Steps:**
 1. **Generate Code:**
@@ -138,13 +128,10 @@ You will work with a blank repo that only has JUnit tests and practice different
 
 ### Part 3.1.B: Prompting for Code based on passing tests with AI
 **Your Task:**
-1. Create and navigate to the `part2_debugging_buggy_code_practice` folder in your lab repo
-2. Review and list any bugs you initially see (5 minutes)
-3. Ask the AI to create an .md file called expectedFileBugs.md
-4. Check to see that the expected bugs match what you found
-5. Uncomment out CorrectTests.java
-6. Ask AI to create a new set of files in the folder `part2_debugging_buggy_code_practice` using your own prompt and pass it CorrectTests.java.
-7. Have it generate code to pass the set of tests in `CorrectTests.java`
+1. Navigate to the `part2_debugging_buggy_code_practice` folder in your lab repo
+2. Review the buggy code and list any bugs you initially see (5 minutes)
+3. Ask AI to generate code that passes the tests in `CorrectTests.java`
+4. Run the tests and record pass/fail results
 
 **Steps:**
 1. **Generate Code:**
@@ -154,12 +141,11 @@ You will work with a blank repo that only has JUnit tests and practice different
     - Review the generated code
 
 2. **Run Tests:**
-    - Run the JUnit tests for Part 1 `CorrectTests.java`
+    - Run the JUnit tests for `CorrectTests.java`
     - Record pass/fail results
 
 3. **Document in REFLECTION.md (Question 2b):**
-    - What is working?
-    - What is broken?
+    - What is working? What is broken?
     - Impressions of the prompt strength
     - What did you learn about basic prompting?
     - How much of the code generated do you understand?
