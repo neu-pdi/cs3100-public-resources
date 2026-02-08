@@ -1,7 +1,3 @@
-// https://claude.ai/share/0e69d802-5558-466f-a0ae-b205ba4608d9
-// https://claude.ai/share/f5e21dae-870d-4038-bc8d-6233f664f394
-// https://claude.ai/share/7ed992aa-5a2a-4035-b57a-09bdb4d23f5b
-
 import React from 'react';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import CodeBlock from '@theme/CodeBlock';
@@ -9,6 +5,7 @@ import CodeBlock from '@theme/CodeBlock';
 interface PollSlideProps {
   choices?: string[];
   image?: string;
+  imageAlt?: string;
   code?: string;
   language?: string;
   username?: string;
@@ -22,6 +19,7 @@ interface PollSlideProps {
  *
  * @param choices - Array of answer choices (auto-labeled A, B, C, etc.)
  * @param image - Optional image path (relative to static folder)
+ * @param imageAlt - Alt text for the optional image
  * @param code - Optional code snippet to display
  * @param language - Language for code syntax highlighting (default: "java")
  * @param username - Poll Everywhere username (e.g., "espertus"); If omitted, logo is shown
@@ -31,6 +29,7 @@ interface PollSlideProps {
 export default function PollSlide({
   choices,
   image,
+  imageAlt = 'Poll image',
   code,
   language = 'java',
   username,
@@ -83,7 +82,7 @@ export default function PollSlide({
           {image && (
             <img
               src={imageSrc}
-              alt="Poll image"
+              alt={imageAlt}
               style={{ maxHeight: '40vh', maxWidth: '100%', marginBottom: '1em' }}
             />
           )}
