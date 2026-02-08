@@ -350,6 +350,20 @@ Style: Retro 8-bit pixel art with clean lines and vibrant colors. Similar aesthe
 
 <Slide>
 
+## The Hard Part
+
+<QuoteSlide
+ quote="Engineering is easy. People are hard."
+ author="Bill Coughran, former SVP of Engineering at Google"
+ credit="Quote source: Debugging Teams (Introduction)"
+ imageSrc="/img/lectures/web/l17-debugging-teams.jpg"
+ imageAlt="Cover of the book 'Debugging Teams: Better Production Through Collaboration' by Brian Fitzpatrick and Ben Collins-Sussman"
+/>
+
+</Slide>
+
+<Slide>
+
 ## Poll: What characteristics would you like groupmates to have?
 
 <PollSlide />
@@ -360,18 +374,6 @@ Answers should be one or two words for a word cloud.
 We will be forming groups for the last part of the semester.
 </aside>
 {/* TODO: Find out how groups will be formed. Students want to know. */}
-
-</Slide>
-
-<Slide>
-
-## Poll: What questions will you ask your groupmates to get started?
-
-<PollSlide />
-
-<aside className="notes">
-We will be forming groups for the last part of the semester.
-</aside>
 
 </Slide>
 
@@ -402,6 +404,7 @@ When forming a new team, explicitly discuss and document expectations:
 **Process & Support:**
 - How will we divide work and make decisions?
 - What do we do when someone is blocked or struggling?
+- What tools should we use to organize information?
 
 </div>
 
@@ -543,6 +546,8 @@ You are not the center of the universe (nor is your code!). You're neither omnis
 - Being willing to change your mind when presented with better arguments
 - Recognizing that others have valuable perspectives
 
+It does not mean being a doormat.
+
 <aside className="notes">
 - Opposite: "I'm the expert, my way is best"
 - Humility doesn't mean lacking confidence in your abilities
@@ -594,21 +599,31 @@ You believe others are competent and will do the right thing, and you're OK with
 
 ## HRT in Code Review
 
-**Without HRT:**
-> "This is wrong. Use a HashMap instead."
->
-> "Why would you do it this way?"
->
-> "This whole function needs to be rewritten."
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.7em'}}>
 
-<div className="fragment">
+<div style={{backgroundColor: 'rgba(255,100,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
 
-**With HRT:**
-> "Have you considered using a HashMap here? It would give us O(1) lookups instead of O(n)."
->
-> "I'm curious about this approach—what led you to this design?"
->
-> "I'm having trouble following the logic in this function. Could we pair on simplifying it?"
+**Without HRT ❌**
+
+"This is wrong. Use a HashMap instead."<br/><br/>
+
+"Why would you do it this way?"
+
+"This whole function needs to be rewritten."
+
+</div>
+
+<div style={{backgroundColor: 'rgba(100,255,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
+
+**With HRT ✓**
+
+"Have you considered using a HashMap here? It would give us O(1) lookups instead of O(n)."
+
+"I'm curious about this approach—what led you to this design?"<br/>
+
+"I'm having trouble following the logic in this function. Could we pair on simplifying it?"
+
+</div>
 
 </div>
 
@@ -619,7 +634,6 @@ You believe others are competent and will do the right thing, and you're OK with
 </aside>
 
 </Slide>
-
 <Slide>
 
 ## When Conflicts Arise
@@ -632,12 +646,60 @@ Even with HRT, conflicts happen. When they do:
 4. **Remain calm** - Step away if triggered, return later
 5. **Fight forward, not back** - Focus on solutions, not blame
 6. **Escalate appropriately** - Bring in neutral third party if needed
+7. **Talk face-to-face.** Misunderstandings can snowball online
 
 <aside className="notes">
 - Conflicts often stem from different assumptions or information
 - Decisions made in anger rarely improve the situation
 - When escalating, don't expect others to solve it for you
 - Transition: Beyond handling conflict, teams need accountability
+</aside>
+
+</Slide>
+
+{/* TODO: Add CMC to lecture notes if we decide to keep it.*/}
+
+<Slide>
+
+## Computer-Mediated Communication
+
+<Img
+  src="/img/lectures/web/l17-cmc-prediction-reality.png"
+  prompt="Concept: 'Computer-Mediated Communication: Prediction vs. Reality'
+A pixel art split-screen comparison showing utopian predictions versus actual outcomes.
+
+Header banner:
+'Computer-Mediated Communication'
+
+LEFT SIDE - 'The Prediction (1990s)' (bright, utopian colors):
+Pixel art scene showing diverse people from different backgrounds (indicated by varied clothing, cultural symbols) holding hands in a circle around a glowing computer/globe. Rainbow bridges connecting them. Speech bubbles with hearts, handshakes, peace symbols. Text banner at top: 'The Internet Will Unite Us!' Small floating quotes: 'Boundaries will dissolve', 'We'll see past differences', 'Anonymous = equal'. Warm golden and rainbow hues. Everyone smiling, harmonious. Computer screens showing collaborative work, shared ideas flowing freely. Utopian sci-fi aesthetic - clean, bright, optimistic.
+
+DIVIDING LINE - A stark vertical split down the middle, perhaps a cracked screen or glitch effect.
+
+RIGHT SIDE - 'The Reality (2020s)' (darker, fragmented colors):
+Pixel art battlefield/wasteland. Scattered fortified islands of community - small groups huddled together behind walls. Each island has a flag reading 'US' and pointing at other islands with signs saying 'THEM'. Angry speech bubbles with fire icons, crossed swords, conflict symbols. Broken bridges between islands. Pixel art flame wars - literal flames coming from computer screens. No explicit political symbols, but generic 'Team A vs Team B' battles, echo chambers (literal echo chambers as structures), filter bubbles (bubbles isolating groups). Storm clouds above. Some islands are completely isolated. Dark blues, reds, harsh contrasts. A few neutral observers standing alone between islands looking confused or sad.
+
+Visual elements throughout:
+- Left: connection lines, bridges, unity symbols
+- Right: walls, broken connections, conflict symbols, isolation
+- Same pixel people types on both sides to show it's the same humanity
+- Technology present on both sides but used differently
+
+Bottom banner split:
+Left side: 'What We Hoped'
+Right side: 'What We Got'
+
+Style: Retro 8-bit pixel art. Stark contrast between utopian left (bright, connected) and dystopian right (dark, fragmented). Clear visual narrative about dashed expectations."
+  alt="Split-screen pixel art comparing CMC predictions vs reality. Left 'The Prediction (1990s)' shows diverse people from different cultures (varied clothing including traditional dress, business attire, casual wear) holding hands in circle around glowing globe, rainbow bridges connecting them, computer screens showing 'Global Communication', 'Shared Free Ideas', speech bubbles with hearts/handshakes/peace symbols, floating text 'Boundaries will dissolve', 'We'll see past differences', banner reads 'The Internet Will Unite Us!', bright golden and rainbow colors. Right 'The Reality (2020s)' shows dark battlefield with four fortified island communities separated by broken bridges and moats of fire, each island has 'US' flag pointing arrows at others labeled 'THEM', angry faces, flame icons, crossed swords, literal flames coming from screens, signs reading 'Team A', 'Team B', 'Echo Chamber', 'Filter Bubble', storm clouds and lightning, scattered confused neutral figures with question marks, dark blues/reds/grays. Bottom split banner: 'What We Hoped' (left) and 'What We Got' (right)."
+/>
+
+<aside className="notes">
+- When computer-mediated communication was taking off in the 90s, some people
+  belived it would be free of racism, sexism, and other prejudices because
+  identity was hidden.
+- Spoiler alert: That didn't happen.
+- Fun fact: Prof. Spertus developed the first software to automatically detective
+  hostile messages ("flames") back in the 90s.
 </aside>
 
 </Slide>
@@ -667,5 +729,9 @@ Accountability isn't about blame—it's about being dependable.
 </aside>
 
 </Slide>
+
+
+
+
 
 </RevealJS>

@@ -211,6 +211,9 @@ Even with HRT, conflicts happen. When they do:
 
 6. **Escalate appropriately.** If you reach an impasse, bring in a neutral third party (team lead, mentor, manager) to help mediate—but don't expect them to solve the problem for you.
 
+7. **Talk face-to-face.** Misunderstandings can snowball in asynchronous communications.
+   Talking together, ideally in person, can get things back on track.
+
 ### Accountability: Being Someone Your Team Can Rely On
 
 Accountability isn't about blame—it's about being the kind of teammate others can depend on. In professional settings, accountability means:
