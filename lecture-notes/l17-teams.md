@@ -34,6 +34,19 @@ Cognitive diversity improves outcomes because:
 
 This means that working with people who are different from you isn't just a nice thing to do—it produces better software. The discomfort of having your assumptions challenged is the feeling of blind spots being revealed.
 
+Here are some examples:
+- Grace Hopper used her experience playing women's basketball
+  (which required forward passes rather than dribbling) to design
+  a single-pass compiler for UNIVAC I [[HOPL 1](https://dl.acm.org/doi/10.1145/800025.1198341)].
+- A collaboration between neuropsychiatrist Warren McCulloch and Logician Walter
+  Pitts led to the [seminal paper on neural networks](https://en.wikipedia.org/wiki/A_Logical_Calculus_of_the_Ideas_Immanent_in_Nervous_Activity).
+- The development of autonomous vehicles required expertise in mechanical
+  engineering, computer science, artificial intelligence, automotive engineering,
+  and behavioral scientists. [[RyzLabs 2025](https://learn.ryzlabs.com/engineering/the-role-of-cross-disciplinary-collaboration-in-engineering-innovations)].
+- [John Henry Holland](https://www.santafe.edu/news-center/news/in-memoriam-john-holland),
+  a professor of both psychology and computer science, drew on his knowledge of evolutionary biology
+  to develop genetic algorithms, an important optimization technique.
+
 ### Brooks' Law and Communication Overhead
 
 In his classic 1975 book *The Mythical Man-Month*, Fred Brooks observed:
@@ -78,6 +91,8 @@ Because of Brooks' Law, successful teams need communication mechanisms that scal
 A useful rule of thumb: **if you've explained something to more than two people, write it down.** The third explanation should be a link to documentation.
 
 Research shows that developers see approximately a **50% productivity boost** when documentation is up-to-date, detailed, and available in multiple formats. Good documentation isn't just nice to have—it's a force multiplier for the entire team.
+
+
 
 ## Describe the stages of team formation and strategies for establishing productive working agreements (15 minutes)
 

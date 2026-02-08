@@ -1,0 +1,177 @@
+---
+sidebar_position: 17
+title: "Teams and Collaboration"
+#image: /img/lectures/web/l13.png
+---
+
+<style>
+{`
+  .reveal {
+    font-size: 28px !important;
+  }
+`}
+</style>
+
+import RevealJS, { Slide } from '@site/src/components/RevealJS';
+import Img from '@site/src/components/Img';
+import PollSlide from '@site/src/components/PollSlide';
+import QuoteSlide from '@site/src/components/QuoteSlide';
+
+<RevealJS transition="slide">
+
+{/* ============================================ */}
+{/* COVER IMAGE */}
+{/* ============================================ */}
+
+{/* ============================================ */}
+{/* ARC 1: DIVERSITY OF SKILLS AND BACKGROUNDS */}
+{/* ============================================ */}
+
+<Slide>
+
+## Poll: What skills would you want on a team?
+
+<PollSlide
+  choices={[
+"Product management (what should we build?)",
+"Project management (how do we coordinate building it?)",
+"System-level design and architecture",
+"Unit-level design and implementation",
+"Operations and deployment",
+"Maintenance and support",
+"User experience and accessibility"
+  ]}
+/>
+
+<aside className="notes">
+* Successful products require teams with many different strengths,
+not just coding.
+
+* Transition: CS also benefits from skills from other fields...
+</aside>
+</Slide>
+
+<Slide>
+
+## Contributions to CS from Other Fields
+
+<div class="fragment">
+* Grace Hopper used her experience playing women's basketball
+  (which required forward passes rather than dribbling ) to design.
+  a single-pass compiler for UNIVAC I.
+</div>
+
+<div class="fragment">
+* Neural networks came from a collaboration between neuropsychiatrist Warren McCulloch and Logician Walter
+  Pitts.
+</div>
+
+<div class="fragment">
+* John Henry Holland, a professor of both psychology and computer science, drew on his knowledge of
+  evolutionary biology to develop genetic algorithms, an important optimization technique.
+</div>
+
+<aside className="notes">
+* Transition: Many projects require cross-displinary teams
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Cross-Disciplinary Teamwork
+
+Autonomous Vehicles require:
+
+* **Software Engineering & AI:** Algorithms, behavior planning, decision-making, machine learning, computer vision
+
+* **Robotics & Control Engineering:** Navigation, motion planning, vehicle control systems
+
+* **Sensor Fusion & Perception:** Integrating data from cameras, lidar, radar, GPS to interpret environment
+
+* **Mechanical & Automotive Engineering:** Vehicle design, drive-by-wire systems, hardware integration
+
+* **Systems Engineering:** Coordinating all components, ensuring safety, testing, infrastructure connectivity
+
+<aside className="notes">
+
+</aside>
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 2: TEAM SIZE */}
+{/* ============================================ */}
+
+<Slide>
+
+## Estimated Employee Counts
+
+| Product/Company | Employees |
+|----------------|-----------|
+| **Spotify** | ~9,800 |
+| **Zoom** | ~7,800 |
+| **TikTok** | ~7,000+ |
+| **Snapchat** | ~5,600 |
+| **Dropbox** | ~3,000 |
+| **YouTube** | ~2,500+ |
+
+<aside className="notes">
+- Even companies/divisions known for a single product have thousands of employees.
+- About a third are engineers.
+- Of course, companies are divided into teams.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Brooks' Law
+
+<QuoteSlide quote="Adding manpower to a late software project makes it later."
+  author="Fred Brooks"
+  imageSrc="/img/lectures/web/l17-fred-brooks.jpg"
+  credit="David.Monniaux CC BY-SA 3.0"
+    />
+  Fred Brooks managed the development of IBM's System/360 computers and
+  wrote <em>The Mythical Man-Month</em> to share how hard it is to manage
+  large software projects. He later won the Turing Award.
+
+<aside className="notes">
+- Next slide will ask students to guess why Brooks' Law holds.
+</aside>
+
+</Slide>
+
+<Slide>
+
+Poll: Why do you think adding staff to a late software project makes it later?
+<PollSlide
+  image="/img/lectures/web/l17-mythical-man-month.jpg"
+  imageAlt="Cover of The Mythical Man-Month by Frederick P. Brooks, Jr."
+/>
+
+<aside className="notes">
+- Acknowledge that the term "man-month" is dated.
+- Poll should be open-ended or word cloud.
+- Tell students which format is used.
+</aside>
+</Slide>
+
+<Slide>
+
+## Why Man-Months are Mythical
+<div className="fragment">
+<Img src="/img/lectures/web/l17-dilbert-add-to-team.webp"
+  alt="Dilbert comic strip: Boss asks 'How long will your project take if I add two people?' Engineer responds 'Add one month for training, one month for extra complexity, and one month to deal with their drama.' Boss says 'But after all that...' Engineer finishes 'They'll be as useful as this meeting.'"
+  width={800}
+  />
+</div>
+<div className="fragment">
+<Img src="/img/lectures/web/l17-dilbert-man-days.jpg"
+  alt="Dilbert comic strip: Boss asks 'How long will your project take if I add two people?' Engineer responds 'Add one month for training, one month for extra complexity, and one month to deal with their drama.' Boss says 'But after all that...' Engineer finishes 'They'll be as useful as this meeting.'"
+  width={800}
+    />
+</div>
+</Slide>
+
+</RevealJS>
