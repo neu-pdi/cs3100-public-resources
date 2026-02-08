@@ -1,7 +1,7 @@
 ---
 sidebar_position: 17
 title: "Teams and Collaboration"
-#image: /img/lectures/web/l13.png
+image: /img/lectures/web/l17.png
 ---
 
 <style>
@@ -22,6 +22,60 @@ import QuoteSlide from '@site/src/components/QuoteSlide';
 {/* ============================================ */}
 {/* COVER IMAGE */}
 {/* ============================================ */}
+
+<Slide>
+
+<Img
+  src="/img/lectures/web/l17.png"
+  prompt="Concept: 'Teams and Collaboration: Many Minds, One Mission'
+Tagline: 'No One Builds Alone.'
+
+A pixel art style educational illustration showing the evolution and complexity of software teams.
+
+Header banner:
+'CS 3100: Program Design & Implementation 2' with subtitle 'Teams and Collaboration'
+
+LEFT SIDE - 'The Solo Myth' (small, isolated):
+A single pixel art developer at a desk, surrounded by thought bubbles showing different skills: 'Frontend?', 'Backend?', 'Design?', 'Security?', 'Ops?', 'Testing?'. The developer looks overwhelmed, trying to juggle multiple hats literally stacked on their head. Muted grays and blues. Small code indicator: '~1000 lines'. A crossed-out label: 'The 10x Engineer Myth'.
+
+CENTER - 'Building Bridges' (collaboration in action):
+Multiple pixel art developers working together around a table with TWO PIZZAS on it (reference to the two-pizza rule). Diverse group with different backgrounds. Grace Hopper (indicated by basketball icon above her head) is one of the team members. Other team members have icons: brain/neuron, DNA helix, gear. Speech bubbles showing communication: 'Have you considered...?', 'What if we...?', 'I can help with that!'. Golden connection lines linking team members, but also showing the n(n-1)/2 communication paths becoming complex. A pixel art version of Brooks' Law formula floats above. Warm collaborative colors (oranges, golds).
+
+RIGHT SIDE - 'Scale and Success' (large teams, organized):
+Layered pixel art showing team structure. Bottom layer: small teams of 4-6 people working on components. Middle layer: documentation wikis, PR reviews, knowledge sharing (represented by glowing books and chat bubbles with arrows showing one-to-many flow). Top layer: autonomous vehicle assembly showing cross-disciplinary collaboration (mechanical engineers, AI specialists, robotics experts working together on a pixel art car). Cool organized colors (teals, purples). Large code indicator: '~10M+ lines'. A pixel art document labeled 'Team Contract' and 'HRT: Humility, Respect, Trust' glows at the foundation.
+
+Visual motifs throughout:
+- Communication paths as golden threads (getting more tangled from left to center, then organized into channels on right)
+- Diversity symbols (Grace Hopper's basketball, McCulloch-Pitts neural network, Holland's DNA)
+- Growth indicators: 1 person → small team → large coordinated teams
+
+Bottom banner:
+'No One Builds Alone.'
+
+Visual style:
+Retro 8-bit pixel art with cohesive color palette. Progression from isolated cool blues (left) through warm collaborative golds (center) to organized cool teals/purples (right). Clear visual narrative from solo → team → scale."
+  alt="Pixel art lecture cover divided into three sections. Left 'The Solo Myth': overwhelmed developer with stack of hats on head, surrounded by thought bubbles asking about Frontend, Backend, Security, Testing, Ops, Design, with crossed-out '10x Engineer Myth' label and ~1000 lines indicator. Center 'Building Bridges': diverse team of five sitting around table with two pizzas (two-pizza rule reference), Grace Hopper with basketball icon, others with brain/neuron, DNA helix, and gear icons, speech bubbles saying 'Have you considered...?', 'I can help with that!', 'What if we...?', 'Let's pair on this!', complexity formula n(n-1)/2 above, golden communication threads connecting team members. Right 'Scale and Success': top shows autonomous vehicle with cross-disciplinary experts (wrench/mechanical, brain/AI, robot icons) and ~10M+ lines indicator, middle layer shows wiki book, magnifying glass, PR reviews checklist, chat bubbles, bottom shows four small diverse teams in teal/orange/purple/blue boxes, foundation displays 'HRT: Humility, Respect, Trust' with Team Contract document. Bottom tagline: 'No One Builds Alone.'"
+/>
+
+</Slide>
+
+{/* ============================================ */}
+{/* TITLE SLIDE */}
+{/* ============================================ */}
+
+<Slide>
+
+# CS 3100: Program Design and Implementation II
+
+## Lecture 17: Teams & Collaboration
+
+<p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
+  ©2026 Jonathan Bell & Ellen Spertus, CC-BY-SA
+</p>
+
+<aside className="notes">
+</aside>
+</Slide>
 
 {/* ============================================ */}
 {/* ARC 1: DIVERSITY OF SKILLS AND BACKGROUNDS */}
@@ -55,18 +109,18 @@ not just coding.
 
 ## Contributions to CS from Other Fields
 
-<div class="fragment">
+<div className="fragment">
 * Grace Hopper used her experience playing women's basketball
   (which required forward passes rather than dribbling ) to design.
   a single-pass compiler for UNIVAC I.
 </div>
 
-<div class="fragment">
+<div className="fragment">
 * Neural networks came from a collaboration between neuropsychiatrist Warren McCulloch and Logician Walter
   Pitts.
 </div>
 
-<div class="fragment">
+<div className="fragment">
 * John Henry Holland, a professor of both psychology and computer science, drew on his knowledge of
   evolutionary biology to develop genetic algorithms, an important optimization technique.
 </div>
@@ -172,6 +226,85 @@ Poll: Why do you think adding staff to a late software project makes it later?
   width={800}
     />
 </div>
+</Slide>
+
+<Slide>
+
+## Communication Overhead Grows Quadratically
+
+In a team of *n* people, the number of communication paths is:
+
+$$\frac{n(n-1)}{2}$$
+
+| Team Size | Communication Paths |
+|-----------|---------------------|
+| 2         | 1                   |
+| 4         | 6                   |
+| 8         | 28                  |
+| 16        | 120                 |
+
+Communication overhead grows faster than team productivity.
+
+Amazon has the two-pizza rule: Teams should be small enough (5-8 people) to be fed by
+two large pizzas.
+
+<aside className="notes">
+- This is why Brooks' Law holds: new team members need to be brought up to speed
+- Everyone spends more time coordinating and less time coding
+- Important to plan upfront how to structure a team
+- Transition: This is why we need communication mechanisms that scale better
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Scalable Knowledge Sharing
+
+**One-to-one** (doesn't scale):
+- Mentorship sessions
+- Hallway conversations
+- Direct messages
+
+**One-to-many** (scales better):
+- Code review (synchronous, but knowledge spreads)
+- Pair programming (immediate knowledge transfer)
+- Q&A forums and mailing lists (asynchronous, searchable)
+
+**One-to-many, persistent** (scales best):
+- Documentation and wikis
+- Recorded tech talks
+- Blog posts and tutorials
+- Well-commented code
+
+<aside className="notes">
+- The key is choosing communication methods that don't grow quadratically with team size
+- Persistent methods are best because they can be referenced repeatedly
+- Transition: So how do we apply this principle?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Write It Down
+
+
+Developers see approximately a **50% productivity boost** when documentation is up-to-date, detailed, and available in multiple formats.
+
+**Tips:**
+- If you've explained something to more than two people, write it down. The third explanation should be a link to documentation.
+- Fix out-of-date documentation as you work through it.
+
+Good documentation isn't just nice to have—it's a force multiplier for the entire team.
+
+<aside className="notes">
+- Documentation reduces interruptions and scales sub-linearly with team growth
+- Every documented solution is one less interruption for your teammates
+- That future team member might be you in six months
+- Transition: Beyond knowledge sharing, teams need to work through stages of development...
+</aside>
+
 </Slide>
 
 </RevealJS>
