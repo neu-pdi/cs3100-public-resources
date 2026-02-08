@@ -23,7 +23,7 @@ By the end of this lab, you will be able to:
 - Download your lab repo from [pawtograder](https://app.pawtograder.com/)
 
 ## Lab Structure (75 minutes)
-1. Pre-workshop survey (5-10 minutes)
+1. Pre-workshop survey (10 minutes)
 2. Understanding effective AI use (10 minutes)
 3. Effective prompting practice (20 minutes)
 4. Hands-on AI debugging exercise (25 minutes)
@@ -37,7 +37,11 @@ Complete the [Lab 6 Pre-Workshop Survey](https://forms.gle/hUrsEfTtAaueKHe29) co
 - AI usefulness for coding
 - AI correctness expectations
 - AI's impact on learning
-- [Please take the survey here](https://forms.gle/hUrsEfTtAaueKHe29) then record the number under the thank-you message
+
+**[Please take the survey here](https://forms.gle/hUrsEfTtAaueKHe29)** then record the number under the thank-you message.
+
+**Document in REFLECTION.md (Question 1a):**
+- Pre-survey confirmation number: `_______________`
 - Note: This number is not unique and your response is anonymous
 
 ---
@@ -61,9 +65,7 @@ Complete the [Lab 6 Pre-Workshop Survey](https://forms.gle/hUrsEfTtAaueKHe29) co
 - Copying without understanding
 - Replacing debugging skills
 - Bypassing concept learning
-- Studies have found dependence of LLM tools has a cognitive cost that reduces brain connectivity.
 - When using LLMs it is important to use it as a tool and not depend on it. 
-- https://www.media.mit.edu/projects/your-brain-on-chatgpt/overview/
 
 ### Key Principles
 
@@ -134,7 +136,7 @@ You will work with a blank repo that only has JUnit tests and practice different
     - Impressions of the prompt strength
     - What did you learn about basic prompting?
 
-#### 3.1.B Prompting for Code based on passing tests with AI
+### Part 3.1.B: Prompting for Code based on passing tests with AI
 **Your Task:**
 1. Create and navigate to the `part2_debugging_buggy_code_practice` folder in your lab repo
 2. Review and list any bugs you initially see (5 minutes)
@@ -155,7 +157,7 @@ You will work with a blank repo that only has JUnit tests and practice different
     - Run the JUnit tests for Part 1 `CorrectTests.java`
     - Record pass/fail results
 
-3. **Document in REFLECTION.md (Question 2a):**
+3. **Document in REFLECTION.md (Question 2b):**
     - What is working?
     - What is broken?
     - Impressions of the prompt strength
@@ -163,7 +165,8 @@ You will work with a blank repo that only has JUnit tests and practice different
     - How much of the code generated do you understand?
     - If given an hour to prepare could you explain this code?
 
-    
+---
+
 ## Part 4: Hands-On AI Debugging Exercise (25 minutes)
 
 ### Overview
@@ -235,7 +238,12 @@ Use `bugs.md` to see if the AI accurately found all the bugs for you.
     - Which helped you understand better?
     - Which gave you more control?
 
-#### Final Documentation
+**Document in REFLECTION.md (Question 3b):**
+- Which strategy (A or B) was more effective? Why?
+- Which approach helped you understand the code better?
+- What did you learn about debugging with AI assistance?
+
+---
 
 ## Part 5: Post-Workshop Survey (10 minutes)
 
@@ -248,7 +256,10 @@ Reflect on how your expectations changed regarding:
 - Time to learn effective AI use
 - Future AI usage plans
 
-**[Please take the survey here](https://forms.gle/9MpRjuLQ8fhB53eo6)** then record the number under the thank-you message
+**[Please take the survey here](https://forms.gle/9MpRjuLQ8fhB53eo6)** then record the number under the thank-you message.
+
+**Document in REFLECTION.md (Question 1b):**
+- Post-survey confirmation number: `_______________`
 - Note: This number is not unique and your response is anonymous
 
 ---
@@ -256,8 +267,8 @@ Reflect on how your expectations changed regarding:
 ## Part 6: Reflection and Takeaways (5 minutes)
 
 ### Key Lessons
-Answer these questions in REFLECTION.md (Question 4):
-[ Answer 2]
+**Document in REFLECTION.md (Question 4):**
+
 1. What surprised you most about working with AI for coding?
 2. What's one specific way you'll change how you use AI for future assignments?
 3. What's one thing you'll always do before accepting AI-suggested code?
@@ -284,7 +295,11 @@ Commit to these practices going forward:
 
 ## Submission Requirements
 
-Submit your completed `REFLECTION.md` file containing all answers to Questions 1-4.
+Submit your completed `REFLECTION.md` file containing:
+- **Question 1:** Survey confirmation numbers (1a: pre-survey, 1b: post-survey)
+- **Question 2:** Code generation exercises (2a: basic generation, 2b: prompting for tests)
+- **Question 3:** Debugging exercises (3a: bug identification, 3b: bug fixing strategies)
+- **Question 4:** Final reflection and takeaways
 
 **Filename:** `REFLECTION.md` (in your lab repo)
 **Submission:** Push to your repository by the end of the lab session
