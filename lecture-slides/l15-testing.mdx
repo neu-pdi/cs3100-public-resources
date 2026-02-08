@@ -17,8 +17,8 @@ import Img from '@site/src/components/Img';
 <Slide>
   <Img
     src="/img/lectures/web/l15.png"
-    alt="Lecture 15 Cover"
-    prompt="A cinematic testing laboratory scene rendered in a sleek, modern technical illustration style. The scene shows a software testing facility where 'stunt doubles' (represented as simplified mannequin-like figures) stand in for complex real-world systems. In the center, a developer works at a terminal running fast unit tests, while behind glass walls we see the 'real' systems they're replacing: a massive industrial HVAC unit, a network of temperature sensors, and a notification broadcast tower. The mannequin doubles are labeled with tags like 'StubSensor', 'SpyHVAC', 'FakeRepository'. A digital clock shows tests completing in milliseconds. The overall mood conveys speed, control, and precision—the power of testing in isolation. Tagline at bottom: 'Test Doubles: Stand-ins for the Real World'"
+    alt="A pixel art illustration showing test doubles as stunt performers standing in for complex systems. On the left, 'real' systems like GitHub servers and databases are shown as imposing, complex machines. On the right, simple mannequin-like 'doubles' labeled StubGitHub, SpyDatabase, and FakeAutograder perform the same roles with ease. A developer in the center runs fast tests on a retro computer showing green checkmarks. Tagline: Stand-ins for the Real World."
+    prompt="Concept: 'Test Doubles and Isolation' (Program Design & Implementation 2). A pixel art educational illustration showing the stunt double concept in software testing. On the left side, imposing 'real' systems are shown as complex, intimidating machines: a GitHub server rack with blinking lights, a database tower with spinning disks, an email notification cannon. On the right side, simple mannequin-like 'test doubles' stand in for each system - labeled 'StubGitHub' (holding a static code scroll), 'SpyDatabase' (with a notepad recording calls), 'FakeAutograder' (a simplified robot). In the center, a developer at a retro computer screen shows tests completing in '3ms' with green checkmarks. The contrast emphasizes: real systems are slow and complex, doubles are fast and simple. The tagline reads 'Stand-ins for the Real World.' in a retro pixel art style with teals, blues, purples, and warm accents."
   />
 
 <aside class="notes">
@@ -103,6 +103,37 @@ After this lecture, you will be able to:
 - Your test suites are graded by mutation testing—tests must actually detect bugs!
 
 → **Transition:** Let's start by understanding the spectrum of test types...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Code Coverage: A Starting Point, Not the Goal
+
+<Img
+  src="/img/lectures/web/l15-coverage.png"
+  alt="Code coverage diagram showing statement and branch coverage"
+  prompt="A technical illustration showing code coverage concepts. LEFT SIDE: A code snippet with some lines highlighted in green (covered) and some in red (uncovered), showing statement coverage at 75%. CENTER: A flowchart showing decision branches, with some paths highlighted as taken and others not, showing branch coverage at 60%. RIGHT SIDE: A warning callout showing a test that achieves 100% coverage but has NO assertions—just calls methods without checking results. The callout reads 'Coverage tells you what code RAN, not what code WORKS.' BOTTOM: A scaling diagram showing that as code grows (small box → medium box → large box), the test suite must grow proportionally, with exponentially more possible paths. Style: clean technical diagram with clear labels, using green for covered/good and red/orange for uncovered/warning areas."
+/>
+
+<aside class="notes">
+**Key concepts:**
+- **Statement coverage:** % of lines executed by tests
+- **Branch coverage:** % of decision paths taken (if/else, loops)
+- Coverage helps find untested code, but doesn't guarantee bug detection
+
+**The assertion problem:**
+- A test can execute 100% of code and catch 0% of bugs
+- If there are no assertions, the test just "exercises" the code
+- Mutation testing catches this—tests must actually verify behavior
+
+**The scaling challenge:**
+- 10 lines of code: maybe 2-3 paths to test
+- 1000 lines of code: potentially thousands of paths
+- Can't test everything—need to be strategic
+
+→ **Transition:** This is why we need to understand test scope...
 </aside>
 
 </Slide>
@@ -198,11 +229,47 @@ After this lecture, you will be able to:
 - Milliseconds to run
 
 **The isolation problem:**
-- If ThermostatController calls TemperatureSensor.readTemperature()...
-- How do we test the controller without a real sensor?
+- If SubmissionService calls GitHubService.fetchCode()...
+- How do we test the service without real GitHub API?
 - This is the central question of today's lecture
 
 **Readability connection (L5):** Unit tests are documentation. A reader should understand the expected behavior from the test name and structure.
+
+→ **Transition:** Integration tests cover the middle ground...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Unit Test Example: From HW3 Handout
+
+<p style={{fontSize: '0.85em', color: '#666'}}>
+  Testing <code>Instruction.toString()</code> — one class, no dependencies
+</p>
+
+```java
+@ParameterizedTest(name = "step {0}: \"{1}\" -> \"{2}\"")
+@DisplayName("should format as stepNumber. text")
+void shouldFormatCorrectly(int stepNumber, String text, String expected) {
+    Instruction instruction = new Instruction(stepNumber, text, List.of());
+
+    assertThat(instruction.toString()).isEqualTo(expected);
+}
+
+// Test cases: (1, "Preheat oven", "1. Preheat oven")
+//             (2, "Mix ingredients", "2. Mix ingredients")
+//             (10, "Serve warm", "10. Serve warm")
+```
+
+<aside class="notes">
+**Why this is a unit test:**
+- Tests ONE class (Instruction) in complete isolation
+- No other components, no I/O, no network
+- Runs in microseconds
+- Zero external dependencies
+
+**The test is focused:** If it fails, the bug is in Instruction.toString() — nowhere else to look.
 
 → **Transition:** Integration tests cover the middle ground...
 </aside>
@@ -229,14 +296,55 @@ After this lecture, you will be able to:
 
 <aside class="notes">
 **When integration tests shine:**
-- Real ThermostatController + real TemperatureSensor + fake HVAC
+- Real Recipe + real JsonRecipeRepository + real file system
 - Testing the "seams" between components
-- Catching issues unit tests can't: protocol mismatches, timing bugs
+- Catching issues unit tests can't: serialization bugs, file format issues
 
 **When integration tests hurt:**
-- Slower (database setup, network calls)
+- Slower (file I/O, database setup)
 - When they fail, which component caused it?
 - Harder to test edge cases
+
+→ **Transition:** Let's see a concrete example...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Integration Test Example: From HW3 Handout
+
+<p style={{fontSize: '0.85em', color: '#666'}}>
+  Testing Recipe + JsonRecipeRepository + Jackson + file system together
+</p>
+
+```java
+@Test
+@DisplayName("round-trip preserves recipe with all fields")
+void roundTripPreservesRecipeWithAllFields() {
+    Recipe recipe = new Recipe("test-id", "Chocolate Cake",
+        new ExactQuantity(8, Unit.WHOLE),
+        List.of(new MeasuredIngredient("flour",
+            new ExactQuantity(2, Unit.CUP), null, null)),
+        List.of(new Instruction(1, "Mix ingredients", List.of())),
+        List.of());
+
+    repository.save(recipe);  // Writes JSON to file system
+    Optional<Recipe> loaded = repository.findById("test-id");
+
+    assertTrue(loaded.isPresent());
+    assertEquals(recipe, loaded.get());
+}
+```
+
+<aside class="notes">
+**Why this is an integration test:**
+- Tests MULTIPLE components working together
+- Recipe → Jackson serialization → file system → Jackson deserialization → Recipe
+- Actually writes files (I/O)
+- Catches bugs in: JSON annotations, file paths, encoding issues
+
+**The tradeoff:** Slower than unit tests, but catches real integration bugs.
 
 → **Transition:** At the far end of the spectrum...
 </aside>
@@ -263,18 +371,48 @@ After this lecture, you will be able to:
 </p>
 
 <aside class="notes">
-**Example:** Pawtograder E2E tests:
-1. Deploy complete system to test environment
-2. Create class with assignments
-3. Create student submissions
-4. Verify student can log in, view results, submit review
-
 **Why we still need them:**
 - Catches integration issues across the whole stack
 - Tests real user journeys
 - But too expensive for edge case coverage
 
 **We'll cover E2E testing in depth in L30 (GUI Patterns and Testing).**
+
+→ **Transition:** Let's see a real E2E example...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## E2E Example: Pawtograder Submission Flow
+
+<Img
+  src="/img/lectures/web/l15-e2e-pawtograder.png"
+  alt="Pawtograder E2E test workflow"
+  prompt="[PLACEHOLDER - Add graphic showing the Pawtograder E2E flow: Student laptop pushing code → GitHub repository → GitHub Actions (autograder container) → Database storing grades → Pawtograder web app showing grades to student. Use arrows to show data flow. Label each step with potential failure points: 'Git push could fail', 'GitHub API rate limits', 'Container build could fail', 'Tests could timeout', 'Database could be down', 'Web app rendering issues'. Style: clean technical flowchart with icons for each component.]"
+/>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+  One test, five systems: Git → GitHub → Actions → Database → Web App
+</p>
+
+<aside class="notes">
+**The Pawtograder E2E workflow:**
+1. Student pushes code to GitHub repository
+2. GitHub webhook triggers autograder in GitHub Actions
+3. Autograder runs tests in a container, computes grade
+4. Grade syncs to database
+5. Student views grade in Pawtograder web app
+
+**What can go wrong:**
+- GitHub API rate limits or timeouts
+- Container build failures
+- Test execution timeouts
+- Database connection issues
+- Web app rendering bugs
+
+**This tests the COMPLETE user journey** — but takes minutes and is flaky.
 
 → **Transition:** Why not just write E2E tests for everything?
 </aside>
@@ -290,7 +428,7 @@ After this lecture, you will be able to:
 </p>
 
 <p style={{marginTop: '1em', fontSize: '0.95em'}}>
-  Imagine testing 15 edge cases for a thermostat:
+  Imagine testing 15 edge cases for SubmissionService:
 </p>
 
 <table style={{margin: '1em auto', fontSize: '0.8em'}}>
@@ -303,14 +441,19 @@ After this lecture, you will be able to:
   </thead>
   <tbody>
     <tr>
+      <td style={{padding: '0.4em 0.8em'}}>Example</td>
+      <td style={{padding: '0.4em 0.8em', color: '#060'}}>SubmissionService logic</td>
+      <td style={{padding: '0.4em 0.8em', color: '#c00'}}>Full submission workflow</td>
+    </tr>
+    <tr>
       <td style={{padding: '0.4em 0.8em'}}>Time to run</td>
       <td style={{padding: '0.4em 0.8em', color: '#060'}}>~150ms total</td>
-      <td style={{padding: '0.4em 0.8em', color: '#c00'}}>~15 minutes</td>
+      <td style={{padding: '0.4em 0.8em', color: '#c00'}}>~5 minutes</td>
     </tr>
     <tr>
       <td style={{padding: '0.4em 0.8em'}}>Flakiness</td>
       <td style={{padding: '0.4em 0.8em', color: '#060'}}>None</td>
-      <td style={{padding: '0.4em 0.8em', color: '#c00'}}>Frequent</td>
+      <td style={{padding: '0.4em 0.8em', color: '#c00'}}>GitHub API, containers</td>
     </tr>
     <tr>
       <td style={{padding: '0.4em 0.8em'}}>Debug time</td>
@@ -322,7 +465,7 @@ After this lecture, you will be able to:
 
 <aside class="notes">
 **The math doesn't work:**
-- 15 edge cases × 1 minute each = 15 minutes
+- 15 edge cases × 20 seconds each = 5 minutes (best case)
 - Unit tests: 15 edge cases × 10ms = 150ms
 - Run unit tests on every save; E2E tests nightly
 
@@ -347,21 +490,24 @@ After this lecture, you will be able to:
 ## The Dependency Problem
 
 <p style={{fontSize: '0.95em'}}>
-  Consider a <code>ThermostatController</code> in a smart home system:
+  Consider <code>SubmissionService</code> from Pawtograder:
 </p>
 
 ```java
-public class ThermostatController {
-    private final TemperatureSensor sensor;
-    private final HVACService hvacService;
+public class SubmissionService {
+    private final GitHubService github;
+    private final AutograderRunner autograder;
     private final NotificationService notifier;
+    private final Database database;
 
-    public ThermostatController(TemperatureSensor sensor,
-                                 HVACService hvacService,
-                                 NotificationService notifier) {
-        this.sensor = sensor;
-        this.hvacService = hvacService;
+    public SubmissionService(GitHubService github,
+                             AutograderRunner autograder,
+                             NotificationService notifier,
+                             Database database) {
+        this.github = github;
+        this.autograder = autograder;
         this.notifier = notifier;
+        this.database = database;
     }
     // ...
 }
@@ -369,13 +515,14 @@ public class ThermostatController {
 
 <aside class="notes">
 **Notice the dependencies:**
-- TemperatureSensor — reads from hardware
-- HVACService — controls actual heating/cooling
-- NotificationService — sends real messages to users
+- GitHubService — fetches code from GitHub API
+- AutograderRunner — executes tests in containers
+- NotificationService — sends real emails to students
+- Database — persists grades
 
 **Design for change connection (L7-8):** This is dependency injection! We designed for testability.
 
-**The question:** How do we unit test this without real hardware?
+**The question:** How do we unit test this without real GitHub, real containers, real email?
 
 → **Transition:** Let's see the method we want to test...
 </aside>
@@ -387,34 +534,36 @@ public class ThermostatController {
 ## The Method Under Test
 
 ```java
-public void adjustToTargetTemperature(double targetTemp, String zoneId) {
-    double currentTemp = sensor.readTemperature(zoneId);
-    double delta = targetTemp - currentTemp;
+public GradeResult processSubmission(Submission submission) {
+    CodeSnapshot code = github.fetchCode(submission.repoUrl());
+    TestResult result = autograder.runTests(code);
 
-    if (Math.abs(delta) > 0.5) {
-        HVACMode mode = delta > 0 ? HVACMode.HEATING : HVACMode.COOLING;
-        hvacService.setMode(mode, zoneId);
-        hvacService.activate(zoneId);
-        notifier.send("HVAC activated in " + zoneId, NotificationLevel.INFO);
+    if (result.allPassed()) {
+        database.saveGrade(submission.studentId(), result.score());
+        notifier.send(submission.studentEmail(),
+                      "Your submission passed!", NotificationLevel.INFO);
+    } else {
+        notifier.send(submission.studentEmail(),
+                      "Some tests failed", NotificationLevel.WARNING);
     }
+    return new GradeResult(submission.studentId(), result);
 }
 ```
 
 <p style={{marginTop: '0.5em', fontSize: '0.85em', color: '#c00'}}>
-  To test this, we'd need real sensors, real HVAC, real notifications!
+  To test this, we'd need real GitHub, real containers, real email!
 </p>
 
 <aside class="notes">
 **What we want to test:**
-- If current temp is below target, activate heating
-- If current temp is above target, activate cooling
-- If within 0.5 degrees, do nothing
-- Correct zone is used
+- If all tests pass, save the grade and notify success
+- If some tests fail, notify failure (don't save grade)
+- Correct student is notified
 
 **What we DON'T want:**
-- Real temperature sensors (need hardware)
-- Real HVAC activation (would heat/cool the building!)
-- Real notifications (spam real users)
+- Real GitHub API calls (rate limits, network issues)
+- Real container execution (slow, resource-heavy)
+- Real email sending (spam students!)
 
 **The solution:** Replace dependencies with test doubles
 
@@ -434,7 +583,7 @@ public void adjustToTargetTemperature(double targetTemp, String zoneId) {
 <Img
   src="/img/lectures/web/l15-stunt-double.png"
   alt="Stunt double concept applied to software testing"
-  prompt="A split-screen cinematic illustration showing the stunt double concept applied to software. LEFT SIDE ('The Real Thing'): A dramatic movie set with a real actor about to do a dangerous stunt—jumping off a building, with complex rigging, safety teams, expensive equipment, and a sign reading 'REAL TemperatureSensor: Requires actual hardware, network access, calibration'. RIGHT SIDE ('The Double'): The same scene but with a confident stunt double (a simple mannequin figure) easily performing the action, with minimal setup, and a sign reading 'StubTemperatureSensor: Returns 65.0, always'. The stunt double has a tag that says 'Does exactly what the scene needs—nothing more'. A director's chair in the corner has a clapperboard labeled 'TEST SCENE 47: activatesHeatingWhenCold'. The visual style should feel like a behind-the-scenes movie documentary, emphasizing that the double is simpler but perfectly adequate for the test's needs. Tagline: 'A test double doesn't need to be real—it just needs to be good enough for the test.'"
+  prompt="A split-screen cinematic illustration showing the stunt double concept applied to software. LEFT SIDE ('The Real Thing'): A dramatic movie set with a real actor about to do a dangerous stunt—jumping off a building, with complex rigging, safety teams, expensive equipment, and a sign reading 'REAL GitHubService: Requires API keys, network access, rate limits'. RIGHT SIDE ('The Double'): The same scene but with a confident stunt double (a simple mannequin figure) easily performing the action, with minimal setup, and a sign reading 'StubGitHubService: Returns sample code, always'. The stunt double has a tag that says 'Does exactly what the scene needs—nothing more'. A director's chair in the corner has a clapperboard labeled 'TEST SCENE 47: savesGradeWhenAllTestsPass'. The visual style should feel like a behind-the-scenes movie documentary, emphasizing that the double is simpler but perfectly adequate for the test's needs. Tagline: 'A test double doesn't need to be real—it just needs to be good enough for the test.'"
 />
 
 <aside class="notes">
@@ -494,22 +643,22 @@ public void adjustToTargetTemperature(double targetTemp, String zoneId) {
 ## Stubs: Return Canned Answers
 
 ```java
-class StubTemperatureSensor implements TemperatureSensor {
-    private final double fixedTemperature;
+class StubGitHubService implements GitHubService {
+    private final CodeSnapshot fixedCode;
 
-    public StubTemperatureSensor(double temperature) {
-        this.fixedTemperature = temperature;
+    public StubGitHubService(CodeSnapshot code) {
+        this.fixedCode = code;
     }
 
     @Override
-    public double readTemperature(String zoneId) {
-        return fixedTemperature;  // Always returns the same value
+    public CodeSnapshot fetchCode(String repoUrl) {
+        return fixedCode;  // Always returns the same code
     }
 }
 ```
 
 <p style={{marginTop: '0.5em', fontSize: '0.85em'}}>
-  Ignores the zone, always returns 65.0 — <strong>that's fine!</strong>
+  Ignores the repo URL, always returns sample code — <strong>that's fine!</strong>
 </p>
 
 <aside class="notes">
@@ -519,11 +668,11 @@ class StubTemperatureSensor implements TemperatureSensor {
 - Ignore parameters we don't care about
 
 **Why this works:**
-- For testing "activate heating when cold"
-- We just need the sensor to say "it's cold"
-- Don't care about zones, precision, calibration
+- For testing "save grade when all tests pass"
+- We just need some code to feed to the autograder
+- Don't care about actual repo URL, authentication, etc.
 
-**Readability (L5):** The stub makes the test's intent clear—we're testing the "cold" case.
+**Readability (L5):** The stub makes the test's intent clear—we're testing the "passing" case.
 
 → **Transition:** What about verifying side effects?
 </aside>
@@ -532,42 +681,46 @@ class StubTemperatureSensor implements TemperatureSensor {
 
 <Slide>
 
-## Spies: Record What Happened
+## Spies: Record What Happened (Decorator Pattern)
 
 ```java
-class SpyHVACService implements HVACService {
-    private boolean activateCalled = false;
-    private String activatedZone = null;
-    private HVACMode setMode = null;
+class SpyDatabase implements Database {
+    private final Database delegate;  // Wraps a real implementation
+    private boolean saveGradeCalled = false;
+    private String savedStudentId = null;
 
-    @Override
-    public void activate(String zoneId) {
-        this.activateCalled = true;
-        this.activatedZone = zoneId;
+    public SpyDatabase(Database realDatabase) {
+        this.delegate = realDatabase;  // Decorator pattern!
     }
 
     @Override
-    public void setMode(HVACMode mode, String zoneId) {
-        this.setMode = mode;
+    public void saveGrade(String studentId, int score) {
+        this.saveGradeCalled = true;       // Record the call
+        this.savedStudentId = studentId;
+        delegate.saveGrade(studentId, score);  // Delegate to real impl
     }
 
     // Query methods for tests
-    public boolean wasActivateCalled() { return activateCalled; }
-    public String getActivatedZone() { return activatedZone; }
-    public HVACMode getSetMode() { return setMode; }
+    public boolean wasSaveGradeCalled() { return saveGradeCalled; }
+    public String getSavedStudentId() { return savedStudentId; }
 }
 ```
 
 <aside class="notes">
+**This is the Decorator pattern:**
+- Spy wraps a real Database instance
+- Records the call, then delegates to the real implementation
+- Can verify interactions AND have real behavior
+
 **Spies record:**
 - Which methods were called
 - With what arguments
 - How many times
 
 **Why we need this:**
-- adjustToTargetTemperature() returns void
-- Can't test by checking return value
-- Must verify it called hvacService.activate()
+- processSubmission() has side effects (saving grade)
+- Can't test just by checking return value
+- Must verify it called database.saveGrade() with correct args
 
 → **Transition:** Now we can write a complete test...
 </aside>
@@ -580,28 +733,30 @@ class SpyHVACService implements HVACService {
 
 ```java
 @Test
-public void activatesHeatingWhenBelowTarget() {
-    StubTemperatureSensor stubSensor = new StubTemperatureSensor(65.0);
-    SpyHVACService spyHVAC = new SpyHVACService();
+public void savesGradeWhenAllTestsPass() {
+    StubGitHubService stubGithub = new StubGitHubService(sampleCode());
+    StubAutograderRunner stubAutograder = new StubAutograderRunner(
+        new TestResult(true, 100));  // All tests pass, score 100
+    SpyDatabase spyDatabase = new SpyDatabase();
     StubNotificationService stubNotifier = new StubNotificationService();
 
-    ThermostatController controller = new ThermostatController(
-        stubSensor, spyHVAC, stubNotifier);
+    SubmissionService service = new SubmissionService(
+        stubGithub, stubAutograder, stubNotifier, spyDatabase);
 
-    controller.adjustToTargetTemperature(72.0, "livingRoom");
+    service.processSubmission(new Submission("student123", "repo-url", "email"));
 
-    assertTrue(spyHVAC.wasActivateCalled());
-    assertEquals("livingRoom", spyHVAC.getActivatedZone());
-    assertEquals(HVACMode.HEATING, spyHVAC.getSetMode());
+    assertTrue(spyDatabase.wasSaveGradeCalled());
+    assertEquals("student123", spyDatabase.getSavedStudentId());
+    assertEquals(100, spyDatabase.getSavedScore());
 }
 ```
 
 <aside class="notes">
 **Trace through the test:**
-1. Stub says temperature is 65°F
-2. Controller sees target is 72°F (7° delta)
-3. Controller should activate heating
-4. Spy records that activate() was called
+1. Stub GitHub returns sample code
+2. Stub autograder says all tests pass with score 100
+3. Service should save the grade
+4. Spy records that saveGrade() was called with correct args
 
 **This test is:**
 - Fast (no I/O)
@@ -620,21 +775,22 @@ public void activatesHeatingWhenBelowTarget() {
 ## The Pain of Hand-Rolling Test Doubles
 
 <p style={{fontSize: '1em'}}>
-  We wrote <strong>three separate classes</strong> just to test one method!
+  We wrote <strong>four separate classes</strong> just to test one method!
 </p>
 
 <ul style={{marginTop: '1em', fontSize: '0.9em'}}>
-  <li>StubTemperatureSensor</li>
-  <li>SpyHVACService</li>
+  <li>StubGitHubService</li>
+  <li>StubAutograderRunner</li>
+  <li>SpyDatabase</li>
   <li>StubNotificationService</li>
 </ul>
 
 <p style={{marginTop: '1em', fontSize: '0.95em', color: '#c00'}}>
-  And we haven't tested cooling, error cases, edge cases...
+  And we haven't tested failures, timeouts, edge cases...
 </p>
 
 <p style={{marginTop: '0.5em', fontSize: '0.85em', color: '#666'}}>
-  Do we need a new stub class for every temperature?
+  Do we need a new stub class for every test result?
 </p>
 
 <aside class="notes">
@@ -664,23 +820,25 @@ public void activatesHeatingWhenBelowTarget() {
 
 ```java
 @Test
-public void activatesHeatingWhenBelowTarget() {
+public void savesGradeWhenAllTestsPass() {
     // Create test doubles — Mockito generates these at runtime
-    TemperatureSensor mockSensor = mock(TemperatureSensor.class);
-    HVACService mockHVAC = mock(HVACService.class);
+    GitHubService mockGithub = mock(GitHubService.class);
+    AutograderRunner mockAutograder = mock(AutograderRunner.class);
     NotificationService mockNotifier = mock(NotificationService.class);
+    Database mockDatabase = mock(Database.class);
 
     // Configure stub behavior
-    when(mockSensor.readTemperature("livingRoom")).thenReturn(65.0);
+    when(mockGithub.fetchCode(anyString())).thenReturn(sampleCode());
+    when(mockAutograder.runTests(any())).thenReturn(new TestResult(true, 100));
 
-    ThermostatController controller = new ThermostatController(
-        mockSensor, mockHVAC, mockNotifier);
+    SubmissionService service = new SubmissionService(
+        mockGithub, mockAutograder, mockNotifier, mockDatabase);
 
-    controller.adjustToTargetTemperature(72.0, "livingRoom");
+    service.processSubmission(new Submission("student123", "repo-url", "email"));
 
     // Verify spy recordings
-    verify(mockHVAC).setMode(HVACMode.HEATING, "livingRoom");
-    verify(mockHVAC).activate("livingRoom");
+    verify(mockDatabase).saveGrade("student123", 100);
+    verify(mockNotifier).send(eq("email"), contains("passed"), any());
 }
 ```
 
@@ -753,15 +911,16 @@ public void activatesHeatingWhenBelowTarget() {
 ## Argument Matchers: Flexible Matching
 
 ```java
-// Return 65.0 for ANY zone
-when(mockSensor.readTemperature(anyString())).thenReturn(65.0);
+// Return sample code for ANY repo URL
+when(mockGithub.fetchCode(anyString())).thenReturn(sampleCode());
 
-// Verify activate was called with any string
-verify(mockHVAC).activate(anyString());
+// Verify saveGrade was called with any student ID
+verify(mockDatabase).saveGrade(anyString(), anyInt());
 
 // Verify with custom condition
 verify(mockNotifier).send(
-    argThat(message -> message.contains("HVAC activated")),
+    anyString(),
+    argThat(message -> message.contains("passed")),
     eq(NotificationLevel.INFO)
 );
 ```
@@ -843,25 +1002,25 @@ class FakeUserRepository implements UserRepository {
 
 <ul style={{fontSize: '0.9em'}}>
   <li><span style={{color: '#060'}}>✓</span> <strong>Speed:</strong> Tests run in milliseconds</li>
-  <li><span style={{color: '#060'}}>✓</span> <strong>Determinism:</strong> No flaky tests from real sensors</li>
+  <li><span style={{color: '#060'}}>✓</span> <strong>Determinism:</strong> No flaky tests from real APIs</li>
   <li><span style={{color: '#060'}}>✓</span> <strong>Isolation:</strong> Failures point to the code under test</li>
   <li><span style={{color: '#060'}}>✓</span> <strong>Edge cases:</strong> Easy to simulate errors</li>
 </ul>
 
 ```java
-// Simulating a sensor failure — one line!
-when(mockSensor.readTemperature(anyString()))
-    .thenThrow(new SensorException("Connection lost"));
+// Simulating a GitHub API failure — one line!
+when(mockGithub.fetchCode(anyString()))
+    .thenThrow(new GitHubException("API rate limit exceeded"));
 ```
 
 <aside class="notes">
 **Speed:** Thousands of tests in seconds. Run on every save.
 
-**Determinism:** A stub always returns 65.0. The real sensor might return 65.001 or timeout.
+**Determinism:** A stub always returns the same code. The real GitHub API might timeout or rate-limit you.
 
-**Isolation:** When the test fails, the bug is in ThermostatController, not in network code.
+**Isolation:** When the test fails, the bug is in SubmissionService, not in network code.
 
-**Edge cases:** How do you test sensor failure with real hardware? Unplug it? With a stub, one line.
+**Edge cases:** How do you test GitHub being down? Wait for an outage? With a stub, one line.
 
 **But there are dangers...**
 
@@ -877,19 +1036,19 @@ when(mockSensor.readTemperature(anyString()))
 <Img
   src="/img/lectures/web/l15-false-confidence.png"
   alt="False confidence from testing with mocks"
-  prompt="A cautionary illustration showing a software developer celebrating a 'ALL TESTS PASS!' screen while behind them, through a window, the real system is on fire. The developer's screen shows green checkmarks for 'MockSensor returns 72.0 ✓' and 'MockHVAC.activate() called ✓'. But through the window, we see the REAL temperature sensor displaying '72.4823017' (different precision), the REAL HVAC system throwing sparks and displaying 'ERROR: Protocol mismatch', and the REAL notification service showing 'Connection refused'. A small note in the corner reads: 'Your tests proved your code works with YOUR test doubles.' The style should be slightly comedic but with a serious undertone—the 'celebration meets disaster' visual metaphor. Colors should contrast: the indoor test environment is calm greens and blues, while the outdoor reality is oranges and reds."
+  prompt="A cautionary illustration showing a software developer celebrating a 'ALL TESTS PASS!' screen while behind them, through a window, the real system is on fire. The developer's screen shows green checkmarks for 'MockGitHub returns code ✓' and 'MockDatabase.saveGrade() called ✓'. But through the window, we see: the REAL GitHub API displaying 'ERROR: Rate limit exceeded', the REAL autograder container throwing sparks and displaying 'Out of memory', and the REAL database showing 'Connection timeout'. A small note in the corner reads: 'Your tests proved your code works with YOUR test doubles.' The style should be slightly comedic but with a serious undertone—the 'celebration meets disaster' visual metaphor. Colors should contrast: the indoor test environment is calm greens and blues, while the outdoor reality is oranges and reds."
 />
 
 <aside class="notes">
 **The core danger:**
 - Tests prove code works with YOUR test doubles
-- The real sensor might have different precision
-- The real HVAC might have a different protocol
-- The real notification service might require auth
+- The real GitHub API might rate-limit you
+- The real autograder might run out of memory
+- The real database might timeout
 
 **Example:**
-- Your stub returns 72.0
-- Real sensor returns 72.4823017
+- Your stub returns code instantly
+- Real GitHub takes 2 seconds and sometimes fails
 - Does your code handle that?
 
 → **Transition:** Another danger: brittle tests...
@@ -902,12 +1061,13 @@ when(mockSensor.readTemperature(anyString()))
 ## The Dangerous: Brittle Tests
 
 ```java
-// This test breaks if you rename activate() to start()
-verify(mockHVAC).activate("livingRoom");
+// This test breaks if you rename saveGrade() to recordGrade()
+verify(mockDatabase).saveGrade("student123", 100);
 
 // This test breaks if you change the message format
 verify(mockNotifier).send(
-    "HVAC activated in livingRoom",
+    "email@example.com",
+    "Your submission passed!",
     NotificationLevel.INFO
 );
 ```
@@ -924,7 +1084,7 @@ verify(mockNotifier).send(
 
 **The deeper problem:**
 - Are you testing BEHAVIOR or IMPLEMENTATION?
-- "It should heat the room" vs "It should call activate()"
+- "It should persist the grade" vs "It should call saveGrade()"
 - The first is behavior; the second is implementation
 
 **Readability connection (L5):** Tests are documentation. If you're documenting implementation details, you're documenting the wrong thing.
