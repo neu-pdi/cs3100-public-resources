@@ -1112,7 +1112,7 @@ _Serves: 8 whole_
 
 ## Ingredients
 
-- 2 cup flour
+- 2 cups flour
 - 1 cup sugar
 
 ## Instructions
