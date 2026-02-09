@@ -176,6 +176,23 @@ After this lecture, you will be able to:
 
 <Slide>
 
+## Poll: How many hours per assignment do you spend debugging?
+
+<PollSlide
+/>
+
+<aside className="notes">
+**Discussion points:**
+- We all spend a lot of time debugging.
+- An hour or so of practice can make you much more efficient.
+
+→ **Transition:** Let's see where you are now...
+</aside>
+
+</Slide>
+
+<Slide>
+
 ## Poll: When You Encounter a Bug, What's Your First Instinct?
 
 <PollSlide
@@ -241,9 +258,10 @@ classDiagram
     }
     class RecipeCollection {
         <<interface>>
-        +getRecipes()
-        +addRecipe()
+        +getRecipes()*
+        +addRecipe()*
     }
+    style RecipeCollection fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
 ```
 
 </div>
@@ -491,7 +509,7 @@ public List<Recipe> findRecipesByTitle(String title) {
         .flatMap(c -> c.getRecipes().stream())              // Control: flatten nested lists
         .filter(r -> r.getTitle().equalsIgnoreCase(title))  // Data: title compared
         .toList();                                           // Control: collect results
-    
+
     // What could go wrong?
     // - If collections is modified during iteration? → Immutability prevents this!
     // - If title is null? → NullPointerException (should validate at method entry)
@@ -709,7 +727,7 @@ graph LR
     D --> G[Serialize Quantities]
     G --> H[ExactQuantity, Fractional, or Range?]
     A --> I[Files.writeString]
-    
+
     style B fill:#d4edda,stroke:#28a745
     style C fill:#fff3cd,stroke:#856404
     style F fill:#d1ecf1,stroke:#0c5460
@@ -833,9 +851,9 @@ classDiagram
         <<interface>>
         -String id
         -String title
-        +getRecipes() List~Recipe~
-        +addRecipe(Recipe) RecipeCollection
-        +removeRecipe(String) RecipeCollection
+        +getRecipes() List~Recipe~*
+        +addRecipe(Recipe) RecipeCollection*
+        +removeRecipe(String) RecipeCollection*
     }
 
     class Recipe {
@@ -856,6 +874,7 @@ classDiagram
     RecipeCollection "1" --> "*" Recipe : contains
     Recipe "1" --> "*" Ingredient : has
     Recipe "1" --> "0..1" Quantity : servings
+    style SourceType fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
 ```
 
 <aside className="notes">
@@ -900,50 +919,22 @@ classDiagram
 
 ## Practical Diagram Workflow
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.8em'}}>
-
-<div style={{backgroundColor: 'rgba(147, 112, 219, 0.1)', padding: '1em', borderRadius: '8px'}}>
-
-**While Debugging: Hand-Sketch**
-
-Quick ASCII art (or *gasp* paper and pencil) is fastest:
+When debugging, sketching quick ASCII art (or *gasp* paper and pencil) is fastest:
 ```
-Test → JsonRecipeCollectionRepository.save(cookbook)
-  Repo → ObjectMapper.writeValueAsString()
-    → adds "type": "cookbook"
-    → serializes Recipe[]
-  Repo → Files.writeString() ⚠️ IO Exception?
+Test -> JsonRecipeCollectionRepository.save(cookbook)
+  Repo -> ObjectMapper.writeValueAsString()
+    -> adds "type": "cookbook"
+    -> serializes Recipe[]
+  Repo -> Files.writeString() ⚠️ IO Exception?
 ```
 
 - Faster than looking up syntax
 - Forces you to understand flow
 - Easy to annotate with hypotheses
 
-</div>
-
-<div style={{backgroundColor: 'rgba(76, 175, 80, 0.1)', padding: '1em', borderRadius: '8px'}}>
-
-**For Documentation: Use Mermaid**
-
-When sharing or preserving:
-- [mermaid.live](https://mermaid.live) for live editing
-- Ask AI to generate from code
-- Verify and tweak the output
-- See Tools & Resources for syntax
-
-</div>
-
-</div>
-
-<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB'}}>
-<strong>Pro tip:</strong> Ask AI to generate Mermaid diagrams from code, then verify them yourself.
-</p>
 
 <aside className="notes">
-**The workflow:**
-1. **Hand-sketch** while debugging (fast, flexible)
-2. **Formalize with Mermaid** when documenting (shareable, version-controlled)
-3. **Use AI** to convert sketches to Mermaid (saves time on syntax)
+**Hand-sketch** while debugging (fast, flexible)
 
 **Key message:** Don't memorize syntax—use references and AI. Focus on WHAT to diagram, not HOW.
 
@@ -957,33 +948,41 @@ When sharing or preserving:
 ## Using AI to Generate Diagrams: Concrete Examples
 
 <div style={{fontSize: '0.75em'}}>
-
-**Example 1: Understanding CookbookImpl construction flow**
+**Example 1: Visualizing classes relating to CookbookImpl**
 
 ```
-Prompt: "Create a sequence diagram showing how CookbookImpl is created 
-from JSON using Jackson."
+Prompt: "Create a class diagram with CookbookImpl and all classes it has relationships with."
 ```
+</div>
 
-✅ **Good use of AI:** Complex flow with multiple steps, saves time on Mermaid syntax
+<div style={{fontSize: '0.75em'}}>
+**Example 2: Understanding CookbookImpl construction flow**
 
+```
+Prompt: "Create a sequence diagram showing how CookbookImpl is created from JSON
+using Jackson."
+```
+</div>
+
+<div style={{fontSize: '0.75em', marginTop: '0.5em'}}>
+**Example 3: Tracing data flow through UserLibraryImpl**
+
+```
+Prompt: "Show the data flow when UserLibraryImpl.findRecipesByTitle()
+searches across collections."
+```
 </div>
 
 <div style={{fontSize: '0.75em', marginTop: '0.5em'}}>
 
-**Example 2: Tracing data flow through UserLibraryImpl**
+✅ **Great use of AI:** Quickly get the benefits of visualization.
 
-```
-Prompt: "Show the data flow when UserLibraryImpl.findRecipesByTitle() 
-searches across collections."
-```
-
-✅ **Good use of AI:** Multi-step pipeline, AI can visualize the stream transformations
-
+**Tip:** Use [mermaid.live](https://mermaid.live) for live editing
 </div>
 
 <aside className="notes">
-**These are GOOD uses of AI for diagrams:**
+**It's great to use AI to increase your understanding through:**
+- Class diagrams
 - Complex multi-step flows (Jackson serialization)
 - Stream pipelines (multiple transformations)
 - Call sequences across multiple methods
@@ -1006,74 +1005,68 @@ searches across collections."
 
 <Slide>
 
-## When to Navigate Manually Instead
+## When to Use the IDE, Not AI
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.8em'}}>
 
+
+
 <div style={{backgroundColor: 'rgba(244, 67, 54, 0.1)', padding: '1em', borderRadius: '8px'}}>
 
-**❌ Don't use AI when:**
+**❌ Don't use AI to:**
+- find a method's javadoc
+- go to an implementation
+- find where a method is called
 
-- **Single method lookup:** "What does `containsRecipe()` do?"
-  - Just Ctrl+Click in your IDE (F12 in VS Code)
-  - AI is slower and might hallucinate
-
-- **Finding where a method is called:**
-  - Use IDE's "Find Usages" (Alt+F7 in IntelliJ)
-  - Shows ALL call sites instantly
-
-- **Checking a simple branch:**
-  - Just read the code: `if (containsRecipe(id)) { throw... }`
-  - No diagram needed
-
+Use the IDE!
 </div>
 
-<div style={{backgroundColor: 'rgba(76, 175, 80, 0.1)', padding: '1em', borderRadius: '8px'}}>
+<div>
 
-**✅ Use AI when:**
-
-- **Complex call chains:** Multiple methods across classes
-  - "Show how `save()` calls Jackson which calls getters"
-
-- **Understanding polymorphism:**
-  - "Diagram the RecipeCollection hierarchy and show which addRecipe runs for each type"
-
-- **Stream pipelines:**
-  - "Visualize the data transformations in findRecipesByTitle"
-
-- **Documenting for others:**
-  - AI generates shareable Mermaid diagrams
-  - You validate them, others can trust them
+<Img src="/img/lectures/web/l14-ide-reference.gif" alt="Animated demonstration of IDE navigation features" />
 
 </div>
 
 </div>
 
 <aside className="notes">
-**The key principle: Use the right tool for the job**
+- IDE navigation is ALWAYS faster for simple lookups
+- Go to definition, find usages, type hierarchy are instant and accurate
+- Don't use AI when reading the code is faster
+- Transition: So when SHOULD you use AI?
+</aside>
 
-**IDE navigation is ALWAYS faster for:**
-- Go to definition (one hop)
-- Find all usages (comprehensive list)
-- Type hierarchy (shows implementations)
-- These are instant and accurate
+</Slide>
 
-**AI is better for:**
-- Generating formal diagrams for documentation
-- Understanding complex flows you haven't seen before
-- Creating visual aids for team discussion
-- Saving time on Mermaid syntax
+<Slide>
 
-**Real example from A3:**
-- ❌ "How do I add a recipe to a cookbook?" → Just read `CookbookImpl.addRecipe()` (10 lines)
-- ✅ "How does JSON deserialization work end-to-end?" → AI can diagram the full Jackson flow
+## When to Use AI for Diagrams
 
-**The workflow:**
-1. Use IDE to navigate and understand
-2. Hand-sketch if needed for your own notes
-3. Ask AI to formalize into Mermaid when sharing/documenting
+<div style={{backgroundColor: 'rgba(76, 175, 80, 0.1)', padding: '1em', borderRadius: '8px', fontSize: '0.85em'}}>
 
-→ **Transition:** Let's see what effective AI prompts look like...
+**✅ Use AI for:**
+
+**Complex call chains:** Multiple methods across classes
+- "Show how `save()` calls Jackson which calls getters"
+
+**Understanding polymorphism:**
+- "Diagram the RecipeCollection hierarchy and show which addRecipe runs for each type"
+
+**Stream pipelines:**
+- "Visualize the data transformations in findRecipesByTitle"
+
+**Documenting for others:**
+- AI generates shareable Mermaid diagrams
+- You validate them, others can trust them
+
+</div>
+
+<aside className="notes">
+- Use AI for complex flows you haven't seen before
+- Use AI for formal diagrams for documentation or team discussion
+- Use AI to save time on Mermaid syntax
+- But ALWAYS verify AI output against actual code
+- Transition: Let's see what effective AI prompts look like
 </aside>
 
 </Slide>
@@ -1091,6 +1084,8 @@ searches across collections."
 
 </div>
 
+<div className="fragment">
+
 ```mermaid
 sequenceDiagram
     actor Client
@@ -1101,84 +1096,84 @@ sequenceDiagram
     participant RC as RecipeCollection<br/>Interface
     participant Path as Path/File
     participant Disk as File System
-    
+
     Client->>+Repo: save(collection)
     Note over Repo: Collection is a CookbookImpl instance
-    
+
     rect rgb(245, 245, 255)
     Note over Repo,Collection: Step 1: Determine file path
     Repo->>+Collection: getId()
     Collection-->>-Repo: "cookbook-123"
     Repo->>Repo: Create file path:<br/>storageDirectory / "cookbook-123.json"
     end
-    
+
     rect rgb(255, 250, 240)
     Note over Repo,Jackson: Step 2: Serialize to JSON
     Repo->>+OM: writeValueAsString(collection)
-    
+
     OM->>+Jackson: Serialize object
-    
+
     Jackson->>+Collection: Get runtime type
     Collection-->>-Jackson: CookbookImpl.class
-    
+
     Jackson->>+RC: Read @JsonTypeInfo annotation
     Note over RC: Use "type" property for polymorphism
     RC-->>-Jackson: Property name: "type"
-    
+
     Jackson->>+RC: Read @JsonSubTypes annotation
     Note over RC: Lookup type name for CookbookImpl
     RC-->>-Jackson: CookbookImpl → "cookbook"
-    
+
     rect rgb(230, 255, 240)
     Note over Jackson,Collection: Serialize all fields
     Jackson->>+Collection: getId()
     Collection-->>-Jackson: "cookbook-123"
     Jackson->>Jackson: Add field: "id": "cookbook-123"
-    
+
     Jackson->>+Collection: getTitle()
     Collection-->>-Jackson: "The Joy of Cooking"
     Jackson->>Jackson: Add field: "title": "The Joy of Cooking"
-    
+
     Jackson->>+Collection: getAuthor()
     Collection-->>-Jackson: Optional["Irma Rombauer"]
     Jackson->>Jackson: Add field: "author": "Irma Rombauer"
-    
+
     Jackson->>+Collection: getIsbn()
     Collection-->>-Jackson: Optional["978-1501169717"]
     Jackson->>Jackson: Add field: "isbn": "978-1501169717"
-    
+
     Jackson->>+Collection: getPublicationYear()
     Collection-->>-Jackson: Optional[1931]
     Jackson->>Jackson: Add field: "publicationYear": 1931
-    
+
     Jackson->>+Collection: getRecipes()
     Collection-->>-Jackson: List[Recipe, ...]
     Jackson->>Jackson: Add field: "recipes": [...]<br/>(recursively serialize recipes)
     end
-    
+
     Jackson->>Jackson: Build JSON object with<br/>"type": "cookbook" + all fields
-    
+
     Jackson-->>-OM: JSON string
     OM-->>-Repo: JSON string
     end
-    
+
     rect rgb(255, 245, 245)
     Note over Repo,Disk: Step 3: Write to disk
     Repo->>+Path: Create/overwrite file
     Note over Path: Path: storageDirectory/cookbook-123.json
-    
+
     Path->>+Disk: Write JSON to file
     Note over Disk: File contents:<br/>{<br/>  "type": "cookbook",<br/>  "id": "cookbook-123",<br/>  "title": "The Joy of Cooking",<br/>  "author": "Irma Rombauer",<br/>  "isbn": "978-1501169717",<br/>  "publicationYear": 1931,<br/>  "recipes": [...]<br/>}
-    
+
     Disk-->>-Path: Write complete
     Path-->>-Repo: Success
     end
-    
+
     Repo-->>-Client: void (success)
-    
+
     Note over Client: Collection saved to:<br/>cookbook-123.json
 ```
-
+</div>
 
 <aside className="notes">
 **Pause here and ask students: "What would you do with this?"**
@@ -1510,23 +1505,12 @@ Welcome!
 
 ## Example: Debugging HTML Markup Removal
 
-
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
-<strong>The task:</strong> Write a function that extracts just the text, removing all tags.
-</p>
-
-<div style={{fontSize: '0.8em'}}>
-
-| Input | Expected Output |
-|-------|-----------------|
-| `<b>Hello</b>` | `Hello` |
-| `Click <a href="url">here</a>` | `Click here` |
-
-</div>
 ```java
+/**
+ * Removes tags from s. For example, "Hello <b>world</b>" becomes "Hello world".
+ */
 public static String removeHtmlMarkup(String s) {
-    boolean tag = false;
-    boolean quote = false;
+    boolean tag = false, quote = false;
     StringBuilder out = new StringBuilder();
 
     for (int i = 0; i < s.length(); i++) {
@@ -1703,9 +1687,8 @@ H1 CONFIRMED: Double quotes are stripped even without any HTML tags.
 
 ## Step 5: Analyze — Narrow Down the Cause
 
-<p style={{fontSize: '0.9em'}}>
+<div style={{fontSize: '0.8em'}}>
 Where is quote-stripping happening? The only quote-handling code is:
-</p>
 
 ```java
 else if (c == '"' || c == '\'' && tag) {
@@ -1713,14 +1696,13 @@ else if (c == '"' || c == '\'' && tag) {
 }
 ```
 
-<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+<div className="fragment">
 This should only trigger when <code>tag</code> is true. But for input <code>"foo"</code>, there are no tags, so <code>tag</code> should always be false...
-</p>
 
-<p style={{fontSize: '0.9em', marginTop: '1em', fontWeight: 'bold'}}>
 New hypothesis H3: The error is due to <code>tag</code> being set incorrectly.
-</p>
+</div>
 
+<div className="fragment">
 ```java
 // Let's add an assertion to test H3:
 for (int i = 0; i < s.length(); i++) {
@@ -1734,6 +1716,9 @@ for (int i = 0; i < s.length(); i++) {
 <p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#e74c3c'}}>
 H3 REFUTED: <code>tag</code> is always false, yet quotes are still stripped.
 </p>
+</div>
+
+</div>
 
 <aside className="notes">
 **The investigation:**
@@ -1758,7 +1743,9 @@ H3 REFUTED: <code>tag</code> is always false, yet quotes are still stripped.
 
 ## Step 5 (continued): The Root Cause Revealed
 
-<p style={{fontSize: '0.9em'}}>
+<div style={{fontSize: '0.8em'}}>
+
+<p>
 New hypothesis <strong>H4</strong>: The quote condition evaluates to true even when <code>tag</code> is false.
 </p>
 
@@ -1770,7 +1757,7 @@ else if (c == '"' || c == '\'' && tag) {
 // Result: Assertion FAILS! The condition IS being triggered.
 ```
 
-<p style={{fontSize: '0.9em', marginTop: '0.5em', color: '#27ae60', fontWeight: 'bold'}}>
+<p style={{ marginTop: '0.5em', color: '#27ae60', fontWeight: 'bold'}}>
 H4 CONFIRMED. But wait—let's test with single quotes:
 </p>
 
@@ -1778,14 +1765,15 @@ H4 CONFIRMED. But wait—let's test with single quotes:
 removeHtmlMarkup("'foo'");  // Returns "'foo'" - quotes preserved!
 ```
 
-<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+<p className="fragment" style={{marginTop: '0.5em'}}>
 Double quotes are stripped. Single quotes are preserved. The difference?
 </p>
 
-<p style={{fontSize: '1em', marginTop: '0.5em', color: '#e74c3c', fontWeight: 'bold'}}>
+<p className="fragment" style={{marginTop: '0.5em', color: '#e74c3c', fontWeight: 'bold'}}>
 Operator precedence! <code>c == '"' || c == '\'' && tag</code> is parsed as<br/>
 <code>(c == '"') || (c == '\'' && tag)</code>
 </p>
+</div>
 
 <aside className="notes">
 **The breakthrough:**
@@ -2048,7 +2036,7 @@ Show a developer at their computer with visual representations of their fading m
 
 THOUGHT BUBBLES becoming increasingly faded/ghostly:
 - A clear bubble: 'Hypothesis 1: tag variable wrong' (but crossed out, they tested this)
-- A fading bubble: 'Wait, did I check if tag was ever true?' 
+- A fading bubble: 'Wait, did I check if tag was ever true?'
 - An even fainter bubble: 'I think I tried something with single quotes...'
 - A nearly invisible bubble: '???'
 
@@ -2076,22 +2064,22 @@ Same developer, same bug, but with a simple text file open alongside their code
 THE LOG (clearly visible, simple plain-text format):
 
   Debugging: quotes being stripped
-  
+
   H1: Double quotes stripped even without tags
       Test: input 'foo' with quotes → output foo without quotes
       Result: CONFIRMED ✓
       → Bug is in quote handling, not tag handling
-  
-  H2: Tag variable being set wrong?  
+
+  H2: Tag variable being set wrong?
       Test: assert !tag for quoted input
       Result: REFUTED (assertion passes)
       → Tag is always false, yet quotes stripped
-  
+
   H3: Quote condition triggers incorrectly
       Test: assert false in quote branch
       Result: CONFIRMED (assertion fails!)
       → The condition itself is wrong
-  
+
   NEXT: Why does condition trigger when tag=false?
 
 The developer's expression: focused, confident, making progress
@@ -2194,7 +2182,7 @@ The key insight: The debugging log isn't bureaucracy - it's a TOOL that prevents
 **The key insight:**
 - These tools serve different purposes
 - Tests = fast reproduction
-- Rubber duck = surface assumptions  
+- Rubber duck = surface assumptions
 - Logging = production/distributed debugging
 - Debugger = deep inspection
 
