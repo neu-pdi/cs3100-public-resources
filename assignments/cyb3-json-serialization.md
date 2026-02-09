@@ -4,6 +4,9 @@ sidebar_position: 4
 image: /img/assignments/web/a3.png
 ---
 
+## Update log
+- 2/8/2026: Note error in handout test `MarkdownExporterTest.java` line 57: `assertTrue(markdown.contains("- 2 cup flour"));` should be `assertTrue(markdown.contains("- 2 cups flour"));`
+
 ## Overview
 
 In this assignment, you'll expand the CookYourBooks application in two major directions: **domain
