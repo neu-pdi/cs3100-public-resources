@@ -6,15 +6,18 @@ image: /img/labs/web/lab6.png
 
 # Lab 6: AI Coding Agents
 
+
 ## Learning Objectives
 By the end of this lab, you will be able to:
-- Utilize an AI programming agent to assist with design and implementation tasks
+- Utilize control flow and data flow analysis to understand unfamiliar code
+- Utilize an AI programming agent to assist with understanding and implementation tasks
 - Determine the appropriate level of abstraction and context to provide to AI programming agents
 - Critically evaluate AI-generated code for correctness and maintainability
 - Apply effective prompting strategies to maximize learning while using AI tools
 - Consider the long-term maintainability implications of AI-generated code
 
 ![Lo-fi pixel art showing a cozy hilltop weather observation station where students and an instructor monitor 'AI Weather' together. A large board displays forecast predictions from pre-surveys: sunny icons next to quotes like 'AI will solve everything!' and 'Instant perfect code!'. Next to it, actual weather readings roll in: partly cloudy, scattered errors, occasional breakthroughs. One student adjusts a barometer labeled 'Expectations', another logs results in a shared journal. The instructor squints at conflicting instruments, equally uncertain. Through the window, the AI sky is a mix of sunshine and storm clouds—genuinely unpredictable. Sticky notes everywhere: 'Your data helps us calibrate!', 'Forecast improves with more observations'. A radar screen shows incoming survey responses as blips. A cozy mug of coffee, vintage weather instruments, warm lamp light against a moody sky. Banner: 'Prediction is hard—especially about AI.' Title: 'Lab 6: AI Coding Agents'.](/img/labs/web/lab6.png)
+
 
 ## Lab Structure (75 minutes)
 1. Pre-workshop survey (10 minutes)
@@ -47,19 +50,21 @@ Complete the [Lab 6 Pre-Workshop Survey](https://forms.gle/hUrsEfTtAaueKHe29) co
 
 ### When AI Helps Your Learning
 - Explaining concepts you've encountered
-- Debugging specific errors after you've tried
+- Generating diagrams to visualize code flow (sequence diagrams, call graphs)
+- Explaining error messages after you've read them yourself
 - Exploring alternative approaches after initial implementation
 - Learning best practices for your existing code
 - Generating test cases
 - Understanding maintainability implications
+- Verifying your hypotheses about bugs
 
 ### When AI Hurts Your Learning
-- Skipping the thinking process
+- Skipping the thinking process ("just fix my code")
 - Avoiding reading error messages
 - Copying without understanding
-- Replacing debugging skills
+- Replacing your debugging skills with "AI, find the bug"
 - Bypassing concept learning
-- When using LLMs it is important to use it as a tool and not depend on it. 
+- Being unable to verify AI's suggestions
 
 ### Key Principles
 
@@ -89,9 +94,32 @@ Complete the [Lab 6 Pre-Workshop Survey](https://forms.gle/hUrsEfTtAaueKHe29) co
 - Too low-level: "Fix line 23"
 - Just right: "Review my bank account classes withdrawal method's error handling approach"
 
+### Evaluating AI-Proposed Changes
+
+When the AI chat suggests code changes, don't just accept everything blindly. For each suggestion:
+
+**Before applying any change, ask yourself:**
+1. Do I understand what this change does?
+2. Do I understand *why* this change works?
+3. Does this match how I would solve the problem?
+4. Could this introduce new bugs or side effects?
+
+**Your options:**
+- **Keep as-is:** You understand it and it's correct
+- **Keep with modifications:** Good idea, but you'd implement it differently
+  - For small changes: edit the code directly yourself
+  - For larger changes: prompt AI to revise (e.g., "Can you change this to use a HashMap instead?")
+- **Reject:** You don't understand it, or you disagree with the approach
+
+**Important:** Rejecting a suggestion is not failure - it's critical thinking. You're the developer, not the AI.
+
+> **Lab Leader Demo:** Your TA will demonstrate how to evaluate and selectively apply AI suggestions.
+
 ---
 
-## Part 3: Effective Prompting Practice and Code Generation
+## Part 3: Effective Prompting Practice and Code Generation (20 minutes)
+
+> **Learning Objectives:** Apply effective prompting strategies to maximize learning while using AI tools; Determine the appropriate level of abstraction and context to provide to AI programming agents
 
 ### The Anatomy of a Good Prompt
 - **Specific** - Clear context and constraints
@@ -100,134 +128,159 @@ Complete the [Lab 6 Pre-Workshop Survey](https://forms.gle/hUrsEfTtAaueKHe29) co
 - **Maintainable** - Considers long-term code quality
 
 ### Exercise Overview
-You will work with a blank repo that only has JUnit tests and practice different prompting strategies.
+You will work with a blank folder that only has JUnit tests and practice different prompting strategies.
 
-### Part 3.1.A: Basic Code Generation (10 minutes)
+### The AnimalShelter System
 
-**Your Task:**
-1. Navigate to the `part1_buggy_code_practice` folder in your lab repo
-2. Ask Copilot Chat to complete the assignment so that all tests fail in `ExpectedFailTests.java`
-3. Did it work? What additional prompts did you require? List them.
+You'll be implementing a simple animal shelter management system. Here's what it should do:
+
+**Domain Concepts:**
+- **Animal:** Has a name, species, and adoption status
+- **AnimalShelter:** Manages a collection of animals
+- **Adoption:** Changes an animal's status from available to adopted
+
+**Key Operations:**
+- Add animals to the shelter (with species tracking)
+- Adopt animals (changing their status)
+- Query shelter statistics (counts by species, adoption counts)
+- Handle edge cases (adopting already-adopted animals, empty shelter, etc.)
+
+**Before you prompt AI, identify:**
+1. Which Java concepts will you need? (classes, enums, collections, etc.)
+2. What data structures make sense for tracking animals?
+3. What edge cases should the code handle?
+
+### Two Prompting Approaches - Try Both!
+
+**Approach A: Test-First**
+> "Generate code that passes these tests in @AnimalShelterTests.java"
+
+**Approach B: Concept-First**
+> "I need an AnimalShelter class that manages animals with species tracking and adoption status. Design it with changeability in mind:
+> - Use encapsulation (private fields, public methods)
+> - Consider using an enum for animal status since new statuses might be added later
+> - Keep the Animal class separate from AnimalShelter (modularity)
+> - The shelter's internal data structure should be hidden from callers (information hiding)
+> 
+> Include methods for adding animals, processing adoptions, and getting statistics. Here are the tests it needs to pass: @AnimalShelterTests.java"
+
+**Your Task:** Try BOTH approaches and compare:
+- Which was faster to get working code?
+- Which produced code you understood better?
+- Which would be easier to modify if requirements changed?
+- Did the AI make different design choices with each approach?
+- For concept-first: Did the AI actually follow your changeability guidance (encapsulation, enums, modularity)? Or did it ignore some of it?
+
+There's no "right answer" here - different situations may call for different approaches. Form your own opinion based on your experience.
+
+---
 
 **Steps:**
 1. **Generate Code:**
     - Open GitHub Copilot Chat (`Ctrl+Shift+I` / `Cmd+Shift+I`)
-    - Paste the assignment requirements
-    - Ask: "Please complete this assignment"
+    - Navigate to the `part3_code_generation` folder in your lab repo
+    - Try both prompting approaches above
     - Review the generated code
 
-2. **Run Tests:**
-    - Run the JUnit tests for Part 1 ExpectedFailTests
+2. **Before running tests, pause and predict:**
+    - What do you think will happen when you run the tests?
+    - What parts of the AI-generated code look correct? Suspicious?
+    - Rate your confidence (1-5) that this code will work as intended.
+
+3. **Run Tests:**
+    - Run the JUnit tests with Gradle:
+      ```bash
+      ./gradlew test --tests "part3_code_generation.AnimalShelterTests"
+      ```
     - Record pass/fail results
 
-3. **Document in REFLECTION.md (Question 2a):**
-    - What is working?
-    - What is broken?
-    - Impressions of the prompt strength
-    - What did you learn about basic prompting?
-
-### Part 3.1.B: Prompting for Code based on passing tests with AI
-**Your Task:**
-1. Navigate to the `part2_debugging_buggy_code_practice` folder in your lab repo
-2. Review the buggy code and list any bugs you initially see (5 minutes)
-3. Ask AI to generate code that passes the tests in `CorrectTests.java`
-4. Run the tests and record pass/fail results
-
-**Steps:**
-1. **Generate Code:**
-    - Open GitHub Copilot Chat (`Ctrl+Shift+I` / `Cmd+Shift+I`)
-    - Paste the assignment requirements
-    - Ask: Define your prompt and record it
-    - Review the generated code
-
-2. **Run Tests:**
-    - Run the JUnit tests for `CorrectTests.java`
-    - Record pass/fail results
-
-3. **Document in REFLECTION.md (Question 2b):**
+4. **Document in REFLECTION.md (Question 2):**
     - What is working? What is broken?
     - Impressions of the prompt strength
     - What did you learn about basic prompting?
+    - Which approach (Test-First vs Concept-First) worked better for you? Why?
     - How much of the code generated do you understand?
-    - If given an hour to prepare could you explain this code?
+
+> **Quick Reflection:** Did AI understand your intent on the first try? What does this tell you about prompt specificity?
 
 ---
 
 ## Part 4: Hands-On AI Debugging Exercise (25 minutes)
 
+> **Learning Objectives:** Utilize control flow and data flow analysis to understand code; Critically evaluate AI-generated fixes for correctness
+
 ### Overview
-Now that you've worked with creating code with AI, you'll practice debugging code with AI assistance.
+Now that you've worked with creating code with AI, you'll practice debugging—but **understanding comes first**. You can't fix what you don't understand.
 
 ### Exercise Setup
-Navigate to the `part3_buggy_code` folder in your lab repo.
-Choose 1 of the 2 files (Music or BankAccount) to unpack from a zip and debug
-This folder contains intentionally buggy code with corresponding JUnit tests.
-Use `bugs.md` to see if the AI accurately found all the bugs for you.
+1. Navigate to `src/main/java/part4_debugging/` in your lab repo
+2. Choose **one** of the two options to debug:
+   - **Bank** (`bank/` folder) - Bank account management with transactions
+   - **Music** (`music/` folder) - Instrument management utility methods
+3. Each folder contains:
+   - Multiple Java files with intentional bugs
+   - A `bugs.md` file listing the expected bugs (check your findings against this **after** you've done your own analysis)
+   - JUnit tests to verify your fixes
 
-### Part 4.1: Bug Identification (10 minutes)
+**Running the tests with Gradle:**
+```bash
+# Run Bank tests
+./gradlew test --tests "part4_debugging.bank.BankTest"
 
-**Steps:**
-1. **Initial Analysis (5 minutes):**
-    - Read through the buggy code yourself
-    - What bugs do you see on your own?
-    - Document your initial findings
+# Run Music tests  
+./gradlew test --tests "part4_debugging.music.MusicTest"
 
-2. **AI Bug Detection (5 minutes):**
-    - Craft a prompt asking AI to identify all bugs
-    - Example: "Review this code and identify all bugs. For each bug, explain: (1) what the bug is, (2) why it's a problem, (3) how it affects the code's behavior"
-    - Document AI's response
+# Run all Part 4 tests
+./gradlew test --tests "part4_debugging.*"
+```
 
-3. **Document in REFLECTION.md (Question 3a):**
-    - Your initial bug findings
-    - AI's bug findings
-    - Does the list match the expected bugs?
-    - Was AI able to find all bugs?
-    - Do you understand the bugs it found?
-    - Did AI find bugs you missed?
-    - Did you find bugs AI missed?
+---
 
+### Part 4.1: Understand the Code First (10 minutes)
 
-### Part 4.2: Bug Fixing Strategies (15 minutes)
+**Before looking for bugs, spend time understanding the code.**
 
-**Your Task:** Test two different approaches to bug fixing with AI
+Choose an approach that works for you:
+- **Ask AI to generate a diagram** (call graph, sequence diagram, class diagram)
+- **Trace control flow:** What methods call what? What branches exist?
+- **Trace data flow:** How do values change? What edge cases could break?
+- **Combine approaches** as needed
 
-#### Strategy A: Fix All Bugs at Once (5 minutes)
+**Example prompts:**
+> "Create a Mermaid diagram showing how methods in `BankAccount.java` call each other"
 
-1. **Create Prompt:**
-    - Ask AI to fix ALL bugs identified
-    - Example: "Please fix all the bugs you identified in the code"
+> "What are the key fields in this class and where do they get modified?"
 
-2. **Run Tests:**
-    - Apply the fixes
-    - Run all JUnit tests
-    - Document results
+**Then run the tests** to see what's failing.
 
-3. **Evaluate:**
-    - Do all tests pass?
-    - Do you understand all the changes?
-    - Can you explain each fix?
+---
 
-#### Strategy B: Fix Bugs One at a Time (10 minutes)
+### Part 4.2: Find and Fix the Bugs (12 minutes)
 
-1. **Create Prompts:**
-    - Ask AI to fix ONE bug at a time (if you have any bugs remaining of bugs.md)
-    - If you do not have any bugs left please explain what you think made your prompt so effective?
-    - Example: "Please fix only the NullPointerException in the calculateAverage method. Explain why this fix works."
+**The Rule:** Don't fix anything you can't explain.
 
-2. **Run Tests:**
-    - Apply one fix at a time
-    - Run tests after each fix
-    - Document results for each
+For each failing test:
+1. Read the test—what does it expect?
+2. Trace through the code—what actually happens?
+3. Find the bug, fix it, verify with the test
 
-3. **Evaluate:**
-    - Which approach was more effective?
-    - Which helped you understand better?
-    - Which gave you more control?
+**Using AI appropriately:**
 
-**Document in REFLECTION.md (Question 3b):**
-- Which strategy (A or B) was more effective? Why?
-- Which approach helped you understand the code better?
-- What did you learn about debugging with AI assistance?
+✅ **Good:** "Explain what this line does" / "What could cause X instead of Y?"
+
+❌ **Avoid:** "Find all the bugs" / "Fix this for me"
+
+After fixing, run ALL tests to make sure you didn't break anything.
+
+**Partner Check (2 min):** Explain one bug to your partner without reading notes. Partner's job: ask one clarifying question, then share what was clear vs. confusing about the explanation.
+
+---
+
+### Document in REFLECTION.md (Question 3):
+- How did you explore the code? Did it help?
+- What bugs did you find and fix? (brief)
+- Did you find all bugs in `bugs.md`?
+- How did you use AI—to understand, or to get quick fixes?
 
 ---
 
@@ -256,11 +309,9 @@ Reflect on how your expectations changed regarding:
 **Document in REFLECTION.md (Question 4):**
 
 1. What surprised you most about working with AI for coding?
-2. What's one specific way you'll change how you use AI for future assignments?
-3. What's one thing you'll always do before accepting AI-suggested code?
-4. When should you NOT use AI for an assignment?
-5. How did considering maintainability change your approach to using AI?
-6. Which prompting strategy (basic, planned, or debugging) was most effective? Why?
+2. What's one thing you'll always do before accepting AI-suggested code?
+3. Which prompting strategy worked best for you?
+4. How will you use AI differently in future assignments?
 
 ### Best Practices Checklist
 Commit to these practices going forward:
@@ -283,7 +334,7 @@ Commit to these practices going forward:
 
 Submit your completed `REFLECTION.md` file containing:
 - **Question 1:** Survey confirmation numbers (1a: pre-survey, 1b: post-survey)
-- **Question 2:** Code generation exercises (2a: basic generation, 2b: prompting for tests)
+- **Question 2:** Code generation exercise (comparing Test-First vs Concept-First prompting)
 - **Question 3:** Debugging exercises (3a: bug identification, 3b: bug fixing strategies)
 - **Question 4:** Final reflection and takeaways
 
@@ -296,9 +347,40 @@ Submit your completed `REFLECTION.md` file containing:
 
 **AI is a tool to enhance your learning, not replace it.**
 
+### The 3-Question Test
+Before using any AI-generated code, ask yourself:
+1. **Can I explain this?** If not, don't use it.
+2. **Can I modify this?** If not, you don't understand it.
+3. **Can I debug this?** If not, you'll be stuck when it breaks.
+
+### Understanding With AI Before Fixing
+When you encounter unfamiliar code or a bug and would like to use AI to understand or fix it:
+1. **Visualize** — Use AI to generate diagrams showing how the code fits together
+2. **Trace** — Follow control flow (what calls what) and data flow (how values change)
+3. **Then debug** — Only after you understand the structure
+
+### Your AI Usage Philosophy
+Write one sentence describing how you will use AI in future assignments:
+
+> "I will use AI to ________________________________, but I will always ________________________________."
+
+---
+
+### Share What You Learned
+
+**Discussion Board:** Post to the **Lab 6** topic on the course discussion board:
+- An effective prompt you discovered
+- A surprising AI response
+- A debugging insight that might help classmates
+
+Your classmates in other sections will benefit from what you learned!
+
+---
+
 The goal is to learn how to:
-- Debug effectively
+- Understand unfamiliar code through control flow and data flow analysis
+- Use AI for visualization and explanation, not to skip understanding
 - Evaluate code critically
-- Write maintainable solutions
-- Use AI as a learning aid
-Success means understanding debugging better and knowing when AI helps versus hurts your learning—regardless of how many bugs you fixed.
+- Debug effectively by understanding first
+
+Success means understanding code better and knowing when AI helps versus hurts your learning—regardless of how many bugs you fixed.
