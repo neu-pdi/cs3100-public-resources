@@ -502,6 +502,34 @@ Choose 3.
 
 <Slide>
 
+## What People Learn From Group Projects
+
+<Img src="/img/lectures/web/l17-group-projects-side-by-side.png"
+
+ alt="Two pie charts comparing group project lessons.
+ Left chart titled 'What group projects are supposed to teach you'
+ shows roughly equal slices for Communication, Responsibility, Collaboration,
+ and Teamwork. Right chart titled 'What group projects actually teach you'
+ shows one massive dark slice labeled 'Trust no one' taking up approximately
+ 85% of the pie, with tiny slivers for Communication, Responsibility,
+ Collaboration, and Teamwork. Credit: endlessorigami.com"
+/>
+
+{/* Black-and-white version of cartoon appeared in Debugging Teams. */}
+
+<aside className="notes">
+- Teachers assign group projects because they want students to learn
+  communication, collaboration, and teamwork.
+- Unfortunately, what students often learn is that they don't like group projects.
+- You can't avoid group projects, in school or in the workplace.
+- We want you to learn how to work well in groups...
+
+</aside>
+
+</Slide>
+
+<Slide>
+
 ## The HRT Framework
 
 **HRT** (pronounced "heart") are the three pillars of effective team collaboration:
@@ -524,8 +552,10 @@ Choose 3.
 
 </div>
 
+<div className="fragment">
 Source: [*Team Geek*](https://learning.oreilly.com/library/view/team-geek/9781449329839/) (later [*Debugging Teams*](https://www.debuggingteams.com/)) by Brian Fitzpatrick and Ben Collins-Sussman,
 former Google engineers.
+</div>
 
 <aside className="notes">
 - These are pillars we will hold you accountable to in group work
@@ -864,6 +894,373 @@ When you receive feedback, your instinct may be to explain, defend, or minimize.
 - Defensiveness shuts down future feedback
 - People stop being honest if you argue every time
 - The most valuable feedback is often the hardest to hear
+</aside>
+
+</Slide>
+
+
+{/* ============================================ */}
+{/* ARC 5: WRITING CLEAR AND SPECIFIC GITHUB ISSUES...  */}
+{/* ============================================ */}
+
+<Slide>
+
+## Anatomy of a Good Issue
+
+A well-written issue makes it easy for someone else (or future-you) to understand and address the problem.
+
+**A clear, specific title:**
+- ❌ "Unable to login"
+- ✅ "Login fails silently when password contains special characters"
+
+**However:** If you're not certain about the exact problem, don't assume. If you've only tried one password, "Unable to login" is better than guessing the cause.
+
+<aside className="notes">
+- Balance specificity with accuracy
+- Don't claim to know the root cause if you're not sure
+- Transition: What else goes in a good issue?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Good Issues Include Context
+
+**Description with context:**
+- What were you trying to do?
+- What did you expect to happen?
+- What actually happened?
+
+**Reproduction steps** (for bugs):
+1. Go to the login page
+2. Enter username "testuser"
+3. Enter password "p@ss#word!"
+4. Click "Sign In"
+5. Observe: nothing happens, no error message displayed
+
+<aside className="notes">
+- Reproduction steps let others confirm the bug
+- Without steps, developers have to guess
+- Transition: What other details help?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Additional Issue Details
+
+**Environment details** (when relevant):
+- Browser/OS version
+- Relevant configuration
+- Error messages or logs
+
+**Screenshots or recordings** (for UI issues):
+- Annotate to highlight the problem area
+- Screen recordings show interactive issues
+
+Good issues save everyone time—both the person fixing it and future developers who encounter similar problems.
+
+<aside className="notes">
+- Environment details help reproduce issues
+- Screenshots are worth 1000 words for UI bugs
+- Well-written issues are documentation of known problems
+- Transition: Pull requests are another key communication tool
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Pull Request Best Practices
+
+Pull requests are both a code integration mechanism and a knowledge-sharing opportunity.
+
+**Link to the issue they address:**
+```markdown
+Fixes #42
+
+This PR adds input validation for special characters in passwords.
+```
+
+**Keep changes small and focused:**
+- One logical change per PR
+- Easier to review, easier to revert if needed
+- Aim for PRs that can be reviewed in 15-30 minutes
+
+<aside className="notes">
+- Linking to issues creates traceability
+- Small PRs get reviewed faster and more thoroughly
+- Large PRs often get rubber-stamped or ignored
+- Transition: Commit messages matter too
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Meaningful Commit Messages
+
+**Include meaningful commit messages:**
+- ❌ "fix bug"
+- ❌ "WIP"
+- ✅ "Add regex validation for password special characters"
+- ✅ "Display error toast when login validation fails"
+
+**Explain the "why," not just the "what":**
+- The code shows *what* changed
+- The description should explain *why* this approach was chosen
+- The first line should be no more than 50 characters, but additional lines can be longer.
+
+<aside className="notes">
+- Future developers (including you) need to understand decisions
+- "Why" is often lost if not documented in commit/PR
+- Good commit messages are part of project documentation
+- Transtion: The way github displays commit messages led to a convention of limiting the first line to 50 characters...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## How GitHub Displays Commit Messages
+
+<Img src="/img/lectures/web/l17-github-screenshot.png"
+  alt="Screenshot of main github page for a repo with commit messages to the right of folder names.
+  These include the folder '.github/workflows' and message 'Add canvas sync' and
+  the folder 'assignments' with the message 'Note bug in handout test'"
+/>
+
+<aside className="notes">
+- The commit message is 50 characters to fit in the code browsing view.
+- There can be additional longer lines.
+- Transition: Code review serves multiple purposes
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Code Review as Knowledge Sharing
+
+Code review serves multiple purposes beyond catching bugs:
+
+- **Knowledge transfer:** Reviewers learn about parts of the codebase they didn't write
+- **Consistency:** Team members align on style and patterns
+- **Mentorship:** Junior developers learn from feedback; senior developers articulate their reasoning
+
+**When reviewing code, apply HRT principles:**
+- **Ask questions** rather than making demands: "What if we used X here?" vs. "Use X."
+- **Explain your reasoning:** "This could cause a null pointer if Y because Z."
+- **Acknowledge good work:** "Nice refactor here—much cleaner than before!"
+- **Critique the code, not the person:** "This function is hard to follow" vs. "You wrote confusing code"
+
+<aside className="notes">
+- Code review is a learning opportunity for everyone involved
+- Even senior developers learn new approaches from juniors
+- As mentioned before, HRT makes reviews productive instead of defensive
+- Transition: Now let's talk about asking technical questions effectively
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Poll: What Feedback do you Receive from Graders?
+
+<PollSlide
+  choices={["negative comments", "positive comments", "encouragement", "no comments"]}
+/>
+
+<aside className="notes">
+- We encourage graders to be positive and encouraging.
+- We'd like to know what you think about the feedback you've gotten?
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 6: Ask Technical Questions Effectively */}
+{/* ============================================ */}
+
+<Slide>
+
+## The Anatomy of a Bad Question
+
+[Real Stack Overflow question](https://stackoverflow.com/questions/31279359/new-to-coding-can-anyone-assist-me):
+
+**Title:** "New To Coding. Can anyone assist me?"
+
+**Body:** "I am trying to make a word counter and I just can't seem to get it. Can anyone help?"
+
+*[Code included but omitted here]*
+
+**Result:** Downvoted, no helpful answers.
+
+<aside className="notes">
+- Why did this fail?
+- Title is vague, doesn't describe the problem
+- "Can't seem to get it" doesn't explain what's wrong
+- No error message or unexpected behavior described
+- No indication of what was already tried
+- Wastes everyone's time, including asker's
+- Transition: What makes a good question?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Bad vs. Good Technical Questions
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.7em'}}>
+
+<div style={{backgroundColor: 'rgba(255,100,100,0.1)', padding: '1em', borderRadius: '8px'}}>
+
+**Bad Question ❌**
+
+**Title:** "HashMap not working"
+
+**Body:** "I'm trying to use a HashMap and it just doesn't work. Can anyone help?"
+```java
+HashMap<String, Recipe> recipes = new HashMap<>();
+recipes.put("pasta", carbonara);
+// ...
+```
+
+</div>
+
+<div style={{backgroundColor: 'rgba(100,255,100,0.1)', padding: '1em', borderRadius: '8px'}}>
+
+**Good Question ✅**
+
+**Title:** "HashMap.get() returns null for key that was just added"
+
+**Body:** "I'm trying to store recipes by name so I can look them up later. I'm using a custom Recipe class as the value. When I call `get()` immediately after `put()`, it returns null.
+
+I've checked the Java docs and tried printing the key—it's not null. My tech stack is Java 17.
+
+I think the problem might be related to how Recipe implements equals/hashCode, but I'm not sure how to verify this."
+
+</div>
+
+</div>
+
+Often writing a detailed question leads to your fixing the problem yourself!
+
+<aside className="notes">
+- Bad: vague title, no specific problem, no context
+- Good: specific problem, clear goal, what was tried, hypothesis
+- Good questions get good answers
+- Transition: What makes this template work?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Make It Easy for People to Help You
+
+A good technical question follows this template:
+
+**I am trying to** [goal] **so that I can** [context/motivation].
+
+**I am running into** [specific problem—error message, unexpected behavior, etc.].
+
+**I have looked at** [resources consulted] **and tried** [approaches attempted].
+
+**My tech stack is:** [relevant versions and configuration].
+
+**I think the problem could be** [your hypothesis, if you have one].
+
+<aside className="notes">
+- Goal and context help others understand what you actually need
+- Specific problem lets people diagnose without guessing
+- Resources consulted shows you've done homework
+- Hypothesis gives experts a starting point
+- Transition: Before asking, search first
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Avoid Duplication: Search First
+
+Before asking a question, **search**:
+
+- Stack Overflow and relevant forums
+- Your team's Slack/Discord history
+- Project documentation and wikis
+- Closed GitHub issues
+
+If you find a partial answer, reference it: "I found [this thread], but it doesn't address [specific aspect]."
+
+<aside className="notes">
+- Your question has probably been asked before
+- Searching respects others' time
+- Shows you've done due diligence
+- Transition: When you get an answer, pay it forward
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Archive and Share Answers
+
+When you solve a problem (or someone helps you solve it), **document the solution**:
+
+- Update the original thread with what worked
+- Add to your team's wiki or FAQ
+- Consider writing a blog post for common issues
+
+You're probably not the only one who will encounter this problem. The time you spend documenting saves future team members from duplicating your struggle—and that future team member might be you in six months.
+
+This connects back to **scalable knowledge sharing**: every documented solution is one less interruption for your teammates.
+
+<aside className="notes">
+- Documentation reduces future interruptions
+- Closes the loop on knowledge sharing from earlier in lecture
+- You in 6 months will thank you from today
+- This is the last section of the lecture
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Bonus Slide
+
+<Img src="/img/lectures/web/l17-xkcd-old-days2.png"
+  alt="5-panel xkcd cartoon showing a conversation between a plain stick figure (Cueball) and a stick figure with a hair bun (Hairbun).
+  [In a slim panel, Cueball and Hairbun are walking together to the right. Hairbun has her palm raised.]
+Cueball: What was the Internet like in the olden days, for a developer?
+Hairbun: Oh, things were very different.
+[Cueball and Hairbun have stopped walking. Zoomed in on Hairbun.]
+Hairbun: The cloud was a lot smaller. It was called a 'mainframe' and it was near Sacramento.
+Hairbun: It was on the state landline, so the whole industry paused when the governor had to make a phone call.
+[Zoomed back out. Hairbun has her palm raised.]
+Hairbun: There was no memory protection. If you wanted to write to an address, you would call around to ask whether anyone else was using it.
+Hairbun: Often Bill Gates would say he was, even when he wasn't. That's how Microsoft got its early foothold.
+Cueball: Wow.
+[Zoomed back in Hairbun. Cueball responds off-screen.]
+Hairbun: 'Git' was originally a van that circled around gathering data tapes to copy and distribute. We all took turns driving it.
+Hairbun: When you saw it coming you'd blow an air horn to request that it pull over.
+Hairbun: That's where 'pull request' came from.
+Cueball (off-screen): Oh, neat!
+[Cueball and Hairbun continue walking to the right. Hairbun has her palm raised.]
+Hairbun: Before terminals, we all used punch cards, which were originally developed to control looms.
+Hairbun: Early mainframes would produce a sweater each time you ran your code.
+Hairbun: Eventually we got them to stop. We had enough sweaters."
+/>
+
+<aside className="notes">
+**Reasons for cartoon**
+- Lecture and cartoon both mention pull requests.
+- Ellen likes to talk about the old days.
 </aside>
 
 </Slide>
