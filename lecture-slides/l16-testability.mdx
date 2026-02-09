@@ -30,8 +30,8 @@ import PollSlide from '@site/src/components/PollSlide';
 
 **Structure:**
 - Observability and controllability (~20 min)
-- Hexagonal Architecture / Ports and Adapters (~15 min)
-- Properties of good test suites (~10 min)
+- Hexagonal Architecture / Ports and Adapters (~20 min)
+- Connecting design to test quality (~5 min)
 - Anti-patterns that lead to untestable code (~10 min)
 
 **Key theme:** Good design for changeability naturally leads to good design for testability. The same principles that reduce coupling also make code easier to test.
@@ -59,9 +59,10 @@ import PollSlide from '@site/src/components/PollSlide';
 **Context from L15:**
 - Students learned about test doubles: stubs, fakes, spies, and mocks
 - They can substitute dependencies to test code in isolation
+- They know good tests are fast, reliable, and find bugs (with strong oracles)
 - But we glossed over: *why was ThermostatController so easy to test?*
 
-**Key theme:** This lecture answers that question. Testability isn't an accident—it's a consequence of good design.
+**Key theme:** This lecture answers that question. Testability isn't an accident—it's a consequence of good design. We won't re-cover test properties from L15—instead, we'll show how design decisions determine whether those properties are achievable.
 
 -> **Transition:** Here's what you'll be able to do after today...
 </aside>
@@ -83,20 +84,22 @@ After this lecture, you will be able to:
 <ol style={{fontSize: '0.75em', textAlign: 'left'}}>
   <li>Evaluate the testability of a software module using the concepts of <strong>observability</strong> and <strong>controllability</strong></li>
   <li>Explain <strong>Hexagonal Architecture</strong> (Ports and Adapters) and its relationship to testability</li>
-  <li>Describe properties of <strong>good test suites</strong>: fast, deterministic, independent, readable</li>
+  <li>Explain how <strong>design decisions</strong> (coupling, DI, separation of concerns) directly impact test suite quality</li>
   <li>Recognize <strong>anti-patterns</strong> that lead to untestable code</li>
 </ol>
 
 <aside className="notes">
 **Time allocation:**
 - Objective 1: Observability and controllability (~20 min)
-- Objective 2: Hexagonal Architecture (~15 min)
-- Objective 3: Good test suite properties (~10 min)
+- Objective 2: Hexagonal Architecture (~20 min)
+- Objective 3: Connecting design to test quality (~5 min)
 - Objective 4: Anti-patterns (~10 min)
 
 **Connection to prior lectures:**
 - These concepts build directly on information hiding (L6) and coupling/cohesion (L7)
 - Testability is a *consequence* of following SOLID principles (L8)
+- L15 covered *what* good tests look like and *how* to use test doubles
+- This lecture covers *why* some code is naturally testable and how to design for it
 
 -> **Transition:** Let's start by understanding what makes code testable...
 </aside>
@@ -887,289 +890,56 @@ void reducesNonEssentialDevicesWhenPriceIsHigh() {
 - Same vocabulary, same principles
 - Now applied at architectural level
 
--> **Transition:** Let's talk about test suite properties...
+-> **Transition:** So how does this connect to the test properties from L15?
 </aside>
 
 </Slide>
 
 {/* ============================================ */}
-{/* ARC 3: PROPERTIES OF GOOD TEST SUITES */}
+{/* BRIDGE: DESIGN ENABLES GOOD TESTS */}
 {/* ============================================ */}
 
 <Slide>
 
-## Properties of Good Test Suites
-
-<Img
-  src="/img/lectures/web/l16-good-test-properties.webp"
-  prompt="An illustration showing the four properties of good test suites as pillars or badges.
-
-Four panels arranged horizontally:
-
-1. 'FAST' - A stopwatch showing milliseconds, a rocket ship, tests completing in the blink of an eye. Developers run tests constantly because they're instant.
-
-2. 'DETERMINISTIC' - A balanced scale showing same inputs always produce same outputs. No dice, no random elements. A frustrated developer next to a 'flaky test' warning sign is crossed out.
-
-3. 'INDEPENDENT' - Isolated test tubes or separate rooms, each test sets up its own state. No arrows connecting them. Contrast with tests connected by shared state (bad).
-
-4. 'READABLE' - A clearly written story with Given/When/Then labels. The test reads like documentation. A developer says 'I understand what this tests!'
-
-All four properties together create a 'Trustworthy Test Suite' badge."
-  alt="Four pillars of good tests: 1) Fast (stopwatch, rocket), 2) Deterministic (balanced scale, no randomness), 3) Independent (isolated test tubes), 4) Readable (Given/When/Then story). Together they create a trustworthy test suite."
-/>
-
-<aside className="notes">
-**Why these properties matter:**
-- Fast: Developers run tests constantly
-- Deterministic: Tests can be trusted
-- Independent: Tests can run in any order
-- Readable: Tests serve as documentation
-
-**The connection to testability:**
-- Hexagonal Architecture enables all of these
-- Domain tests are fast (no I/O)
-- Injected dependencies are deterministic
-- No shared infrastructure means independence
-
--> **Transition:** Let's examine each property...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Tests Should Be Fast
+## Good Design Enables Good Tests
 
 <p style={{fontSize: '0.9em'}}>
-  If tests take 30 minutes, developers won't run them often. If they take 30 seconds, they'll run them after every change.
+  In L15, we covered what makes tests good: <strong>fast</strong>, <strong>reliable</strong>, and <strong>finds bugs</strong>. Individual tests should be hermetic, clear, and non-brittle.
 </p>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', marginTop: '1em'}}>
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+  Hexagonal Architecture directly enables every one of these properties:
+</p>
 
-<div style={{fontSize: '0.75em'}}>
+| Test Property | How Testable Design Enables It |
+|---------------|-------------------------------|
+| **Fast** | Domain tests have zero I/O — milliseconds, not seconds |
+| **Deterministic** | Injected dependencies return controlled values — no flakiness |
+| **Independent** | No shared database or service state between tests |
+| **Focused** | Each test targets one business rule, not infrastructure wiring |
 
-**Slow tests (infrastructure)**
-```java
-@Test
-void savesUserToDatabase() {
-    // Spin up test database
-    // Insert test data
-    // Run migrations
-    // Execute test
-    // Tear down
-    // ... seconds to minutes
-}
-```
-
-</div>
-
-<div style={{fontSize: '0.75em'}}>
-
-**Fast tests (domain)**
-```java
-@Test
-void calculatesComfortAction() {
-    ComfortCalculator calc =
-        new ComfortCalculator();
-
-    assertEquals(HVACAction.HEAT,
-        calc.calculateAction(68.0, 72.0));
-    // ... milliseconds
-}
-```
-
-</div>
-
-</div>
-
-<p style={{fontSize: '0.8em', marginTop: '1em', color: '#9370DB'}}>
-  Separating domain from infrastructure means most tests can be fast.
+<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#9370DB'}}>
+  Testability isn't extra work on top of good design — it's a natural consequence of it.
 </p>
 
 <aside className="notes">
-**The test pyramid:**
-- Many fast domain tests (base)
-- Fewer integration tests (middle)
-- Few end-to-end tests (top)
+**Connection to L15:**
+- L15 covered what makes tests good and how to use test doubles
+- This lecture answers *why* some code naturally supports test doubles and some doesn't
+- If you follow low coupling (L7), DI (L8), and information hiding (L6)...
+- ...then using test doubles (L15) becomes trivial
 
-**The payoff:**
-- Fast feedback catches bugs earlier
-- Earlier bugs are cheaper to fix
-- Developers stay in flow
+**The key insight:**
+- The design does the heavy lifting; the testing framework is just the tool
+- If your code is hard to test, the problem is usually the design, not the test
 
--> **Transition:** But fast isn't enough...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Tests Should Be Deterministic
-
-<p style={{fontSize: '0.9em'}}>
-  A <strong>flaky test</strong> sometimes passes and sometimes fails without code changes. Flaky tests destroy trust.
-</p>
-
-<div style={{fontSize: '0.75em'}}>
-
-**Common causes of flakiness:**
-
-| Cause | Problem | Solution |
-|-------|---------|----------|
-| System time | `LocalDateTime.now()` changes | Inject `Clock` |
-| Random values | Unpredictable behavior | Inject random generator with fixed seed |
-| Execution order | Test B needs Test A to run first | Each test sets up own state |
-| External services | Network failures, slow responses | Use test doubles |
-
-</div>
-
-<p style={{fontSize: '0.8em', marginTop: '1em', color: '#f44336'}}>
-  ⚠ When tests fail randomly, developers start ignoring failures.
-</p>
-
-<aside className="notes">
-**The trust problem:**
-- "Oh that test is flaky, ignore it"
-- Now a real bug can hide behind "flakiness"
-- Test suite becomes useless
-
-**The fix:**
-- All non-determinism comes from injected dependencies
-- Tests control those dependencies completely
-- Same inputs → same outputs, always
-
--> **Transition:** Tests must also be independent...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Tests Should Be Independent
-
-<p style={{fontSize: '0.9em'}}>
-  Each test should run in isolation. If Test B only passes when Test A runs first, you have a problem.
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', marginTop: '0.5em'}}>
-
-<div>
-
-**Bad: Shared state**
-
-```java
-public class DeviceRegistryTest {
-    // Shared across all tests!
-    private static DeviceRegistry
-        registry = new DeviceRegistry();
-
-    @Test
-    void registersNewDevice() {
-        registry.register(
-            new Light("light-1"));
-        assertEquals(1, registry.count());
-        // Fails if another test ran first!
-    }
-}
-```
-
-</div>
-
-<div>
-
-**Good: Fresh state per test**
-
-```java
-public class DeviceRegistryTest {
-    private DeviceRegistry registry;
-
-    @BeforeEach
-    void setUp() {
-        // Fresh state for each test
-        registry = new DeviceRegistry();
-    }
-
-    @Test
-    void registersNewDevice() {
-        registry.register(
-            new Light("light-1"));
-        assertEquals(1, registry.count());
-        // Always starts from 0
-    }
-}
-```
-
-</div>
-
-</div>
-
-<aside className="notes">
-**Why independence matters:**
-- Tests can run in any order
-- Tests can run in parallel
-- Failures are easier to debug (isolated)
-
-**The pattern:**
-- `@BeforeEach` sets up fresh state
-- Each test is a self-contained story
-- No assumptions about what ran before
-
--> **Transition:** Finally, tests should be readable...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Tests Should Be Readable
-
-<p style={{fontSize: '0.9em'}}>
-  Tests serve as documentation. A well-written test tells a story.
-</p>
-
-```java
-@Test
-void sendsAlertWhenTemperatureExceedsSafetyThreshold() {
-    // Given: A safety monitor with a 90°F threshold
-    TemperatureSensor stubSensor = mock(TemperatureSensor.class);
-    AlertService spyAlerts = mock(AlertService.class);
-    SafetyMonitor monitor = new SafetyMonitor(stubSensor, spyAlerts, 90.0);
-
-    // When: The temperature exceeds the threshold
-    when(stubSensor.readTemperature("server-room")).thenReturn(95.0);
-    monitor.checkZone("server-room");
-
-    // Then: An alert is sent
-    verify(spyAlerts).sendCriticalAlert(
-        argThat(alert -> alert.contains("server-room") &&
-                         alert.contains("95.0")));
-}
-```
-
-<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#4CAF50'}}>
-  The method name describes expected behavior. Given/When/Then structure makes the test's purpose clear.
-</p>
-
-<aside className="notes">
-**The structure:**
-- **Given:** Set up the scenario
-- **When:** Execute the action
-- **Then:** Verify the outcome
-
-**Also called:**
-- Arrange/Act/Assert (same idea)
-
-**Why it matters:**
-- Tests fail → you read the test → you understand the bug
-- New developer → reads tests → understands the system
-
--> **Transition:** Now let's look at anti-patterns...
+-> **Transition:** Now let's look at anti-patterns that undermine all of this...
 </aside>
 
 </Slide>
 
 {/* ============================================ */}
-{/* ARC 4: ANTI-PATTERNS */}
+{/* ARC 3: ANTI-PATTERNS */}
 {/* ============================================ */}
 
 <Slide>
@@ -1531,7 +1301,7 @@ The overall message: Testability isn't extra work—it's a natural result of fol
   <li><strong>Observability</strong> = can we see what happened? (return values, accessible state)</li>
   <li><strong>Controllability</strong> = can we set up the scenario? (dependency injection)</li>
   <li><strong>Hexagonal Architecture</strong> separates domain logic from infrastructure</li>
-  <li>Good tests are <strong>fast, deterministic, independent, and readable</strong></li>
+  <li>Good design directly enables the test properties from L15 (fast, deterministic, independent)</li>
   <li><strong>Avoid</strong> static methods, singletons, hidden dependencies, tight coupling</li>
 </ul>
 
@@ -1544,6 +1314,7 @@ The overall message: Testability isn't extra work—it's a natural result of fol
 - Information hiding (L6) → isolate infrastructure behind interfaces
 - Coupling/cohesion (L7) → low coupling enables test double substitution
 - SOLID (L8) → Dependency Inversion is key to testability
+- Test doubles (L15) → the *tools* work when the *design* supports them
 
 **For assignments:**
 - Design for testability from the start
