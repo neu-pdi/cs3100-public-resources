@@ -331,7 +331,122 @@ public boolean isOffPeakHours() {
 - This is the **Dependency Inversion Principle** in action!
 - "Depend on abstractions, not concretions"
 
--> **Transition:** This lets us test any scenario we want...
+-> **Transition:** Let's see how coupling affects controllability...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Coupling Affects Controllability
+
+<p style={{fontSize: '0.85em'}}>
+  Remember from L7: <strong>data coupling</strong> passes only what's needed, while <strong>stamp coupling</strong> passes entire objects.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', marginTop: '0.5em'}}>
+
+<div>
+
+**Stamp Coupling (Low Controllability)**
+
+```java
+// Must create full Submission object
+public void notifyStudent(
+    Submission submission) {
+  String email = submission
+      .getStudent().getEmail();
+  String msg = "Grade: " +
+      submission.getGrade();
+  emailService.send(email, msg);
+}
+```
+
+</div>
+
+<div>
+
+**Data Coupling (High Controllability)**
+
+```java
+// Only needs the data it uses
+public void notifyStudent(
+    String email,
+    int grade) {
+  String msg = "Grade: " + grade;
+  emailService.send(email, msg);
+}
+```
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#4CAF50'}}>
+  ✓ Data coupling requires less test setup—no need to construct complex object graphs.
+</p>
+
+<aside className="notes">
+**Connection to L7:**
+- Data coupling: pass only what's needed
+- Stamp coupling: pass entire objects
+- For testability, data coupling is usually better
+
+**Why this matters:**
+- Stamp coupling forces you to create full object graphs for tests
+- Data coupling lets you pass just the values needed
+- Less setup = more focused tests
+
+-> **Transition:** Let's look at observability through the same lens...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Observability in Pawtograder
+
+<p style={{fontSize: '0.85em'}}>
+  Consider testing a grading service. How do we observe what happened?
+</p>
+
+```java
+// Low Observability: modifies external state, returns void
+public class GradingService {
+    private final SubmissionRepository repo;
+
+    public void gradeSubmission(Submission submission) {
+        int score = calculateScore(submission);
+        submission.setGrade(score);  // Mutates input!
+        repo.save(submission);       // Side effect!
+    }
+}
+
+// High Observability: returns result, no side effects on input
+public class GradingService {
+    public GradingResult gradeSubmission(Submission submission) {
+        int score = calculateScore(submission);
+        return new GradingResult(submission.getId(), score);
+    }
+}
+```
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
+  The second version is easier to test: call the method, check the return value. No need to inspect mutated objects or mock repositories.
+</p>
+
+<aside className="notes">
+**Why the second is more observable:**
+- Returns a value we can assert on
+- Doesn't mutate the input object
+- Separates calculation from persistence
+
+**Connection to L6 (immutability):**
+- Immutable inputs = no hidden mutations
+- Return values = explicit outputs
+- Same principles that prevent bugs also enable testing
+
+-> **Transition:** Let's talk about separating infrastructure from domain...
 </aside>
 
 </Slide>
@@ -478,7 +593,62 @@ Key insight: Adapters can be swapped without changing the core. Test adapters en
 - All external systems connect through ports
 - The domain doesn't know which adapters are plugged in
 
--> **Transition:** Let's break this down...
+-> **Transition:** But wait—why a hexagon?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Why "Hexagonal"? (Not Just Layers)
+
+<p style={{fontSize: '0.85em'}}>
+  Traditional layered architecture has a <strong>top-down flow</strong>: UI → Business Logic → Data.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', marginTop: '0.5em', fontSize: '0.75em'}}>
+
+<div>
+
+**Layered Architecture**
+- Implies hierarchy (UI on top)
+- Data layer at the bottom
+- Flow goes one direction
+- Web UI and CLI are "different layers"
+- Database and external API are "same layer"
+
+</div>
+
+<div>
+
+**Hexagonal Architecture**
+- No top or bottom—domain is center
+- All external things are "outside"
+- Web UI, CLI, database, APIs are all adapters
+- Each connects through a port
+- Tests are just another adapter!
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.8em', marginTop: '1em', color: '#9370DB'}}>
+  The hexagon has no privileged direction. Each edge is a potential connection point. The shape is arbitrary—the <strong>insight</strong> is that everything external (including tests!) connects the same way.
+</p>
+
+<aside className="notes">
+**Why this matters for testability:**
+- In layered architecture, tests often mock "lower layers"
+- In hexagonal, tests are just adapters—they plug in the same way
+- This mental model makes test doubles feel natural, not like "cheating"
+
+**The key insight:**
+- A test that stubs `EnergyPricePort` is doing exactly what production does
+- Production plugs in `GridPriceApiAdapter`
+- Tests plug in `StubPriceAdapter`
+- Both are valid adapters for the same port
+
+-> **Transition:** Let's look at the three layers...
 </aside>
 
 </Slide>
@@ -879,6 +1049,141 @@ The domain logic is:
 **This is why good design leads to testability:**
 - Same principles, same benefits
 - Changeability and testability are two sides of the same coin
+
+-> **Transition:** Let's see how testability aligns with our design principles...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Testability Aligns with Good Design
+
+<p style={{fontSize: '0.85em'}}>
+  Testability isn't a separate concern—it's a natural consequence of following the principles from L6-L8:
+</p>
+
+<div style={{fontSize: '0.7em'}}>
+
+| Design Principle | Testability Benefit |
+|------------------|---------------------|
+| **Low Coupling (L7)** | Dependencies can be substituted with test doubles |
+| **High Cohesion (L7)** | Each class has a clear purpose → focused tests |
+| **Information Hiding (L6)** | Implementation changes don't break tests |
+| **Dependency Inversion (L8)** | Inject test doubles instead of real dependencies |
+| **Single Responsibility (L8)** | Fewer behaviors to test per class |
+| **Interface Segregation (L8)** | Smaller interfaces → simpler test doubles |
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB', textAlign: 'center'}}>
+  <strong>If your code is hard to test, it probably violates one of these principles.</strong>
+</p>
+
+<aside className="notes">
+**The key insight:**
+- Testability is an indicator of design quality
+- Hard-to-test code often has:
+  - High coupling (can't substitute dependencies)
+  - Low cohesion (too many behaviors to test)
+  - Hidden dependencies (surprising test setup requirements)
+
+**Practical implication:**
+- Use testability as a design feedback signal
+- If tests are painful, consider refactoring
+
+-> **Transition:** But there are also tensions to be aware of...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Testability Can Be in Tension with Other Goals
+
+<p style={{fontSize: '0.85em'}}>
+  Designing for testability sometimes involves tradeoffs:
+</p>
+
+<div style={{fontSize: '0.7em'}}>
+
+| Goal | Tension with Testability |
+|------|-------------------------|
+| **Simplicity** | Testability may require more interfaces, abstractions, and indirection |
+| **Encapsulation** | Observability sometimes requires exposing internal state |
+| **Performance** | Dependency injection adds indirection; interfaces prevent inlining |
+| **Reduced Boilerplate** | Constructor injection requires more code than `new` |
+
+</div>
+
+<p style={{fontSize: '0.75em', marginTop: '1em'}}>
+  These tensions are usually worth it for non-trivial systems, but not every class needs hexagonal architecture!
+</p>
+
+<aside className="notes">
+**Practical guidance:**
+- Not every class needs to be highly testable
+- Simple data classes, value objects → direct instantiation is fine
+- Complex business logic, external dependencies → invest in testability
+
+**The balance:**
+- Over-engineering: Interfaces for everything, mocks everywhere
+- Under-engineering: Can't test critical business logic
+- Sweet spot: Testable where it matters, simple where it doesn't
+
+-> **Transition:** Let's talk about test suite properties...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## When to Invest in Testability
+
+<p style={{fontSize: '0.85em'}}>
+  Not all code needs the same level of testability investment:
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', marginTop: '0.5em', fontSize: '0.75em'}}>
+
+<div>
+
+**High Investment**
+- Complex business rules
+- Code with many edge cases
+- Integration points with external systems
+- Code that changes frequently
+- Code where bugs are expensive
+
+</div>
+
+<div>
+
+**Low Investment**
+- Simple data transfer objects
+- Straightforward delegation
+- Configuration and wiring code
+- Stable, well-tested libraries
+- Code that rarely changes
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB', textAlign: 'center'}}>
+  Apply hexagonal architecture where it provides value. Don't over-abstract simple code.
+</p>
+
+<aside className="notes">
+**The pragmatic approach:**
+- Testability has a cost (complexity, indirection)
+- That cost should be justified by value
+- Critical business logic: worth the investment
+- Simple CRUD: probably not
+
+**Connection to L7 (coupling):**
+- We said "low coupling is good" but also "some coupling is necessary"
+- Same with testability: "testable is good" but "over-abstracting is wasteful"
 
 -> **Transition:** Let's talk about test suite properties...
 </aside>
