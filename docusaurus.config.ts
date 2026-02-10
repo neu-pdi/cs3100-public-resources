@@ -271,6 +271,19 @@ const config: Config = {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
     },
+
+    algolia: {
+      // The application ID provided by Algolia
+      appId: 'D4EHZ302OE',
+
+      // Public API key: it is safe to commit it
+      apiKey: 'df9a150f330521ba85d3b4fe021b0877',
+
+      indexName: 'CS 3100',
+
+      // Optional: see doc section below
+      contextualSearch: true,
+    }
   } satisfies Preset.ThemeConfig,
   future: {
     experimental_storage: {
