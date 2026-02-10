@@ -36,6 +36,11 @@ import QuoteSlide from '@site/src/components/QuoteSlide';
 - Clear issues, PRs, and effective questions (~12 min)
 - Key takeaways (~2 min)
 
+**Important timing context:**
+- **Next week:** Students will form teams for the group project
+- **After spring break:** Group project actually begins
+- This lecture is intentionally placed NOW so students think about these principles when deciding who to work with
+
 **Key theme:** Professional software is built by teams, not heroes. The skills you need to collaborate effectively are as important as your technical skills.
 
 > **Transition:** Let's start with the learning objectives...
@@ -60,8 +65,9 @@ import QuoteSlide from '@site/src/components/QuoteSlide';
 <aside className="notes">
 **Context:**
 - Students have been working individually on assignments
-- Group projects are coming up
-- These skills transfer directly to professional settings
+- **Next week:** You'll form teams for the group project
+- **After spring break:** The group project begins
+- **Today's goal:** Think about these principles as you consider who you want to work with
 
 **Key theme:** Nobody builds real software alone. The skills in this lecture are what make the difference between teams that ship and teams that implode.
 
@@ -194,7 +200,56 @@ Below all panels, show the formula n(n-1)/2 and a quote bubble from Fred Brooks:
 
 **Implication:** Teams need to plan how they communicate upfront. You can't just throw more people at a problem.
 
-> **Transition:** So how do successful teams manage this?
+> **Transition:** There's another law about how teams affect software...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Conway's Law: Teams Shape Architecture
+
+<QuoteSlide
+  quote="Organizations which design systems are constrained to produce designs which are copies of the communication structures of these organizations."
+  attribution="Melvin Conway, 1967"
+/>
+
+<div className="fragment" style={{fontSize: '0.8em', marginTop: '1em'}}>
+
+**Translation:** Your software's architecture will mirror your team's structure—whether you plan for it or not.
+
+</div>
+
+<div className="fragment" style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em', marginTop: '0.5em'}}>
+
+<div style={{backgroundColor: 'rgba(255,100,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
+
+**Example:** Three teams working on one app → three separate services that need integration
+
+</div>
+
+<div style={{backgroundColor: 'rgba(100,255,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
+
+**Inverse Conway:** Design the team structure you *want* to match the architecture you *need*
+
+</div>
+
+</div>
+
+<aside className="notes">
+**Connection to earlier lectures:**
+- Remember our architecture discussions? This is why team structure matters for design
+- Interfaces between modules often match boundaries between teams
+- If two teams don't communicate well, their code won't integrate well either
+
+**Conway's Law in practice:**
+- Microsoft's Windows team structure → Windows architecture (famously criticized)
+- Amazon's "two-pizza teams" → microservices architecture
+- Your group project: how you divide work will shape your system's modules
+
+**Inverse Conway Maneuver:** Some companies deliberately restructure teams to get the architecture they want.
+
+> **Transition:** So how do successful teams manage communication overhead?
 </aside>
 
 </Slide>
@@ -212,6 +267,7 @@ Below all panels, show the formula n(n-1)/2 and a quote bubble from Fred Brooks:
 - Mentorship sessions
 - Hallway conversations
 - Direct messages
+- Pair programming
 
 </div>
 
@@ -220,7 +276,6 @@ Below all panels, show the formula n(n-1)/2 and a quote bubble from Fred Brooks:
 **One-to-many** (scales better)
 
 - Code review
-- Pair programming
 - Q&A forums
 
 </div>
@@ -252,6 +307,62 @@ Research shows developers see ~50% productivity boost when documentation is up-t
 - Persistent, searchable documentation is the best investment
 
 **The third explanation should be a link.**
+
+> **Transition:** Here's a creative example of scalable knowledge sharing...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Case Study: Google's "Testing on the Toilet"
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em'}}>
+
+<div>
+
+**The idea:** One-page newsletters posted in bathroom stalls, written by developers for developers.
+
+- Started in 2006, originally for testing practices
+- Expanded to cover tools, best practices, code health
+- Posted weekly, distributed by volunteers (later facilities staff)
+
+</div>
+
+<div style={{backgroundColor: 'rgba(147, 112, 219, 0.1)', padding: '0.5em', borderRadius: '8px'}}>
+
+**Why it works:**
+
+- Low information density environment
+- Fixed, repeated exposure time
+- One topic per week (no overload)
+- Written by peers, not management
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+<strong>Research result:</strong> A 2019 study found 11 of 12 tools promoted via TotT showed <em>statistically significant increases</em> in adoption — outperforming social media posts and email announcements.
+</p>
+
+<p  style={{fontSize: '0.75em', color: '#666'}}>
+Murphy-Hill et al., "<a href="https://research.google/pubs/do-developers-discover-new-tools-on-the-toilet/" target="_blank">Do Developers Discover New Tools On The Toilet?</a>" <em>Proc. International Conference on Software Engineering (ICSE)</em>, 2019.
+</p>
+
+<aside className="notes">
+**Testing on the Toilet (TotT):**
+- A quirky but effective knowledge-sharing mechanism
+- Key insight: meet developers where they are (literally)
+- The bathroom is information-sparse — no competing notifications
+- Weekly pacing prevents overload
+
+**Research findings:**
+- Tools like `clang-format` saw 189% increase in daily users
+- `iblaze` saw 378% increase
+- More effective than social media because it's not limited by personal networks
+
+**The lesson:** Creative, persistent, one-to-many communication scales. Sometimes unconventional approaches work best.
 
 > **Transition:** Now let's talk about how teams form...
 </aside>
@@ -333,6 +444,8 @@ Explicitly discuss and document expectations <strong>before</strong> conflicts a
 - Surface potential conflicts before they become problems
 - Create a reference document to return to during disagreements
 - Not a legal document—a shared understanding
+
+**This is why we poll you:** When forming groups next week, we'll ask about your preferred working hours, communication styles, and availability. This isn't busywork—it's so we can help form teams with compatible expectations from the start.
 
 **This matters for your group projects:** You'll establish team contracts in CYB10.
 
@@ -661,7 +774,7 @@ The discomfort is the point. If all feedback feels good, you're only hearing fro
 - It reveals blind spots you didn't know you had
 - Seek out people who will challenge you
 
-> **Transition:** Now let's talk about written communication on GitHub...
+> **Transition:** Everything we've discussed—HRT, feedback, scalable knowledge sharing—comes together in how you communicate in writing...
 </aside>
 
 </Slide>
@@ -669,6 +782,46 @@ The discomfort is the point. If all feedback feels good, you're only hearing fro
 {/* ============================================ */}
 {/* ARC 5: ISSUES, PRS, AND EFFECTIVE QUESTIONS */}
 {/* ============================================ */}
+
+<Slide>
+
+## Written Communication Is a Force Multiplier
+
+<p style={{fontSize: '0.85em'}}>
+Everything we've discussed comes together when you communicate in writing:
+</p>
+
+<ul style={{fontSize: '0.8em'}}>
+  <li><strong>HRT:</strong> Written words lack tone — extra care needed to show respect and assume good intent</li>
+  <li><strong>Scalable knowledge sharing:</strong> Written communication persists, gets searched, gets reused</li>
+  <li><strong>Feedback:</strong> Clear writing makes it easier for others to help you</li>
+  <li><strong>Conway's Law:</strong> How teams communicate shapes the software — written artifacts are the connective tissue</li>
+</ul>
+
+<p className="fragment" style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
+These skills apply everywhere: GitHub, Slack, email, documentation, Stack Overflow, AI prompts, and beyond.
+</p>
+
+<aside className="notes">
+**Why this matters:**
+- In async/remote work, writing IS your communication
+- A well-written issue saves hours of back-and-forth
+- A poorly-written message can damage relationships (missing tone cues)
+
+**The broader application:**
+- We'll use GitHub as our examples, but these principles apply to:
+  - Slack messages and Discord posts
+  - Emails to teammates, TAs, and professors
+  - Documentation you write
+  - Questions you ask on Stack Overflow or forums
+  - Even prompts you write for AI assistants
+
+**Key insight:** The time you invest in clear writing pays dividends — your future self and teammates will thank you.
+
+> **Transition:** Let's look at specific examples, starting with GitHub issues...
+</aside>
+
+</Slide>
 
 <Slide>
 
@@ -908,6 +1061,10 @@ Code review isn't just about catching bugs—it's the team's primary learning me
 </ul>
 
 <aside className="notes">
+**Looking ahead:**
+- **Next week:** Team formation — think about who you want to work with and why
+- **After spring break:** Group project begins — you'll apply everything from today
+
 **For your group projects:**
 - Establish team contracts early
 - Use GitHub Issues and Projects to track work
