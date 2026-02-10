@@ -281,8 +281,10 @@ const config: Config = {
 
       indexName: 'CS 3100',
 
+      askAi: 'm7AP3ZUlGhl3',
+
       // Optional: see doc section below
-      contextualSearch: true,
+      contextualSearch: false,
     }
   } satisfies Preset.ThemeConfig,
   future: {
