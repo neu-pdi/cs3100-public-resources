@@ -69,9 +69,11 @@ Detailed rubrics will be published with each assignment.
 
 | Assignment | Points |
 |------------|--------|
-| GA1: GUI | 60 |
-| GA2: OCR Integration | 70 |
-| GA3: Final Integration | 70 |
+| Team Charter | 20 |
+| GA0: Design Sprint | 30 |
+| GA1: Core Features | 50 |
+| GA2: Feature Buffet | 50 |
+| GA3: Final Submission | 50 |
 
 **Group Assignment Grading:** Group assignments are graded as a team, but each team member must demonstrate minimum weekly contributions to receive the team's full score. Each week during a group assignment, you are expected to:
 
