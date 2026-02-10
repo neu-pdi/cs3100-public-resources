@@ -567,35 +567,35 @@ classDiagram
     %% Provided interface hierarchy for collections
     class RecipeCollection {
         <<interface, provided>>
-        +getId() String
-        +getTitle() String
-        +getSourceType() SourceType
-        +getRecipes() List~Recipe~
-        +findRecipeById(String) Optional~Recipe~
-        +containsRecipe(String) boolean
-        +addRecipe(Recipe) RecipeCollection
-        +removeRecipe(String) RecipeCollection
+        +getId() String*
+        +getTitle() String*
+        +getSourceType() SourceType*
+        +getRecipes() List~Recipe~*
+        +findRecipeById(String) Optional~Recipe~*
+        +containsRecipe(String) boolean*
+        +addRecipe(Recipe) RecipeCollection*
+        +removeRecipe(String) RecipeCollection*
     }
 
     class Cookbook {
         <<interface, provided>>
-        +getAuthor() Optional~String~
-        +getIsbn() Optional~String~
-        +getPublisher() Optional~String~
-        +getPublicationYear() OptionalInt
+        +getAuthor() Optional~String~*
+        +getIsbn() Optional~String~*
+        +getPublisher() Optional~String~*
+        +getPublicationYear() OptionalInt*
     }
 
     class PersonalCollection {
         <<interface, provided>>
-        +getDescription() Optional~String~
-        +getNotes() Optional~String~
+        +getDescription() Optional~String~*
+        +getNotes() Optional~String~*
     }
 
     class WebCollection {
         <<interface, provided>>
-        +getSourceUrl() URI
-        +getDateAccessed() Optional~LocalDate~
-        +getSiteName() Optional~String~
+        +getSourceUrl() URI*
+        +getDateAccessed() Optional~LocalDate~*
+        +getSiteName() Optional~String~*
     }
 
     class SourceType {
@@ -621,14 +621,14 @@ classDiagram
 
     class UserLibrary {
         <<interface, provided>>
-        +getCollections() List~RecipeCollection~
-        +addCollection(RecipeCollection) UserLibrary
-        +removeCollection(String) UserLibrary
-        +findRecipesByTitle(String) List~Recipe~
-        +findCollectionById(String) Optional~RecipeCollection~
-        +findCollectionByTitle(String) Optional~RecipeCollection~
-        +findAllCollectionsByTitle(String) List~RecipeCollection~
-        +findRecipeById(String) Optional~Recipe~
+        +getCollections() List~RecipeCollection~*
+        +addCollection(RecipeCollection) UserLibrary*
+        +removeCollection(String) UserLibrary*
+        +findRecipesByTitle(String) List~Recipe~*
+        +findCollectionById(String) Optional~RecipeCollection~*
+        +findCollectionByTitle(String) Optional~RecipeCollection~*
+        +findAllCollectionsByTitle(String) List~RecipeCollection~*
+        +findRecipeById(String) Optional~Recipe~*
     }
 
     class UserLibraryImpl {
@@ -638,19 +638,19 @@ classDiagram
     %% Provided repository interfaces
     class RecipeRepository {
         <<interface, provided>>
-        +save(Recipe recipe) void
-        +findById(String id) Optional~Recipe~
-        +findByTitle(String title) Optional~Recipe~
-        +findAll() List~Recipe~
-        +delete(String id) void
+        +save(Recipe recipe) void*
+        +findById(String id) Optional~Recipe~*
+        +findByTitle(String title) Optional~Recipe~*
+        +findAll() List~Recipe~*
+        +delete(String id) void*
     }
 
     class RecipeCollectionRepository {
         <<interface, provided>>
-        +save(RecipeCollection collection) void
-        +findById(String id) Optional~RecipeCollection~
-        +findByTitle(String title) Optional~RecipeCollection~
-        +findAll() List~RecipeCollection~
+        +save(RecipeCollection collection) void*
+        +findById(String id) Optional~RecipeCollection~*
+        +findByTitle(String title) Optional~RecipeCollection~*
+        +findAll() List~RecipeCollection~*
         +delete(String id) void
     }
 
@@ -700,14 +700,14 @@ classDiagram
     style Ingredient fill:#e0e0e0,stroke:#999
     style Quantity fill:#e0e0e0,stroke:#999
 
-    style RecipeCollection fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
-    style Cookbook fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
-    style PersonalCollection fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
-    style WebCollection fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
-    style RecipeRepository fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
-    style RecipeCollectionRepository fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
-    style SourceType fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
-    style UserLibrary fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style RecipeCollection fill:#90D5FF,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style Cookbook fill:#90D5FF,,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style PersonalCollection fill:#90D5FF,,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style WebCollection fill:#90D5FF,,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style RecipeRepository fill:#90D5FF,,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style RecipeCollectionRepository fill:#90D5FF,,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style SourceType fill:#90D5FF,,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style UserLibrary fill:#90D5FF,,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
 
     style CookbookImpl fill:#d4edda,stroke:#28a745
     style PersonalCollectionImpl fill:#fff3cd,stroke:#856404
