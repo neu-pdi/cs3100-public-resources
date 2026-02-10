@@ -543,13 +543,13 @@ Does that mean we shouldn't write tests?
 - We can't test them all—need to choose wisely
 - These two strategies complement each other
 
-**Spec-driven:**
+**Spec-driven (sometimes called black-box):**
 
 - Read the spec: "converts cups to tablespoons"
 - What are interesting inputs? 0, 1, fractional, negative?
 - Boundary values: max precision, overflow cases
 
-**Code-driven:**
+**Code-driven (sometimes called white-box):**
 
 - Look at the if-statements and loops
 - Pick inputs that go down each branch
@@ -600,10 +600,6 @@ void shouldConvert2CupsTo32Tablespoons() {
     assertThat(result.getAmount()).isEqualTo(32);  // 2 cups × 16 tbsp/cup
 }
 ```
-
-<p style={{ marginTop: '0.75em', fontSize: '0.85em', color: '#666' }}>
-  You choose inputs from requirements or by examining the code
-</p>
 
 <aside class="notes">
 **Example-based testing:**
@@ -662,55 +658,9 @@ void shouldFormatCorrectly(int stepNumber, String text, String expected) {
 **When to use:** Testing the same behavior with different data—boundary values, edge cases,
 different valid inputs.
 
-→ **Transition:** What if we could generate inputs automatically?
+JUnit has many more useful features beyond the scope of this course.
 
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Property-Based Testing: Describe Properties, Generate Inputs
-
-<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Describe invariants; let the framework find counterexamples.</p>
-
-<p style={{ fontSize: '0.95em', color: '#666' }}>
-  JUnit-QuickCheck (out of scope for this class, but worth knowing about)
-</p>
-
-```java
-@Property
-void scalingPreservesRatios(
-        @ForAll @IntRange(min=1, max=100) int flour,
-        @ForAll @IntRange(min=1, max=100) int sugar,
-        @ForAll @DoubleRange(min=0.1, max=10) double scaleFactor) {
-    Recipe original = recipeWith(flour, sugar);
-    Recipe scaled = original.scale(scaleFactor, registry);
-
-    // Property: ratio of flour:sugar should be preserved
-    double originalRatio = flour / (double) sugar;
-    double scaledRatio = getFlour(scaled) / (double) getSugar(scaled);
-    assertThat(scaledRatio).isCloseTo(originalRatio, within(0.001));
-}
-```
-
-<p style={{ marginTop: '0.5em', fontSize: '0.85em' }}>
-  Framework generates <em>hundreds</em> of random inputs satisfying constraints
-</p>
-
-<aside class="notes">
-**Property-based testing:**
-- Describe a PROPERTY that should hold for ALL inputs
-- Framework generates hundreds of random inputs
-- Finds edge cases you'd never think of
-
-**Example property:** "Scaling a recipe preserves ingredient ratios"
-
-**Why out of scope:** Requires thinking about properties, not just examples. Valuable skill, but
-we're focusing on fundamentals.
-
-→ **Transition:** Fuzzing takes automatic generation further...
-
+→ **Transition:** Fuzzing is a way to generate lots of inputs...
 </aside>
 
 </Slide>
@@ -761,6 +711,7 @@ we're focusing on fundamentals.
 
 {/* ============================================ */}
 
+{/*
 <Slide>
 
 ## The Testing “Vibe” Trap
@@ -839,8 +790,6 @@ we're focusing on fundamentals.
 
 </Slide>
 
-{/* TEST SCOPE SPECTRUM */} {/* ============================================ */}
-
 <Slide>
 
 ## The Tradeoff Triangle
@@ -895,6 +844,21 @@ we're focusing on fundamentals.
 
 → **Transition:** Let's look at the different test types...
 
+</aside>
+
+</Slide>
+*/}
+
+{/* Transition to digging into unit tests */}
+
+<Slide>
+
+## Unit Tests
+
+<Img src="/img/lectures/web/l15-unit-tests-help.webp" />
+
+<aside className="notes">
+Here's why unit tests are so great...
 </aside>
 
 </Slide>
@@ -990,6 +954,20 @@ void shouldFormatCorrectly(int stepNumber, String text, String expected) {
 
 <Slide>
 
+## Unit Tests Miss Some Problems
+
+<Img src="/img/lectures/web/l15-unit-tests-passing-no-integration-tests.jpg"
+  width={720}
+  height={720}
+ />
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+
 ## Integration Tests: The Middle Ground
 
 <p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Test components together to catch seam bugs.</p>
@@ -1027,6 +1005,23 @@ void shouldFormatCorrectly(int stepNumber, String text, String expected) {
 - Catching issues unit tests can't: serialization bugs, file format issues
 
 → **Transition:** Let's see a concrete example...
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Mars Climate Orbiter Disaster
+
+<Img src="/img/lectures/web/l15-mars-climate-orbiter.jpg"
+  alt="Comic-style illustration of the Mars Climate Orbiter disaster. Top panel shows the spacecraft burning up in Mars' atmosphere while a green alien thinks 'They should have done integration testing.' Bottom left panel labeled 'Jet Propulsion Lab' shows horrified engineers with a whiteboard displaying 'Force: 4.45 N, kg·m/s²'. Bottom right panel labeled 'Lockheed Martin' shows equally distressed engineers with their whiteboard showing 'Force: 1 lbf, pound-force-seconds'."
+  prompt="A dramatic cartoon illustration split into three sections. The main central panel shows the Mars Climate Orbiter breaking apart and burning up in the orange-red Martian atmosphere, with flames and debris trailing behind it. On the rocky red surface below, a small green alien with big eyes looks up at the destruction, with a thought bubble containing the text 'They should have done integration testing.' In the bottom left corner, an inset panel labeled 'Jet Propulsion Lab' shows JPL engineers staring in horror at monitors, hands on their heads or covering their mouths in disbelief. A whiteboard behind them displays calculations in metric units: 'Force: 4.45 N' and 'kg·m/s²'. In the bottom right corner, a matching inset panel labeled 'Lockheed Martin' shows their engineers equally horrified, some standing frozen, others gesturing in panic. Their whiteboard shows the same calculations in imperial units: 'Force: 1 lbf' and 'pound-force-seconds'. The style should be a humorous editorial cartoon with bold labels clearly identifying each engineering team."
+/>
+
+<aside className="notes">
+I told you back in lecture 5 about the Mars Climate Orbiter, which was launched
+because JPL used metric while Lockheed Martin used imperial units.
 
 </aside>
 
@@ -1228,8 +1223,6 @@ void roundTripPreservesRecipeWithAllFields() {
 
 ## The Test Pyramid
 
-<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Many unit tests, some integration, few E2E.</p>
-
 <Img
   src='/img/lectures/web/l15-test-pyramid.png'
   alt='Test pyramid showing unit tests at base, integration in middle, E2E at top'
@@ -1252,58 +1245,6 @@ void roundTripPreservesRecipeWithAllFields() {
 
 → **Transition:** So how do we take one big E2E test and break it into many small unit tests?
 
-</aside>
-
-</Slide>
-
-<Slide>
-
-## From Big Tests to Small Tests: Find the Seams
-
-<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Replace dependencies with doubles to carve unit tests from E2E.</p>
-
-<p style={{ fontSize: '0.95em' }}>
-  Start with a real user workflow, then <strong>carve out unit tests</strong> by replacing
-  dependencies.
-</p>
-
-<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', marginTop: '1em' }}>
-  <div>
-    <p style={{ fontSize: '0.9em', color: '#c00' }}>
-      <strong>One big test (E2E)</strong>
-    </p>
-    <ul style={{ fontSize: '0.8em' }}>
-      <li>Slow + flaky (network, DB, timeouts)</li>
-      <li>Hard to debug (“something failed”) </li>
-      <li>Good for one critical journey</li>
-    </ul>
-  </div>
-  <div>
-    <p style={{ fontSize: '0.9em', color: '#060' }}>
-      <strong>Many small tests (unit)</strong>
-    </p>
-    <ul style={{ fontSize: '0.8em' }}>
-      <li>Fast + reliable (in-memory)</li>
-      <li>Each test targets one behavior/edge case</li>
-      <li>
-        Depends on <strong>test doubles</strong> for external services
-      </li>
-    </ul>
-  </div>
-</div>
-
-<p class='fragment' style={{ marginTop: '1em', fontSize: '0.9em', color: '#9370DB' }}>
-  The trick: identify <strong>dependencies</strong> (GitHub/API/DB/email) and replace them with
-  stubs/fakes/spies/mocks.
-</p>
-
-<aside class='notes'>
-  **Concrete workflow:**\n 1) Write (or imagine) the E2E “happy path” once.\n 2) List the
-  dependencies it touches (network, DB, filesystem, clock, randomness).\n 3) For each dependency,
-  create a seam (interface / DI) so it can be replaced.\n 4) Unit-test the logic with doubles; keep
-  a small number of integration/E2E tests to validate reality.\n \n This is why the dependency
-  problem matters: it’s the engineering move that turns “few big tests” into “many small tests.”\n
-  \n → **Transition:** Let’s look at a concrete dependency-heavy service.\n
 </aside>
 
 </Slide>
@@ -1610,7 +1551,7 @@ public void savesGradeWhenAllTestsPass() {
   We wrote <strong>four separate classes</strong> just to test one method!
 </p>
 
-<ul style={{ marginTop: '1em', fontSize: '0.9em' }}>
+<ul style={{ fontSize: '0.9em' }}>
   <li>StubGitHubService</li>
   <li>StubAutograderRunner</li>
   <li>SpyDatabase</li>
@@ -1644,10 +1585,11 @@ public void savesGradeWhenAllTestsPass() {
 
 <Slide>
 
-## Mockito: Test Doubles Without the Boilerplate
+## Mockito is a Test Framework that Dynamically Creates Mocks
 
+{/*
 <p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Generate test doubles at runtime with when() and verify().</p>
-
+*/}
 <p style={{ fontSize: '0.95em' }}>
   A <strong>mocking framework</strong> generates test doubles at runtime
 </p>
@@ -1667,7 +1609,6 @@ public void savesGradeWhenAllTestsPass() {
 
     SubmissionService service = new SubmissionService(
         mockGithub, mockAutograder, mockNotifier, mockDatabase);
-
     service.processSubmission(new Submission("student123", "repo-url", "email"));
 
     // Verify spy recordings
@@ -1941,8 +1882,6 @@ rate-limit you.
 
 ## The Dangerous: False Confidence
 
-<p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Tests prove code works with your doubles, not with real systems.</p>
-
 <Img
   src='/img/lectures/web/l15-false-confidence.png'
   alt='False confidence from testing with mocks'
@@ -2086,6 +2025,35 @@ instead.
 
 <Slide>
 
+## Mutation Testing
+
+<Img src="/img/lectures/web/l15-mutation-testing.jpg"
+prompt="A whimsical educational illustration about mutation testing in software. In the center, a classic valid snowman made of three stacked snowballs with coal eyes, a carrot nose, stick arms, a top hat, and a scarf.
+    Arrows radiate outward from the center snowman to 4 'mutated' snowmen arranged in a circle around it. Each mutant has a single defect: one has two heads, one has its face upside-down (carrot pointing up, smile above eyes),
+    one has the scarf around its face, and one has the carrot nose on its belly instead of its face. A scientist in a white lab coat and safety goggles holds a handheld detector device (like a Geiger counter) up against
+    one of the mutant snowmen, with the detector showing a red alert or beeping indicator. The style should be clean, friendly, and slightly cartoonish, suitable for a computer science lecture slide.
+    Light blue winter background with subtle snowflakes."
+alt="Educational illustration of mutation testing. A valid snowman labeled 'Original Program Code' stands in the center with arrows pointing to four mutated snowmen around it: Mutant 1 has two heads (Code Duplication), Mutant 2 has an upside-down face (Logic Error), Mutant 3 has a scarf covering its face (Missing Functionality), and Mutant 4 has its nose on its belly (Incorrect Variable Usage). A scientist labeled 'Test Suite' holds a beeping detector against Mutant 3. Title reads 'Mutation Testing: Evaluating Test Quality by Introducing Defects'."
+/>
+
+<aside className="notes">
+**Mutation testing explained:**
+- We change ">" to ">="
+- We delete a line
+- We change a constant
+- Do your tests catch it?
+
+**Why mutation testing is legit (Module 11):**
+
+- Research (hundreds of real faults studied) finds mutation score correlates with finding real bugs
+- This has been replicated in multiple contexts, including student code
+
+</aside>
+
+</Slide>
+
+<Slide>
+
 ## Connection to Your Assignments
 
 <p style={{ fontSize: '1.1em', color: '#9370DB', fontStyle: 'italic', marginBottom: '0.5em' }}>Mutation testing grades whether your tests catch bugs, not just pass.</p>
@@ -2107,16 +2075,6 @@ instead.
 </p>
 
 <aside class="notes">
-**Mutation testing explained:**
-- We change ">" to ">="
-- We delete a line
-- We change a constant
-- Do your tests catch it?
-
-**Why mutation testing is legit (Module 11):**
-
-- Research (hundreds of real faults studied) finds mutation score correlates with finding real bugs
-- This has been replicated in multiple contexts, including student code
 
 **Equivalent mutants (important nuance):**
 
@@ -2308,6 +2266,12 @@ tests.
 
 </aside>
 
+</Slide>
+
+<Slide>
+## Bonus Slide
+
+<Img src="/img/lectures/web/l15-integration-tests-passed-unit-tests-failed.jpg" />
 </Slide>
 
     </RevealJS>
