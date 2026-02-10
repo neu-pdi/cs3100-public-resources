@@ -1266,8 +1266,8 @@ void reducesNonEssentialDevices_whenEnergyPriceExceedsThreshold() {
     // Given: energy price is high and user has set a threshold
     priceService.setCurrentPrice(0.35);  // Stub returns high price
     preferences.setHighPriceThreshold(0.25);
-    devices.addDevice(new Device("living-room-light", essential: false));
-    devices.addDevice(new Device("refrigerator", essential: true));
+    devices.addDevice(new Device("living-room-light", false)); // non-essential
+    devices.addDevice(new Device("refrigerator", true)); // essential
 
     // When: the optimizer runs
     optimizer.optimizeForPrice("home-123");
