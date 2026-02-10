@@ -651,7 +651,7 @@ classDiagram
         +findById(String id) Optional~RecipeCollection~*
         +findByTitle(String title) Optional~RecipeCollection~*
         +findAll() List~RecipeCollection~*
-        +delete(String id) void
+        +delete(String id) void*
     }
 
     %% Student implementations
@@ -701,13 +701,13 @@ classDiagram
     style Quantity fill:#e0e0e0,stroke:#999
 
     style RecipeCollection fill:#90D5FF,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
-    style Cookbook fill:#90D5FF,,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
-    style PersonalCollection fill:#90D5FF,,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
-    style WebCollection fill:#90D5FF,,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
-    style RecipeRepository fill:#90D5FF,,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
-    style RecipeCollectionRepository fill:#90D5FF,,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
-    style SourceType fill:#90D5FF,,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
-    style UserLibrary fill:#90D5FF,,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style Cookbook fill:#90D5FF,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style PersonalCollection fill:#90D5FF,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style WebCollection fill:#90D5FF,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style RecipeRepository fill:#90D5FF,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style RecipeCollectionRepository fill:#90D5FF,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style SourceType fill:#90D5FF,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style UserLibrary fill:#90D5FF,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
 
     style CookbookImpl fill:#d4edda,stroke:#28a745
     style PersonalCollectionImpl fill:#fff3cd,stroke:#856404
