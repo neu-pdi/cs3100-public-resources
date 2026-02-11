@@ -12,7 +12,8 @@ import QuoteSlide from '@site/src/components/QuoteSlide';
 
 <RevealJS transition="slide">
 
-{/* ============================================ */} {/* COVER IMAGE */}
+{/* ============================================ */}
+{/* COVER IMAGE */}
 {/* ============================================ */}
 
 <Slide>
@@ -73,7 +74,29 @@ STYLE: Retro pixel art, Hollywood golds and dramatic reds, studio lighting." />
 
 </Slide>
 
-{/* ============================================ */} {/* TITLE SLIDE */}
+<Slide>
+
+## Poll: Did you get your GitHub Student Pack set up with CoPilot access?
+
+<PollSlide username="espertus"
+  choices={["Yes", "Haven't tried yet", "Tried, still waiting for it to go through"]}
+  />
+
+</Slide>
+
+<Slide>
+
+## Poll: When did you request GitHub student access?
+
+<PollSlide username="espertus"
+  choices={["I already had it", "Last week", "Over the weekend", "Monday", "Tuesday", "Today", "I haven't requested it"]}
+  />
+
+</Slide>
+
+
+{/* ============================================ */}
+{/* TITLE SLIDE */}
 {/* ============================================ */}
 
 <Slide>
@@ -867,6 +890,7 @@ JUnit has many more useful features beyond the scope of this course.
 
 <Img src="/img/lectures/web/l15-unit-tests-help.webp"
 alt="Four-panel meme of a blue bird. Panel 1: Bird angrily yells 'Get that thing out of my face!' at a cracker labeled 'Unit Tests'. Panel 2: Bird takes a bite of the cracker with a 'chomp'. Panel 3: Empty. Panel 4: Bird has sparkly eyes and a blissful expression with bubbles around it. Caption reads 'When a unit test helps you find a bug you wouldn't have found otherwise'."
+width={800}
 />
 
 <aside className="notes">
@@ -1358,31 +1382,8 @@ public GradeResult processSubmission(Submission submission) {
 
 </Slide>
 
-<Slide>
-
-## Dependency Injection Simplified
-
-<Img src="/img/lectures/web/l15-dependency-injection.png"
-  alt="Tweet from patrick thomson @importantshock
-      I love to use [1] dependency [2] injection [3].
-
-      1 pass
-      2 values
-      3 functions
-
-      8:58 AM - 17 Jan 2019
-  "
-/>
-
-<aside className="notes">
-* Dependency injection sounds fancy
-* But it's just passing values to functions
-* So make sure your constructors and methods can take arguments
-</aside>
-
-</Slide>
-
-{/* ============================================ */} {/* TEST DOUBLES */}
+{/* ============================================ */} 
+{/* TEST DOUBLES */}
 {/* ============================================ */}
 
 <Slide>
@@ -1910,6 +1911,30 @@ rate-limit you.
 
 → **Transition:** The dark side of mocking...
 
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Dependency Injection Simplified
+
+<Img src="/img/lectures/web/l15-dependency-injection.png"
+  alt="Tweet from patrick thomson @importantshock
+      I love to use [1] dependency [2] injection [3].
+
+      1 pass
+      2 values
+      3 functions
+
+      8:58 AM - 17 Jan 2019
+  "
+/>
+
+<aside className="notes">
+* Dependency injection sounds fancy
+* But it's just passing values to functions
+* So make sure your constructors and methods can take arguments
 </aside>
 
 </Slide>
