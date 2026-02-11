@@ -5,6 +5,7 @@ image: /img/assignments/web/a3.png
 ---
 
 ## Update log
+- 2/10/2026: Removed the line "You only receive implementation points if you also have tests that detect bugs in that component" - we relaxed this after HW1/HW2
 - 2/8/2026: Note error in handout test `MarkdownExporterTest.java` line 57: `assertTrue(markdown.contains("- 2 cup flour"));` should be `assertTrue(markdown.contains("- 2 cups flour"));`
 
 ## Overview
@@ -1353,8 +1354,6 @@ Your submission should demonstrate:
 
 ## Grading Rubric
 
-_[To be finalized after API review]_
-
 ### Automated Grading (76 points)
 
 #### Implementation Correctness (40 points)
@@ -1386,7 +1385,6 @@ Your tests are evaluated using mutation testing as in the previous assignments:
 
 **Notes:**
 
-- You only receive implementation points if you also have tests that detect bugs in that component.
 - `MarkdownExporterTest.java` is an excellent task for AI assistance—the format is precisely
   specified. See the AI Workflow Guide for suggested prompts.
 
