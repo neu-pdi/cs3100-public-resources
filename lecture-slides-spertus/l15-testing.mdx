@@ -12,7 +12,8 @@ import QuoteSlide from '@site/src/components/QuoteSlide';
 
 <RevealJS transition="slide">
 
-{/* ============================================ */} {/* COVER IMAGE */}
+{/* ============================================ */}
+{/* COVER IMAGE */}
 {/* ============================================ */}
 
 <Slide>
@@ -73,7 +74,29 @@ STYLE: Retro pixel art, Hollywood golds and dramatic reds, studio lighting." />
 
 </Slide>
 
-{/* ============================================ */} {/* TITLE SLIDE */}
+<Slide>
+
+## Poll: Did you get your GitHub Student Pack set up with CoPilot access?
+
+<PollSlide username="espertus"
+  choices={["Yes", "Haven't tried yet", "Tried, still waiting for it to go through"]}
+  />
+
+</Slide>
+
+<Slide>
+
+## Poll: When did you request GitHub student access?
+
+<PollSlide username="espertus"
+  choices={["I already had it", "Last week", "Over the weekend", "Monday", "Tuesday", "Today", "I haven't requested it"]}
+  />
+
+</Slide>
+
+
+{/* ============================================ */}
+{/* TITLE SLIDE */}
 {/* ============================================ */}
 
 <Slide>
@@ -1358,31 +1381,8 @@ public GradeResult processSubmission(Submission submission) {
 
 </Slide>
 
-<Slide>
-
-## Dependency Injection Simplified
-
-<Img src="/img/lectures/web/l15-dependency-injection.png"
-  alt="Tweet from patrick thomson @importantshock
-      I love to use [1] dependency [2] injection [3].
-
-      1 pass
-      2 values
-      3 functions
-
-      8:58 AM - 17 Jan 2019
-  "
-/>
-
-<aside className="notes">
-* Dependency injection sounds fancy
-* But it's just passing values to functions
-* So make sure your constructors and methods can take arguments
-</aside>
-
-</Slide>
-
-{/* ============================================ */} {/* TEST DOUBLES */}
+{/* ============================================ */} 
+{/* TEST DOUBLES */}
 {/* ============================================ */}
 
 <Slide>
