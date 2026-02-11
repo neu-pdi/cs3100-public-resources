@@ -282,30 +282,30 @@ Mention what String.format() does
 <Slide>
 
 ## Improving Observability and Controllability
-
+<div style={{fontSize: '0.7em'}}>
 ```java
 public class TemperatureLogger {
-    private final List<String> logEntries = new ArrayList<>();  // ① Store results
-    private final Clock clock;  // ② Inject dependency
+  private final List<String> logEntries = new ArrayList<>();  // ① Store results
+  private final Clock clock;  // ② Inject dependency
 
-    public TemperatureLogger(Clock clock) {
-        this.clock = clock;
-    }
+  public TemperatureLogger(Clock clock) {
+    this.clock = clock;
+  }
 
-    public void logReading(String zoneId, double temperature) {
-        String timestamp = Instant.now(clock).toString();  // ③ Use injected clock
-        String logEntry = String.format("[%s] Zone %s: %.1f°F",
-            timestamp, zoneId, temperature);
-        logEntries.add(logEntry);
-    }
+  public void logReading(String zoneId, double temperature) {
+    String timestamp = Instant.now(clock).toString();  // ③ Use injected clock
+    String logEntry = String.format("[%s] Zone %s: %.1f°F",
+        timestamp, zoneId, temperature);
+    logEntries.add(logEntry);
+  }
 
-    public List<String> getLogEntries() {  // ④ Expose for inspection
-        return Collections.unmodifiableList(logEntries);
-    }
+  public List<String> getLogEntries() {  // ④ Expose for inspection
+    return Collections.unmodifiableList(logEntries);
+  }
 }
 ```
-
-<div style={{fontSize: '0.75em', marginTop: '0.5em'}}>
+</div>
+<div style={{fontSize: '0.75em', marginTop: '0em'}}>
   <p className="fragment" style={{color: '#4CAF50', margin: '0.25em 0'}}>✓ ① Store entries in a list — we can inspect them later <strong>(observability)</strong></p>
   <p className="fragment" style={{color: '#2196F3', margin: '0.25em 0'}}>✓ ②③ Inject <code>Clock</code> — tests pass <code>Clock.fixed(...)</code> <strong>(controllability)</strong></p>
   <p className="fragment" style={{color: '#4CAF50', margin: '0.25em 0'}}>✓ ④ <code>getLogEntries()</code> — tests can assert on what was logged <strong>(observability)</strong></p>
@@ -385,10 +385,9 @@ public void processOrder(Order order) {
 <Slide>
 
 ## Controllability: Can We Set Up the Test Scenario?
+<div style={{fontSize: '0.8em'}}>
 
-<p style={{fontSize: '0.9em'}}>
-  Controllability is about how easily we can <strong>put the system into a specific state</strong> for testing.
-</p>
+Controllability is about how easily we can <strong>put the system into a specific state</strong> for testing.
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', marginTop: '0.5em'}}>
 
@@ -398,17 +397,17 @@ public void processOrder(Order order) {
 
 ```java
 public double getCurrentPrice() {
-    // Creates its own client!
-    HttpClient client =
-        HttpClient.newHttpClient();
-    // Can't substitute test version
+  // Creates its own client!
+  HttpClient client =
+      HttpClient.newHttpClient();
+  // Can't substitute test version
 }
 
 public boolean isOffPeakHours() {
-    // Uses system clock!
-    int hour = LocalTime.now()
-                       .getHour();
-    // Can't test 3 AM at 2 PM
+  // Uses system clock!
+  int hour = LocalTime.now()
+                     .getHour();
+  // Can't test 3 AM at 2 PM
 }
 ```
 
@@ -423,19 +422,19 @@ private final EnergyPriceApi api;
 private final Clock clock;
 
 public EnergyPriceService(
-    EnergyPriceApi api, Clock clock) {
-    this.api = api;
-    this.clock = clock;
+  EnergyPriceApi api, Clock clock) {
+  this.api = api;
+  this.clock = clock;
 }
 
 public double getCurrentPrice() {
-    return api.fetchCurrentPrice();
+  return api.fetchCurrentPrice();
 }
 
 public boolean isOffPeakHours() {
-    int hour = LocalTime.now(clock)
-                       .getHour();
-    return hour >= 22 || hour < 6;
+  int hour = LocalTime.now(clock)
+                     .getHour();
+  return hour >= 22 || hour < 6;
 }
 ```
 
@@ -443,10 +442,6 @@ public boolean isOffPeakHours() {
 
 </div>
 
-<div style={{fontSize: '0.7em', marginTop: '0.5em'}}>
-  <p className="fragment" style={{color: '#f44336', margin: '0.25em 0'}}>❌ Left: Dependencies created <em>inside</em> methods — can't substitute them</p>
-  <p className="fragment" style={{color: '#4CAF50', margin: '0.25em 0'}}>✓ Right: Dependencies <em>injected</em> via constructor — tests provide stubs</p>
-  <p className="fragment" style={{color: '#2196F3', margin: '0.25em 0'}}>💡 This is Dependency Inversion Principle (L8) in action!</p>
 </div>
 
 <aside className="notes">
