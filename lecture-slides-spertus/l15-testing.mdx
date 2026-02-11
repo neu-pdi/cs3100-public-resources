@@ -82,7 +82,7 @@ STYLE: Retro pixel art, Hollywood golds and dramatic reds, studio lighting." />
 
 ## Lecture 15: Test Doubles and Isolation
 
-<p style={{ marginTop: '2em', fontSize: '0.8em', color: '#666' }}>©2026 Jonathan Bell, CC-BY-SA</p>
+<p style={{ marginTop: '2em', fontSize: '0.8em', color: '#666' }}>©2026 Jonathan Bell & Ellen Spertus, CC-BY-SA</p>
 
 <aside class="notes">
 **Context from prior lectures:**
@@ -391,9 +391,14 @@ VS Code's Test Explorer lets you run tests *with coverage*, showing coverage of:
 * branches (green for both ways, hashed for one way)
 </div>
 
-<Img src="/img/lectures/web/l15-code-coverage-factorial.png" />
+<Img src="/img/lectures/web/l15-code-coverage-factorial.png"
+  alt="VS Code screenshot showing partial coverage of factorial with a single base-case test"
+/>
 
 <aside className="notes">
+* Go over each line.
+* Point out that only one direction of the branch was tested.
+* Apologize to students with red-green color blindness.
 
 </aside>
 
@@ -403,12 +408,16 @@ VS Code's Test Explorer lets you run tests *with coverage*, showing coverage of:
 
 ## Code Coverage with Factorial 2
 
-<Img src="/img/lectures/web/l15-code-coverage-factorial2.png" />
+<Img src="/img/lectures/web/l15-code-coverage-factorial2.png"
+  alt="VS Code screenshot showing 100% coverage of factorial with base-case and recursive tests"
+/>
 
 <p style={{ fontSize: '.85em' }}>
 We have 100% coverage!
 </p>
 <aside className="notes">
+* Adding a test of the recursive case brought us to 100%
+* Don't spoil poll on next slide about whether coverage guarantees bug-free code
 
 </aside>
 
@@ -419,7 +428,7 @@ We have 100% coverage!
 ## Poll: What Coverage Guarantees Bug-Free Code?
 
 <PollSlide
-  choices={["100% line coverage", "100% branch coverage", "both of the above", "none of the above"]}
+  choices={["100% line coverage", "100% branch coverage", "100% line and branch coverage", "none of the above"]}
 />
 
 <aside className="notes">
@@ -488,7 +497,7 @@ Does that mean we shouldn't write tests?
 - Testing is still vital!
 - We need to put thought into our test cases.
 
-→ **Transition:** How do we write good tests.
+→ **Transition:** How do we write good tests?
 
 </aside>
 </Slide>
@@ -855,7 +864,9 @@ JUnit has many more useful features beyond the scope of this course.
 
 ## Unit Tests
 
-<Img src="/img/lectures/web/l15-unit-tests-help.webp" />
+<Img src="/img/lectures/web/l15-unit-tests-help.webp"
+alt="Four-panel meme of a blue bird. Panel 1: Bird angrily yells 'Get that thing out of my face!' at a cracker labeled 'Unit Tests'. Panel 2: Bird takes a bite of the cracker with a 'chomp'. Panel 3: Empty. Panel 4: Bird has sparkly eyes and a blissful expression with bubbles around it. Caption reads 'When a unit test helps you find a bug you wouldn't have found otherwise'."
+/>
 
 <aside className="notes">
 Here's why unit tests are so great...
@@ -1020,7 +1031,7 @@ void shouldFormatCorrectly(int stepNumber, String text, String expected) {
 />
 
 <aside className="notes">
-I told you back in lecture 5 about the Mars Climate Orbiter, which was launched
+I told you back in lecture 5 about the Mars Climate Orbiter, which was lost
 because JPL used metric while Lockheed Martin used imperial units.
 
 </aside>
@@ -2271,7 +2282,8 @@ tests.
 <Slide>
 ## Bonus Slide
 
-<Img src="/img/lectures/web/l15-test-coverage-hack.png" />
+<Img src="/img/lectures/web/l15-test-coverage-hack.png"
+alt="Reddit post from r/ProgrammerHumor titled 'Found this at work. Someone padded a repo with thousands of lines like this to pass a 75% code coverage check.' Shows Java code with a method called fakeCoverage() containing 'Integer i = 0;' followed by dozens of identical 'i++;' statements to artificially inflate line count and code coverage metrics."/>
 </Slide>
 
-    </RevealJS>
+</RevealJS>
