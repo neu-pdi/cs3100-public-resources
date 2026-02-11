@@ -19,7 +19,7 @@ import PollSlide from '@site/src/components/PollSlide';
   <Img
     src="/img/lectures/web/l16.png"
     alt='A pixel art illustration contrasting untestable code (tangled monolith with buried logic) versus testable code (hexagonal architecture with clean ports for test doubles). Shows how separating infrastructure from domain logic enables easy testing.'
-    prompt="Cover art for a lecture. 
+    prompt="Cover art for a lecture.
 
 Header banner: 'CS 3100: Program Design & Implementation 2' with subtitle 'Designing for Testability'
 Theme: The same glowing gem (business logic) exists in both systems—but one buries it, the other protects it.
@@ -170,7 +170,7 @@ After this lecture, you will be able to:
   alt="Two pillars supporting 'Testability': Left pillar 'Observability' shows a scientist examining a transparent glass box with visible internal state. Right pillar 'Controllability' shows a conductor directing dependencies. Without both pillars, the roof collapses."
   prompt="Technical illustration.
 
-STRUCTURE: Two Greek-style pillars supporting a pediment roof. The roof is labeled 'TESTABILITY'. 
+STRUCTURE: Two Greek-style pillars supporting a pediment roof. The roof is labeled 'TESTABILITY'.
 
 LEFT PILLAR - 'OBSERVABILITY' (subtitle: 'Can we see what happened?'):
 TOP HALF (Good): A transparent glass box labeled 'Code Under Test'. Inside, clearly visible: a glowing return value emerging from the top labeled 'return HealthStatus.CRITICAL', internal variables displayed on a small LCD: 'batteryLevel: 5%', 'lastContact: 2hr ago'. A developer with a clipboard checks off 'Output: ✓ Visible'.
@@ -221,11 +221,12 @@ public class TemperatureLogger {
 
 <div style={{fontSize: '0.75em', marginTop: '0.5em'}}>
   <p className="fragment" style={{color: '#f44336', margin: '0.25em 0'}}>❌ <code>void</code> return — nothing to assert on</p>
-  <p className="fragment" style={{color: '#f44336', margin: '0.25em 0'}}>❌ <code>System.out.println</code> — output disappears into the void</p>
+  <p className="fragment" style={{color: '#f44336', margin: '0.25em 0'}}>❌ <code>System.out.println</code> — output disappears into the ether</p>
   <p className="fragment" style={{color: '#FF9800', margin: '0.25em 0'}}>⚠️ <code>LocalDateTime.now()</code> — timestamp changes every run (controllability!)</p>
 </div>
 
 <aside className="notes">
+Mention what String.format() does
 **The problem:**
 - Method returns `void`—nothing to assert on
 - Output goes to `System.out`—need to capture stdout
@@ -291,6 +292,55 @@ public class TemperatureLogger {
 
 -> **Transition:** Now let's look at controllability in more detail...
 </aside>
+
+</Slide>
+
+<Slide>
+
+## Poll: Which change would MOST improve the testability of this method?
+
+<PollSlide
+  code={`
+    public void processOrder(Order order) {
+        double tax = order.getTotal() * 0.08;
+        order.setTax(tax);
+        database.save(order);
+    }
+  `}
+  choices={["Make it private", "Make database a parameter", "Split it into multiple methods", "Add a getTax() method to Order"]}
+/>
+
+<aside className="notes">
+* Making it private would make it harder to test.
+* Making database a parameter would be an improvement.
+* Splitting it into multiple methods would help a lot.
+* Adding a getTax() method to Order would also be helpful.
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## One Possibility Rewrite for Testability
+```java
+protected double calculateTax(double amount) {
+    return amount * .08;
+}
+
+protected void addTaxToOrder(Order order) {
+    order.setTax(calculateTax(order.getTotal()));
+}
+
+protected void processOrder(Order order, Database db) {
+    addTaxToOrder(order);
+    db.save(order); // save to parameter db
+}
+
+public void processOrder(Order order) {
+    processOrder(order, database); // pass instance variable
+}
+```
 
 </Slide>
 
@@ -379,31 +429,28 @@ public boolean isOffPeakHours() {
 
 ## Observability: Return Values vs Side Effects
 
-<p style={{fontSize: '0.85em'}}>
-  Consider testing a device health checker. How do we observe what happened?
-</p>
+<div style={{ fontSize: '.8em' }}>
+Consider testing a device health checker. How do we observe what happened?
+
 
 ```java
-// Low Observability: modifies external state, returns void
+
 public class DeviceHealthChecker {
     private final DeviceRepository repo;
 
-    public void checkDevice(IoTDevice device) {
+    public void checkDevice1(IoTDevice device) {
         HealthStatus status = assessHealth(device);
         device.setHealthStatus(status);  // Mutates input!
         repo.save(device);               // Side effect!
     }
-}
 
-// High Observability: returns result, no side effects on input
-public class DeviceHealthChecker {
-    public HealthReport checkDevice(IoTDevice device) {
+    public HealthReport checkDevice2(IoTDevice device) {
         HealthStatus status = assessHealth(device);
         return new HealthReport(device.getId(), status);
     }
 }
 ```
-
+</div>
 <p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
   The second version is easier to test: call the method, check the return value. No need to inspect mutated objects or mock repositories.
 </p>
@@ -478,15 +525,41 @@ public class DeviceHealthChecker {
 
 <Slide>
 
+## Poll: What makes this method hard to test?
+
+<PollSlide
+  code={`
+public boolean shouldSendAlert(String deviceId) {
+    double temp = new TemperatureSensor().readTemperature(deviceId);
+    LocalTime now = LocalTime.now();
+    return temp > 100.0 && now.getHour() >= 8 && now.getHour() <= 22;
+}
+  `}
+  choices={["Its return type is a primitive", "It creates its dependencies internally",
+  "It tests multiple conditions", "It has side effects"]}
+/>
+
+<aside className="notes">
+* Nothing's wrong with returning a primitive.
+* It is problematic that it creates its dependencies internally.
+* It's fine that it has multiple conditions. That's needed to do its job.
+* It does not have side effects.
+</aside>
+
+</Slide>
+
+<Slide>
+
 ## Mind the Gap (Revisited from L12)
 
 <Img
   src="/img/lectures/web/l12-representational-gap-good-bad.webp"
+  width={1000}
   alt="Pixel art split-screen: TOP shows small gap with sturdy bridge between domain and implementation. BOTTOM shows huge gap with technical debris everywhere. Tagline: Mind the Gap."
 />
 
-<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
-  In L12, we talked about keeping implementation close to the domain model.<br/>
+<p style={{fontSize: '0.85em'}}>
+  In L12, we talked about keeping implementation close to the domain model.<br/><br/>
   <strong>The same principle applies to testability:</strong> the more infrastructure pollutes your domain, the harder testing becomes.
 </p>
 
@@ -511,42 +584,41 @@ public class DeviceHealthChecker {
 ## Mixed Concerns Make Testing Painful
 
 ```java
-public class SmartThermostat {
-    public void adjustForComfort(String zoneId, double targetTemp) {
-        // Infrastructure: database access
-        Connection conn = DriverManager.getConnection(
-            "jdbc:mysql://localhost/iot", "root", "");
-        PreparedStatement ps = conn.prepareStatement(
-            "SELECT temperature FROM sensors WHERE zone_id = ?");
-        ps.setString(1, zoneId);
-        ResultSet rs = ps.executeQuery();
-        rs.next();
-        double currentTemp = rs.getDouble("temperature");
+public class EnergyOptimizer {
+    private static final double LOW_PRICE_THRESHOLD = 0.10;
+
+    public void optimizeForPrice(String thermostatId) {
+        // Infrastructure: API call to get price
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest priceRequest = HttpRequest.newBuilder()
+            .uri(URI.create("https://api.gridprices.com/current"))
+            .header("Authorization", "Bearer " + System.getenv("API_KEY"))
+            .build();
+        HttpResponse<String> response =
+            client.send(priceRequest, HttpResponse.BodyHandlers.ofString());
+        double currentPrice = Double.parseDouble(response.body());
 
         // Domain: business logic (buried in the middle!)
-        double delta = targetTemp - currentTemp;
-        String action = Math.abs(delta) <= 0.5 ? "NONE"
-                      : delta > 0 ? "HEAT" : "COOL";
+        int powerLevel = currentPrice < LOW_PRICE_THRESHOLD ? 100 : 50;
 
-        // Infrastructure: web service call
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://hvac-service/zones/" + zoneId + "/" + action))
-            .POST(HttpRequest.BodyPublishers.noBody()).build();
-        client.send(request, HttpResponse.BodyHandlers.discarding());
+        // Infrastructure: Zigbee protocol command
+        ZigbeeGateway gateway = new ZigbeeGateway("192.168.1.100");
+        gateway.connect();
+        gateway.sendCommand(thermostatId, "SET_POWER", powerLevel);
+        gateway.disconnect();
     }
 }
 ```
 
 <aside className="notes">
 **The testing nightmare:**
-- Need a real MySQL database running
-- Need a real HVAC web service running
-- The business rule (when to heat vs cool) is buried in the middle!
+- Need a real energy price API running (and an API key!)
+- Need a real Zigbee gateway on the network
+- The business rule (full power vs half power) is one line buried in the middle!
 
 **The root cause:**
 - Infrastructure and domain logic are mixed together
-- Can't test the "heat vs cool" decision without all the infrastructure
+- Can't test the pricing decision without all the infrastructure
 
 -> **Transition:** This pattern has a name and a solution...
 </aside>
@@ -562,46 +634,32 @@ public class SmartThermostat {
 ## Hexagonal Architecture (Ports and Adapters)
 
 <p style={{fontSize: '0.9em'}}>
-  The solution is formalized as <strong>Hexagonal Architecture</strong>, proposed by Alistair Cockburn in 2005.
+  The solution is called <strong>Hexagonal Architecture</strong>, proposed by Alistair Cockburn (2005)
 </p>
 
 <Img
-  src="/img/lectures/web/l16-hexagonal-architecture.webp"
-  alt="Hexagonal Architecture: Central hexagon 'Application Core' with ports (interfaces) on edges. Outside, adapters (DatabaseAdapter, APIAdapter, TestAdapter) plug into ports and connect to external systems. Adapters are swappable without changing the core."
-  prompt="Technical diagram: Hexagonal Architecture (Ports and Adapters) for IoT Smart Home.
-
+  src="/img/lectures/web/l16-simpler-hexagonal-architecture.jpg"
+  width={1200}
+  alt="Hexagonal Architecture diagram for an IoT Smart Home. A central golden hexagon labeled 'Application Core / Domain Logic' contains 'EnergyOptimizer' with the rule 'if (price > threshold) reducePower()' and the caption 'Pure business rules. No technology.' Two ports sit on the hexagon's edges as electrical outlet sockets. On the left, EnergyPricePort has two adapters plugged in: GridPriceApiAdapter (blue, connecting to an Energy Grid API cloud) and StubPriceAdapter (green, labeled 'returns $0.35'). On the right, DeviceControlPort has ZigbeeDeviceAdapter (blue, connecting to a smart thermostat) and SpyDeviceControl (green, labeled 'records calls'). A callout reads 'Tests plug in here! Same ports, different adapters.' Blue adapters represent production; green adapters represent test doubles."
+    prompt="Technical diagram: Hexagonal Architecture (Ports and Adapters) for IoT Smart Home.
 CENTER - THE HEXAGON (warm golden glow):
-A large hexagonal shape labeled 'APPLICATION CORE' at top, 'Domain Logic' below. Inside the hexagon, show clean code snippets representing pure business logic:
-- 'if (price > threshold) reducePower()'
-- 'ComfortCalculator'
-- 'EnergyOptimizer'
-- No imports of HTTP, SQL, or hardware libraries visible
-Caption inside: 'Pure business rules. No technology.'
+A hexagonal shape labeled 'APPLICATION CORE' at top, 'Domain Logic' below. Inside the hexagon, show clean text:
 
-EDGES - SIX PORTS (shown as electrical outlet sockets on each hexagon edge):
-- Top: 'EnergyPricePort' (interface symbol)
-- Top-right: 'SensorPort' (interface symbol)
-- Bottom-right: 'DeviceControlPort' (interface symbol)
-- Bottom: 'PreferencesPort' (interface symbol)
-- Bottom-left: 'WeatherPort' (interface symbol)
-- Top-left: 'NotificationPort' (interface symbol)
-Each port has a label: 'interface' in small text
+'EnergyOptimizer'
+'if (price > threshold) reducePower()'
+'Pure business rules. No technology.'
+EDGES - TWO PORTS (shown as electrical outlet sockets on left and right edges of hexagon):
 
-OUTSIDE - ADAPTERS (shown as plug cables connecting to external systems):
-Production adapters (solid lines):
-- 'GridPriceAPIAdapter' → connects to cloud icon labeled 'Energy Grid API'
-- 'ZigbeeSensorAdapter' → connects to IoT sensor icon
-- 'PostgresPreferencesAdapter' → connects to database cylinder
-- 'TwilioNotificationAdapter' → connects to phone icon
-
-Test adapters (dashed lines, friendly green color):
-- 'StubPriceAdapter' plugged into EnergyPricePort, labeled 'returns $0.35'
-- 'FakeSensorAdapter' plugged into SensorPort, labeled 'returns 72°F'
-- 'SpyNotificationAdapter' plugged into NotificationPort, labeled 'records calls'
-
-CALLOUT BOX (bottom right): 'Tests plug in here! Same ports, different adapters.'
-
-STYLE: Clean technical diagram, blueprint aesthetic. Hexagon glows warm amber. Production adapters in blue. Test adapters in green. External systems in gray."
+Left edge: 'EnergyPricePort' with small label 'interface'
+Right edge: 'DeviceControlPort' with small label 'interface'
+OUTSIDE LEFT - EnergyPricePort connections:
+Production adapter (solid blue cable): 'GridPriceApiAdapter' connects via blue plug to EnergyPricePort, cable runs to a cloud icon labeled 'Energy Grid API'
+Test adapter (dashed green cable): 'StubPriceAdapter' with green plug near the same port, labeled 'returns $0.35'
+OUTSIDE RIGHT - DeviceControlPort connections:
+Production adapter (solid blue cable): 'ZigbeeDeviceAdapter' connects via blue plug to DeviceControlPort, cable runs to a smart thermostat icon
+Test adapter (dashed green cable): 'SpyDeviceControl' with green plug near the same port, labeled 'records calls'
+BOTTOM RIGHT CALLOUT BOX (green background): 'Tests plug in here! Same ports, different adapters.'
+STYLE: Clean technical diagram, light gray background. Hexagon glows warm amber. Production adapters and cables in blue. Test adapters and cables in dashed green. External systems in gray. Electrical outlet/plug metaphor for ports and adapters. Uncluttered with plenty of whitespace."
 />
 
 <aside className="notes">
@@ -676,38 +734,42 @@ STYLE: Clean technical diagram, blueprint aesthetic. Hexagon glows warm amber. P
 
 ```mermaid
 graph LR
-    subgraph External["External Systems"]
-        DB[(Database)]
-        API[External APIs]
-        HW[Hardware]
-    end
+    API["Energy Grid API"]
+    HW["Smart Thermostat"]
 
     subgraph Adapters["Adapters"]
-        DA[Database Adapter]
-        AA[API Adapter]
-        HA[Hardware Adapter]
+        AA["GridPriceApiAdapter"]
+        HA["ZigbeeDeviceAdapter"]
+        SA["StubPriceAdapter (test)"]
+        SD["SpyDeviceControl (test)"]
     end
 
     subgraph Ports["Ports (Interfaces)"]
-        RP[Repository Port]
-        EP[External Service Port]
-        SP[Sensor Port]
+        EP["EnergyPricePort"]
+        DP["DeviceControlPort"]
     end
 
     subgraph Core["Application Core (Domain)"]
-        BL[Business Logic]
+        BL["EnergyOptimizer"]
     end
 
-    DB --> DA --> RP --> BL
     API --> AA --> EP --> BL
-    HW --> HA --> SP --> BL
+    HW --> HA --> DP --> BL
+    SA --> EP
+    SD --> DP
 ```
 
-<p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
-  <strong>Core:</strong> Knows nothing about databases, APIs, or hardware—only the domain.<br/>
-  <strong>Ports:</strong> Interfaces that describe *what* the domain needs, not *how* to get it.<br/>
+<div style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+<div className="fragment">
+  <strong>Core:</strong> Knows nothing about databases, APIs, or hardware—only the domain.<br/><br/>
+</div>
+<div className="fragment">
+  <strong>Ports:</strong> Interfaces that describe *what* the domain needs, not *how* to get it.<br/><br/>
+</div>
+<div className="fragment">
   <strong>Adapters:</strong> Know how to talk to specific technologies.
-</p>
+</div>
+</div>
 
 <aside className="notes">
 **The dependency direction:**
@@ -742,15 +804,10 @@ public interface EnergyPricePort {
 public interface DeviceControlPort {
     void setDevicePower(String deviceId, int powerPercent);
 }
-
-// Port: How we get user preferences for a home
-public interface UserPreferencesPort {
-    EnergyPreferences getPreferences(String homeId);
-}
 ```
 
 <p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
-  Notice: Single-method interfaces can be implemented with lambdas in tests!
+  Note: Functional interfaces can be implemented with lambdas in tests.
 </p>
 
 <aside className="notes">
@@ -779,26 +836,24 @@ public interface UserPreferencesPort {
 
 ```java
 public class EnergyOptimizer {
+    private static final double LOW_PRICE_THRESHOLD = 0.10;
     private final EnergyPricePort priceService;
     private final DeviceControlPort deviceControl;
-    private final UserPreferencesPort preferences;
 
     public EnergyOptimizer(EnergyPricePort priceService,
-                           DeviceControlPort deviceControl,
-                           UserPreferencesPort preferences) {
+                           DeviceControlPort deviceControl) {
         this.priceService = priceService;
         this.deviceControl = deviceControl;
-        this.preferences = preferences;
     }
 
-    public void optimizeForPrice(String homeId) {
+    public void optimizeForPrice(String thermostatId) {
         double currentPrice = priceService.getCurrentPricePerKWh();
-        EnergyPreferences prefs = preferences.getPreferences(homeId);
 
-        if (currentPrice > prefs.highPriceThreshold()) {
-            reduceNonEssentialDevices();
-        } else if (currentPrice < prefs.lowPriceThreshold()) {
-            preconditionHome();
+        if (currentPrice < LOW_PRICE_THRESHOLD) {
+            // Energy is cheap — pre-heat the home
+            deviceControl.setDevicePower(thermostatId, 100);
+        } else {
+            deviceControl.setDevicePower(thermostatId, 50);
         }
     }
 }
@@ -879,27 +934,27 @@ public class ZigbeeDeviceAdapter implements DeviceControlPort {
 
 ```java
 @Test
-void reducesNonEssentialDevicesWhenPriceIsHigh() {
-    // Simple in-memory implementations — no real infrastructure!
-    EnergyPricePort stubPrices = () -> 0.35;  // High price (lambda!)
+void runsThermostatAtFullPowerWhenPriceIsLow() {
+    EnergyPricePort stubPrices = () -> 0.05;  // Well below $0.10 threshold
+    SpyDeviceControl spyDevices = new SpyDeviceControl();
 
-    List<ControllableDevice> devices = List.of(
-        new ControllableDevice("light-1", true, 100),   // non-essential
-        new ControllableDevice("fridge", false, 100)    // essential
-    );
-    SpyDeviceControl spyDevices = new SpyDeviceControl(devices);
+    EnergyOptimizer optimizer = new EnergyOptimizer(stubPrices, spyDevices);
 
-    UserPreferencesPort stubPrefs = (homeId) ->
-        new EnergyPreferences(0.25, 0.10);  // high=0.25, low=0.10
+    optimizer.optimizeForPrice("thermostat-1");
 
-    EnergyOptimizer optimizer = new EnergyOptimizer(
-        stubPrices, spyDevices, stubPrefs);
+    assertEquals(100, spyDevices.getPowerLevel("thermostat-1"));
+}
 
-    optimizer.optimizeForPrice("home-123");
+@Test
+void reducesToHalfPowerWhenPriceIsHigh() {
+    EnergyPricePort stubPrices = () -> 0.35;  // Above $0.10 threshold
+    SpyDeviceControl spyDevices = new SpyDeviceControl();
 
-    // Verify only non-essential devices were reduced
-    assertEquals(50, spyDevices.getPowerLevel("light-1"));
-    assertEquals(100, spyDevices.getPowerLevel("fridge"));  // unchanged
+    EnergyOptimizer optimizer = new EnergyOptimizer(stubPrices, spyDevices);
+
+    optimizer.optimizeForPrice("thermostat-1");
+
+    assertEquals(50, spyDevices.getPowerLevel("thermostat-1"));
 }
 ```
 
@@ -910,60 +965,10 @@ void reducesNonEssentialDevicesWhenPriceIsHigh() {
 - No waiting for network calls
 - No flaky test failures from external services
 
-**This test is:**
+**This tests are:**
 - Fast (milliseconds)
 - Deterministic (no external dependencies)
 - Focused (tests one business rule)
-
--> **Transition:** Let's look at a simpler example...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Extracted Domain Logic is Trivially Testable
-
-```java
-// Domain: pure business logic, easily testable
-public class ComfortCalculator {
-    public HVACAction calculateAction(double currentTemp, double targetTemp) {
-        double delta = targetTemp - currentTemp;
-        if (Math.abs(delta) <= 0.5) {
-            return HVACAction.NONE;
-        } else if (delta > 0) {
-            return HVACAction.HEAT;
-        } else {
-            return HVACAction.COOL;
-        }
-    }
-}
-```
-
-```java
-@Test void heatsWhenBelowTarget() {
-    ComfortCalculator calc = new ComfortCalculator();
-    assertEquals(HVACAction.HEAT, calc.calculateAction(68.0, 72.0));
-}
-
-@Test void coolsWhenAboveTarget() {
-    ComfortCalculator calc = new ComfortCalculator();
-    assertEquals(HVACAction.COOL, calc.calculateAction(76.0, 72.0));
-}
-
-@Test void doesNothingWithinThreshold() {
-    ComfortCalculator calc = new ComfortCalculator();
-    assertEquals(HVACAction.NONE, calc.calculateAction(72.3, 72.0));
-}
-```
-
-<aside className="notes">
-**No database. No HTTP. No exceptions. Tests run in milliseconds.**
-
-The domain logic is:
-- Pure (no side effects)
-- Deterministic (same inputs = same outputs)
-- Easy to understand and test
 
 -> **Transition:** How do you design this way?
 </aside>
@@ -1210,6 +1215,25 @@ The domain logic is:
 
 </Slide>
 
+<Slide>
+
+## complexity
+
+<Img src ="/img/lectures/web/l16-complexity.webp"
+  alt="Two-panel cartoon entitled 'Complexity'.
+  The left panel is labeled 'solution engineering' and shows happy stick figures engineering a complex
+  system with pulleys, counterweights, and hamster wheels to bridge a crevasse.
+  The right panel is labeled 'problem solving' and shows a solitary happy stick figure
+  in front of a crevasse spanned by a board.
+  The cartoon is dated July 22, 2022 and is labeled monkeyuser.com."
+ />
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
 {/* ============================================ */}
 {/* ARC 3: PROPERTIES OF GOOD TEST SUITES */}
 {/* ============================================ */}
@@ -1411,43 +1435,43 @@ public class ScheduledTask {
 
 ## Wrapping Static Methods
 
-<p style={{fontSize: '0.85em'}}>
-  Java provides `Clock` for time, but what about `System.getenv()`? You can't substitute a static method call.
+<p style={{fontSize: '0.8em'}}>
+  Java provides `Clock` for time, but what about `System.getenv()` for environment variables?
 </p>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', marginTop: '0.5em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', marginTop: '0em'}}>
 
-<div>
+<div style={{ fontSize: '.8em' }}>
 
 **The Problem**
 
 ```java
 public class ApiClient {
-    public void connect() {
-        // Can't substitute this in tests!
-        String key = System.getenv("API_KEY");
-        // ...
-    }
+  public void connect() {
+    // Can't substitute this in tests!
+    String key = System.getenv("API_KEY");
+    // ...
+  }
 }
 ```
 
 </div>
 
-<div>
+<div className="fragment" style={{ fontSize: '.7em' }}>
 
 **The Solution: Wrap It**
 
 ```java
 public interface EnvironmentProvider {
-    String getEnv(String name);
+  String getEnv(String name);
 }
 
 public class ApiClient {
-    private final EnvironmentProvider env;
+  private final EnvironmentProvider env;
 
-    public void connect() {
-        String key = env.getEnv("API_KEY");
-    }
+  public void connect() {
+    String key = env.getEnv("API_KEY");
+  }
 }
 ```
 
@@ -1455,7 +1479,8 @@ public class ApiClient {
 
 </div>
 
-<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
+<div className="fragment">
+<p style={{fontSize: '0.7em', marginTop: '0.5em', color: '#9370DB'}}>
   Even better: a higher-level `CredentialProvider` that hides <em>how</em> credentials are obtained:
 </p>
 
@@ -1466,6 +1491,7 @@ public interface CredentialProvider {
 // Production: reads from env vars, secrets manager, or config file
 // Tests: returns a fixed test key
 ```
+</div>
 
 <aside className="notes">
 **The pattern:**
@@ -1544,13 +1570,13 @@ public class UserService {
 
 <Slide>
 
-## Anti-Pattern: Private Methods That Want Testing
+## Anti-Pattern: Private Methods Needing Testing
 
 <p style={{fontSize: '0.85em'}}>
-  If you feel the urge to test a private method directly, it's often a sign that it should be its own class.
+  If you feel the urge to test a private method directly, consider putting it in its own class.
 </p>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', marginTop: '0.5em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', marginTop: '0.1em'}}>
 
 <div style={{fontSize: '0.65em'}}>
 
@@ -1558,22 +1584,20 @@ public class UserService {
 
 ```java
 public class DeviceHealthChecker {
-    public HealthReport checkAll(
-            List<IoTDevice> devices) {
-        HealthReport report = new HealthReport();
-        for (IoTDevice device : devices) {
-            report.add(device.getId(),
-                assessHealth(device));
-        }
-        return report;
+  public HealthReport checkAll(
+      List<IoTDevice> devices) {
+    HealthReport report = new HealthReport();
+    for (IoTDevice device : devices) {
+      report.add(device.getId(),
+        assessHealth(device));
     }
+    return report;
+  }
 
-    // Complex logic we want to test!
-    private HealthStatus assessHealth(
-            IoTDevice device) {
-        // Battery, signal, contact time...
-        // Many branches to test
-    }
+  private HealthStatus assessHealth(
+    IoTDevice device) {
+    // complex logic to test
+  }
 }
 ```
 
@@ -1586,18 +1610,18 @@ public class DeviceHealthChecker {
 ```java
 // Extracted to its own class
 public class DeviceHealthAssessor {
-    public HealthStatus assess(
-            double batteryPercent,
-            int signalStrength,
-            long minutesSinceContact) {
-        if (minutesSinceContact > 60)
-            return HealthStatus.OFFLINE;
-        if (batteryPercent < 10)
-            return HealthStatus.CRITICAL;
-        if (batteryPercent < 25 ||
-            signalStrength < 20)
-            return HealthStatus.WARNING;
-        return HealthStatus.HEALTHY;
+  public HealthStatus assess(
+      double batteryPercent,
+      int signalStrength,
+      long minutesSinceContact) {
+    if (minutesSinceContact > 60)
+      return HealthStatus.OFFLINE;
+    if (batteryPercent < 10)
+      return HealthStatus.CRITICAL;
+    if (batteryPercent < 25 ||
+        signalStrength < 20)
+      return HealthStatus.WARNING;
+    return HealthStatus.HEALTHY;
     }
 }
 ```
@@ -1606,7 +1630,7 @@ public class DeviceHealthAssessor {
 
 </div>
 
-<p style={{fontSize: '0.75em', marginTop: '0.5em', color: '#9370DB'}}>
+<p style={{fontSize: '0.7em', marginTop: '0.5em', color: '#9370DB'}}>
   Connection to SRP (L8): DeviceHealthChecker was doing two things. Health assessment deserves its own class.
 </p>
 
@@ -1630,7 +1654,7 @@ public class DeviceHealthAssessor {
 
 ## Not an Anti-Pattern: Integration Points
 
-<p style={{fontSize: '0.9em'}}>
+<p style={{fontSize: '0.8em'}}>
   Some classes coordinate multiple components. This isn't an anti-pattern—it's an <strong>integration point</strong>.
 </p>
 
@@ -1650,7 +1674,7 @@ public class HomeAutomationController {
 }
 ```
 
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+<p style={{fontSize: '0.8em', marginTop: '1em'}}>
   You can still mock the dependencies—but verify <strong>coordination behavior</strong>, not just "was this method called?"
 </p>
 
@@ -1686,7 +1710,7 @@ public class HomeAutomationController {
   Complex conditions require many test cases to cover all branches.
 </p>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', marginTop: '0.5em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', marginTop: '0.1em'}}>
 
 <div>
 
@@ -1712,18 +1736,17 @@ if ((device.isOnline() &&
 
 ```java
 private boolean canReceiveCommands(
-        IoTDevice device) {
-    return hasSufficientBattery(device)
-        || hasReliablePower(device)
-        || isRequiredInEmergency(device);
+    IoTDevice device) {
+  return hasSufficientBattery(device)
+      || hasReliablePower(device)
+      || isRequiredInEmergency(device);
 }
 
 private boolean hasSufficientBattery(
         IoTDevice device) {
-    return device.isOnline() &&
-           device.batteryLevel() > 20;
+  return device.isOnline() &&
+         device.batteryLevel() > 20;
 }
-// Each predicate tested individually
 ```
 
 </div>
@@ -1731,7 +1754,7 @@ private boolean hasSufficientBattery(
 </div>
 
 <p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#4CAF50'}}>
-  Breaking conditions into named methods doesn't reduce complexity, but it spreads out the testing burden and improves readability.
+  Breaking conditions into named methods spreads out the complexity, increasing testability and readability.
 </p>
 
 <aside className="notes">
@@ -1816,6 +1839,19 @@ private boolean hasSufficientBattery(
 
 **Questions?**
 </aside>
+
+</Slide>
+
+<Slide>
+
+## Bonus Slide
+
+<Img src="/img/lectures/web/l16-software-design-class.png"
+  width={600}
+  alt="Tweet from brombo reading: 'This is what every diagram in my software design class looks like'.
+      Top part of diagram, labeled 'problem': Rectangles named 'thing 1' and 'thing 2' with lots of squiggly arrows between them.
+      Bottom part of diagram, labeled 'solution': Same rectangles with neat arrows to and from a new rectangle named 'thing in the middle'."
+ />
 
 </Slide>
 
