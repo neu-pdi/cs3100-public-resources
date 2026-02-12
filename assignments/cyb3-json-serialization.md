@@ -5,6 +5,7 @@ image: /img/assignments/web/a3.png
 ---
 
 ## Update log
+- 2/11/2026: 24 hour extension on due date due to large number of students who did not activate GitHub Student Pack before Monday
 - 2/10/2026: Removed the line "You only receive implementation points if you also have tests that detect bugs in that component" - we relaxed this after HW1/HW2
 - 2/8/2026: Note error in handout test `MarkdownExporterTest.java` line 57: `assertTrue(markdown.contains("- 2 cup flour"));` should be `assertTrue(markdown.contains("- 2 cups flour"));`
 
@@ -24,7 +25,7 @@ system that's easier to test, maintain, and extend.
 serialization work includes plenty of design decisions and boilerplate code—perfect for practicing
 effective AI collaboration.
 
-**Due:** Thursday, February 12, 2026 at 11:59 PM Boston Time
+**Due:** Thursday, February 13, 2026 at 11:59 PM Boston Time
 
 **Prerequisites:** This assignment builds on the A2 sample implementation (provided). You should be
 familiar with `Recipe`, `Quantity`, `Ingredient`, and the conversion system from Assignments 1
