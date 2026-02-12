@@ -485,7 +485,7 @@ public class DeviceHealthChecker {
 ```
 </div>
 <p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
-  The second version is easier to test: call the method, check the return value. No need to inspect mutated objects or mock repositories.
+  The second version is easier to test: call the method, check the return value.<br/>There's no need to inspect mutated objects or mock repositories.
 </p>
 
 <aside className="notes">
@@ -591,7 +591,7 @@ public boolean shouldSendAlert(String deviceId) {
   alt="Pixel art split-screen: TOP shows small gap with sturdy bridge between domain and implementation. BOTTOM shows huge gap with technical debris everywhere. Tagline: Mind the Gap."
 />
 
-<p style={{fontSize: '0.85em'}}>
+<p style={{fontSize: '0.8em'}}>
   In L12, we talked about keeping implementation close to the domain model.<br/><br/>
   <strong>The same principle applies to testability:</strong> the more infrastructure pollutes your domain, the harder testing becomes.
 </p>
@@ -673,7 +673,7 @@ public class EnergyOptimizer {
 <Img
   src="/img/lectures/web/l16-simpler-hexagonal-architecture.jpg"
   width={1200}
-  alt="Hexagonal Architecture diagram for an IoT Smart Home. A central golden hexagon labeled 'Application Core / Domain Logic' contains 'EnergyOptimizer' with the rule 'if (price > threshold) reducePower()' and the caption 'Pure business rules. No technology.' Two ports sit on the hexagon's edges as electrical outlet sockets. On the left, EnergyPricePort has two adapters plugged in: GridPriceApiAdapter (blue, connecting to an Energy Grid API cloud) and StubPriceAdapter (green, labeled 'returns $0.35'). On the right, DeviceControlPort has ZigbeeDeviceAdapter (blue, connecting to a smart thermostat) and SpyDeviceControl (green, labeled 'records calls'). A callout reads 'Tests plug in here! Same ports, different adapters.' Blue adapters represent production; green adapters represent test doubles."
+  alt="Hexagonal Architecture diagram for an IoT Smart Home. A central golden hexagon labeled 'Application Core / Domain Logic' contains 'EnergyOptimizer' with the rule 'if (price > threshold) reducePower()' and the caption 'Pure business rules. No technology.' Two ports sit on the hexagon's edges as electrical outlet sockets. On the left, EnergyPricePort has two adapters plugged in: GridPriceApiAdapter (blue, connecting to an Energy Grid API cloud) and StubPriceAdapter (green, labeled 'returns $0.35'). On the right, DeviceControlPort has ZigbeeDeviceAdapter (blue, connecting to a smart thermostat) and SpyDeviceControlAdapter (green, labeled 'records calls'). A callout reads 'Tests plug in here! Same ports, different adapters.' Blue adapters represent production; green adapters represent test doubles."
     prompt="Technical diagram: Hexagonal Architecture (Ports and Adapters) for IoT Smart Home.
 CENTER - THE HEXAGON (warm golden glow):
 A hexagonal shape labeled 'APPLICATION CORE' at top, 'Domain Logic' below. Inside the hexagon, show clean text:
@@ -690,7 +690,7 @@ Production adapter (solid blue cable): 'GridPriceApiAdapter' connects via blue p
 Test adapter (dashed green cable): 'StubPriceAdapter' with green plug near the same port, labeled 'returns $0.35'
 OUTSIDE RIGHT - DeviceControlPort connections:
 Production adapter (solid blue cable): 'ZigbeeDeviceAdapter' connects via blue plug to DeviceControlPort, cable runs to a smart thermostat icon
-Test adapter (dashed green cable): 'SpyDeviceControl' with green plug near the same port, labeled 'records calls'
+Test adapter (dashed green cable): 'SpyDeviceControlAdapter' with green plug near the same port, labeled 'records calls'
 BOTTOM RIGHT CALLOUT BOX (green background): 'Tests plug in here! Same ports, different adapters.'
 STYLE: Clean technical diagram, light gray background. Hexagon glows warm amber. Production adapters and cables in blue. Test adapters and cables in dashed green. External systems in gray. Electrical outlet/plug metaphor for ports and adapters. Uncluttered with plenty of whitespace."
 />
@@ -724,7 +724,7 @@ STYLE: Clean technical diagram, light gray background. Hexagon glows warm amber.
   The hexagon shape emphasizes a key idea: <strong>there's no "top" or "bottom"</strong>.
 </p>
 
-<div style={{fontSize: '0.8em', marginTop: '1em'}}>
+<div style={{fontSize: '0.8em', marginTop: '.5em'}}>
 
 **The insight:**
 - Your business logic sits in the center
@@ -736,10 +736,6 @@ STYLE: Clean technical diagram, light gray background. Hexagon glows warm amber.
 
 <p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB'}}>
   Tests are just another "outside" thing! They plug in through the same ports as real infrastructure.
-</p>
-
-<p style={{fontSize: '0.75em', marginTop: '0.5em', color: '#666'}}>
-  (Ironically, we'll visualize this left-to-right in diagrams because that's easier to draw. The hexagon shape is conceptual, not literal.)
 </p>
 
 <aside className="notes">
@@ -761,9 +757,10 @@ STYLE: Clean technical diagram, light gray background. Hexagon glows warm amber.
 
 </Slide>
 
-<Slide>
 
-## The Three Layers
+<Slide data-transition="fade">
+
+## The Three Layers: Core
 
 ```mermaid
 graph LR
@@ -774,7 +771,7 @@ graph LR
         AA["GridPriceApiAdapter"]
         HA["ZigbeeDeviceAdapter"]
         SA["StubPriceAdapter (test)"]
-        SD["SpyDeviceControl (test)"]
+        SD["SpyDeviceControlAdapter (test)"]
     end
 
     subgraph Ports["Ports (Interfaces)"]
@@ -782,7 +779,7 @@ graph LR
         DP["DeviceControlPort"]
     end
 
-    subgraph Core["Application Core (Domain)"]
+    subgraph Core["Core (Domain)"]
         BL["EnergyOptimizer"]
     end
 
@@ -790,18 +787,120 @@ graph LR
     HW --> HA --> DP --> BL
     SA --> EP
     SD --> DP
+
+    style Core fill:#e8f4e8,stroke:#4a9,stroke-width:2px
+    style Ports fill:#f5f5f5,stroke:#ccc
+    style Adapters fill:#f5f5f5,stroke:#ccc
 ```
 
 <div style={{fontSize: '0.8em', marginTop: '0.5em'}}>
-<div className="fragment">
   <strong>Core:</strong> Knows nothing about databases, APIs, or hardware—only the domain.<br/><br/>
+  <div style={{visibility: 'hidden'}}><strong>Ports:</strong> Interfaces that describe *what* the domain needs, not *how* to get it.<br/><br/></div>
+  <div style={{visibility: 'hidden'}}><strong>Adapters:</strong> Implementations of the interfaces to talk to specific technologies</div>
 </div>
-<div className="fragment">
+
+<aside className="notes">
+Start with the core. Everything else exists to serve this layer.
+
+- The domain contains the business logic
+- It knows nothing about infrastructure
+- It only speaks in terms of its own concepts
+</aside>
+
+</Slide>
+
+---
+
+<Slide data-transition="fade">
+
+## The Three Layers: Ports
+
+```mermaid
+graph LR
+    API["Energy Grid API"]
+    HW["Smart Thermostat"]
+
+    subgraph Adapters["Adapters"]
+        AA["GridPriceApiAdapter"]
+        HA["ZigbeeDeviceAdapter"]
+        SA["StubPriceAdapter (test)"]
+        SD["SpyDeviceControlAdapter (test)"]
+    end
+
+    subgraph Ports["Ports (Interfaces)"]
+        EP["EnergyPricePort"]
+        DP["DeviceControlPort"]
+    end
+
+    subgraph Core["Core (Domain)"]
+        BL["EnergyOptimizer"]
+    end
+
+    API --> AA --> EP --> BL
+    HW --> HA --> DP --> BL
+    SA --> EP
+    SD --> DP
+
+    style Core fill:#f5f5f5,stroke:#ccc
+    style Ports fill:#e8f0fa,stroke:#68a,stroke-width:2px
+    style Adapters fill:#f5f5f5,stroke:#ccc
+```
+
+<div style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+  <strong>Core:</strong> Knows nothing about databases, APIs, or hardware—only the domain.<br/><br/>
   <strong>Ports:</strong> Interfaces that describe *what* the domain needs, not *how* to get it.<br/><br/>
+  <div style={{visibility: 'hidden'}}><strong>Adapters:</strong> Implementations of the interfaces to talk to specific technologies</div>
 </div>
-<div className="fragment">
-  <strong>Adapters:</strong> Know how to talk to specific technologies.
-</div>
+
+<aside className="notes">
+Ports are the boundary — interfaces owned by the domain.
+
+- They describe what the domain needs (e.g., "give me energy prices")
+- They say nothing about how that need is fulfilled
+- This is DIP from L8: high-level modules depend on abstractions
+</aside>
+
+</Slide>
+
+<Slide data-transition="fade">
+
+## The Three Layers: Adapters
+
+```mermaid
+graph LR
+    API["Energy Grid API"]
+    HW["Smart Thermostat"]
+
+    subgraph Adapters["Adapters"]
+        AA["GridPriceApiAdapter"]
+        HA["ZigbeeDeviceAdapter"]
+        SA["StubPriceAdapter (test)"]
+        SD["SpyDeviceControlAdapter (test)"]
+    end
+
+    subgraph Ports["Ports (Interfaces)"]
+        EP["EnergyPricePort"]
+        DP["DeviceControlPort"]
+    end
+
+    subgraph Core["Core (Domain)"]
+        BL["EnergyOptimizer"]
+    end
+
+    API --> AA --> EP --> BL
+    HW --> HA --> DP --> BL
+    SA --> EP
+    SD --> DP
+
+    style Core fill:#f5f5f5,stroke:#ccc
+    style Ports fill:#f5f5f5,stroke:#ccc
+    style Adapters fill:#f0e8fa,stroke:#96c,stroke-width:2px
+```
+
+<div style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+  <strong>Core:</strong> Knows nothing about databases, APIs, or hardware—only the domain.<br/><br/>
+  <strong>Ports:</strong> Interfaces that describe *what* the domain needs, not *how* to get it.<br/><br/>
+  <strong>Adapters:</strong> Implementations of the interfaces to talk to specific technologies
 </div>
 
 <aside className="notes">
@@ -865,37 +964,37 @@ public interface DeviceControlPort {
 
 <Slide>
 
-## The Domain Uses Ports, Not Technologies
+## The Domain Uses Ports (Abstractions), Not Technologies (Concretions)
 
+<div style={{ fontSize: '.75em' }}>
 ```java
 public class EnergyOptimizer {
-    private static final double LOW_PRICE_THRESHOLD = 0.10;
-    private final EnergyPricePort priceService;
-    private final DeviceControlPort deviceControl;
+  private static final double LOW_PRICE_THRESHOLD = 0.10;
+  private final EnergyPricePort priceService;
+  private final DeviceControlPort deviceControl;
 
-    public EnergyOptimizer(EnergyPricePort priceService,
-                           DeviceControlPort deviceControl) {
-        this.priceService = priceService;
-        this.deviceControl = deviceControl;
+  public EnergyOptimizer(EnergyPricePort priceService,
+                         DeviceControlPort deviceControl) {
+    this.priceService = priceService;
+    this.deviceControl = deviceControl;
+  }
+
+  public void optimizeForPrice(String thermostatId) {
+    double currentPrice = priceService.getCurrentPricePerKWh();
+    if (currentPrice < LOW_PRICE_THRESHOLD) {
+      // Energy is cheap — pre-heat the home
+      deviceControl.setDevicePower(thermostatId, 100);
+    } else {
+      deviceControl.setDevicePower(thermostatId, 50);
     }
-
-    public void optimizeForPrice(String thermostatId) {
-        double currentPrice = priceService.getCurrentPricePerKWh();
-
-        if (currentPrice < LOW_PRICE_THRESHOLD) {
-            // Energy is cheap — pre-heat the home
-            deviceControl.setDevicePower(thermostatId, 100);
-        } else {
-            deviceControl.setDevicePower(thermostatId, 50);
-        }
-    }
+  }
 }
 ```
 
-<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#4CAF50'}}>
+<p style={{marginTop: '0.5em', color: '#4CAF50'}}>
   ✓ No `HttpClient`, no `Connection`, no `DataSource`—only interfaces.
 </p>
-
+</div>
 <aside className="notes">
 **Notice:**
 - No technology-specific code
@@ -916,36 +1015,59 @@ public class EnergyOptimizer {
 
 ## Adapters Connect to Real Infrastructure
 
+<div style={{display: 'flex', gap: '1em', alignItems: 'start'}}>
+<div style={{flex: 2, fontSize: '.75em'}}>
+
 ```java
 // Adapter: Gets prices from a real API
-public class GridPriceApiAdapter implements EnergyPricePort {
-    private final HttpClient httpClient;
-    private final String apiKey;
+public class GridPriceApiAdapter
+    implements EnergyPricePort {
 
-    @Override
-    public double getCurrentPricePerKWh() {
-        HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("https://api.gridprices.com/current"))
-            .header("Authorization", "Bearer " + apiKey)
-            .build();
-        // ... parse response and return price
-    }
-}
+  private final HttpClient httpClient;
+  private final String apiKey;
 
-// Adapter: Controls devices via Zigbee protocol
-public class ZigbeeDeviceAdapter implements DeviceControlPort {
-    private final ZigbeeGateway gateway;
-
-    @Override
-    public void setDevicePower(String deviceId, int powerPercent) {
-        // Zigbee protocol commands
-    }
+  @Override
+  public double getCurrentPricePerKWh() {
+    HttpRequest request = HttpRequest.newBuilder()
+      .uri(URI.create(
+        "https://api.gridprices.com/current"))
+      .header("Authorization",
+        "Bearer " + apiKey)
+      .build();
+    // ... parse response and return price
+  }
 }
 ```
 
+
+</div>
+<div style={{flex: 1, fontSize: '.75em'}}>
+
+```mermaid
+classDiagram
+  direction BT
+    class EnergyPricePort {
+        <<interface>>
+        getCurrentPricePerKWh()* double
+    }
+
+    class GridPriceApiAdapter {
+        -HttpClient httpClient
+        -String apiKey
+        +getCurrentPricePerKWh() double
+    }
+
+    GridPriceApiAdapter ..|> EnergyPricePort
+
+    style EnergyPricePort fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+</div>
+</div>
 <p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
-  Adapters know the technology. Domain says *what* it needs; adapters know *how* to get it.
+  Adapters know the technology and implement the ports to meet the domain's needs.
 </p>
+
 
 <aside className="notes">
 **Adapters contain all the messy details:**
@@ -965,31 +1087,73 @@ public class ZigbeeDeviceAdapter implements DeviceControlPort {
 
 ## Testing with Hexagonal Architecture
 
+<div style={{display: 'flex', gap: '1em', alignItems: 'start'}}>
+<div style={{flex: 2, fontSize: '.75em'}}>
+
 ```java
 @Test
 void runsThermostatAtFullPowerWhenPriceIsLow() {
-    EnergyPricePort stubPrices = () -> 0.05;  // Well below $0.10 threshold
-    SpyDeviceControl spyDevices = new SpyDeviceControl();
+  // Implement the functional interface with a lambda.
+  EnergyPricePort stubPrices = () -> 0.05;
 
-    EnergyOptimizer optimizer = new EnergyOptimizer(stubPrices, spyDevices);
+  // Implement DeviceControlPort.
+  SpyDeviceControlAdapter spyDevices =
+    new SpyDeviceControlAdapter();
 
-    optimizer.optimizeForPrice("thermostat-1");
+  // EnergyOptimizer is the class under test.
+  EnergyOptimizer optimizer =
+    new EnergyOptimizer(stubPrices, spyDevices);
 
-    assertEquals(100, spyDevices.getPowerLevel("thermostat-1"));
-}
+  // This is the method under test.
+  optimizer.optimizeForPrice("thermostat-1");
 
-@Test
-void reducesToHalfPowerWhenPriceIsHigh() {
-    EnergyPricePort stubPrices = () -> 0.35;  // Above $0.10 threshold
-    SpyDeviceControl spyDevices = new SpyDeviceControl();
-
-    EnergyOptimizer optimizer = new EnergyOptimizer(stubPrices, spyDevices);
-
-    optimizer.optimizeForPrice("thermostat-1");
-
-    assertEquals(50, spyDevices.getPowerLevel("thermostat-1"));
+  // Make sure the power level was set correctly.
+  assertEquals(100,
+    spyDevices.getPowerLevel("thermostat-1"));
 }
 ```
+
+</div>
+<div style={{flex: 1, fontSize: '.75em'}}>
+
+```mermaid
+classDiagram
+    direction BT
+    class EnergyPricePort {
+        <<interface>>
+        getCurrentPricePerKWh()* double
+    }
+
+    class anonymous {
+        +getCurrentPricePerKWh() double
+    }
+
+    anonymous ..|> EnergyPricePort
+
+    style EnergyPricePort fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+```mermaid
+classDiagram
+    direction BT
+    class DeviceControlPort {
+        <<interface>>
+        setDevicePower(String, int)* void
+    }
+
+    class SpyDeviceControlAdapter {
+        -Map~String, Integer~ powerLevels
+        +setDevicePower(String, int) void
+        +getPowerLevel(String) int
+    }
+
+    SpyDeviceControlAdapter ..|> DeviceControlPort
+
+    style DeviceControlPort fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+</div>
+</div>
 
 <aside className="notes">
 **Notice what's NOT here:**
@@ -1400,9 +1564,8 @@ void reducesNonEssentialDevices_whenEnergyPriceExceedsThreshold() {
 
 ## Anti-Pattern: Static Methods
 
-<p style={{fontSize: '0.9em'}}>
+<div style={{fontSize: '0.8em'}}>
   Static methods are <strong>globally accessible</strong>, which means you can't substitute test implementations.
-</p>
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', marginTop: '0.5em'}}>
 
@@ -1412,42 +1575,47 @@ void reducesNonEssentialDevices_whenEnergyPriceExceedsThreshold() {
 
 ```java
 public class ScheduledTask {
-    public void runIfDue() {
-        // Static call - can't stub!
-        if (TimeUtils.isBusinessHours()) {
-            doWork();
-        }
+  public void runIfDue() {
+    // Static call - can't stub!
+    if (TimeUtils.isBusinessHours()) {
+      doWork();
     }
+  }
 }
 ```
 
+<div style={{ fontSize: '.9em' }}>
+We can wrap the method `isBusinessHours()` in a class...
+</div>
 </div>
 
-<div>
+<div className="fragment">
 
 **Testable**
 
 ```java
 public class ScheduledTask {
-    private final BusinessHoursChecker
-        hoursChecker;
+  private final BusinessHoursChecker
+      hoursChecker;
 
-    public ScheduledTask(
-        BusinessHoursChecker hoursChecker) {
-        this.hoursChecker = hoursChecker;
-    }
+  public ScheduledTask(
+      BusinessHoursChecker hoursChecker) {
+    this.hoursChecker = hoursChecker;
+  }
 
-    public void runIfDue() {
-        if (hoursChecker.isBusinessHours()) {
-            doWork();
-        }
+  public void runIfDue() {
+    if (hoursChecker.isBusinessHours()) {
+      doWork();
     }
+  }
 }
 ```
 
 </div>
 
 </div>
+</div>
+
 
 <aside className="notes">
 **The problem with static:**
@@ -1466,141 +1634,91 @@ public class ScheduledTask {
 
 <Slide>
 
-## Wrapping Static Methods
+## The Singleton Pattern
 
-<p style={{fontSize: '0.8em'}}>
-  Java provides `Clock` for time, but what about `System.getenv()` for environment variables?
-</p>
+<div style={{fontSize: '0.9em'}}>
+Singleton ensures only one instance of a class exists, accessed through a static method.
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', marginTop: '0em'}}>
-
-<div style={{ fontSize: '.8em' }}>
-
-**The Problem**
 
 ```java
-public class ApiClient {
-  public void connect() {
-    // Can't substitute this in tests!
-    String key = System.getenv("API_KEY");
-    // ...
+public class DatabaseConnection {
+  private static DatabaseConnection instance;
+
+  private DatabaseConnection() {
+    // private constructor — no one else can create one
   }
-}
-```
 
-</div>
-
-<div className="fragment" style={{ fontSize: '.7em' }}>
-
-**The Solution: Wrap It**
-
-```java
-public interface EnvironmentProvider {
-  String getEnv(String name);
-}
-
-public class ApiClient {
-  private final EnvironmentProvider env;
-
-  public void connect() {
-    String key = env.getEnv("API_KEY");
+  public static DatabaseConnection getInstance() {
+    if (instance == null) {
+      instance = new DatabaseConnection();
+    }
+    return instance;
   }
+
+  public Result query(String sql) { /* ... */ }
 }
 ```
 
-</div>
-
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.7em', marginTop: '0.5em', color: '#9370DB'}}>
-  Even better: a higher-level `CredentialProvider` that hides <em>how</em> credentials are obtained:
+<p className="fragment" >
+  This is good for efficiency but bad for safety.
 </p>
-
-```java
-public interface CredentialProvider {
-    String getApiKey();  // Domain concept, not "getEnv"
-}
-// Production: reads from env vars, secrets manager, or config file
-// Tests: returns a fixed test key
-```
 </div>
-
 <aside className="notes">
-**The pattern:**
-1. Identify the static call you can't control (`System.getenv`, `Math.random`, etc.)
-2. Create an interface that wraps it (`EnvironmentProvider`)
-3. Inject the interface instead of calling the static method directly
-4. Production: `SystemEnvironment` calls the real static method
-5. Tests: `TestEnvironment` returns controlled values
+**What is a singleton?**
+- Only one instance of the class can ever exist
+- Private constructor prevents external instantiation
+- Static method provides access to the single instance
 
-**Design consideration:**
-- Don't always wrap 1:1 with the static API
-- `CredentialProvider.getApiKey()` is better than `EnvironmentProvider.getEnv("API_KEY")`
-- Higher-level abstractions hide implementation details (env var vs secrets manager vs config file)
-- Think about what the *domain* needs, not what the *infrastructure* provides
+**Where students might encounter them:**
+- Database connections, logging, configuration
+- Common in older Java codebases and some design pattern textbooks
 
-**Common static dependencies to wrap:**
-- Time → Java's `Clock` (built-in!)
-- Random → wrap `Random` or use injectable seed
-- Environment variables → `EnvironmentProvider` or domain-specific wrapper
-- File system → `FileSystem` abstraction
+**Why it seems appealing:**
+- Convenient — no need to pass the object around
+- Guarantees one instance (e.g., one DB connection pool)
 
--> **Transition:** Another common anti-pattern...
+-> **Transition:** So what's the problem?
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Anti-Pattern: Singletons
-
-<p style={{fontSize: '0.9em'}}>
-  Singletons are globally accessible state that can't be replaced per-test.
-</p>
+## Why Singletons Hurt Testing
 
 ```java
-// Singleton - only one instance, globally accessible
-public class DatabaseConnection {
-    private static DatabaseConnection instance;
-
-    public static DatabaseConnection getInstance() {
-        if (instance == null) {
-            instance = new DatabaseConnection();
-        }
-        return instance;
-    }
-}
-
-// Code that uses the singleton
 public class UserService {
-    public User findUser(String id) {
-        // Can't substitute this for tests!
-        return DatabaseConnection.getInstance().query("SELECT ...");
-    }
+  public User findUser(String id) {
+    // Can't substitute this for tests!
+    return DatabaseConnection.getInstance()
+      .query("SELECT ...");
+  }
 }
 ```
 
-<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#f44336'}}>
-  ⚠ Every test uses the same connection. State leaks between tests.
+<div className="fragment" style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+<p style={{color: '#f44336'}}>
+  ⚠ Same static call problem — you can't swap in a test double.
 </p>
+<p>
+  But singletons add another issue: <strong>shared mutable state</strong>. One test's data leaks into the next.
+</p>
+</div>
 
 <aside className="notes">
-**Problems with singletons:**
-- Global state leaks between tests
-- Can't run tests in parallel
-- Can't substitute test implementation
+**Two problems in one:**
+1. Same as static methods — `getInstance()` is a static call, so you can't substitute it
+2. Shared state — every test sees the same instance, so data written by one test affects others
 
-**The fix:**
+**The fix is the same:**
 - Inject the dependency instead
-- Let a dependency injection framework manage lifecycle
+- `UserService` takes a `DatabaseConnection` (or better, an interface) in its constructor
 - Each test can provide its own instance
 
 -> **Transition:** Another smell...
 </aside>
 
 </Slide>
-
 <Slide>
 
 ## Anti-Pattern: Private Methods Needing Testing
@@ -1879,12 +1997,20 @@ private boolean hasSufficientBattery(
 
 ## Bonus Slide
 
+<div style={{display: 'flex', gap: '2em', alignItems: 'center', justifyContent: 'center'}}>
+
 <Img src="/img/lectures/web/l16-software-design-class.png"
-  width={600}
+  width={450}
   alt="Tweet from brombo reading: 'This is what every diagram in my software design class looks like'.
       Top part of diagram, labeled 'problem': Rectangles named 'thing 1' and 'thing 2' with lots of squiggly arrows between them.
       Bottom part of diagram, labeled 'solution': Same rectangles with neat arrows to and from a new rectangle named 'thing in the middle'."
  />
+
+<Img src="/img/lectures/web/l16-xkcd-imposter-syndrome.png"
+  width={450}
+  />
+
+</div>
 
 </Slide>
 
