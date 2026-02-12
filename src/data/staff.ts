@@ -134,8 +134,8 @@ export const staffMembers: StaffMember[] = [
     name: "Manav Kamleshbhai Dhamani",
     role: "ta",
     campus: "Boston",
-    bio: "",
-    headshot: "staff-placeholder.svg"
+    bio: "Second year MS CS student; enjoys astronomy, hiking, and chess.",
+    headshot: "manav_dhamani.jpg"
   },
   {
     name: "Amber Friar",

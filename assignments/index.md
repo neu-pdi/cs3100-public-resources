@@ -77,8 +77,8 @@ Assignments are structured to provide a steady, manageable pace throughout the s
   - **First assignment where AI assistants are allowed/encouraged**
     - Practice using AI for boilerplate generation and serialization code
     - Reflect on AI strengths/weaknesses for different task types
-- [**Lab 5: Domain Modeling**](/labs/lab5-domain-modeling)
-  - Create a domain model for Pawtograder course operations platform
+- [**Lab 5: Requirements Engineering**](/labs/lab5-requirements)
+  - Experience how ambiguous requirements lead to divergent interpretations
 - [**Lab 6: AI Coding Agents**](/labs/lab6-copilot)
   - Learn to effectively prompt AI for code generation
 
