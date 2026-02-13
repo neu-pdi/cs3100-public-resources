@@ -336,7 +336,7 @@ flowchart LR
 ```
 
 :::note Looking Ahead
-The module system is our first glimpse of how design principles scale beyond individual classes. Later in the course, we'll return to these ideas when we discuss **software architecture** ([Lecture 19](/lecture-notes/l19-architecture-design)) and **open source ecosystems** ([Lecture 23](/lecture-notes/l23-oss)). You'll see how the same tension between "what's public" and "what's implementation detail" plays out at even larger scales—between services, between teams, and between organizations.
+The module system is our first glimpse of how design principles scale beyond individual classes. Later in the course, we'll return to these ideas when we discuss **software architecture** ([Lecture 18](/lecture-notes/l18-architecture-design)) and **open source ecosystems** ([Lecture 23](/lecture-notes/l23-oss)). You'll see how the same tension between "what's public" and "what's implementation detail" plays out at even larger scales—between services, between teams, and between organizations.
 
 For now, the key insight is: **information hiding is fractal**. The same principle that makes a well-designed class easier to change also makes a well-designed library easier to change, and ultimately makes a well-designed system easier to change.
 :::
