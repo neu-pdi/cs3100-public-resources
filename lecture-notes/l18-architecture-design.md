@@ -1,10 +1,10 @@
 ---
-sidebar_position: 19
-lecture_number: 19
+sidebar_position: 18
+lecture_number: 18
 title: Thinking Architecturally
 ---
 
-In [L18](./l18-creation-patterns.md), we saw how patterns like Builder, Factory Methods, and Dependency Injection help us create and wire up individual objects. We ended with a glimpse of how these same principles apply at larger scales—services like `ImportService`, `ExportService`, and `LibraryService` that collaborate to form a complete application.
+In [L17](./l17-creation-patterns.md), we saw how patterns like Builder, Factory Methods, and Dependency Injection help us create and wire up individual objects. We ended with a glimpse of how these same principles apply at larger scales—services like `ImportService`, `ExportService`, and `LibraryService` that collaborate to form a complete application.
 
 But where do those service boundaries come from? How do we decide that "import" and "library management" should be separate concerns? This lecture is about **thinking architecturally**—stepping back from individual classes to see the shape of the whole system.
 

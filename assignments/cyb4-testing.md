@@ -25,8 +25,8 @@ You'll also implement `IngredientParser`, a utility that parses human-readable i
 
 By completing this assignment, you will demonstrate proficiency in:
 
-- **Designing application services** that orchestrate domain operations through ports ([L18: From Code Patterns to Architecture Patterns](/lecture-notes/l18-creation-patterns))
-- **Using dependency injection** to wire services with their dependencies ([L18](/lecture-notes/l18-creation-patterns))
+- **Designing application services** that orchestrate domain operations through ports ([L17: From Code Patterns to Architecture Patterns](/lecture-notes/l17-creation-patterns))
+- **Using dependency injection** to wire services with their dependencies ([L17](/lecture-notes/l17-creation-patterns))
 - **Testing with mocks** using Mockito to verify service behavior in isolation ([L15: Test Doubles and Isolation](/lecture-notes/l15-testing))
 - **Experiencing hexagonal testability** by testing services without any real adapters ([L16: Designing for Testability](/lecture-notes/l16-testing2))
 - **Writing parameterized tests** to efficiently test many input variations ([L15](/lecture-notes/l15-testing))
