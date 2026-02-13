@@ -1,17 +1,22 @@
-// https://claude.ai/share/91411c22-222b-47b5-b7e4-bd991c05c8c5
-// https://claude.ai/share/0e69d802-5558-466f-a0ae-b205ba4608d9
-
 import React from 'react';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 type Size = 'auto' | 'short' | 'medium' | 'long';
 
 interface QuoteSlideProps {
+  /** The quote text (without quotation marks - they are added automatically) */
   quote: string;
-  attribution?: string;
+  /** Who said the quote, displayed inside the blockquote */
+  author?: string;
+  /** Image source, publication info, or other metadata (displayed below the slide) */
+  credit?: string;
+  /** Path to an image (typically a portrait of the author) */
   imageSrc?: string;
+  /** Alt text for the image (defaults to author if not specified) */
   imageAlt?: string;
+  /** Color for the blockquote left border */
   accentColor?: string;
+  /** Controls font size and image height: 'short', 'medium', 'long', or 'auto' (default) */
   size?: Size;
 }
 
@@ -39,7 +44,8 @@ function getAutoSize(quote: string): keyof typeof sizePresets {
 
 export default function QuoteSlide({
   quote,
-  attribution,
+  author,
+  credit,
   imageSrc,
   imageAlt,
   accentColor = '#9370DB',
@@ -48,7 +54,6 @@ export default function QuoteSlide({
   const resolvedSize = size === 'auto' ? getAutoSize(quote) : size;
   const { fontSize, imageHeight } = sizePresets[resolvedSize];
 
-  // Handle baseUrl for absolute paths - call hook unconditionally
   const baseUrlResult = useBaseUrl(imageSrc || '');
   const resolvedImageSrc = imageSrc && imageSrc.startsWith('/')
     ? baseUrlResult
@@ -60,7 +65,7 @@ export default function QuoteSlide({
         {resolvedImageSrc && (
           <img
             src={resolvedImageSrc}
-            alt={imageAlt || 'Portrait'}
+            alt={imageAlt || author || 'Portrait'}
             style={{maxHeight: imageHeight, borderRadius: '4px'}}
           />
         )}
@@ -73,11 +78,21 @@ export default function QuoteSlide({
           margin: 0,
         }}>
           "{quote}"
+          {author && (
+            <footer style={{
+              fontSize: '0.7em',
+              fontStyle: 'normal',
+              color: '#666',
+              marginTop: '0.5em',
+            }}>
+              — {author}
+            </footer>
+          )}
         </blockquote>
       </div>
-      {attribution && (
-        <p style={{fontSize: '0.6em', color: '#999', marginTop: '0.5em'}}>
-          {attribution}
+      {credit && (
+        <p style={{fontSize: '0.5em', color: '#777', textAlign: 'left', marginTop: '0.5em'}}>
+          {credit}
         </p>
       )}
     </>
