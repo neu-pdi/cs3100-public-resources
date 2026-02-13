@@ -23,7 +23,7 @@ You'll create two key team documents—a **Team Charter** and a **Team Lexicon**
 
 By completing this assignment, you will demonstrate proficiency in:
 
-- **Establishing team working agreements** through explicit discussion of communication norms, availability, and conflict resolution ([L17: Teams and Collaboration](/lecture-notes/l17-teams))
+- **Establishing team working agreements** through explicit discussion of communication norms, availability, and conflict resolution ([L22: Teams and Collaboration](/lecture-notes/l22-teams))
 - **Creating shared vocabulary** through a team lexicon that ensures consistent naming conventions ([L5: Functional Programming and Readability](/lecture-notes/l5-fp-readability-reusability))
 - **Applying User-Centered Design** through personas, wireframes, and prototyping ([L27: User-Centered Design](/lecture-notes/l27-ucd))
 - **Considering accessibility** in interface design from the start ([L28: Accessibility and Inclusivity](/lecture-notes/l28-accessibility))
