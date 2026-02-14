@@ -4,7 +4,7 @@ lecture_number: 20
 title: Architectural Qualities
 ---
 
-In [L16 (Design for Testability)](./l16-testing2.md), we introduced **Hexagonal Architecture** (Ports and Adapters) as a way to separate domain logic from infrastructure, making code testable. That was architecture in service of a specific quality attribute: testability. In [L18](./l18-architecture-design.md), we identified service boundaries for CookYourBooks—`ImportService`, `LibraryService`, and `ExportService`—by applying heuristics about cohesion, coupling, and change.
+In [L16 (Design for Testability)](./l16-testing2.md), we introduced **Hexagonal Architecture** (Ports and Adapters) as a way to separate domain logic from infrastructure, making code testable. That was architecture in service of a specific quality attribute: testability. In [L18](./l18-architecture-design.md), we identified component boundaries for Pawtograder's autograder—the Solution Repo, Grading Action, and Pawtograder API—by applying heuristics about rate of change, actors, interface segregation, and testability.
 
 Now we zoom out to look at architectural styles more broadly—recurring structures that help organize entire applications. We'll see how these styles apply to CookYourBooks and how they affect quality attributes beyond just testability. 
 
@@ -32,7 +32,7 @@ This is the software engineering version of [piecemeal growth](./l18-architectur
 
 ## CookYourBooks: Applying Architecture to a Familiar Domain (5 minutes)
 
-We've been building CookYourBooks throughout the course. In [L17](./l17-creation-patterns.md), we saw how object-level patterns (Builder, Factory Methods, Dependency Injection) help construct and wire individual objects. In [L18](./l18-architecture-design.md), we identified service boundaries based on cohesion, coupling, and change vectors.
+We've been building CookYourBooks throughout the course. In [L17](./l17-creation-patterns.md), we saw how object-level patterns (Builder, Factory Methods, Dependency Injection) help construct and wire individual objects. In [L18](./l18-architecture-design.md), we used Pawtograder's autograder to explore how architectural heuristics—rate of change, actors, interface segregation, and testability—help us find component boundaries.
 
 Now let's see how architectural patterns help us structure the application as a whole.
 

@@ -154,7 +154,9 @@ The question shifts from "how do I create this object?" to "how do I wire up thi
 
 ### Preview: Thinking Architecturally
 
-Next lecture, we step back to ask: **where do service boundaries come from?** We mentioned `ImportService`, `ExportService`, and `LibraryService`—but how did we decide those were the right boundaries? 
+Next lecture, we step back to ask: **where do service boundaries come from?** We've been building services like `ImportService`, `ExportService`, and `LibraryService` for CookYourBooks—but how did we decide those were the right boundaries?
+
+We'll use a different system as our running example: **Pawtograder**, the autograder that grades your assignments. It has three components—a Solution Repo with config, a Grading Action, and the Pawtograder API—and we'll explore the heuristics that led to those boundaries. We'll also compare it to Orca, the previous grading system at Northeastern, to see how different requirements lead to different architectural choices.
 
 We'll explore:
 - What distinguishes "architecture" from "design"
