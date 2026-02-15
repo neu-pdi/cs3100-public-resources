@@ -1,24 +1,82 @@
 ---
 sidebar_position: 21
 lecture_number: 21
-title: Distributed Architecture, Networks, and Security
+title: "Distributed Architecture: Networks, Microservices, and Security"
 ---
 
-In [L19](./l19-monoliths.md), we explored architectural patterns for applications that run as a single process—Hexagonal Architecture, Layered Architecture, Pipelined Architecture. These patterns help organize code within a single deployment unit.
+In [L19](./l19-monoliths.md), we explored architectural styles for organizing code within a single deployment unit—Hexagonal Architecture, Layered Architecture, Pipelined Architecture—all living inside a monolith. We ended with a troubling observation: once components communicate over a network, everything changes.
 
-But CookYourBooks doesn't live in isolation. When users can share the Table of Contents for their cookbooks, and potentially even share recipes, notes and reviews, we're suddenly dealing with a fundamentally different kind of system: one where components communicate over networks. This lecture explores what changes—and what stays the same—when we move from monolithic to distributed architecture.
+This lecture explores that change. We'll examine **client-server architecture**, the **fallacies of distributed computing**, and the **microservices architecture** that embraces distribution fully. We'll see how Pawtograder handles (or struggle with) the challenges of distributed systems—and why security becomes an architectural concern the moment data crosses a network boundary.
 
 ## Client-Server Architecture (10 minutes)
 
 The **client-server architecture** separates systems into two roles: clients make requests, servers respond to them. The server centralizes data and logic; multiple clients can connect simultaneously. This is perhaps the most ubiquitous architectural style—every web application, every mobile app talking to a backend, every database connection follows this pattern.
 
-CookYourBooks has a natural client-server relationship: the **CYB Table of Contents Service**. This is a cloud service that maintains a central catalog of cookbook tables of contents. Once one user imports the recipe list from a cookbook, that table of contents becomes searchable by all users. Think of it as a collaborative index—you benefit from everyone else's work.
+Our running example, Pawtograder, exhibits a client-server relationship:
 
-- The desktop application (client) queries the ToC Service (server) to search for recipes across all known cookbooks
-- When a user imports a cookbook, the app can upload its table of contents to the shared service
-- Even locally, JavaFX views (clients) request data from services (servers within the same process)
+Pawtograder has a clear client-server boundary between the Grading Action (client) and the Pawtograder API (server):
+- The action calls `createSubmission()` to register a grading run
+- The action calls `submitFeedback()` to post results
+- The API never calls the action—communication is always client-initiated
 
-The benefits are clear: centralized data, shared state across users, and network effects (the more users contribute, the more valuable the service becomes). The constraints are significant: the server becomes a single point of failure, and network latency affects every search. For CookYourBooks, this is why local recipe management works offline—users shouldn't be unable to view their own recipes just because their internet is down.
+```
+┌─────────────────────────┐         ┌─────────────────────────┐
+│     Grading Action      │         │    Pawtograder API      │
+│   (GitHub Actions VM)   │         │   (Web services)        │
+│                         │  HTTP   │                         │
+│  ┌───────────────────┐  │ ──────► │  ┌───────────────────┐  │
+│  │ createSubmission()│  │         │  │ Submission Record │  │
+│  │ submitFeedback()  │  │ ◄────── │  │ Grade Storage     │  │
+│  └───────────────────┘  │         │  └───────────────────┘  │
+└─────────────────────────┘         └─────────────────────────┘
+         CLIENT                              SERVER
+```
+
+**Benefits of client-server:**
+- Centralized control and shared state across clients
+- Easier updates (change the server once, all clients benefit)
+- Server can enforce business rules and security policies
+
+**Constraints:**
+- The server becomes a single point of failure
+- Network latency affects every operation
+- Requires handling network errors, timeouts, and retries
+
+## How Services Communicate: REST APIs (5 minutes)
+
+When clients and servers communicate over networks, they need a common protocol. **HTTP** (Hypertext Transfer Protocol) is the foundation of web communication—it's how your browser talks to websites, how mobile apps talk to backends, and how services talk to each other.
+
+An HTTP request has three key parts:
+1. **Method** (also called "verb"): What action you want to perform
+2. **URL**: Which resource you're targeting (e.g., `/submissions/123`)
+3. **Body** (optional): Data you're sending (e.g., the contents of a new submission)
+
+The server responds with a **status code** (200 = success, 404 = not found, 500 = server error) and optionally a response body.
+
+**REST** (Representational State Transfer) is an architectural style built on HTTP that provides conventions for how to structure APIs. Understanding REST helps you read API documentation, design interfaces between services, and reason about distributed systems.
+
+REST organizes APIs around **resources**—nouns representing domain concepts (submissions, assignments, students). Clients manipulate resources using standard HTTP methods:
+
+| Method | Purpose | Example |
+|--------|---------|---------|
+| GET | Retrieve a resource | `GET /assignments/hw1` |
+| POST | Create a new resource | `POST /submissions` with body containing submission data |
+| PUT | Replace a resource entirely | `PUT /assignments/hw1` with complete new assignment |
+| PATCH | Update part of a resource | `PATCH /submissions/123` to update just the score |
+| DELETE | Remove a resource | `DELETE /submissions/123` |
+
+**Pawtograder's API is RESTful:**
+```
+POST /functions/v1/createSubmission     # Create new submission record
+POST /functions/v1/submitFeedback       # Submit grading results
+GET  /rest/v1/submissions?student_id=X  # List submissions for a student
+```
+
+REST has become ubiquitous because it maps naturally onto HTTP (which every platform supports), uses standard status codes for errors (404 = not found, 401 = unauthorized, 500 = server error), and is stateless—each request contains all information needed to process it, making horizontal scaling straightforward.
+
+**Alternative: GraphQL** is another API style where clients specify exactly which fields they need, avoiding over-fetching. It's powerful for complex frontends with varying data needs, but adds complexity. We won't cover it in depth, but you should know it exists—many modern APIs offer GraphQL alongside REST.
+
+The key architectural insight: REST enforces a uniform interface across your entire API. Once you understand how to interact with one resource, you understand them all. This consistency reduces cognitive load for API consumers and makes services more composable.
 
 ## The Fallacies of Distributed Computing (15 minutes)
 
@@ -30,47 +88,58 @@ When components communicate over a network, everything gets harder. Peter Deutsc
 
 Networks fail. Cables get unplugged, routers crash, cloud providers have outages. Code that assumes `httpClient.send()` will always succeed is fragile code.
 
-*CookYourBooks example*: User searches the ToC Service for "chocolate soufflé recipes." The request times out. What happens? If we assumed reliability, maybe the app hangs forever or crashes. A robust design shows an error message and offers retry—or degrades gracefully to searching only local recipes.
+*Pawtograder example*: The Grading Action tries to submit feedback after grading completes. The request times out. What happens? If we assumed reliability, the student never sees their grade. Pawtograder implements retry logic with exponential backoff—if the first attempt fails, wait 1 second and try again; if that fails, wait 2 seconds; then 4 seconds. Eventually, either the request succeeds or we give up and log an error.
 
 **2. Latency is zero**
 
 Every network call takes time. Local method calls take nanoseconds; network calls take milliseconds to seconds. Code that makes many sequential network calls will be slow.
 
-*CookYourBooks example*: When uploading a cookbook's table of contents, suppose we upload each recipe entry as a separate API call. If the cookbook has 200 recipes and each call takes 100ms, that's 20 seconds of waiting. Better: batch the entire ToC in one request, or provide progress feedback.
+*Pawtograder example*: The Grading Action must register the submission, download the grader tarball, run tests, and submit feedback. If we reported each test result as a separate API call (100 tests × 100ms = 10 seconds of network overhead), grading would be painfully slow. Instead, the action batches all results into a single `submitFeedback()` call.
 
 **3. Bandwidth is infinite**
 
-Networks have limited capacity. Sending a 10MB payload over a mobile connection is different from sending it over fiber.
+Networks have limited capacity. Sending large payloads over constrained connections is problematic.
 
-*CookYourBooks example*: When uploading a table of contents, should we include thumbnail images of each recipe? That might be nice for search results, but it dramatically increases upload size. The tradeoff: richer data vs. faster transfers.
+*Pawtograder example*: The Grading Action downloads the grader tarball (archive of the instructor's solution repo) from Pawtograder's API. For a large assignment with many test files, this could be megabytes. Pawtograder includes a SHA hash to verify integrity and enable caching—if the grader hasn't changed, skip the download entirely.
 
 **4. The network is secure**
 
 Data crossing networks can be intercepted, modified, or spoofed. Every network boundary is a potential attack surface.
 
-*CookYourBooks example*: If users can contribute to the ToC Service, how do we prevent spam or malicious entries? If we use API keys to identify users, those keys are sensitive. We need to think about where secrets live and how authentication happens.
+*Pawtograder example*: The Grading Action authenticates using a GitHub OIDC token—a cryptographically signed assertion from GitHub that proves the action is running in a specific repository. Without this, anyone could POST fake grades to the API. We'll explore security in depth later in this lecture.
 
 **5. Topology doesn't change**
 
 Network paths change. IP addresses change. Servers move. DNS entries update. Code that caches network locations can break when things move.
 
-*CookYourBooks example*: What happens if we need to move the ToC service to a new host?
+*Pawtograder example*: The Pawtograder API URL is configured for each assignment, allowing migration to different API hosts as needed.
 
 **6. There is one administrator**
 
 In distributed systems, different parts are controlled by different organizations. You can't control what the intermediate service operators do with their servers, what your user's ISP does with traffic, or what corporate firewalls block.
 
-*Northeastern University Example:* Northeastern University contracts with the firm [Palo Alto Networks](https://www.paloaltonetworks.com/) to filter all campus network traffic (both inbound and outbound) for malware and other security threats. When Palo Alto Networks arbitrarily decides that CookYourBooks is malware, student learning is disrupted and the university claims no responsibility for the outage, for repairing it, or for preventing similar situations from recurring. 
+*Northeastern University Example:* Northeastern University contracts with the firm [Palo Alto Networks](https://www.paloaltonetworks.com/) to filter all campus network traffic (both inbound and outbound) for malware and other security threats. When Palo Alto Networks arbitrarily decides that Pawtograder's development environment is malware, student learning is disrupted and the university claims no responsibility for the outage, for repairing it, or for preventing similar situations from recurring. This happens all of the time.
 
 **7. Transport cost is zero**
 
-Network calls have costs: computational (serialization, encryption), monetary (API pricing, bandwidth fees), and energy (radio transmission, data center processing).
+Network calls have costs: computational (serialization, encryption), monetary (API pricing, bandwidth fees), and energy (radio transmission, data center processing). These costs are often invisible during development but accumulate rapidly in production.
 
-*CookYourBooks example*: If the ToC Service is hosted in the cloud, every API call costs the service operators money. A design that queries on every keystroke (instead of waiting for the user to press Enter) likely makes the service unsustainably expensive.
+*Pawtograder example*: Pawtograder uses self-hosted GitHub Actions runners, so we don't currently pay per-minute costs. But GitHub has announced they'll start metering self-hosted runner usage soon. When that happens, every grading run will have a dollar cost—and a design that spins up heavyweight VMs or makes excessive API calls will be unsustainably expensive. 
+
+**Energy implications**: Every network request requires:
+- CPU cycles to serialize data to JSON, then deserialize it
+- Network interface power to transmit packets
+- Router and switch power along the network path
+- Server CPU cycles to process the request
+- Data center cooling to dissipate the heat from all of the above
+
+For Pawtograder, batching test results into a single `submitFeedback()` call instead of 100 individual calls doesn't just save latency—it saves energy. Multiply by 6,000 grading runs per semester, and architectural decisions about API granularity have measurable environmental impact. This is why **sustainability** is becoming an architectural quality attribute alongside performance and scalability.
 
 **8. The network is homogeneous**
 
 Networks involve many different technologies, protocols, and vendors. Your carefully-tested code might behave differently on a user's unusual network configuration.
+
+*Pawtograder example*: Our self-hosted runners are distributed across multiple data centers. A grading job at one data center sees one Docker image cache; a job at another data center sees a different cache. The same assignment might grade in 30 seconds on a warm cache or 3 minutes on a cold one—and which you get depends on network routing decisions we don't control.
 
 ### Designing for an Unreliable World
 
@@ -94,13 +163,63 @@ while (response == null && attempts < 3) {
     }
 }
 if (response == null) {
-    return searchLocalRecipesOnly(query);
+    logError("Failed to submit feedback after 3 attempts");
+    // Degrade gracefully: student sees "grading in progress" rather than crash
 }
 ```
 
-**Graceful degradation**: When a service is unavailable, offer reduced functionality rather than complete failure. CookYourBooks can search only local recipes when the ToC Service is unreachable—not ideal, but better than nothing.
+**Graceful degradation**: When a service is unavailable, offer reduced functionality rather than complete failure.
 
-**Idempotent operations**: Design requests so that retrying them is safe. If the user clicks "Import" and the network fails mid-request, can they safely click again without creating duplicate recipes?
+**Idempotent operations**: Design requests so that retrying them is safe. If the Grading Action POSTs feedback and the network fails mid-request, can it safely POST again without creating duplicate grades? Pawtograder uses submission IDs to ensure idempotency—submitting feedback for the same submission ID twice just overwrites the previous result.
+
+## Microservices Architecture (15 minutes)
+
+In L19, we introduced microservices briefly. Now that we understand the challenges of distributed systems, we can appreciate both the benefits and the costs of this architectural style.
+
+A **microservices architecture** decomposes a system into small, independently deployable services, each responsible for a specific business capability. Services communicate over the network (typically HTTP/REST or message queues) and each manages its own data.
+
+### Why Microservices?
+
+**Independent scaling**: In a monolith, if grading is the bottleneck, you must scale the entire application. With microservices, you can scale just the grading service.
+
+**Isolated failures**: A bug in the Discord bot shouldn't crash the grading system. With separate services, failures are contained (if designed well).
+
+**Team autonomy**: Small teams can own services end-to-end. The team maintaining the Grading Action doesn't need to coordinate with the team maintaining the API—they just agree on the interface.
+
+**Technology flexibility**: Different services can use different technologies. Pawtograder's components are all TypeScript, but they run on different platforms: the Grading Action runs on GitHub Actions runners and the API and Discord bot run on Supabase Edge Functions (Deno serverless runtime). Each deployment target has different constraints and capabilities.
+
+### The Cost of Microservices
+
+**Distributed systems complexity**: Every one of the eight fallacies applies. Network failures, latency, eventual consistency, distributed debugging—all become your daily reality.
+
+**Operational overhead**: Many services means many builds, many deploys, many logs to monitor. Pawtograder has separate CI/CD pipelines for each component.
+
+**Data consistency challenges**: No transactions across services. If the Grading Action submits feedback but the grade notification fails, the data is temporarily inconsistent. 
+
+**Testing complexity**: Integration testing requires running multiple services. Pawtograder's end-to-end tests spin up a complete copy of the system in a test environment.
+
+**Energy overhead**: In a monolith, calling a method costs nanoseconds and negligible energy. In microservices, that same call becomes an HTTP request requiring serialization, network transmission, and deserialization—orders of magnitude more energy per interaction. A "chatty" microservices architecture where services make many small calls to each other can consume significantly more energy than an equivalent monolith. This is another reason why the "monolith-first" approach makes sense: don't pay the energy cost of distribution until you need the benefits.
+
+### Where Do Our Running Examples Fall?
+
+| Aspect | Bottlenose | Pawtograder |
+|--------|------------|-------------|
+| **Architecture** | Monolith + one microservice (Orca) | True microservices |
+| **Why distributed?** | Isolation for untrusted code | Team autonomy, platform leverage |
+| **Communication** | HTTP + message queue | HTTP APIs |
+| **Data** | Shared PostgreSQL | Each service owns its data |
+
+:::tip The Distributed Monolith Anti-pattern
+The worst outcome is a "distributed monolith"—services that are deployed separately but so tightly coupled that they must be changed and deployed together. You get all the operational complexity of microservices with none of the benefits.
+
+Signs you have a distributed monolith:
+- Changing one service requires changing multiple others
+- Services share a database schema
+- You can't deploy services independently
+- Teams must coordinate every change
+
+If you find yourself here, consider either properly decoupling the services (with clear boundaries and contracts) or collapsing them back into a monolith.
+:::
 
 ## Network-Related Requirements and Patterns (10 minutes)
 
@@ -112,15 +231,15 @@ When designing distributed systems, several quality attributes become critical. 
 ### Performance: Latency, Throughput, and Resource Utilization
 
 - **Latency**: Time for a single operation to complete. Users notice latency above ~100ms.
-- **Throughput**: Operations per unit time. Can the system handle peak load?
+- **Throughput**: Operations per unit time. Can the system handle peak load (near-deadline submission spikes)?
 - **Resource utilization**: How efficiently are compute, memory, and bandwidth used?
 
 Strategies:
 
-- **Caching**: Store frequently-accessed data closer to where it's needed. The ToC Service might cache popular cookbook searches in memory rather than querying the database every time. CookYourBooks could cache recent search results locally. This improves latency but may result in users seeing stale data.
-- **Request batching**: Combine multiple small requests into one larger request. Instead of 100 API calls for 100 recipes, send one call with all 100. This improves throughput, but may result in increased latency for the first response.
-- **Asynchronous processing**: Don't block the UI while waiting for network responses. Fire off the request, let the user continue working, update when the response arrives.
-- **Load balancing**: Distribute requests across multiple servers. If the ToC Service has three servers, a load balancer can route each request to the least-busy one.
+- **Caching**: Store frequently-accessed data closer to where it's needed. Pawtograder caches the grader tarball by SHA—if it hasn't changed, skip the download.
+- **Request batching**: Combine multiple small requests into one larger request. The Grading Action sends all test results in a single `submitFeedback()` call, not one call per test.
+- **Asynchronous processing**: Don't block while waiting for network responses. Bottlenose enqueues grading jobs and returns immediately; students see "grading in progress" while results trickle in.
+- **Load balancing**: Distribute requests across multiple servers. GitHub Actions inherently load-balances by spinning up separate runners for each submission.
 
 ### Reliability: Fault Tolerance, Availability, and Recoverability
 
@@ -130,10 +249,10 @@ Strategies:
 
 Strategies:
 
-- **Redundancy**: Run multiple instances of critical components. If one ToC Service server crashes, others continue serving requests. Data is replicated across multiple storage systems. Replication is harder than it seems (more next lecture).
-- **Health checks**: Regularly verify that components are functioning. A load balancer pings each server every few seconds; if a server stops responding, it's removed from rotation. 
-- **Circuit breakers**: When a service is failing, stop sending it requests temporarily. If the ToC Service returns errors 50% of the time, "trip the circuit" and fail fast locally rather than overwhelming a struggling service.
-- **Failover mechanisms**: Automatically switch to backup systems when primary systems fail. If the primary database becomes unavailable, promote the replica to primary.
+- **Redundancy**: Run multiple instances of critical components. Supabase (Pawtograder's backend) runs replicated PostgreSQL under the hood.
+- **Health checks**: Regularly verify that components are functioning. Orca pings Bottlenose periodically; if it can't connect, grading jobs wait.
+- **Circuit breakers**: When a service is failing, stop sending it requests temporarily. If the Pawtograder API returns errors 50% of the time, the Grading Action could "trip the circuit" and fail fast rather than overwhelming a struggling service.
+- **Failover mechanisms**: Automatically switch to backup systems when primary systems fail.
 
 ### Scalability: Horizontal and Vertical
 
@@ -142,98 +261,92 @@ Strategies:
 
 Strategies:
 
-- **Stateless services**: Design services so any instance can handle any request. No "sticky sessions" that tie a user to a specific server. This makes horizontal scaling straightforward—just add more instances.
-- **Database sharding**: Maintain stateful services, but split data across multiple instances of the service. Cookbooks A-M on one server, N-Z on another. Increases capacity but adds complexity.
-- **CDN (Content Delivery Network)**: For static content (images, CSS, JS), use globally-distributed edge servers. Users download from nearby servers rather than a single origin.
+- **Stateless services**: Design services so any instance can handle any request. The Grading Action is completely stateless—each run is independent. This makes horizontal scaling trivial (GitHub just spins up more runners).
+- **Database sharding**: Split data across multiple database instances. Assignments A-M on one server, N-Z on another.
+- **CDN (Content Delivery Network)**: For static content, use globally-distributed edge servers.
 
-For CookYourBooks as a desktop app, scalability is less about handling millions of users and more about handling large libraries (thousands of recipes) efficiently on typical hardware. But if the ToC Service becomes popular, these strategies might become more important.
+**Energy tradeoff**: Horizontal scaling offers elasticity—spin up instances during deadline rushes, spin them down at 3 AM. This *can* be more energy-efficient than a vertically-scaled server that's oversized for average load but necessary for peaks. However, horizontal scaling also means more network communication (coordination, load balancing, distributed state). The most energy-efficient architecture depends on your traffic patterns: steady load often favors vertical; bursty load often favors horizontal with aggressive scale-to-zero.
 
 ## Security as an Architectural Concern (15 minutes)
 
-Security isn't a feature you bolt on at the end—it's an architectural concern that shapes design decisions throughout.
+Security isn't a feature you bolt on at the end—it's an architectural concern that shapes design decisions throughout. The moment components communicate over a network, you must think about who can send requests, whether data can be intercepted, and what happens if an attacker compromises one component.
 
 ### Authentication and Authorization
 
 **Authentication**: Proving identity. "Who are you?"
 **Authorization**: Checking permissions. "What are you allowed to do?"
 
-*CookYourBooks example*: The ToC Service might require users to create an account (authentication). Free-tier users might be limited to 100 searches per day, while contributors who've uploaded ToCs get unlimited searches (authorization). Where do credentials live? How do we prevent them from leaking?
+*Pawtograder example*: The Grading Action authenticates to the API using a GitHub OIDC token. This token is simply a short JSON string that is cryptographically signed by GitHub and includes information like:
+- The request is coming from a GitHub Actions workflow (so we can trust the workflow is running in a specific repository)
+- The workflow is running in a specific repository (e.g., `cs3100-sp26/hw1-student123`) and on a specific git reference
+
+The API then authorizes the request: is this repository allowed to submit to this assignment? Is the deadline still open? Is this student enrolled?
 
 ### Trust Boundaries
 
 A **trust boundary** is a line in your architecture where you stop trusting data. Anything crossing that boundary must be validated.
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    User's Machine                        │
-│   ┌─────────────┐      ┌─────────────────────────┐      │
-│   │ User Input  │─────►│     CookYourBooks       │      │
-│   └─────────────┘      │                         │      │
-│   TRUST BOUNDARY       │  ┌─────────────────┐    │      │
-│   ==================   │  │  Recipe Parser   │    │      │
-│                        │  └────────┬────────┘    │      │
-│                        │           │             │      │
-│                        └───────────┼─────────────┘      │
-└────────────────────────────────────┼────────────────────┘
-                                     │ TRUST BOUNDARY
-                     ================│=================
-                                     ▼
-                        ┌─────────────────────────┐
-                        │    CYB ToC Service       │
-                        │   (External Service)     │
-                        └─────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                    GitHub Actions (untrusted)                   │
+│   ┌─────────────────────────────────────────────────────────┐   │
+│   │                  Grading Action                         │   │
+│   │  - Runs student-provided code                           │   │
+│   │  - Could be modified by student (fork attack)           │   │
+│   │  - Reports grades back to API                           │   │
+│   └─────────────────────────────────────────────────────────┘   │
+└──────────────────────────────────┬──────────────────────────────┘
+                                   │ TRUST BOUNDARY
+               ====================│====================
+                                   ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    Pawtograder API (trusted)                    │
+│   - Verifies OIDC token signature                               │
+│   - Checks repository permissions                               │
+│   - Validates submission data                                   │
+│   - Never trusts the action to report its own identity          │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-Code that runs in an untrusted environment (like the desktop application) cannot be implicitly trusted, as users may be able to tamper with it. Hence, the ToC service **must not** rely on the desktop application to, for example:
-- Report that a given user is logged in
-- Report that a recipe is in a given user's library
-- Produce authentic recipe data
+The Grading Action runs in an environment the student could theoretically tamper with (by forking the action). The API **must not** trust the action to:
+- Report its own repository name (extracted from the verified OIDC token instead)
+- Report accurate test results (the action could lie about passing tests)
+- Report the correct submission time
 
-Data from users (file uploads, text input) crosses a trust boundary—it could be malicious. When the ToC service receives data from the desktop application, it must validate it to ensure it is authentic and not malicious.
+Wait—how can we trust test results if the action could lie? This is a fundamental tension in distributed autograding. Pawtograder mitigates it through:
+- **Workflow validation**: The grader tarball is only returned if the workflow is not tampered with and authorized to run
+- **Instructor review**: Suspicious submissions (perfect scores, unusual code patterns such as accessing instructor test files) can be flagged for manual review
+- **Log preservation**: The full grading log is stored, so instructors can verify results
+- **Detection over prevention**: Some attacks are caught after the fact rather than prevented
 
 ### The CIA Triad
 
 Security requirements are often expressed in terms of three properties:
 
 **Confidentiality**: Sensitive information is only accessible to authorized parties.
-- User credentials must not leak
-- A user's personal notes and ratings shouldn't be visible to others
-- Uploaded ToC data should only be attributed to users who opt in
+- Student grades shouldn't leak to other students
+- Solution code shouldn't be exposed to students
+- API tokens must be kept secret
 
 **Integrity**: Data is accurate and hasn't been tampered with.
-- Recipe data shouldn't be corrupted in transit
-- Import/export should preserve recipe content exactly
-- Users should be able to trust that their recipes weren't modified
+- Grades should reflect actual test results
+- Student submissions shouldn't be modified in transit
+- The grader tarball should match what the instructor uploaded
 
 **Availability**: Systems are accessible when users need them.
-- The app should work offline for core functionality
-- Network issues shouldn't corrupt local data
-- Cloud service outages shouldn't brick the application
+- Students should be able to submit assignments before deadlines
+- Grading should complete in reasonable time
+- Denial of service attacks shouldn't take down the system
 
-### Practical Security for CookYourBooks
+### Practical Security for Distributed Systems
 
-1. **Credential management**: Store user tokens securely (not in source code), use the OS credential store or secure storage
-2. **Input validation**: Never trust data from files, user input, or API responses. Validate and sanitize.
-3. **HTTPS everywhere**: All network communication should be encrypted
-4. **Minimal data transmission**: Don't send more data than necessary to the ToC Service
-5. **Error messages**: Don't leak sensitive information in error messages
-
-## CookYourBooks: Local vs. Cloud Search as Architectural Decision (5 minutes)
-
-Our `RecipeSearchService` port abstracts over local search (just your recipes) and cloud search (the ToC Service). This architectural decision has network implications:
-
-| Concern | Local Search | Cloud ToC Service |
-|---------|--------------|-------------------|
-| Network dependency | None | Full |
-| Latency | Consistent (~10ms) | Variable (100ms-2s) |
-| Coverage | Only your recipes | All contributed cookbooks |
-| Cost | CPU time only | Service hosting costs |
-| Privacy | Data stays local | Queries visible to service |
-| Availability | Always | Depends on service |
-
-The Hexagonal Architecture we discussed in L21 makes this choice swappable—users can search locally when offline and benefit from the cloud service when connected. But the *architectural thinking* that led us to create that abstraction was informed by understanding network tradeoffs.
+1. **Credential management**: Store tokens securely. Rotate credentials periodically.
+2. **Input validation**: Never trust data from network requests. Validate and sanitize everything.
+3. **HTTPS everywhere**: All network communication should be encrypted. HTTP traffic can be intercepted and modified.
+4. **Minimal data transmission**: Don't send more data than necessary. The Grading Action sends only final results, not raw test output.
+5. **Principle of least privilege**: Each component should have only the permissions it needs. The Grading Action can submit grades but can't modify course settings.
+6. **Error messages**: Don't leak sensitive information. "Invalid token" is safer than "Token for user jdoe expired at 2024-03-15."
 
 ---
 
-In the next lecture, we'll explore **Serverless Architecture**—an architectural style that embraces distributed computing fully, letting cloud providers manage infrastructure while you focus on business logic. Serverless pushes many of the concerns we discussed today (scaling, availability, security) to the platform level—with its own tradeoffs.
-
+**In the next lecture**, we'll explore **Serverless Architecture**—an architectural style that embraces distributed computing fully, letting cloud providers manage infrastructure while you focus on business logic. Serverless pushes many of the concerns we discussed today (scaling, availability, security) to the platform level—with its own tradeoffs. We'll see how Pawtograder leverages serverless patterns extensively.
