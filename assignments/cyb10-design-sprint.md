@@ -28,7 +28,7 @@ By completing this assignment, you will demonstrate proficiency in:
 - **Applying User-Centered Design** through personas, wireframes, and prototyping ([L27: User-Centered Design](/lecture-notes/l27-ucd))
 - **Considering accessibility** in interface design from the start ([L28: Accessibility and Inclusivity](/lecture-notes/l28-accessibility))
 - **Evaluating usability** using Nielsen's heuristics ([L24: Usability](/lecture-notes/l24-usability))
-- **Connecting design to architecture** by mapping ViewModels to existing services ([L19: Thinking Architecturally](/lecture-notes/l19-architecture-design))
+- **Connecting design to architecture** by mapping ViewModels to existing services ([L19: Thinking Architecturally](/lecture-notes/l18-architecture-design))
 
 ## AI Policy for This Assignment
 
