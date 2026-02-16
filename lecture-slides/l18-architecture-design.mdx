@@ -1220,6 +1220,7 @@ public interface Builder {
     BuildResult build(Path projectDir, BuildConfig config);
     List<TestResult> parseTestResults(Path reportDir);
     Optional<LintResult> lint(Path projectDir, LinterConfig config);
+    Optional<List<MutantResult>> mutationTest(Path projectDir, MutationConfig config);
 }
 
 // GradleBuilder for Java, PythonScriptBuilder for Python
