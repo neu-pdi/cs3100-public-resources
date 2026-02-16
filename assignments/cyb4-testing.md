@@ -1301,7 +1301,7 @@ This assignment involves significant design decisions. Poor design choices compo
 
 Review the lectures on good design before implementing:
 - [L16: Designing for Testability](/lecture-notes/l16-testing2) — why facades with many responsibilities are hard to test, and how to structure code for testability
-- [L18: From Code Patterns to Architecture Patterns](/lecture-notes/l18-creation-patterns) — service layers, dependency injection, and separating coordination from computation
+- [L17: From Code Patterns to Architecture Patterns](/lecture-notes/l17-creation-patterns) — service layers, dependency injection, and separating coordination from computation
 
 The principle: each class should have one job. Services coordinate; parsers parse; aggregators aggregate.
 
