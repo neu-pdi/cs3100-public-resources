@@ -18,7 +18,7 @@ Each team member will create personas, wireframes, and accessibility considerati
 **Due:** Thursday, March 26, 2026 at 11:59 PM Boston Time
 
 **Prerequisites:** 
-- [Team Charter](/assignments/team-charter) must be complete (this established your team's working agreements and shared vocabulary)
+- [Team Charter](/assignments/team-charter) must be complete (this established your team's working agreements)
 - A5 solution (provided) — you should be familiar with the service layer architecture and CLI implementation
 
 ## Learning Outcomes
@@ -99,7 +99,7 @@ This doesn't need to be high-fidelity—annotated sketches showing how features 
 
 ### 3. User-Facing Terminology
 
-Building on your Team Lexicon from the Team Charter, finalize the terminology users will see in the UI:
+Establish the terminology users will see in the UI. Consistency in naming reduces confusion:
 
 - **RecipeCollection** → "Cookbook" (Users think in cookbooks, not collections)
 - **Library** → "My Cookbooks" (Friendly, possessive)
