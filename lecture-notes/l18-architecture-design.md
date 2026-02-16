@@ -379,6 +379,7 @@ public interface Builder {
     BuildResult build(Path projectDir, BuildConfig config);
     List<TestResult> parseTestResults(Path reportDir);
     Optional<LintResult> lint(Path projectDir, LinterConfig config);
+    Optional<List<MutantResult>> mutationTest(Path projectDir, MutationConfig config);
 }
 
 // GradleBuilder for Java, PythonScriptBuilder for Python
@@ -577,7 +578,7 @@ Pawtograder's grading pipeline grew this way. The first version of the action co
 | Feature | When it was added | What prompted it |
 |---------|------------------|------------------|
 | **Line-level feedback comments** | After instructors asked for richer feedback | A `comment_script` hook lets any external script attach comments to specific lines of student code |
-| **Detailed hints for mutants not detected** | After mutation testing revealed that students struggled to understand why certain mutants weren't caught | The `mutationTest()` method returns detailed feedback on each mutant (configurd via `pawtograder.yml`), not just a score |
+| **Detailed hints for mutants not detected** | After mutation testing revealed that students struggled to understand why certain mutants weren't caught | The `mutationTest()` method returns detailed feedback on each mutant (configured via `pawtograder.yml`), not just a score |
 | **Dependency-based scoring** | After multi-part assignments revealed the need | If Part 2 depends on Part 1 and Part 1 fails, Part 2 shouldn't run—avoids cascading confusing failures |
 
 Neither of these features were planned in the original design document. But—and this is the critical point—**the architecture made each addition cheap** because the right boundaries were in place from the start.

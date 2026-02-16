@@ -952,7 +952,7 @@ graph TD
 
 <Slide>
 
-## Comparing Boundaries: Where Does Intelligence Live?
+## Comparing Boundaries: Two approaches for grading student code
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.7em', marginTop: '1em'}}>
 
@@ -1649,8 +1649,8 @@ Diagrams show <em>what</em>. <strong>ADRs capture <em>why</em></strong>. An ADR 
 **Consequences:**
 - ✅ **Security:** Students strictly cannot see test code (it's never in their repo). Student code *does* run alongside instructor code, but the design ensures that a student who submits a trojan horse to exfiltrate the secret grader is trivially detected.
 - ✅ **Changeability:** Instructors can update tests after assignment release without student pull.
-- ⚠️ **Reliability:** Grading requires active network connection to Pawtograder API.
-- ⚠️ **Complexity:** Needs OIDC auth flow to get the download URL and ensure that student code is immutably recorded before receiving access to the grader code.
+- ⚠️ **Reliability:** Grading requires active network connection to Pawtograder API, adding more points of failure.
+- ⚠️ **Complexity:** Needs a complex auth flow to get the download URL and ensure that student code is immutably recorded before receiving access to the grader code.
 
 </div>
 
