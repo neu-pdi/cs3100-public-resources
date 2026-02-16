@@ -81,7 +81,7 @@ How well must the system perform? Quality attributes (also called non-functional
 | **Testability** | Grading logic should be testable without deploying to GitHub or Pawtograder. | [L16: Design for Testability](./l16-testing2.md) covers observability and controllability|
 | **Maintainability** | A small team maintains the action; many instructors use it across courses. | [L36: Sustainability](./l36-sustainability.md) examines long-term maintainability and technical debt |
 
-Quality attributes often conflict. Optimizing for security (downloading the grader at runtime) creates a network dependency that hurts reliability. Maximizing changeability (rich config format) adds complexity to the action. Architecture is about making these tradeoffs consciously. We'll explore these tradeoffs systematically in [L19: Architectural Qualities](./l19-monoliths.md). Today is all about understanding how these drivers *can* shape the structure of our system.
+Quality attributes often conflict. Optimizing for security (downloading the grader at runtime) creates a network dependency that hurts reliability. Maximizing changeability (rich config format) adds complexity to the action. Architecture is about making these tradeoffs consciously. We'll explore these tradeoffs systematically in [L19: Architectural Styles](./l19-monoliths.md). Today is all about understanding how these drivers *can* shape the structure of our system.
 
 ### Constraints
 
@@ -626,4 +626,4 @@ Even though our Bottlenose analysis is speculative, this kind of reverse-enginee
 
 ---
 
-In the next lecture ([L19](./l19-monoliths.md)), we'll examine **architectural qualities**—diving deep into how architectural choices affect quality attributes like maintainability, scalability, and security. From there, we'll build on today's foundations through the rest of the course: [networks and distributed communication](./l20-networks.md) (L20), [serverless architecture](./l21-serverless.md) (L21), [teams and Conway's Law](./l22-teams.md) (L22), [safety and reliability](./l35-safety-reliability.md) (L35), and [sustainability](./l36-sustainability.md) (L36).
+In the next lecture ([L19: Architectural Styles](./l19-monoliths.md)), we'll examine **architectural styles**—Hexagonal, Layered, Pipelined, and Monolithic architectures—and how these patterns affect quality attributes like maintainability, scalability, and security. From there, we'll build on today's foundations through the rest of the course: [networks and distributed communication](./l20-networks.md) (L20), [serverless architecture](./l21-serverless.md) (L21), [teams and Conway's Law](./l22-teams.md) (L22), [safety and reliability](./l35-safety-reliability.md) (L35), and [sustainability](./l36-sustainability.md) (L36).
