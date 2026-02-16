@@ -6,6 +6,7 @@ image: /img/lectures/web/l17.png
 
 import RevealJS, { Slide } from '@site/src/components/RevealJS';
 import Img from '@site/src/components/Img';
+import PollSlide from '@site/src/components/PollSlide';
 
 <RevealJS transition="slide">
 
@@ -104,6 +105,30 @@ After this lecture, you will be able to:
 - These patterns are the building blocks
 
 → **Transition:** Let's start by reviewing what you've already built...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* INTRODUCTORY POLL */}
+{/* ============================================ */}
+
+<Slide>
+
+## Poll: Which of the following statements about constructors are true?
+
+<PollSlide
+ choices={[
+    "There can be only one constructor in a class",
+    "Constructors must have the same name as the class",
+    "Constructors must always create new objects -- no recycling",
+    "Constructors must always return an instance of the enclosing class, not a subclass"]}
+/>
+
+<aside className="notes">
+* Multi-answer Poll
+* Go over the options
+* For the last, ask if the Ingredient constructor could return a MeasuredIngredient
 </aside>
 
 </Slide>
@@ -273,7 +298,7 @@ ConversionRule r3 = new ConversionRule("cups", "mL", 236.588);
 <Slide>
 
 <Img
-  src="/img/lectures/web/l17-memory-allocation.webp"
+  src="/img/lectures/web/l17-memory-allocation-v2.jpg"
   prompt="A 2x2 grid illustration explaining when constructor allocation makes sense vs. when factory caching helps. Features a GC (garbage collector) robot character in three panels.
 
 TOP ROW - 'DIFFERENT DATA: Separate objects make sense ✓'
@@ -281,9 +306,9 @@ TOP-LEFT: Three Recipe objects on a memory heap, each with DIFFERENT content: 'P
 TOP-RIGHT: A garbage collector robot looking content, giving a thumbs up. Speech bubble: 'This makes sense — different recipes need different objects.' Caption: 'Expected behavior. No waste.'
 
 BOTTOM ROW - 'IDENTICAL DATA: Why make copies?'
-BOTTOM-LEFT labeled 'Constructor: Always Allocates': Three IDENTICAL boxes on the heap, each containing 'cups→mL, 236.588'. Variables r1, r2, r3 each point to their own separate-but-identical box. A garbage collector robot SHRUGGING with palms up, looking confused and exasperated. Speech bubble: 'Why am I managing three copies of the same thing?' Caption: 'Wasteful! Same immutable data, triplicated.'
+BOTTOM-LEFT labeled 'Constructor: Always Allocates': Three IDENTICAL boxes on the heap, each containing 'cups→mL, 236.588'. Variables cr1, cr2, cr3 each point to their own separate-but-identical box. A garbage collector robot SHRUGGING with palms up, looking confused and exasperated. Speech bubble: 'Why am I managing three copies of the same thing?' Caption: 'Wasteful! Same immutable data, triplicated.'
 
-BOTTOM-RIGHT labeled 'Factory Method: Can Cache': Same heap, but now r1, r2, r3 ALL point to ONE golden box labeled 'cups→mL, 236.588' with a 'SHARED' badge. The GC robot is relaxed, feet up, reading a newspaper. Speech bubble: 'Much better — one object to track.' Caption: 'Efficient! Immutable data safely shared.'
+BOTTOM-RIGHT labeled 'Factory Method: Can Cache': Same heap, but now cr1, cr2, cr3 ALL point to ONE golden box labeled 'cups→mL, 236.588' with a 'SHARED' badge. The GC robot is relaxed, feet up, reading a newspaper. Speech bubble: 'Much better — one object to track.' Caption: 'Efficient! Immutable data safely shared.'
 
 CENTER CALLOUT bridging the rows: 'The key question: Is the data DIFFERENT or IDENTICAL? For identical immutable objects, caching saves memory and GC work.'
 
@@ -369,6 +394,40 @@ This is why <code>new Integer()</code> is deprecated since Java 9 — <code>valu
 
 <Slide>
 
+## Integer.valueOf() Implementation
+
+```java
+    /**
+     * Returns an {@code Integer} instance representing the specified
+     * {@code int} value.  If a new {@code Integer} instance is not
+     * required, this method should generally be used in preference to
+     * the constructor {@link #Integer(int)}, as this method is likely
+     * to yield significantly better space and time performance by
+     * caching frequently requested values.
+     *
+     * This method will always cache values in the range -128 to 127,
+     * inclusive, and may cache other values outside of this range.
+     *
+     * @param  i an {@code int} value.
+     * @return an {@code Integer} instance representing {@code i}.
+     * @since  1.5
+     */
+    public static Integer valueOf(int i) {
+        if (i >= IntegerCache.low && i <= IntegerCache.high)
+            return IntegerCache.cache[i + (-IntegerCache.low)];
+        return new Integer(i);
+    }
+```
+
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+
 ## Static Factory Methods Add Names and Flexibility
 
 <p style={{fontSize: '0.9em', fontWeight: 'bold', color: '#9370DB'}}>
@@ -446,8 +505,9 @@ ConversionRule rule2 = StandardConversions
 
 <Slide>
 
-## Complete Example: Constructor vs. Factory Methods
+## Example: Bidirectional Conversion Rules
 
+<div style={{ fontSize: '.6em' }}>
 ```java
 public class ConversionRule {
     private final String fromUnit;
@@ -469,17 +529,70 @@ public class ConversionRule {
     public static ConversionRule bidirectional(String from, String to, double factor) {
         return new ConversionRule(from, to, factor, true);
     }
+}
+```
+
+```java
+// old
+ConversionRule cupsToMilliliters = new ConversionRule("cups", "mL", 236.588);
+
+// new
+ConversionRule cupsToMilliliters = ConversionRule.bidirectional("cups", "mL", 236.588);
+```
+</div>
+
+<aside className="notes">
+**What this enables:**
+1. **Private constructor** — caller MUST use factory methods
+2. **Named methods** — `oneWay()` vs `bidirectional()` is obvious
+3. **Caching** — `cached()` returns same instance for same parameters
+4. **Future flexibility** — can return subtypes later without changing callers
+
+**Compare usage:**
+- Constructor: `new ConversionRule("cups", "mL", 236.588, true)` — what's `true`?
+- Factory: `ConversionRule.bidirectional("cups", "mL", 236.588)` — clear!
+
+**Language note:**
+- Swift has *named constructors*: `ConversionRule(from: "cups", to: "mL", bidirectional: true)`
+- Dart has *named constructors*: `ConversionRule.bidirectional("cups", "mL")`
+- Java's workaround (static factory methods) achieves similar readability
+
+→ **Transition:** Let's compare readability...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Example: Cached Conversion Rules
+
+<div style={{ fontSize: '.6em' }}>
+```java
+public class ConversionRule {
+    private final String fromUnit;
+    private final String toUnit;
+    private final double factor;
+
+    // Private constructor — forces use of factory methods
+    // For simplicity, we are not supporting bidirectional rules.
+    private ConversionRule(String from, String to, double factor) {
+        this.fromUnit = from;
+        this.toUnit = to;
+        this.factor = factor;
+    }
 
     // Can return cached instances!
     private static final Map<String, ConversionRule> CACHE = new ConcurrentHashMap<>();
 
     public static ConversionRule cached(String from, String to, double factor) {
-        String key = from + "->" + to;
+        String key = from + "->" + to; // for example, "cups->mL"
+        // If a cached rule is present, return it; otherwise, create and cache one.
         return CACHE.computeIfAbsent(key,
             k -> new ConversionRule(from, to, factor, true));
     }
 }
 ```
+</div>
 
 <aside className="notes">
 **What this enables:**
@@ -507,33 +620,38 @@ public class ConversionRule {
 ## The Telescoping Constructor Problem
 
 <p style={{fontSize: '0.9em', fontWeight: 'bold', color: '#9370DB'}}>
-  Effective Java Item 2: "Consider a builder when faced with many constructor parameters"
+  EJ Item 2: "Consider a builder when faced with many constructor parameters"
 </p>
 
-<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
-When a class has many optional parameters, constructors become unwieldy:
-</p>
-
+<div style={{ fontSize: '.65em' }}>
 ```java
 public class Recipe {
-    // Telescoping constructors — each adds one more parameter
-    public Recipe(String name) { this(name, List.of(), List.of(), List.of(), null, false); }
-    public Recipe(String name, List<Ingredient> ingredients) { this(name, ingredients, List.of(), List.of(), null, false); }
-    public Recipe(String name, List<Ingredient> ingredients, List<String> instructions) { ... }
-    public Recipe(String name, List<Ingredient> ingredients, List<String> instructions, List<String> notes) { ... }
-    public Recipe(String name, List<Ingredient> ingredients, List<String> instructions, List<String> notes, String source) { ... }
-    public Recipe(String name, List<Ingredient> ingredients, List<String> instructions, List<String> notes, String source, boolean isVegan) { ... }
+  // Most general constructor
+  Recipe(String name, List<Ingredient> ingredients, List<String> instructions, List<String> notes,
+      String source, boolean isVegan) { ... }
 
-    // Which constructor do I call if I want name + notes but no ingredients?
+  Recipe(String name) { this(name, List.of(), List.of(), List.of(), null, false);
+
+  Recipe(String name, List<Ingredient> ingredients) {
+    this(name, ingredients, List.of(), List.of(), null, false);
+  }
+
+  Recipe(String name, List<Ingredient> ingredients, List<String> instructions) { ... }
+  Recipe(String name, List<Ingredient> ingredients, List<String> instructions, List<String> notes) { ... }
+  Recipe(String name, List<Ingredient> ingredients, List<String> instructions, List<String> notes,
+      String source) { ... }
+
+  // Which constructor do I call if I want name + notes but no ingredients?
 }
 ```
-
+</div>
 <p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#f44336'}}>
 ❌ Combinatorial explosion: every combination of optional parameters needs its own constructor!
 </p>
 
 <aside className="notes">
 **The problem:**
+- "Telescoping" constructors -- each with one more parameter than the previous one
 - 6 optional parameters = up to 64 constructor combinations
 - Which constructor to call if you want `name` + `notes` but no `ingredients`?
 - Hard to read: `new Recipe("Pasta", null, null, notes, null, false)` — what are those nulls?
@@ -552,7 +670,7 @@ public class Recipe {
   prompt="A two-panel illustration contrasting the Telescoping Constructor problem with the Builder pattern solution.
 
 LEFT PANEL - 'TELESCOPING CONSTRUCTORS: Combinatorial Explosion'
-A tree diagram starting from a single 'Recipe' class at top. Each optional parameter (name, ingredients, instructions, notes, source, isVegan) creates a branching decision: 'include?' or 'skip?'. The tree EXPLODES downward into 64 leaves, each representing a different constructor overload. The branches are tangled and overwhelming. A developer at the bottom looks panicked with sweat drops, saying 'Which constructor do I call for name + notes but no ingredients?!' 
+A tree diagram starting from a single 'Recipe' class at top. Each optional parameter (name, ingredients, instructions, notes, source, isVegan) creates a branching decision: 'include?' or 'skip?'. The tree EXPLODES downward into 64 leaves, each representing a different constructor overload. The branches are tangled and overwhelming. A developer at the bottom looks panicked with sweat drops, saying 'Which constructor do I call for name + notes but no ingredients?!'
 Caption: '6 optional parameters → up to 64 constructor combinations'
 A code snippet shows: new Recipe('Pasta', null, null, notes, null, false) with '???' over each null.
 
@@ -618,17 +736,17 @@ Recipe recipe = new RecipeBuilder("Pasta Carbonara")
 <Slide>
 
 ## Inside the Builder: The Implementation
-
+<div style={{ fontSize: '.65em' }}>
 ```java
 public class RecipeBuilder {
-    private final String name;                           // Required
+    private final String name;  // Required
     private final List<Ingredient> ingredients = new ArrayList<>();  // Accumulated
     private final List<String> instructions = new ArrayList<>();
     private final List<String> notes = new ArrayList<>();
-    private String source = null;                        // Optional
+    private String source = null;  // Optional
 
     public RecipeBuilder(String name) {
-        this.name = name;  // Non-null by default; @Nullable if optional
+        this.name = name;
     }
 
     public RecipeBuilder addIngredient(Ingredient ing) {
@@ -636,9 +754,9 @@ public class RecipeBuilder {
         return this;  // Return 'this' enables method chaining
     }
 
-    public RecipeBuilder addInstruction(String step) { this.instructions.add(step); return this; }
     public RecipeBuilder addNote(String note) { this.notes.add(note); return this; }
     public RecipeBuilder source(String source) { this.source = source; return this; }
+    public RecipeBuilder addInstruction(String step) { ... }
 
     public Recipe build() {
         if (ingredients.isEmpty()) throw new IllegalStateException("Recipe needs ingredients");
@@ -648,6 +766,7 @@ public class RecipeBuilder {
     }
 }
 ```
+</div>
 
 <aside className="notes">
 **Key implementation details:**
@@ -726,7 +845,8 @@ val recipe = Recipe(
 </div>
 
 <p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#FF9800'}}>
-⚠ In Java, we use Builder to simulate what these languages provide natively.
+⚠ In Java, we use Builder to simulate what these languages provide natively.<br/>
+►These languages specify nullable types with question marks.
 </p>
 
 <aside className="notes">
@@ -953,11 +1073,11 @@ export function getRule(from: string, to: string) {
 // Built-in language support for singletons
 object ConversionRegistry {
     private val rules = mutableMapOf<String, ConversionRule>()
-    
+
     fun addRule(rule: ConversionRule) {
         rules["${rule.from}->${rule.to}"] = rule
     }
-    
+
     fun getRule(from: String, to: String): ConversionRule? {
         return rules["$from->$to"]
     }
@@ -1259,14 +1379,14 @@ Spring 2.5 introduced <code>@Autowired</code>. The framework scans for annotated
 // The SERVICE — just annotate what you need
 @Service
 public class ImportService {
-    @Autowired 
+    @Autowired
     private LibraryService library;
-    
-    @Autowired 
+
+    @Autowired
     private ConversionRegistry conversions;
-    
+
     // No constructor needed!
-    
+
     public void importRecipe(Path file) {
         Recipe recipe = parse(file);
         conversions.normalize(recipe);
@@ -1278,13 +1398,13 @@ public class ImportService {
 ```java
 // The IMPLEMENTATIONS — Spring finds these
 @Service
-public class InMemoryLibraryService 
+public class InMemoryLibraryService
         implements LibraryService {
     // Spring creates one instance
 }
 
-@Service  
-public class StandardConversionRegistry 
+@Service
+public class StandardConversionRegistry
         implements ConversionRegistry {
     // Spring creates one instance
 }
@@ -1508,16 +1628,16 @@ sequenceDiagram
     F->>S: new ImportService()
     Note over S: library = null ❌<br/>conversions = null ❌<br/>validator = null ❌
     Note over S: ⚠️ INVALID STATE<br/>Object exists but can't work!
-    
+
     F->>S: set library field (reflection)
     Note over S: library = ✓<br/>conversions = null ❌<br/>validator = null ❌
     Note over S: ⚠️ STILL INVALID
-    
+
     F->>S: set conversions field
     F->>S: set validator field
     Note over S: library = ✓<br/>conversions = ✓<br/>validator = ✓
     Note over S: ✓ Finally valid!
-    
+
     F->>S: importRecipe()
     S->>L: save(recipe)
 ```
@@ -1537,7 +1657,7 @@ sequenceDiagram
     F->>S: new ImportService(lib, conv, val)
     Note over S: library = ✓<br/>conversions = ✓<br/>validator = ✓
     Note over S: ✓ VALID IMMEDIATELY<br/>Object ready to use!
-    
+
     F->>S: importRecipe()
     S->>L: save(recipe)
 ```
@@ -1729,7 +1849,7 @@ public interface RecipeImporter {
 // In a JAR file: plugins/json-importer.jar
 public class JsonRecipeImporter implements RecipeImporter { ... }
 
-// In another JAR: plugins/paprika-importer.jar  
+// In another JAR: plugins/paprika-importer.jar
 public class PaprikaImporter implements RecipeImporter { ... }
 
 // In yet another: plugins/gemini-importer.jar — uses an LLM!
@@ -1771,17 +1891,17 @@ Same interface, vastly different implementations — core app doesn't care:
 **JsonRecipeImporter: Simple parsing**
 
 ```java
-public class JsonRecipeImporter 
+public class JsonRecipeImporter
         implements RecipeImporter {
-    
+
     public boolean canHandle(Path file) {
         return file.toString().endsWith(".json");
     }
-    
+
     public Recipe importFrom(Path file) {
         // Simple: read JSON, map to Recipe
         String json = Files.readString(file);
-        return objectMapper.readValue(json, 
+        return objectMapper.readValue(json,
                                        Recipe.class);
     }
 }
@@ -1794,23 +1914,23 @@ public class JsonRecipeImporter
 **GeminiImporter: Complex LLM workflow**
 
 ```java
-public class GeminiImporter 
+public class GeminiImporter
         implements RecipeImporter {
     private final GeminiClient gemini;
-    
+
     public boolean canHandle(Path file) {
         // Can handle images, PDFs, screenshots!
         return isImage(file) || isPdf(file);
     }
-    
+
     public Recipe importFrom(Path file) {
         // 1. Send image to Gemini Vision
         String extracted = gemini.analyzeImage(file,
             "Extract recipe: name, ingredients, steps");
-        
+
         // 2. Parse LLM response into structured data
         Recipe draft = parseGeminiResponse(extracted);
-        
+
         // 3. Validate and normalize units
         return normalizeUnits(draft);
     }
@@ -2058,7 +2178,7 @@ Data coupling (DI) is usually preferable. Common coupling (Service Locator) is t
 public class ImportService {
     // What does this depend on?
     // You must read every line to know!
-    
+
     public void importRecipe(Path file) {
         Recipe recipe = parseRecipe(file);
         ServiceLocator
