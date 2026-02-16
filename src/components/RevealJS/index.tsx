@@ -446,6 +446,7 @@ export default function RevealJS({
         minScale: 0.2,
         maxScale: 2.0,
         margin: 0.04,  // Margin around slides
+        slideNumber: 'c/t',
         plugins: [RevealNotes],
       } as any);
 
@@ -620,6 +621,7 @@ export default function RevealJS({
         minScale: 0.1,
         maxScale: 1.5,
         margin: 0.04,  // Margin around slides for dead space
+        slideNumber: 'c/t',
         plugins: [RevealNotes],
       } as any);
 
