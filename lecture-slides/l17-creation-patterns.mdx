@@ -474,7 +474,7 @@ public class ConversionRule {
     private static final Map<String, ConversionRule> CACHE = new ConcurrentHashMap<>();
 
     public static ConversionRule cached(String from, String to, double factor) {
-        String key = from + "->" + to;
+        String key = from + "->" + to + "@" + factor;
         return CACHE.computeIfAbsent(key,
             k -> new ConversionRule(from, to, factor, true));
     }
@@ -1129,7 +1129,7 @@ ConversionRegistry realRegistry = new StandardConversionRegistry();
 RecipeConverter converter = new RecipeConverter(realRegistry);
 
 // Test: swap in a test double — exactly what we did in L16!
-ConversionRegistry stubRegistry = () -> new ConversionRule("cups", "mL", 236.588);
+ConversionRegistry stubRegistry = (from, to) -> new ConversionRule("cups", "mL", 236.588);
 RecipeConverter testConverter = new RecipeConverter(stubRegistry);
 ```
 
