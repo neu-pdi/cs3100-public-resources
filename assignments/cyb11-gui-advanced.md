@@ -26,7 +26,7 @@ By completing this assignment, you will demonstrate proficiency in:
 - **Implementing the MVVM pattern** with ViewModels that expose observable state and commands ([L30: GUI Patterns and Testing](/lecture-notes/l30-gui2))
 - **Creating JavaFX interfaces** that bind to ViewModel properties ([L29: GUIs in Java](/lecture-notes/l29-gui1))
 - **Handling asynchronous operations** in a GUI context ([L31-32: Concurrency](/lecture-notes/l31-concurrency1))
-- **Practicing effective code review** with HRT principles ([L17: Teams and Collaboration](/lecture-notes/l17-teams))
+- **Practicing effective code review** with HRT principles ([L22: Teams and Collaboration](/lecture-notes/l22-teams))
 - **Integrating multiple features** into a cohesive application
 
 ## AI Policy for This Assignment

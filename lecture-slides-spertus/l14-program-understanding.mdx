@@ -96,10 +96,32 @@ Quick title slide, move on to learning objectives.
 
 </Slide>
 
+{/* ============================================ */}
+{/* OPENING POLLS */}
+{/* ============================================ */}
+
+<Slide>
+## Poll: What would you think of a lab on Java?
+
+<div style={{fontSize: '0.7em'}}>
+We have not had time in lecture to address common areas of confusion for Java
+learners. Would you attend one? (Unlike with other polls, I will track answers.)
+</div>
+
+<PollSlide username="espertus"
+  choices={[
+    "I know Java well so feel no need.",
+    "It would be helpful, and I would attend.",
+    "Other (please enter on Q&A poll)"
+  ]}
+/>
+
+</Slide>
+
 <Slide>
 ## Poll: Why don't you use Oakland office hours or appointments?
 <div style={{fontSize: '0.7em'}}>
-We offer [in-person office hours and video appointments](https://northeastern.instructure.com/courses/239378).
+We offer [in-person office hours and video appointments](https://northeastern.instructure.com/courses/239378). (Answers are anonymous but count toward your participation grade.)
 </div>
 <PollSlide username="espertus"
   choices={["I didn't know you held them.", "I'm not available at those times.",
@@ -108,9 +130,7 @@ We offer [in-person office hours and video appointments](https://northeastern.in
     "I don't think it would be helpful.", "I don't know", "other"
   ]}
 />
-<div style={{fontSize: '0.7em'}}>
-Answers are anonymous but count toward your participation grade.
-</div>
+
 </Slide>
 
 {/* ============================================ */}
@@ -1458,11 +1478,11 @@ flowchart LR
 
 ## Quick Background: What Is HTML?
 
-<p style={{fontSize: '0.9em'}}>
+<p style={{fontSize: '0.7em'}}>
 HTML uses <strong>tags</strong> (text in angle brackets) to format web pages:
 </p>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.85em', marginTop: '0.5em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.7em', marginTop: '0.5em'}}>
 
 <div style={{backgroundColor: 'rgba(66, 165, 245, 0.1)', padding: '1em', borderRadius: '8px'}}>
 
@@ -1486,16 +1506,17 @@ Welcome!
 
 </div>
 
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+<p style={{fontSize: '0.7em', marginTop: '1em'}}>
 <strong>The task:</strong> Write a function that extracts just the text, removing all tags.
 </p>
 
-<div style={{fontSize: '0.8em'}}>
+<div style={{fontSize: '0.7em'}}>
 
 | Input | Expected Output |
 |-------|-----------------|
 | `<b>Hello</b>` | `Hello` |
 | `Click <a href="url">here</a>` | `Click here` |
+| `<input type="text" value="<your name>">` |  |
 
 </div>
 
@@ -1525,11 +1546,9 @@ Welcome!
 ## Example: Debugging HTML Markup Removal
 
 ```java
-/**
- * Removes tags from s. For example, "Hello <b>world</b>" becomes "Hello world".
- */
 public static String removeHtmlMarkup(String s) {
-    boolean tag = false, quote = false;
+    boolean tag = false;
+    boolean quote = false;
     StringBuilder out = new StringBuilder();
 
     for (int i = 0; i < s.length(); i++) {
@@ -1819,7 +1838,7 @@ Operator precedence! <code>c == '"' || c == '\'' && tag</code> is parsed as<br/>
 
 ## Step 6: Fix — Implement and Verify
 
-<div style={{display: 'flex', gap: '1em', fontSize: '0.8em'}}>
+<div style={{display: 'flex', gap: '1em', fontSize: '0.7em'}}>
 <div style={{flex: 1}}>
 
 **Before (buggy):**
@@ -1885,7 +1904,7 @@ Parsed as:
 ## The Hypothesis Funnel: How We Narrowed Down the Bug
 
 <Img
-  src="/img/lectures/web/l14-hypothesis-funnel.png"
+  src="/img/lectures/web/l14-hypothesis-funnel.png" width={1000}
   alt="Funnel diagram showing how each hypothesis test narrowed the search space from 'something is wrong' to 'operator precedence bug'"
   prompt="Concept: 'The Hypothesis Funnel' (Narrowing Down to Root Cause)
 
@@ -1956,7 +1975,7 @@ VISUAL STYLE:
 Style notes: This is the 'aha!' visual that ties together the example. Students should see that each step DRAMATICALLY reduced the search space. The systematic approach isn't just more rigorous—it's actually FASTER because it eliminates possibilities efficiently."
 />
 
-<p style={{fontSize: '0.85em', marginTop: '0.5em', textAlign: 'center'}}>
+<p style={{fontSize: '0.75em', marginTop: '0.5em', textAlign: 'center'}}>
 4 targeted tests took us from "something is wrong" to "operator precedence bug."
 </p>
 

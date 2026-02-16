@@ -4,7 +4,7 @@ lecture_number: 22
 title: Serverless Architecture
 ---
 
-In [L21](./l21-networks.md), we explored distributed architecture—what changes when components communicate over networks. We saw the Fallacies of Distributed Computing and strategies for building reliable systems despite unreliable networks.
+In [L20](./l20-networks.md), we explored distributed architecture—what changes when components communicate over networks. We saw the Fallacies of Distributed Computing and strategies for building reliable systems despite unreliable networks.
 
 This lecture introduces **serverless architecture**—an architectural style where you write functions that a cloud provider executes on demand, composing managed infrastructure services rather than managing servers yourself. But first, we need vocabulary for those infrastructure services.
 
@@ -77,7 +77,7 @@ We'll explore event-driven patterns and queues more deeply in **L33 (Event Archi
 
 A **cache** stores copies of frequently-accessed data in memory for speed. Instead of querying the database every time someone searches for "chocolate cake recipes," you cache the result and serve it directly—until the cache expires or the underlying data changes.
 
-*CookYourBooks example*: The ToC Service (from L22) might cache popular cookbook searches. The first search hits the database; subsequent searches within the next few minutes return the cached result instantly.
+*CookYourBooks example*: The ToC Service (from L20) might cache popular cookbook searches. The first search hits the database; subsequent searches within the next few minutes return the cached result instantly.
 
 | Service | What It Does |
 |---------|--------------|
@@ -118,7 +118,7 @@ With this vocabulary established, let's see how serverless architecture works.
 
 "Serverless" is a bit of a misnomer—there are still servers, you just don't manage them. The key insight is organizational: serverless is **technical partitioning with a vendor**.
 
-In [L20](./l20-monoliths.md), we discussed technical vs. domain partitioning—whether you organize code (and teams) by technical role (controllers, services, repositories) or by business capability (import, library, export). Serverless takes technical partitioning to the organizational level: a cloud vendor operates the infrastructure layer *as a service*, allowing your team to focus entirely on domain logic.
+In [L19](./l19-monoliths.md), we discussed technical vs. domain partitioning—whether you organize code (and teams) by technical role (controllers, services, repositories) or by business capability (import, library, export). Serverless takes technical partitioning to the organizational level: a cloud vendor operates the infrastructure layer *as a service*, allowing your team to focus entirely on domain logic.
 
 This is Conway's Law in action. The vendor's organization is structured to specialize in infrastructure—they have teams for container orchestration, auto-scaling, monitoring, security patching. Your organization specializes in your domain—recipes, cookbooks, user workflows. The system boundary (your functions ↔ their infrastructure) mirrors the organizational boundary. The vendor serves thousands of clients, achieving economies of scale that no single team could justify for their own infrastructure.
 
