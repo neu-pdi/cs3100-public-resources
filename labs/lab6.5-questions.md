@@ -130,7 +130,7 @@ public class Logger {
 
 What does this print?
 
-<!-- Answer: "[OTHER: server down]" followed by [OTHER: 404]" -->
+<!-- Answer: "OTHER: server down" followed by "OTHER: 404" -->
 
 ### Q6
 ```java
@@ -328,19 +328,19 @@ E. Run-time error\
 ```java
 class Base {
     public Base() {
-        System.out.print("B ");
+        System.out.print('B');
     }
 }
 
 class Middle extends Base {
     public Middle() {
-        System.out.print("M ");
+        System.out.print('M');
     }
 }
 
 class Top extends Middle {
     public Top() {
-        System.out.print("T ");
+        System.out.print('T');
     }
 }
 ```
@@ -351,10 +351,10 @@ What does this print?
 
 <!-- Answer: B -->
 
-A. `T M B `\
-B. `B M T `\
-C. `T `\
-D. `B T `\
+A. `TMB`\
+B. `BMT`\
+C. `T`\
+D. `BT`\
 
 ---
 
@@ -414,7 +414,7 @@ public class NullCheck {
 ```
 What happens?
 
-<!-- Answer: d -->
+<!-- Answer: D -->
 
 A. Prints `other`\
 B. Prints `greeting`\
