@@ -1,8 +1,4 @@
----
-sidebar_class_name: hidden
----
-
-# Lab 6.5 (Oakland): Java
+# Lab 6.5 (Oakland): Java Questions
 
 Please do not read these questions until directed to do so in lab.
 
@@ -264,7 +260,7 @@ Does `Toaster`'s constructor need an explicit `super()` call?
 A. Yes — without it, the code won't compile\
 B. No — Java automatically calls `super()` since `Appliance` has a no-arg constructor\
 C. No — subclass constructors never need to call `super()`\
-D. Yes — `super()` is always required in every constructor\
+D. Yes — `super()` is always required in every constructor
 
 ### Q13
 ```java
@@ -322,7 +318,7 @@ A. `ring ring`\
 B. `(vibrate)`\
 C. `ring ring (vibrate)`\
 D. Compile-time error\
-E. Run-time error\
+E. Run-time error
 
 ### Q15
 ```java
@@ -354,7 +350,7 @@ What does this print?
 A. `TMB`\
 B. `BMT`\
 C. `T`\
-D. `BT`\
+D. `BT`
 
 ---
 
@@ -376,7 +372,7 @@ What happens?
 A. Prints `null`\
 B. Prints nothing (blank line)\
 C. Compile-time error\
-D. NullPointerException\
+D. NullPointerException
 
 ### Q17
 ```java
@@ -394,7 +390,7 @@ What happens?
 A. Prints `0`\
 B. Prints `null`\
 C. Compile-time error\
-D. NullPointerException\
+D. NullPointerException
 
 ### Q18
 ```java
@@ -419,5 +415,5 @@ What happens?
 A. Prints `other`\
 B. Prints `greeting`\
 C. Compile-time error\
-D. NullPointerException\
+D. NullPointerException
 
