@@ -6,6 +6,7 @@ image: /img/lectures/web/l18.png
 
 import RevealJS, { Slide } from '@site/src/components/RevealJS';
 import Img from '@site/src/components/Img';
+import PollSlide from '@site/src/components/PollSlide';
 
 <RevealJS transition="slide">
 
@@ -333,15 +334,15 @@ graph TD
     A[Architectural Drivers] --> B[Functional Requirements<br/>What must the system DO?]
     A --> C[Quality Attributes<br/>How WELL must it perform?]
     A --> D[Constraints<br/>What limits our choices?]
-    
+
     B --> E[Architecture]
     C --> E
     D --> E
-    
+
     classDef driver fill:#D4C4E8,stroke:#9370DB,stroke-width:2px
     classDef input fill:#B8D4E3,stroke:#4A90A4,stroke-width:2px
     classDef output fill:#C8E6C9,stroke:#4CAF50,stroke-width:2px
-    
+
     class A driver
     class B,C,D input
     class E output
@@ -400,15 +401,14 @@ A single monolithic script COULD do all of this. But should it? The functional r
 
 <Slide>
 
-## Driver 2: Quality Attributes (the "-ilities")
-
-<p style={{fontSize: '0.85em'}}>
+## Driver 2: Quality Attributes (the "-ilities")!
+<p style={{fontSize: '0.8em'}}>
 How <em>well</em> must the system perform? Quality attributes shape structure more than features do.
 </p>
 
-<div style={{display: 'flex', flexDirection: 'column', gap: '1em', fontSize: '0.7em', marginTop: '0.5em', width: '100%'}}>
+<div style={{display: 'flex', flexDirection: 'column', gap: '0.75em', fontSize: '0.65em', marginTop: '0.5em', width: '100%'}}>
 
-<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px', width: '100%'}}>
+<div style={{padding: '0.6em', border: '2px solid #4CAF50', borderRadius: '8px', width: '100%'}}>
 
 **You already know these:**
 
@@ -417,9 +417,9 @@ How <em>well</em> must the system perform? Quality attributes shape structure mo
 
 *Same principles from class design — now at service scale!*
 
-</div>  
+</div>
 
-<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px', width: '100%'}}>
+<div style={{padding: '0.6em', border: '2px solid #FF9800', borderRadius: '8px', width: '100%'}}>
 
 **Coming up:**
 
@@ -432,8 +432,8 @@ How <em>well</em> must the system perform? Quality attributes shape structure mo
 
 </div>
 
-<div className="fragment" style={{marginTop: '0.75em'}}>
-<p style={{fontSize: '0.8em', color: '#9370DB'}}>
+<div className="fragment" style={{marginTop: '0.5em'}}>
+<p style={{fontSize: '0.75em', color: '#9370DB'}}>
 Quality attributes often <strong>conflict</strong>. Security (download grader at runtime) creates a network dependency that hurts reliability. Architecture = making these tradeoffs consciously.
 </p>
 </div>
@@ -827,7 +827,7 @@ graph TD
     Repo["Student Repo + <br/>Solution Repo with pawtograder.yml"]
     Action["Grading Action<br/>(TypeScript)"]
     API["Pawtograder API<br/>(Edge Functions)"]
-    
+
     User --> Repo
     Repo --> Action
     Action --> API
@@ -836,7 +836,7 @@ graph TD
     classDef fast fill:#C8E6C9,stroke:#4CAF50,stroke-width:2px
     classDef medium fill:#B8D4E3,stroke:#4A90A4,stroke-width:2px
     classDef slow fill:#D4C4E8,stroke:#9370DB,stroke-width:2px
-    
+
     class User actor
     class Repo fast
     class Action medium
@@ -985,13 +985,13 @@ Coupling makes itself felt at test time: isolated testing isn't impossible in Bo
 
 ## A Design Decision: Where Does Language Logic Live?
 
-<p style={{fontSize: '0.85em'}}>
+<p style={{fontSize: '0.85em', margin: '0 0 0.5em 0'}}>
 We need to support multiple languages (Java, Python). Where should the language-specific build/test logic live?
 </p>
 
-<div style={{display: 'flex', flexDirection: 'column', gap: '1em', fontSize: '0.65em', marginTop: '1em'}}>
+<div style={{display: 'flex', flexDirection: 'column', gap: '0.5em', fontSize: '0.65em'}}>
 
-<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+<div style={{padding: '0.5em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
 
 **Option A: Logic in the Action**
 
@@ -1003,7 +1003,7 @@ The action knows how to build Java (Gradle) and Python. It normalizes results be
 
 </div>
 
-<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+<div style={{padding: '0.5em', border: '2px solid #FF9800', borderRadius: '8px'}}>
 
 **Option B: Logic in the API**
 
@@ -1018,7 +1018,7 @@ Action sends raw logs/XML to API. API parses and normalizes.
 </div>
 
 <div className="fragment">
-<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB'}}>
+<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#9370DB', margin: '0.5em 0 0 0'}}>
 Pawtograder chooses <strong>Option A</strong>. The action normalizes everything into a standard `AutograderFeedback` format. The API remains simple and scalable.
 </p>
 </div>
@@ -1101,12 +1101,11 @@ The green path (normalize early) avoids this:
 
 ## Interface Design at the Service Level
 
-<p style={{fontSize: '0.85em'}}>
+<p style={{fontSize: '0.75em'}}>
 Once we've identified components, we need to design their interfaces. The same principles from class design apply—and so do the same patterns from L17.
 </p>
 
-<div style={{fontSize: '0.6em', marginTop: '0.5em'}}>
-
+<div style={{fontSize: '0.6em', marginTop: '-1em'}}>
 **Dependency Injection at service scale:**
 
 ```java
@@ -1132,18 +1131,17 @@ public interface Builder {
     Optional<LintResult> lint(Path projectDir, LinterConfig config);
     Optional<List<MutantResult>> mutationTest(Path projectDir, MutationConfig config);
 }
-
-// GradleBuilder for Java, PythonScriptBuilder for Python
-// Adding Rust support = adding a new Builder implementation
 ```
 
 </div>
 
+{/* can't fit
 <div className="fragment">
 <p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
 **Make contracts clear:** What does `register` promise? What happens if the OIDC token is invalid? What format does `AutograderFeedback` use? These details belong in the interface's documentation.
 </p>
 </div>
+*/}
 
 <aside className="notes">
 **Connection to L17:**
@@ -1408,7 +1406,7 @@ graph TD
     TestRunner --> ReportParsers["Report Parsers<br/><br/>Surefire XML<br/>PIT XML<br/>JaCoCo CSV<br/>Checkstyle"]
 ```
 
-<p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+<p style={{fontSize: '0.7em', marginTop: '0em'}}>
 This view shows how `main.ts` orchestrates the internal components. **Mutation Analysis** depends on **Tests** being run first, and multiple report parsers normalize tool-specific output into `AutograderFeedback`.
 </p>
 
