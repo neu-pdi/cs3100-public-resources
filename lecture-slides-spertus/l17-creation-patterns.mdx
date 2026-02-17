@@ -1858,8 +1858,9 @@ public class ImportService {
 
 <Slide>
 
-## The Same Patterns Work at Every Scale
+## Assignment 5 Preview
 
+<div style={{ fontSize: '.7em' }}>
 ```java
 public class ImportService {
     public void importRecipe(Path file) {
@@ -1868,14 +1869,6 @@ public class ImportService {
     }
 }
 ```
-
-<div className="fragment">
-<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#f44336'}}>
-  ✗ Testing is painful — you can't substitute a mock LibraryService.<br/>
-  ✗ The dependency graph is invisible.<br/>
-  ✗ Changing the library implementation affects everything that calls getInstance().
-</p>
-</div>
 
 <div className="fragment">
 
@@ -1896,9 +1889,10 @@ public class ImportService {
 }
 ```
 
-<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#4CAF50'}}>
+<p style={{marginTop: '0.5em', color: '#4CAF50'}}>
   ✓ Dependencies visible. Tests can inject mocks. Implementations swappable.
 </p>
+</div>
 </div>
 
 <aside className="notes">
@@ -1932,7 +1926,10 @@ public class ImportService {
 </div>
 
 <p style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
-The question shifts from "how do I create this object?" to "how do I wire up this whole system?" — but the answer is the same: <strong>depend on abstractions, inject implementations, keep coupling loose</strong>.
+The question shifts from "how do I create this object?" to "how do I wire up this whole system?" — but the answer is the same:
+* depend on abstractions
+* inject implementations
+* keep coupling loose
 </p>
 
 <aside className="notes">
