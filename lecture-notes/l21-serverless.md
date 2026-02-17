@@ -6,7 +6,7 @@ title: Serverless Architecture
 
 In [L20](./l20-networks.md), we explored distributed architecture—what changes when components communicate over networks. We saw the Fallacies of Distributed Computing and strategies for building reliable systems despite unreliable networks.
 
-This lecture introduces **serverless architecture**—an architectural style where you write functions that a cloud provider executes on demand, composing managed infrastructure services rather than managing servers yourself. But first, we need vocabulary for those infrastructure services.
+This lecture introduces **serverless architecture**—an architectural style where you write functions that a cloud provider executes on demand, composing managed infrastructure services rather than managing servers yourself. We'll continue using Pawtograder and Bottlenose as our running examples—and we'll see how Pawtograder embraces serverless patterns extensively. But first, we need vocabulary for the infrastructure services that serverless applications compose.
 
 ## Recognize common infrastructure building blocks (15 minutes)
 
@@ -14,7 +14,7 @@ Cloud platforms provide standardized infrastructure components that solve recurr
 
 ### Databases: Structured Data Persistence
 
-A **database** stores and retrieves structured data reliably. When your application needs to remember something across restarts—user accounts, recipe metadata, cookbook indexes—that data lives in a database.
+A **database** stores and retrieves structured data reliably. When your application needs to remember something across restarts—user accounts, course enrollments, submission records—that data lives in a database.
 
 For a more complete treatment of databases, you should consider CS3200/CS4200, but here's what matters most architecturally:
 
@@ -24,16 +24,17 @@ For a more complete treatment of databases, you should consider CS3200/CS4200, b
 | **Document** | Flexible schemas, JSON-like data, rapid development | MongoDB, Firestore |
 | **Key-Value** | Simple lookups by ID, extremely fast reads | DynamoDB, Redis |
 
-The "right" database choice depends heavily on **query patterns**—how you expect to access and search the data. Consider: what if CookYourBooks lets users maintain an ingredient inventory and then query for recipes they can make? Suddenly you need queries like:
-- "Find all recipes where every ingredient is in my pantry"
-- "Find recipes that require at most 3 additional items"
-- "Find recipes that only need dry goods additions (no fresh produce—it's winter)"
+The "right" database choice depends heavily on **query patterns**—how you expect to access and search the data. Consider Pawtograder's grading platform: we need queries like:
+- "Find all submissions by this student across all assignments"
+- "Find the latest submission for each student in a course"
+- "Calculate average scores grouped by assignment and section"
+- "Find students who haven't submitted to an assignment before the deadline"
 
-These queries involve *relationships* between recipes, ingredients, and inventory—exactly where relational databases shine. A document database that stores each recipe as a blob would struggle with "join all recipes against my inventory and filter." You'd either denormalize everything (duplicating ingredient data) or fetch all recipes and filter in application code (slow and expensive).
+These queries involve *relationships* between students, courses, assignments, submissions, and grades—exactly where relational databases shine. A document database that stores each submission as a blob would struggle with "join submissions against enrollments and filter by deadline." You'd either denormalize everything (duplicating course data in every submission) or fetch all data and filter in application code (slow and expensive).
 
-The architectural lesson: database choice isn't about "which is best" but "which fits our access patterns." If CookYourBooks only needs "get recipe by ID" and "list recipes in cookbook," a document store is simple and fast. If complex ingredient queries are core to the product, a relational database pays off despite added complexity.
+The architectural lesson: database choice isn't about "which is best" but "which fits our access patterns." Both Bottlenose and Pawtograder use PostgreSQL for this reason—an autograding platform inherently involves complex relationships and queries that relational databases handle well.
 
-The choice between database types also involves tradeoffs we'll explore more deeply when we cover **concurrency** (L31-32)—questions like "what happens when two users edit the same recipe simultaneously?" For now, just recognize that databases are a fundamental building block for persistent state, and the right choice depends on how you'll query the data.
+The choice between database types also involves tradeoffs we'll explore more deeply when we cover **concurrency** (L31-32)—questions like "what happens when two students submit at the exact same moment?" For now, just recognize that databases are a fundamental building block for persistent state, and the right choice depends on how you'll query the data.
 
 ### Object/Blob Storage: Files and Binary Data
 
@@ -44,8 +45,9 @@ The choice between database types also involves tradeoffs we'll explore more dee
 | S3 | AWS |
 | Cloud Storage | Google Cloud |
 | Blob Storage | Azure |
+| Supabase Storage | Supabase (built on S3) |
 
-*CookYourBooks example*: When a user uploads a photo of a cookbook page for OCR, that image file goes to object storage. The OCR function retrieves it by name, processes it, and might store the result back. You wouldn't put a 5MB image directly in a database—object storage is built for this.
+*Pawtograder example*: Instructors upload grader tarballs—archives containing test code, build configuration, and solution scaffolds. These can be several megabytes. The tarball goes to Supabase Storage, and when grading runs, the Grading Action downloads it via a signed URL. You wouldn't put a 5MB tarball directly in the database—object storage is built for this.
 
 Object storage is typically:
 - **Cheap** for large amounts of data, much more so than a database is for the same amount of data
@@ -67,25 +69,29 @@ A **message queue** lets components communicate without being online at the same
 
 The key architectural property of message queues is **durability**: once the queue confirms receipt of a message, it guarantees eventual delivery. The producer can move on, confident the work will happen—even if the consumer crashes and restarts, or the network hiccups, or traffic spikes. The queue persists the message until a consumer successfully processes it.
 
-*CookYourBooks example*: Imagine users can upload 50 cookbook photos at once. Rather than blocking while all 50 process, the upload handler puts 50 messages on a queue—one per image. OCR workers process them at their own pace. The user gets immediate feedback ("uploads received"), and processing happens in the background. Even if an OCR worker crashes mid-processing, the message returns to the queue and another worker picks it up—no uploads lost.
+*Bottlenose example*: When a student submits code to Bottlenose, the web server doesn't grade it synchronously—that would block the HTTP request for minutes. Instead, Bottlenose puts a grading job on a message queue. The Orca grading worker picks up jobs from the queue and processes them at its own pace. The student sees "grading in progress" immediately, and results appear when ready. Even if Orca crashes mid-grading, the message returns to the queue and gets retried—no submissions lost.
 
-Examples: AWS SQS, Google Pub/Sub, RabbitMQ, Apache Kafka.
+*Pawtograder example*: Pawtograder uses **pgmq** (PostgreSQL Message Queue)—an extension that adds queue semantics directly to PostgreSQL. When an instructor creates a new assignment, Pawtograder needs to create a GitHub repository for each student—but GitHub's API is rate limited to 60 requests per minute. Rather than blocking the instructor or failing partway through, Pawtograder enqueues a "create repo" task for each student. A background process works through the queue at a sustainable pace, respecting the rate limit. The instructor sees immediate confirmation; student repos appear over the next few minutes, guaranteed to eventually complete.
+
+Examples: AWS SQS, Google Pub/Sub, RabbitMQ, Apache Kafka, pgmq (PostgreSQL extension).
 
 We'll explore event-driven patterns and queues more deeply in **L33 (Event Architecture)**. For now, recognize queues as a tool for decoupling, handling variable load, and ensuring reliable delivery.
 
 ### Caches: Fast Access to Hot Data
 
-A **cache** stores copies of frequently-accessed data in memory for speed. Instead of querying the database every time someone searches for "chocolate cake recipes," you cache the result and serve it directly—until the cache expires or the underlying data changes.
+A **cache** stores copies of frequently-accessed data in memory for speed. Instead of querying the database every time someone requests the same data, you cache the result and serve it directly—until the cache expires or the underlying data changes.
 
-*CookYourBooks example*: The ToC Service (from L20) might cache popular cookbook searches. The first search hits the database; subsequent searches within the next few minutes return the cached result instantly.
+*Pawtograder example*: Recall from L20 that the Grading Action caches grader tarballs by SHA hash. The first grading run downloads the tarball; subsequent runs check if the SHA matches and skip the download entirely. This is a form of content-addressable caching—the cache key *is* the content hash, so if the instructor updates the grader, the new SHA automatically invalidates the old cache.
+
+Pawtograder also uses **Upstash** (hosted Redis) as an external key-value store for rate limiting outbound API calls. GitHub and Discord have rate limits; when Pawtograder sends notifications, it checks Redis to see how many requests it's made recently and backs off if approaching the limit. Redis is ideal here: fast reads/writes, automatic expiration of old entries, and works from stateless Edge Functions (which can't maintain in-memory counters themselves, because they are stateless).
 
 | Service | What It Does |
 |---------|--------------|
-| Redis | In-memory key-value store, often used as a cache |
+| Redis / Upstash | In-memory key-value store, often used as a cache or rate limiter |
 | Memcached | Distributed memory cache |
 | CDN (CloudFront, etc.) | Caches static files at edge locations globally |
 
-Caching involves tradeoffs: you gain speed but might serve stale data. When should the cache refresh? What if the underlying recipe changes?
+Caching involves tradeoffs: you gain speed but might serve stale data. When should the cache refresh? What if the grading criteria change?
 
 :::note Looking Ahead
 These consistency questions—what happens when multiple sources of truth diverge?—are fundamental to distributed systems. We'll explore them in greater depth during our concurrency unit: [Lecture 31 (Concurrency I)](/lecture-notes/l31-concurrency1), [Lecture 32 (Asynchronous Programming)](/lecture-notes/l32-concurrency2), and [Lecture 33 (Event-Driven Architecture)](/lecture-notes/l33-event-architecture).
@@ -98,19 +104,68 @@ An **API Gateway** provides a single entry point for your APIs. Instead of expos
 ```
 ┌─────────┐      ┌─────────────┐      ┌──────────────────┐
 │ Clients │─────►│ API Gateway │─────►│ Backend Services │
-└─────────┘      │ • Auth      │      │ • Import Function│
-                 │ • Routing   │      │ • Search Function│
-                 │ • Rate Limit│      │ • Export Function│
+└─────────┘      │ • Auth      │      │ • Edge Functions │
+                 │ • Routing   │      │ • PostgREST      │
+                 │ • Rate Limit│      │ • Storage        │
                  └─────────────┘      └──────────────────┘
 ```
 
-*CookYourBooks example*: If CookYourBooks offers a cloud API (import, search, export), an API gateway provides a single `api.cookyourbooks.com` endpoint. It verifies user tokens before requests reach the functions, prevents abuse with rate limiting, and routes `/import` vs. `/search` to different backend functions.
+*Pawtograder example*: Pawtograder's web app frontend talks to a single API endpoint that acts as an API gateway. It provides:
+- **Authentication**: JWT verification before requests reach backend functions
+- **Routing**: `/auth/*` for authentication, `/rest/v1/*` for PostgREST database access, `/functions/v1/*` for Edge Functions
+- **Rate limiting**: Prevents abuse by limiting requests per client
 
 Examples: AWS API Gateway, Google Cloud Endpoints, Kong.
 
+### Observability: Logs, Errors, and Monitoring
+
+In a monolith, debugging is (relatively) straightforward: one log file, one stack trace, one process to inspect. In distributed and serverless architectures, a single user action might trigger multiple functions, database queries, and external API calls—each generating its own logs on different machines that may not even exist anymore by the time you investigate.
+
+**Observability** is the practice of instrumenting your system so you can understand what's happening inside it. The three pillars are:
+
+- **Logs**: Textual records of events ("User X submitted to assignment Y at time Z")
+- **Metrics**: Numerical measurements over time (request latency, error rate, queue depth)
+- **Traces**: The path a request takes through your system (function A → database → function B → external API)
+
+For serverless architectures, observability is both more important and more challenging. Functions are ephemeral—they spin up, execute, and disappear. If something goes wrong, you can't SSH into the server and look around. You need centralized tooling that captures information *before* the function vanishes.
+
+**Log aggregation services** collect logs from all your functions and services into a single searchable location:
+
+| Service | What It Does |
+|---------|--------------|
+| **Sentry** | Error tracking with stack traces, breadcrumbs, and alerting |
+| **Bugsink** | Self-hosted error tracking (Sentry alternative) |
+| **Datadog** | Full observability platform (logs, metrics, traces) |
+| **CloudWatch** | AWS's built-in logging for Lambda and other services |
+
+*Pawtograder example*: When a grading run fails, we need to understand why. The Grading Action writes structured logs that Pawtograder captures and stores. If a student reports "my submission shows 0 points but my code is correct," an instructor can pull up the grading log and see exactly what happened: did the build fail? Did tests timeout? Did the API call to submit results fail?
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Distributed System                           │
+│  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐             │
+│  │Function │  │Function │  │Database │  │External │             │
+│  │   A     │  │   B     │  │         │  │  API    │             │
+│  └────┬────┘  └────┬────┘  └────┬────┘  └────┬────┘             │
+│       │            │            │            │                  │
+│       └────────────┴─────┬──────┴────────────┘                  │
+│                          │ logs, errors, traces                 │
+│                          ▼                                      │
+│              ┌───────────────────────┐                          │
+│              │   Log Aggregation     │                          │
+│              │   (Sentry, Datadog)   │                          │
+│              │   • Searchable logs   │                          │
+│              │   • Error alerting    │                          │
+│              │   • Request tracing   │                          │
+│              └───────────────────────┘                          │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Why this matters architecturally**: When you split a monolith into microservices or serverless functions, you're trading debuggability for other qualities. You *must* invest in observability tooling to compensate, or you'll spend hours hunting for bugs that would have been obvious in a monolith's single log file. This is one of the hidden costs of distributed architectures that teams often underestimate.
+
 ### Building Blocks Summary
 
-These five building blocks—databases, object storage, queues, caches, and API gateways—appear in nearly every cloud architecture. Serverless architecture is fundamentally about **composing these managed services**: you write functions containing business logic; the cloud provider operates the infrastructure.
+These building blocks—databases, object storage, queues, caches, API gateways, and observability tools—appear in nearly every cloud architecture. Serverless architecture is fundamentally about **composing these managed services**: you write functions containing business logic; the cloud provider operates the infrastructure.
 
 With this vocabulary established, let's see how serverless architecture works.
 
@@ -120,7 +175,7 @@ With this vocabulary established, let's see how serverless architecture works.
 
 In [L19](./l19-monoliths.md), we discussed technical vs. domain partitioning—whether you organize code (and teams) by technical role (controllers, services, repositories) or by business capability (import, library, export). Serverless takes technical partitioning to the organizational level: a cloud vendor operates the infrastructure layer *as a service*, allowing your team to focus entirely on domain logic.
 
-This is Conway's Law in action. The vendor's organization is structured to specialize in infrastructure—they have teams for container orchestration, auto-scaling, monitoring, security patching. Your organization specializes in your domain—recipes, cookbooks, user workflows. The system boundary (your functions ↔ their infrastructure) mirrors the organizational boundary. The vendor serves thousands of clients, achieving economies of scale that no single team could justify for their own infrastructure.
+This is Conway's Law in action. The vendor's organization is structured to specialize in infrastructure—they have teams for container orchestration, auto-scaling, monitoring, security patching. Your organization specializes in your domain—courses, assignments, grading workflows. The system boundary (your functions ↔ their infrastructure) mirrors the organizational boundary. The vendor serves thousands of clients, achieving economies of scale that no single team could justify for their own infrastructure.
 
 Of course, this division comes with costs. You gain operational simplicity and scalability, but you lose control: the vendor's abstractions constrain how you build (likely resulting in a much more complex system than you would have built yourself), their pricing model determines your costs at scale, and switching vendors means rewriting infrastructure code. We'll see these tradeoffs concretely when we compare serverless to DIY approaches. This course will not go into the details of how to build your own infrastructure, but interested students should consider CS3650 (Computer Systems), CS3700 (Networks and Distributed Systems), and CS4730 (Distributed Systems).
 
@@ -129,23 +184,42 @@ Of course, this division comes with costs. You gain operational simplicity and s
 Instead of deploying an application that runs continuously, you deploy **functions** that execute in response to events:
 
 ```java
-// A serverless function for CookYourBooks
-public class RecipeImportFunction implements RequestHandler<ImportRequest, ImportResponse> {
+// A serverless function for creating a submission (AWS Lambda style)
+// Pawtograder uses TypeScript/Deno, but the pattern is the same in Java
+public class CreateSubmissionHandler 
+        implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+    
+    private final SubmissionRepository submissions;
+    private final StorageService storage;
     
     @Override
-    public ImportResponse handleRequest(ImportRequest request, Context context) {
-        // This function runs only when triggered
-        byte[] imageData = request.getImageData();
-        String extractedText = ocrService.extractText(imageData);
-        Recipe recipe = recipeParser.parse(extractedText);
-        return new ImportResponse(recipe);
+    public APIGatewayProxyResponseEvent handleRequest(
+            APIGatewayProxyRequestEvent request, Context context) {
+        // This function runs only when triggered by an HTTP request
+        SubmissionRequest body = parseJson(request.getBody());
+        
+        // Verify the OIDC token from GitHub Actions
+        String token = request.getHeaders().get("Authorization");
+        OIDCClaims claims = verifyGitHubOIDC(token);
+        
+        // Create submission record in database
+        Submission submission = submissions.create(
+            body.assignmentId(), 
+            claims.repository()
+        );
+        
+        // Return grader tarball URL
+        String graderUrl = storage.getSignedUrl(body.assignmentId());
+        return new APIGatewayProxyResponseEvent()
+            .withStatusCode(200)
+            .withBody(toJson(new SubmissionResponse(submission.id(), graderUrl)));
     }
 }
 ```
 
 The cloud provider:
 - Receives the request
-- Spins up a container with your function
+- Spins up a container with your function (or reuses a warm one)
 - Executes the function
 - Returns the response
 - Tears down the container (eventually)
@@ -163,20 +237,20 @@ Serverless functions are triggered by **events**:
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
-│                        Event Sources                              │
-│  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐             │
-│  │  HTTP   │  │  File   │  │ Database│  │ Schedule│             │
-│  │ Request │  │ Upload  │  │ Change  │  │  Timer  │             │
-│  └────┬────┘  └────┬────┘  └────┬────┘  └────┬────┘             │
+│                        Event Sources                             │
+│  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐              │
+│  │  HTTP   │  │  File   │  │ Database│  │ Schedule│              │
+│  │ Request │  │ Upload  │  │ Change  │  │  Timer  │              │
+│  └────┬────┘  └────┬────┘  └────┬────┘  └────┬────┘              │
 │       │            │            │            │                   │
 │       └────────────┴─────┬──────┴────────────┘                   │
-│                          │                                        │
-│                          ▼                                        │
+│                          │                                       │
+│                          ▼                                       │
 │                 ┌─────────────────┐                              │
-│                 │   Your Function  │  ◄── Scales automatically   │
+│                 │   Your Function │  ◄── Scales automatically    │
 │                 └────────┬────────┘                              │
-│                          │                                        │
-│                          ▼                                        │
+│                          │                                       │
+│                          ▼                                       │
 │            ┌─────────────────────────────┐                       │
 │            │    Other Services           │                       │
 │            │  (Database, Storage, APIs)  │                       │
@@ -186,19 +260,22 @@ Serverless functions are triggered by **events**:
 
 ## Compare serverless to traditional architectures (10 minutes)
 
-Let's compare three approaches to deploying CookYourBooks' recipe import feature:
+Let's compare three approaches to deploying an autograding platform's submission handling:
 
-### Traditional Server (Monolith)
+### Traditional Server (Monolith): Bottlenose
 
 ```
 ┌─────────────────────────────────────────┐
-│            Your Server (24/7)           │
+│          Bottlenose Server (24/7)       │
 │  ┌─────────────────────────────────┐    │
-│  │        CookYourBooks App        │    │
+│  │         Rails Application       │    │
 │  │  ┌───────────┐ ┌─────────────┐  │    │
-│  │  │  Import   │ │   Library   │  │    │
-│  │  │  Service  │ │   Service   │  │    │
+│  │  │Submission │ │   Course    │  │    │
+│  │  │ Handler   │ │  Management │  │    │
 │  │  └───────────┘ └─────────────┘  │    │
+│  └─────────────────────────────────┘    │
+│  ┌─────────────────────────────────┐    │
+│  │           PostgreSQL            │    │
 │  └─────────────────────────────────┘    │
 └─────────────────────────────────────────┘
          Running even when idle
@@ -209,58 +286,56 @@ Let's compare three approaches to deploying CookYourBooks' recipe import feature
 - You handle scaling manually
 - All services share the same deployment
 
-### Container-Based (Microservices)
+### Container-Based (Microservices): Bottlenose + Orca
 
 ```
 ┌──────────────────┐    ┌──────────────────┐
-│  Import Service  │    │  Library Service │
-│    Container     │    │    Container     │
+│    Bottlenose    │    │   Orca Grader    │
+│    (Web App)     │    │   (Container)    │
 └──────────────────┘    └──────────────────┘
         ▲                       ▲
-        │                       │
-┌───────┴───────────────────────┴───────────┐
-│           Container Orchestrator           │
-│           (Kubernetes, etc.)              │
-└───────────────────────────────────────────┘
+        │    Message Queue      │
+        └───────────────────────┘
 ```
 
-- Containers run continuously (or scale to zero with advanced config)
-- More operational complexity
-- Independent scaling per service
-- You manage the orchestrator or use a managed service
+- Orca runs in isolated containers for security (untrusted student code)
+- Independent scaling: more graders during deadline rushes
+- Containers run continuously waiting for jobs
+- You manage container orchestration
 
-### Serverless (FaaS)
+### Serverless (FaaS): Pawtograder
 
 ```
-     HTTP Request
-          │
-          ▼
-┌─────────────────┐
-│   API Gateway   │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐     ┌─────────────────┐
-│ Import Function │────►│   S3 Bucket     │
-│  (runs on       │     │ (recipe images) │
-│   demand)       │     └─────────────────┘
-└─────────────────┘
-         │
-         ▼
-┌─────────────────┐
-│    DynamoDB     │
-│ (recipe storage)│
-└─────────────────┘
+     GitHub Actions triggers
+              │
+              ▼
+    ┌─────────────────┐
+    │ Supabase Gateway│
+    └────────┬────────┘
+             │
+             ▼
+    ┌─────────────────┐     ┌─────────────────┐
+    │  Edge Function  │────►│ Supabase Storage│
+    │ createSubmission│     │(grader tarballs)│
+    │  (runs on       │     └─────────────────┘
+    │   demand)       │
+    └─────────────────┘
+             │
+             ▼
+    ┌─────────────────┐
+    │   PostgreSQL    │
+    │ (via PostgREST) │
+    └─────────────────┘
 ```
 
-- Functions run only when triggered
+- Edge Functions run only when triggered
 - Provider handles scaling automatically
 - Pay per invocation
 - No servers to manage
 
 ### Comparison Table
 
-| Aspect | Monolith | Containers | Serverless |
+| Aspect | Bottlenose (Monolith) | Bottlenose + Orca (Containers) | Pawtograder (Serverless) |
 |--------|----------|------------|------------|
 | **Scaling** | Manual | Configured | Automatic |
 | **Idle cost** | Full | Reduced (with scale-to-zero) | Zero |
@@ -272,19 +347,33 @@ Let's compare three approaches to deploying CookYourBooks' recipe import feature
 
 Let's unpack each row:
 
-**Scaling**: With a monolith, *you* decide when to add capacity—monitoring traffic, provisioning new servers, configuring load balancers. Containers let you declare scaling rules ("maintain 3 replicas," "scale up when CPU > 70%"), but you configure and tune those rules. Serverless scales invisibly: if 1,000 requests arrive simultaneously, 1,000 function instances spin up. You don't think about it—until you get the bill.
+**Scaling**: With Bottlenose's monolith, *you* decide when to add capacity—monitoring traffic, provisioning new servers, configuring load balancers. Orca's containers let you declare scaling rules ("maintain 3 graders," "scale up when queue length > 10"), but you configure and tune those rules. Pawtograder's serverless functions scale invisibly: if 100 students submit simultaneously at a deadline, 100 Edge Function instances spin up. You don't think about it—until you get the bill.
 
-**Idle cost**: A monolith server runs 24/7, whether serving requests or not. Containers can "scale to zero" with advanced configuration, but this is tricky to set up and has its own cold-start implications. Serverless truly charges nothing when idle—if CookYourBooks has no users at 3 AM, you pay $0 during those hours.
+**Idle cost**: Bottlenose's server runs 24/7, whether serving requests or not. Orca containers can "scale to zero" with advanced configuration, but this is tricky to set up and has its own cold-start implications. Serverless truly charges nothing when idle—if no one is submitting at 3 AM, Pawtograder pays $0 during those hours.
 
-**Cold start**: When a monolith is running, every request hits warm code—no startup penalty. Containers have minimal cold starts if already running, but spinning up new instances takes seconds. Serverless cold starts are the most noticeable: when a function hasn't run recently, the provider must allocate a container, load your runtime (JVM, Node.js), initialize dependencies, then execute. This adds 100ms–5s latency on the first request. For user-facing APIs, this can feel sluggish; for background processing, it rarely matters.
+**Cold start**: When Bottlenose is running, every request hits warm code—no startup penalty. Orca has minimal cold starts if graders are already running, but spinning up new containers takes seconds. Serverless cold starts are the most noticeable: when a function hasn't run recently, the provider must allocate a container, load the runtime (JVM, Node.js, Deno, etc.), initialize dependencies, then execute. This adds 100ms–5s latency on the first request. For the Grading Action calling APIs in the background, this rarely matters; for interactive features like viewing grades, it can feel sluggish.
 
 **Complexity**: A monolith is one thing to deploy, monitor, and debug—simple. Container orchestration (Kubernetes) is notoriously complex: networking, service discovery, health checks, rolling deployments, secrets management (you would need to take another course to learn about this). Serverless is medium complexity: simpler operationally (no servers to manage), but debugging across many small functions and understanding cold starts introduces its own challenges.
 
-**Vendor lock-in**: A monolith running on a VM can move between cloud providers or on-premises with modest effort. Containers are fairly portable (Docker runs anywhere), though managed Kubernetes services have their quirks. Serverless lock-in is more nuanced than it used to be. Open-source FaaS platforms like Deno Deploy, OpenFaaS, and Knative let you write functions that run on multiple providers or self-hosted infrastructure—if you choose them from the start. However, this varies significantly by ecosystem: JavaScript/TypeScript developers have good portable options, while Java developers (like us in this course) have fewer choices and often end up coupled to AWS Lambda or Google Cloud Functions. The Hexagonal Architecture we learned helps regardless: if domain logic is behind ports, you can swap adapters for different providers, but you'll still rewrite infrastructure code when the underlying services differ.
+**Vendor lock-in**: Bottlenose running on a VM can move between cloud providers or on-premises with modest effort. Orca containers are fairly portable (Docker runs anywhere), though managed Kubernetes services have their quirks. Pawtograder's Supabase dependency is more significant—the tight integration with PostgREST, Row-Level Security policies, and Edge Functions means migrating to another provider would require substantial rewrites. However, much of Pawtograder's domain logic lives in standard PostgreSQL (triggers, functions, RLS policies), which *is* portable. The Hexagonal Architecture we learned helps regardless: if domain logic is behind ports, you can swap adapters for different providers, but you'll still rewrite infrastructure code when the underlying services differ.
 
-**State management**: A monolith can hold state in memory—session data, caches, connection pools—because the process runs continuously. Containers can too, though scaling and restarts complicate things. Serverless functions are stateless by design: each invocation may run on a different container, so you *must* externalize state to databases, caches, or session stores. This forces cleaner architecture but adds latency and complexity.
+**State management**: Bottlenose can hold state in memory—session data, caches, connection pools—because the process runs continuously. Orca containers can too, though scaling and restarts complicate things. Serverless functions are stateless by design: each Edge Function invocation may run on a different container, so you *must* externalize state. Pawtograder pushes this further: most state and domain logic lives in PostgreSQL itself via triggers and RLS policies—the functions are thin wrappers that delegate to the database. This forces cleaner architecture but adds latency and complexity.
 
-**Long-running tasks**: A monolith can run a task for hours if needed. Containers can too. Serverless functions typically timeout after 15 minutes (AWS Lambda) or less. Processing a 1,000-page cookbook? You'll need to chunk the work, use queues, or accept that serverless isn't the right tool.
+**Long-running tasks**: Bottlenose can run a task for hours if needed. Orca containers can too—and grading jobs often take minutes. Serverless functions typically timeout after 15 minutes (AWS Lambda) or less. This is why Pawtograder uses GitHub Actions for actual grading rather than Edge Functions—grading can take several minutes, exceeding typical function timeouts. Edge Functions handle the quick API calls (registration, feedback submission); the heavy lifting happens elsewhere.
+
+### Energy Efficiency Considerations
+
+Serverless architecture has interesting energy implications that cut both ways:
+
+**Potential energy savings:**
+- **No idle power**: A monolith server consumes power 24/7, even at 3 AM when no one is submitting. Serverless functions consume energy only when executing—true scale-to-zero.
+- **Shared infrastructure**: Cloud providers achieve high utilization across thousands of customers. A server running at 80% utilization is more energy-efficient than one running at 10%.
+- **Right-sized execution**: Functions get exactly the resources they need for their execution time. No over-provisioned VMs sitting mostly idle.
+
+**Potential energy costs:**
+- **Cold start overhead**: Spinning up a new container for each cold invocation has energy costs that a warm monolith avoids.
+- **Per-request overhead**: Each function invocation goes through the provider's routing, logging, and billing infrastructure—energy costs that don't exist for in-process method calls.
+- **Distributed chattiness**: If your serverless architecture has many small functions calling each other, you're paying network energy costs that a monolith wouldn't incur.
 
 ## Requirements suited (and unsuited) for serverless (10 minutes)
 
@@ -292,36 +381,38 @@ Let's unpack each row:
 
 **Event-driven, stateless operations:**
 ```java
-// Good: Process uploaded image, return result
-public Recipe handleImageUpload(ImageUploadEvent event) {
-    byte[] image = storageService.getObject(event.getBucket(), event.getKey());
-    String text = ocrService.extractText(image);
-    return recipeParser.parse(text);
+// Good: Register submission, return grader URL
+public class CreateSubmissionHandler implements RequestHandler<Request, Response> {
+    public Response handleRequest(Request req, Context ctx) {
+        OIDCClaims token = verifyOIDC(req.getHeader("Authorization"));
+        Submission sub = submissions.create(req.assignmentId(), token.repository());
+        return new Response(storage.getSignedUrl(req.assignmentId()));
+    }
 }
 ```
 
 **Variable or unpredictable workloads:**
-- Recipe imports might spike when a cooking blog links to CookYourBooks
-- Pay for actual usage, not provisioned capacity
+- Submission traffic spikes near deadlines (100x normal load)
+- Pay for actual usage, not provisioned capacity for peak
 
 **Glue code and integrations:**
 - Transform data between services
-- Respond to webhooks
-- Scheduled tasks (daily recipe backup)
+- Respond to webhooks (e.g., GitHub webhook when student pushes)
+- Scheduled tasks (nightly grade exports)
 
 **APIs with moderate traffic:**
 - REST/GraphQL endpoints that don't need sub-10ms latency
-- Traffic patterns with idle periods
+- Traffic patterns with idle periods (no submissions at 3 AM)
 
 ### Poor Fit for Serverless
 
 **Long-running computations:**
 ```java
 // Bad: This might timeout (typically 15 min max)
-public void processEntireCookbook(CookbookId id) {
-    List<Recipe> recipes = library.getAllRecipes(id);  // 1000 recipes
-    for (Recipe r : recipes) {
-        // Heavy processing...
+public void gradeAllSubmissions(String assignmentId) {
+    List<Submission> submissions = getSubmissions(assignmentId);  // 200 students
+    for (Submission sub : submissions) {
+        runTests(sub);  // Each takes 2-3 minutes...
     }
 }
 ```
@@ -339,43 +430,154 @@ public void processEntireCookbook(CookbookId id) {
 - Per-invocation pricing can exceed server costs at high volume
 - Better to run your own servers for predictable, sustained load
 
-### CookYourBooks: What Would Go Serverless?
+### Domain Logic in the Database
 
-If CookYourBooks had a cloud component, serverless would fit well for:
+One distinctive aspect of Pawtograder's architecture: much of the domain logic lives in PostgreSQL itself, not in application code. PostgreSQL handles not just data storage but also message queuing (pgmq), business rule enforcement (triggers), and access control (RLS). This is an interesting serverless pattern worth understanding:
 
-| Feature | Why Serverless Works |
-|---------|---------------------|
-| **Recipe OCR API** | Stateless, event-driven, variable load |
-| **Recipe sharing endpoint** | Low traffic, don't need 24/7 server |
-| **Daily backup job** | Scheduled task, runs briefly |
-| **Webhook for cookbook updates** | Sporadic events, quick processing |
+```sql
+-- Example: PostgreSQL trigger enforces submission deadlines
+CREATE FUNCTION check_deadline() RETURNS TRIGGER AS $$
+DECLARE
+  effective_deadline TIMESTAMP;
+BEGIN
+  -- Calculate deadline: base deadline + any per-student extension
+  -- auth.uid() returns the current authenticated user
+  -- COALESCE defaults to 0 extra hours if no exception exists for this student
+  SELECT a.deadline + COALESCE(e.additional_hours, 0) * INTERVAL '1 hour'
+  INTO effective_deadline
+  FROM assignments a
+  LEFT JOIN assignment_due_date_exceptions e 
+    ON e.assignment_id = a.id AND e.user_id = auth.uid()
+  WHERE a.id = NEW.assignment_id;
+  
+  IF NOW() > effective_deadline THEN
+    RAISE EXCEPTION 'Submission past deadline';
+  END IF;
+  RETURN NEW;  -- Allow the INSERT to proceed
+END;
+$$ LANGUAGE plpgsql;
+```
 
-Serverless would fit poorly for:
+**Why put logic in the database?**
+- **Atomic enforcement**: The check and the insert happen as one indivisible operation—no possibility of checking the deadline, then another request sneaking in, then inserting
+- **Always runs**: Whether request comes from Edge Function, PostgREST, or direct SQL
+- **No cold starts**: Database is always warm; triggers execute immediately
+- **Single source of truth**: Business rules live where the data lives
 
-| Feature | Why Serverless Doesn't Work |
-|---------|---------------------------|
-| **Real-time collaborative editing** | Needs persistent connections, low latency |
-| **Large cookbook migration** | Long-running, might timeout |
-| **Recipe search with complex ranking** | Needs in-memory indexes, stateful |
+**Tradeoffs:**
+- Harder to test (need database fixtures)
+- Less familiar to developers (SQL vs TypeScript)
+- Vendor lock-in to PostgreSQL (though it's portable *within* PostgreSQL providers)
+
+This "database as application server" pattern is controversial but effective for Pawtograder's use case—the invariants (deadline enforcement, grade visibility, enrollment checks) are fundamentally about data consistency, exactly what databases are designed to ensure.
 
 ## Connection to Earlier Concepts (5 minutes)
 
 :::note Information Hiding In Action
-The principles from [Lecture 6 (Information Hiding)](/lecture-notes/l6-immutability-abstraction) scale all the way up to cloud architecture. A serverless function hides its implementation behind an event interface—callers don't know (or care) whether it's running on AWS Lambda, Google Cloud Functions, or a container. The ports-and-adapters pattern means your domain logic doesn't know it's running serverless at all. Information hiding isn't just about `private` fields; it's a fractal principle that applies at every level of system design.
+The principles from [Lecture 6 (Information Hiding)](/lecture-notes/l6-immutability-abstraction) scale all the way up to cloud architecture. Pawtograder's Edge Functions hide their implementation behind an event interface—the Grading Action doesn't know (or care) whether `createSubmission` runs on Supabase Edge Functions, AWS Lambda, or a container. The ports-and-adapters pattern means the action's domain logic doesn't know it's calling serverless at all. Information hiding isn't just about `private` fields; it's a fractal principle that applies at every level of system design.
 :::
 
 Serverless isn't a departure from what we've learned—it's an application of the same principles at a different scale:
 
-| Course Concept | Serverless Application |
+| Course Concept | Pawtograder's Serverless Application |
 |----------------|----------------------|
-| **Hexagonal Architecture** (L16, L21) | Domain logic behind ports; cloud services are adapters |
-| **Dependency Injection** (L18) | Functions receive dependencies through configuration |
-| **Information Hiding** (L6) | Each function hides its implementation behind an event interface |
-| **Fallacies of Distributed Computing** (L22) | Serverless makes network calls explicit—can't hide them |
-| **Quality Attributes** (L21) | Serverless optimizes for scalability and cost; trades off latency |
+| **Hexagonal Architecture** (L16, L21) | Domain logic in DB triggers; Edge Functions are thin adapters |
+| **Dependency Injection** (L18) | Functions receive database client, storage client via environment |
+| **Information Hiding** (L6) | Grading Action doesn't know API is serverless vs. traditional server |
+| **Fallacies of Distributed Computing** (L20) | Edge Functions handle retries, timeouts explicitly |
+| **Quality Attributes** (L20) | Serverless optimizes for scalability and cost; trades off latency |
 
-The architectural thinking is the same. Serverless is one point in the design space—sometimes the right choice, sometimes not.
+The architectural thinking is the same. Serverless is one point in the design space—sometimes the right choice, sometimes not. Pawtograder's hybrid approach demonstrates this: serverless for the API layer, GitHub Actions for compute-heavy grading, PostgreSQL for domain invariants.
+
+## Choosing an Architecture: A Decision Framework (10 minutes)
+
+We've now covered a range of architectural styles across L19-L21. How do you actually decide which to use? Here's a practical framework for thinking through architectural choices.
+
+### Start with These Questions
+
+**1. What's your team size and structure?**
+- **Small team (1-5)**: Monolith or modular monolith. You don't have the people to operate multiple services.
+- **Medium team (5-15)**: Modular monolith or limited microservices. Clear module boundaries let sub-teams work independently.
+- **Large team (15+)**: Microservices become more viable. Team autonomy and independent deployment cycles justify the operational overhead.
+
+**2. What are your scaling requirements?**
+- **Predictable, steady load**: Traditional servers or containers are cost-effective. You're not paying for elasticity you don't need.
+- **Bursty, unpredictable load**: Serverless or auto-scaling containers. Near-deadline submission spikes are a classic bursty pattern.
+- **Sustained high throughput**: Dedicated infrastructure. Per-invocation serverless pricing becomes expensive at scale.
+
+**3. What are your latency requirements?**
+- **Sub-100ms interactive**: Avoid serverless cold starts. Use warm containers or a monolith.
+- **Background processing, APIs**: Serverless is fine. Cold starts matter less when users aren't waiting.
+
+**4. Do you need isolation for untrusted code?**
+- **Yes**: Separate service boundary (Orca) or managed execution (GitHub Actions). Don't run student code in your main process.
+- **No**: Monolith or modular monolith is simpler.
+
+**5. What's your operational capacity?**
+- **Minimal ops expertise**: Serverless or managed containers. Let the vendor handle infrastructure.
+- **Strong ops team**: You can run your own Kubernetes, databases, message queues—and potentially save money (but... more in another course).
+
+### Decision Flowchart
+
+```
+START: New project or major architectural decision
+                    │
+                    ▼
+        ┌───────────────────────┐
+        │ Is this a greenfield  │
+        │   project or early    │──── Yes ────► Start with a MONOLITH
+        │       stage?          │              (you can always extract later)
+        └───────────┬───────────┘
+                    │ No (existing system or clear requirements)
+                    ▼
+        ┌───────────────────────┐
+        │  Do you have specific │
+        │ scaling/team/deploy   │──── No ─────► Stay with / build MONOLITH
+        │  problems to solve?   │              or MODULAR MONOLITH
+        └───────────┬───────────┘
+                    │ Yes
+                    ▼
+        ┌───────────────────────┐
+        │  Is the problem:      │
+        │ • Independent scaling │──── Yes ────► Extract to MICROSERVICE
+        │ • Team autonomy       │              or SERVERLESS FUNCTION
+        │ • Deployment isolation│
+        └───────────┬───────────┘
+                    │ No / Unclear
+                    ▼
+        ┌───────────────────────┐
+        │  Is it bursty traffic │
+        │  with idle periods?   │──── Yes ────► Consider SERVERLESS
+        └───────────┬───────────┘
+                    │ No
+                    ▼
+            Consider CONTAINERS
+           with auto-scaling rules
+```
+
+### The Pawtograder Case Study
+
+Why does Pawtograder use a hybrid architecture?
+
+| Component | Architecture | Why? |
+|-----------|--------------|------|
+| **Pawtograder API** | Serverless (Edge Functions) | Bursty traffic, stateless operations, minimal ops team |
+| **Grading execution** | GitHub Actions (managed compute) | Long-running jobs, isolation for untrusted code, leverages existing infrastructure |
+| **Domain logic** | PostgreSQL (triggers, RLS) | Data consistency is paramount, no cold starts, single source of truth |
+| **Rate limiting** | Redis (Upstash) | Fast external state for stateless functions |
+
+No single architecture was right for everything. The decision framework helped identify that different components had different requirements—and the Hexagonal Architecture from L16/L19 made it possible to use different infrastructure for different concerns.
+
+### Common Mistakes to Avoid
+
+**Premature microservices**: Don't split into services until you have a clear reason. The distributed systems complexity is real.
+
+**Ignoring operational costs**: Microservices and serverless require observability tooling, distributed debugging skills, and CI/CD for each component. Budget for this.
+
+**Chasing trends**: "Netflix uses microservices" doesn't mean you should. Netflix has thousands of engineers and billions of users. You probably don't.
+
+**One-way doors**: Some choices are hard to reverse (vendor lock-in, data model decisions). Be more careful with those than with easily-reversible choices.
 
 ---
 
-After spring break, we'll shift focus to **user-centered design**—how to build software that users can actually use. We'll explore usability heuristics, user testing, and accessibility. The architecture we've been building needs to serve real people, and that's what the next unit addresses.
+We've now covered architectural styles from monoliths through microservices to serverless. But we've been implicitly assuming a single developer making all decisions. Real software is built by **teams**—and as Conway's Law suggests, system architecture and team structure are deeply intertwined. In the next lecture, we'll explore how teams organize, communicate, and coordinate to build software together. The architectural boundaries we've drawn often become team boundaries, and vice versa.

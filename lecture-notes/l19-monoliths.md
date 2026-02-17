@@ -1,12 +1,14 @@
 ---
-sidebar_position: 20
-lecture_number: 20
-title: Architectural Qualities
+sidebar_position: 19
+lecture_number: 19
+title: "Architectural Styles: From Hexagons to Monoliths"
 ---
 
-In [L16 (Design for Testability)](./l16-testing2.md), we introduced **Hexagonal Architecture** (Ports and Adapters) as a way to separate domain logic from infrastructure, making code testable. That was architecture in service of a specific quality attribute: testability. In [L18](./l18-architecture-design.md), we identified service boundaries for CookYourBooks—`ImportService`, `LibraryService`, and `ExportService`—by applying heuristics about cohesion, coupling, and change.
+In [L16 (Design for Testability)](./l16-testing2.md), we introduced **Hexagonal Architecture** (Ports and Adapters) as a way to separate domain logic from infrastructure, making code testable. That was architecture in service of a specific quality attribute: testability. In [L18](./l18-architecture-design.md), we identified component boundaries for Pawtograder's autograder—the Solution Repo, Grading Action, and Pawtograder API—by applying heuristics about rate of change, actors, interface segregation, and testability.
 
-Now we zoom out to look at architectural styles more broadly—recurring structures that help organize entire applications. We'll see how these styles apply to CookYourBooks and how they affect quality attributes beyond just testability. 
+Now we zoom out to look at architectural styles more broadly—recurring structures that help organize entire applications. We'll continue with our **Pawtograder** and **Bottlenose** running examples to see how these styles apply in practice.
+
+This lecture focuses on **single-process architecture**: patterns for organizing code within a single deployment unit where components communicate via method calls in shared memory. We'll explore Hexagonal, Layered, and Pipelined architectures, then examine the **monolithic architecture** that encompasses them all. At the end, we'll glimpse what happens when we break out of the monolith—and discover why that simple step introduces a world of new challenges.
 
 Architecture is fundamentally about tradeoffs. Every architectural choice affects multiple quality attributes: maintainability (how easy is it to change?), scalability (how does it handle growth?), performance (how fast is it?), and increasingly, energy efficiency (how much power does it consume?). There's no universally "best" architecture—only architectures that are better or worse fits for particular constraints and priorities. Our goal is to develop vocabulary for discussing these tradeoffs and intuition for recognizing them.
 
@@ -16,7 +18,7 @@ Before diving into specific examples, let's clarify vocabulary that architects u
 
 An **architectural style** describes a bundle of characteristics about a system. When we name a style, we're capturing several dimensions at once: how components and their dependencies are organized (the *component topology*), whether the system runs as a single deployment unit or as multiple networked services (the *physical architecture*), how frequently and in what pieces the system gets deployed, how components communicate with each other (method calls? REST? message queues?), and whether data is centralized or spread across multiple stores.
 
-Naming a style gives us shorthand for this complex bundle. When you say "microservices," other architects immediately understand implications about deployment, communication, team structure, and more. When you say "layered architecture," they picture horizontal strata with rules about which layers can call which. The name is a handle for a whole worldview.
+Naming a style gives us shorthand for this complex bundle, and we will learn about several of these styles in today's lecture. When you say "microservices," other architects immediately understand implications about deployment, communication, team structure, and more. When you say "layered architecture," they picture horizontal strata with rules about which layers can call which. The name is a handle for a whole worldview.
 
 An **architectural pattern**, by contrast, is a contextualized solution to a recurring problem. Patterns are more specific and tactical. "Circuit Breaker" is a pattern for handling failures in distributed systems. "Repository" is a pattern for abstracting data access. You might use many patterns within a single architectural style.
 
@@ -30,93 +32,97 @@ There's no official committee that decides what architectural styles exist. Styl
 This is the software engineering version of [piecemeal growth](./l18-architecture-design.md)—Christopher Alexander's observation that good architecture emerges through gradual adaptation rather than top-down master plans. Architectural styles aren't invented in ivory towers; they evolve from the ecosystem.
 :::
 
-## CookYourBooks: Applying Architecture to a Familiar Domain (5 minutes)
+## Continuing Our Running Examples: Pawtograder and Bottlenose (5 minutes)
 
-We've been building CookYourBooks throughout the course. In [L17](./l17-creation-patterns.md), we saw how object-level patterns (Builder, Factory Methods, Dependency Injection) help construct and wire individual objects. In [L18](./l18-architecture-design.md), we identified service boundaries based on cohesion, coupling, and change vectors.
+In [L18](./l18-architecture-design.md), we identified component boundaries for Pawtograder's autograder and compared them to Bottlenose's architecture. We discovered that both systems solve the same fundamental problem—grade student code automatically—but make different architectural choices based on different requirements.
 
-Now let's see how architectural patterns help us structure the application as a whole.
+Now let's see how architectural *styles* help us understand and describe these different approaches.
 
-As a reminder, CookYourBooks:
-- Manages **Recipes** (with ingredients, instructions, notes, and conversion rules)
-- Organizes recipes into **Cookbooks** within a **UserLibrary**
-- Imports recipes from various sources (JSON, images via OCR, markdown)
-- Exports recipes to various formats (markdown, JSON)
-- Provides both **CLI** and **GUI** interfaces
-- Integrates with external services (Tesseract for local OCR, Claude API for cloud OCR)
+As a reminder, both systems must:
+- Accept student code submissions
+- Run tests against student implementations
+- Compute scores based on test results
+- Report feedback to students
 
-These requirements create architectural challenges:
-- Multiple input/output formats behind unified interfaces
-- Multiple user interfaces sharing the same logic
-- External service integration that shouldn't pollute domain code
-- Testability requirements (we need to test without real files or APIs)
+But they do so with different architectural approaches:
+- **Pawtograder**: A "thick action" architecture where the Grading Action normalizes results before sending them through a narrow API
+- **Bottlenose**: A Rails monolith with platform-driven grading logic, delegating execution to Orca (a Docker-based microservice)
 
-Let's see how Hexagonal Architecture—which we first met in L16—addresses these challenges.
+These differences create architectural challenges that manifest differently in each system:
+- How to isolate grading logic from infrastructure (testability)
+- How to handle multiple programming languages (extensibility)
+- How to manage communication between components (coupling)
+- How to scale to many concurrent submissions (scalability)
 
-## Hexagonal Architecture Applied to CookYourBooks (15 minutes)
+Let's see how Hexagonal Architecture—which we first met in L16—manifests in these real systems.
 
-In L16, we saw Hexagonal Architecture (Ports and Adapters) applied to a smart home energy optimizer. The pattern separated domain logic from infrastructure, making the code testable. Now let's apply the same pattern to CookYourBooks.
+## Hexagonal Architecture in Pawtograder (15 minutes)
+
+In L16, we saw Hexagonal Architecture (Ports and Adapters) applied to a smart home energy optimizer. The pattern separated domain logic from infrastructure, making the code testable. Now let's see how this same pattern manifests in Pawtograder's Grading Action.
 
 ### The Core Domain
 
-CookYourBooks' domain logic doesn't care *how* recipes are stored or *where* they come from—it only cares about recipes, cookbooks, and the operations on them:
+Pawtograder's grading logic doesn't care *how* results are sent to the API or *where* the grader tarball comes from—it only cares about grading submissions:
 
 ```java
-// Domain: Pure business logic, no infrastructure
-public class RecipeScaler {
-    private final ConversionRegistry conversions;
+// Domain: Pure grading logic, no infrastructure
+public class OverlayGrader implements Grader {
+    private final Builder builder;
+    private final Logger logger;
     
-    public RecipeScaler(ConversionRegistry conversions) {
-        this.conversions = conversions;
+    public OverlayGrader(Builder builder, Logger logger) {
+        this.builder = builder;
+        this.logger = logger;
     }
     
-    public Recipe scaleToServings(Recipe recipe, int targetServings) {
-        double scaleFactor = (double) targetServings / recipe.getServings();
-        List<Ingredient> scaledIngredients = recipe.getIngredients().stream()
-            .map(ing -> scaleIngredient(ing, scaleFactor))
-            .toList();
-        return recipe.withIngredients(scaledIngredients)
-                     .withServings(targetServings);
-    }
-    
-    public Recipe convertToSystem(Recipe recipe, UnitSystem targetSystem) {
-        List<Ingredient> converted = recipe.getIngredients().stream()
-            .map(ing -> convertIngredient(ing, targetSystem))
-            .toList();
-        return recipe.withIngredients(converted);
+    public AutograderFeedback grade(Path solutionDir, Path submissionDir, 
+                                     PawtograderConfig config) {
+        // 1. Copy solution to grading directory
+        // 2. Overlay student files onto solution
+        // 3. Build and run tests
+        BuildResult buildResult = builder.build(gradingDir, config.getBuild());
+        if (!buildResult.success()) {
+            return createBuildFailureFeedback(buildResult);
+        }
+        
+        // 4. Parse test results and compute scores
+        List<TestResult> testResults = builder.parseTestResults(gradingDir);
+        List<TestFeedback> feedback = gradeUnits(config.getGradedParts(), testResults);
+        
+        // 5. Return normalized feedback
+        return new AutograderFeedback(feedback, lintResult, output, score);
     }
 }
 ```
 
-This code knows nothing about JSON files, OCR APIs, or database connections. It's pure domain logic: given a recipe, scale it or convert its units.
+This code knows nothing about GitHub Actions, HTTP APIs, or database connections. It's pure domain logic: given a solution and a submission, grade it according to the config.
 
 ### Ports Define What the Domain Needs
 
-Ports are interfaces that describe what the application needs from the outside world—without specifying how:
+Ports are interfaces that describe what the grading engine needs from the outside world—without specifying how:
 
 ```java
-// Port: How do we load recipes? (not HOW they're stored)
-public interface RecipeRepository {
-    Optional<Recipe> findById(RecipeId id);
-    List<Recipe> findByCookbook(CookbookId cookbookId);
-    void save(Recipe recipe);
-    void delete(RecipeId id);
+// Port: How do we build and test? (not WHICH build tool)
+public interface Builder {
+    BuildResult build(Path projectDir, BuildConfig config);
+    List<TestResult> parseTestResults(Path reportDir);
+    Optional<LintResult> lint(Path projectDir, LinterConfig config);
+    Optional<List<MutantResult>> mutationTest(Path projectDir, MutationConfig config);
 }
 
-// Port: How do we import recipes? (not WHICH format)
-public interface RecipeImporter {
-    Recipe importRecipe(Path source) throws ImportException;
-    boolean canHandle(Path source);
+// Port: How do we register submissions? (not WHICH platform)
+public interface SubmissionAPI {
+    SubmissionRegistration register(String oidcToken);
 }
 
-// Port: How do we export recipes? (not WHICH format)
-public interface RecipeExporter {
-    void export(Recipe recipe, Path destination) throws ExportException;
-    String getFormatName();
+// Port: How do we submit feedback? (not HOW it's stored)
+public interface FeedbackAPI {
+    void submit(String submissionId, AutograderFeedback feedback);
 }
 
-// Port: How do we perform OCR? (not WHICH service)
-public interface OcrService {
-    String extractText(Path imagePath) throws OcrException;
+// Port: How do we log output? (not WHERE it goes)
+public interface Logger {
+    void log(String message, Visibility visibility);
 }
 ```
 
@@ -125,137 +131,90 @@ public interface OcrService {
 Adapters implement the ports for specific technologies:
 
 ```java
-// Adapter: JSON file storage
-public class JsonRecipeRepository implements RecipeRepository {
-    private final Path storageDirectory;
-    private final ObjectMapper mapper;
-    
-    public JsonRecipeRepository(Path storageDirectory, ObjectMapper mapper) {
-        this.storageDirectory = storageDirectory;
-        this.mapper = mapper;
+// Adapter: Gradle builds (Java)
+public class GradleBuilder implements Builder {
+    @Override
+    public BuildResult build(Path projectDir, BuildConfig config) {
+        // Run ./gradlew test with appropriate arguments
+        ProcessResult result = runGradle(projectDir, "test", config.getTimeouts());
+        return new BuildResult(result.exitCode() == 0, result.output());
     }
     
     @Override
-    public Optional<Recipe> findById(RecipeId id) {
-        Path file = storageDirectory.resolve(id.value() + ".json");
-        if (!Files.exists(file)) return Optional.empty();
-        return Optional.of(mapper.readValue(file.toFile(), Recipe.class));
+    public List<TestResult> parseTestResults(Path reportDir) {
+        // Parse Surefire XML format
+        return SurefireParser.parse(reportDir.resolve("build/test-results"));
     }
     
     @Override
-    public void save(Recipe recipe) {
-        Path file = storageDirectory.resolve(recipe.getId().value() + ".json");
-        mapper.writeValue(file.toFile(), recipe);
+    public Optional<LintResult> lint(Path projectDir, LinterConfig config) {
+        // Run checkstyle, parse XML output
+        runGradle(projectDir, "checkstyleMain");
+        return Optional.of(CheckstyleParser.parse(reportDir));
     }
 }
 
-// Adapter: Tesseract OCR (local)
-public class TesseractOcrAdapter implements OcrService {
-    private final Tesseract tesseract;
-    
-    public TesseractOcrAdapter(String tessDataPath) {
-        this.tesseract = new Tesseract();
-        tesseract.setDatapath(tessDataPath);
-    }
-    
+// Adapter: Python script builds
+public class PythonScriptBuilder implements Builder {
     @Override
-    public String extractText(Path imagePath) throws OcrException {
-        try {
-            return tesseract.doOCR(imagePath.toFile());
-        } catch (TesseractException e) {
-            throw new OcrException("Tesseract failed", e);
-        }
+    public BuildResult build(Path projectDir, BuildConfig config) {
+        // Run configured Python test command
+        ProcessResult result = runPython(projectDir, config.getCmd());
+        return new BuildResult(result.exitCode() == 0, result.output());
     }
+    // ... parse pytest output ...
 }
 
-// Adapter: Claude API OCR (cloud)
-public class ClaudeOcrAdapter implements OcrService {
+// Adapter: Pawtograder's Supabase backend
+public class SupabaseAPI implements SubmissionAPI, FeedbackAPI {
     private final HttpClient client;
-    private final String apiKey;
+    private final String baseUrl;
     
     @Override
-    public String extractText(Path imagePath) throws OcrException {
-        // Encode image, call Claude API, parse response
-        byte[] imageBytes = Files.readAllBytes(imagePath);
-        String base64Image = Base64.getEncoder().encodeToString(imageBytes);
-        // ... HTTP request to Claude API ...
-    }
-}
-
-// Adapter: Markdown export
-public class MarkdownExportAdapter implements RecipeExporter {
-    @Override
-    public void export(Recipe recipe, Path destination) throws ExportException {
-        StringBuilder md = new StringBuilder();
-        md.append("# ").append(recipe.getTitle()).append("\n\n");
-        md.append("*Servings: ").append(recipe.getServings()).append("*\n\n");
-        md.append("## Ingredients\n\n");
-        for (Ingredient ing : recipe.getIngredients()) {
-            md.append("- ").append(ing.format()).append("\n");
-        }
-        // ... instructions, notes ...
-        Files.writeString(destination, md.toString());
+    public SubmissionRegistration register(String oidcToken) {
+        // POST to createSubmission endpoint with OIDC token
+        // Returns submission ID, grader URL, and SHA for verification
     }
     
     @Override
-    public String getFormatName() { return "Markdown"; }
+    public void submit(String submissionId, AutograderFeedback feedback) {
+        // POST normalized feedback to submitFeedback endpoint
+        // Includes retry logic with exponential backoff
+    }
 }
 ```
 
 ### Services Orchestrate Domain and Adapters
 
-The services we identified in L20 coordinate between domain logic and infrastructure:
+The main entry point coordinates between the grading domain and infrastructure adapters:
 
 ```java
-public class ImportService {
-    private final List<RecipeImporter> importers;
-    private final OcrService ocrService;
-    private final RecipeParser recipeParser;
+public class GradingPipeline {
+    private final SubmissionAPI submissionApi;
+    private final FeedbackAPI feedbackApi;
+    private final Grader grader;
     
-    public ImportService(List<RecipeImporter> importers, 
-                         OcrService ocrService,
-                         RecipeParser recipeParser) {
-        this.importers = importers;
-        this.ocrService = ocrService;
-        this.recipeParser = recipeParser;
+    public GradingPipeline(SubmissionAPI submissionApi, 
+                           FeedbackAPI feedbackApi,
+                           Grader grader) {
+        this.submissionApi = submissionApi;
+        this.feedbackApi = feedbackApi;
+        this.grader = grader;
     }
     
-    public Recipe importFromFile(Path file) throws ImportException {
-        // Find appropriate importer
-        RecipeImporter importer = importers.stream()
-            .filter(i -> i.canHandle(file))
-            .findFirst()
-            .orElseThrow(() -> new ImportException("No importer for: " + file));
-        return importer.importRecipe(file);
-    }
-    
-    public Recipe importFromImage(Path imagePath) throws ImportException {
-        // Use OCR to extract text, then parse
-        String extractedText = ocrService.extractText(imagePath);
-        return recipeParser.parse(extractedText);
-    }
-}
-
-public class LibraryService {
-    private final RecipeRepository recipeRepository;
-    private final CookbookRepository cookbookRepository;
-    
-    public LibraryService(RecipeRepository recipeRepository,
-                          CookbookRepository cookbookRepository) {
-        this.recipeRepository = recipeRepository;
-        this.cookbookRepository = cookbookRepository;
-    }
-    
-    public void addRecipeToCookbook(Recipe recipe, CookbookId cookbookId) {
-        Cookbook cookbook = cookbookRepository.findById(cookbookId)
-            .orElseThrow(() -> new CookbookNotFoundException(cookbookId));
-        recipeRepository.save(recipe);
-        cookbook.addRecipe(recipe.getId());
-        cookbookRepository.save(cookbook);
-    }
-    
-    public List<Recipe> getRecipesInCookbook(CookbookId cookbookId) {
-        return recipeRepository.findByCookbook(cookbookId);
+    public void run(String oidcToken, Path submissionDir) {
+        // 1. Register submission (infrastructure concern)
+        SubmissionRegistration reg = submissionApi.register(oidcToken);
+        
+        // 2. Download and extract grader (infrastructure concern)
+        Path solutionDir = downloadGrader(reg.graderUrl(), reg.graderSha());
+        
+        // 3. Grade (pure domain logic)
+        PawtograderConfig config = parseConfig(solutionDir);
+        AutograderFeedback feedback = grader.grade(solutionDir, submissionDir, config);
+        
+        // 4. Submit results (infrastructure concern)
+        feedbackApi.submit(reg.submissionId(), feedback);
     }
 }
 ```
@@ -264,17 +223,19 @@ public class LibraryService {
 
 | Concern | Where It Lives | Can Change Without Affecting... |
 |---------|----------------|--------------------------------|
-| "Scale recipe to 8 servings" | Domain (RecipeScaler) | Any adapter |
-| "Recipes stored as JSON files" | Adapter (JsonRecipeRepository) | Domain logic, other adapters |
-| "OCR via Tesseract" | Adapter (TesseractOcrAdapter) | Domain logic, can swap to Claude |
-| "Export as Markdown" | Adapter (MarkdownExportAdapter) | Domain logic, import adapters |
-| "CLI commands" | Adapter (CliController) | Domain logic, GUI |
+| "Grade a submission against tests" | Domain (OverlayGrader) | Any adapter |
+| "Build Java with Gradle" | Adapter (GradleBuilder) | Domain logic, other builders |
+| "Send results to Pawtograder" | Adapter (SupabaseAPI) | Domain logic, build adapters |
+| "Parse Surefire XML" | Adapter (SurefireParser) | Domain logic, other parsers |
+| "Run in GitHub Actions" | Adapter (Main.java) | Domain logic, could run locally |
 
-This is the payoff of Hexagonal Architecture: the business rules are protected from infrastructure churn. When we add a new export format, we add an adapter—the domain never changes. When we switch from local OCR to cloud OCR, we swap an adapter—the import service never knows.
+This is the payoff of Hexagonal Architecture: the grading logic is protected from infrastructure churn. When we add Python support, we add a `PythonScriptBuilder` adapter—the grading domain never changes. When we want to test locally without Pawtograder, we swap in mock APIs—the grader doesn't know the difference.
+
+**This is why the Grading Action can run locally** via `java -jar grader.jar -s /path/to/solution -u /path/to/submission`. The grading engine has no dependency on GitHub Actions or the Pawtograder API—those are adapters that can be swapped out for local testing.
 
 ## Read Architectural Diagrams and Recognize Common Patterns
 
-Now that we've seen Hexagonal Architecture in depth, let's survey several other foundational architectural styles. As you read architectural diagrams and documentation, you'll encounter these patterns constantly.
+Now that we've seen Hexagonal Architecture in depth, let's survey several other foundational architectural styles. As you read architectural diagrams and documentation, you'll encounter these patterns constantly. We'll see how each manifests in Pawtograder and Bottlenose.
 
 ### Layered Architecture (5 minutes)
 
@@ -284,13 +245,19 @@ The key rule is that dependencies flow downward: Presentation can call Service, 
 
 How does this relate to Hexagonal Architecture? Both achieve separation of domain logic from infrastructure, but through different lenses. Hexagonal emphasizes the *direction of dependencies* (domain at the center, infrastructure at the edges). Layered emphasizes *horizontal strata* with strict rules about which layer can call which. In practice, you'll often see both perspectives applied to the same system.
 
-In CookYourBooks, we can identify these layers:
-- **Presentation**: CLI commands, JavaFX views
-- **Application/Service**: ImportService, LibraryService, ExportService
-- **Domain**: Recipe, Cookbook, Ingredient, ConversionRegistry
-- **Infrastructure**: JsonRecipeRepository, TesseractOcrAdapter, MarkdownExportAdapter
+In Pawtograder's Grading Action, we can identify these layers:
+- **Presentation**: GitHub Actions entry point (`Main.java`), job summary generation
+- **Application/Service**: `GradingPipeline` (orchestration), config parsing
+- **Domain**: `OverlayGrader`, score calculation, dependency resolution
+- **Infrastructure**: `SupabaseAPI`, `GradleBuilder`, report parsers
 
-The benefits are clear: separation of concerns, improved testability, and the ability to replace components. But layered architectures have pitfalls too. Changes that span multiple layers (adding a new field to Recipe that flows from UI to database) require touching every layer. Hence, while the layered architecture is an important style to study, it should not be blindly and strictly applied—the hexagonal architecture is often a better way to think about the problem.
+In Bottlenose, the layers look different because it's a Rails monolith:
+- **Presentation**: ERB views, web controllers, REST API endpoints
+- **Application/Service**: `SubmissionsController`, `GradingJob` orchestration
+- **Domain**: `Grader` subclasses, `Submission#compute_grade!`
+- **Infrastructure**: ActiveRecord (PostgreSQL), Beanstalkd queue, Orca HTTP client
+
+The benefits are clear: separation of concerns, improved testability, and the ability to replace components. But layered architectures have pitfalls too. Changes that span multiple layers (adding a new grading field that flows from config to API) require touching every layer. Hence, while the layered architecture is an important style to study, it should not be blindly and strictly applied—the hexagonal architecture is often a better way to think about the problem.
 
 ### Pipelined Architecture (5 minutes)
 
@@ -298,36 +265,151 @@ The **pipelined architecture** (sometimes called "pipes and filters") organizes 
 
 Compilers are classic examples: source code flows through lexing, parsing, type checking, optimization, and code generation stages. Data processing workflows (ETL jobs, stream processing) often follow this pattern.
 
-In CookYourBooks, recipe import could be implemented as a pipeline:
+**Pawtograder's grading pipeline** is a perfect example:
 
 ```
-Image File → [OCR Extract] → Raw Text → [Text Cleanup] → Clean Text 
-    → [Recipe Parser] → Unvalidated Recipe → [Validator] → Recipe
+Submission → [Overlay Files] → Merged Project → [Build] → Build Result
+    → [Run Tests] → Test Results → [Parse Reports] → TestFeedback[]
+    → [Grade Units] → Scored Units → [Apply Dependencies] → Final Feedback
 ```
 
-Each stage can be developed and tested independently. Adding support for a new preprocessing step (say, spell correction) means adding a stage, not rewriting the whole flow.
+Each stage can be developed and tested independently. The grading action actually makes two passes: Pass 1 grades all units, Pass 2 applies dependencies (if Part 1 failed, Part 2 doesn't run). Adding mutation testing meant inserting a stage between "Run Tests" and "Grade Units"—the rest of the pipeline remained unchanged.
 
 The benefits are modularity and flexibility. The constraint is that the pattern works best when data truly flows in one direction—it's awkward for interactive or bidirectional workflows.
 
-### Client-Server Architecture (5 minutes)
+## Monolithic Architecture (10 minutes)
 
-The **client-server architecture** separates systems into two roles: clients make requests, servers respond to them. The server centralizes data and logic; multiple clients can connect simultaneously. This is perhaps the most ubiquitous architectural style—every web application, every mobile app talking to a backend, every database connection follows this pattern.
+So far, all the architectural styles we've examined—Hexagonal, Layered, Pipelined—describe how to organize code *within a single deployment unit*. They all assume that components communicate via method calls in shared memory, that transactions can span the entire system, and that debugging means following one stack trace.
 
-CookYourBooks is primarily a desktop application, but it has client-server relationships too:
-- The application (client) calls the Claude API (server) for cloud OCR
-- If we added cloud sync, the desktop app (client) would sync with a cloud service (server)
-- Even locally, JavaFX views (clients) request data from services (servers within the same process)
+This is the world of the **monolith**.
 
-The benefits are centralized control, shared state across clients, and easier updates (change the server once, all clients benefit). The constraints are significant: the server becomes a single point of failure, and network latency affects every operation. For CookYourBooks, this is why we support both local and cloud OCR—users shouldn't be unable to import recipes just because their internet is down.
+A **monolith** is a system deployed as a single unit. All functionality—user interface, business logic, data access—lives in one codebase, compiles into one artifact, and runs in one process (or a cluster of identical processes).
 
-Client-server introduces **distributed architecture**—systems where components run on different machines and communicate over networks. This introduces challenges that don't exist in single-process applications. CookYourBooks hits these challenges when using cloud OCR! What happens when the API call times out? When the user's WiFi drops mid-upload?
+**Characteristics of monoliths:**
+- **Single deployment unit**: One build, one deploy, one running process
+- **Shared memory**: Components communicate via method calls, not network requests
+- **Single database**: All data lives in one schema, managed by one application
+- **Unified codebase**: All code in one repository, one build system, one language ecosystem
 
-In the next lecture, we'll explore these challenges in depth: the **Fallacies of Distributed Computing**, security as an architectural concern, and patterns for building reliable distributed systems.
+**Bottlenose is a classic monolith.** It's a Rails application where:
+- Controllers, models, views, and jobs all deploy together
+- Grader subclasses share a database with submissions, courses, and users
+- Adding a feature means changing the monolith and redeploying the whole application
+- The entire team works in one codebase
+
+**Benefits of monoliths:**
+- **Simplicity**: One thing to build, test, deploy, and monitor
+- **Performance**: In-process calls are orders of magnitude faster than network calls
+- **Consistency**: Transactions span the entire system; no distributed coordination needed
+- **Debugging**: One log file, one stack trace, one debugger session
+
+**Drawbacks of monoliths:**
+- **Scaling constraints**: Must scale the entire application, even if only one feature is bottlenecked
+- **Deployment risk**: Every deploy is all-or-nothing; a bug in one feature can take down everything
+- **Team coupling**: Large teams stepping on each other's changes in a single codebase
+- **Technology lock-in**: The whole system uses one language, one framework, one set of dependencies
+
+:::tip The Monolith-First Approach
+Martin Fowler and many experienced architects recommend starting with a monolith. Why? Because monoliths are *simple*. You can understand the whole system. You can refactor freely. You can deploy with confidence.
+
+The alternative—microservices—adds significant complexity that's only justified when you have specific scaling, team, or deployment problems that a monolith can't solve. We'll see exactly what that complexity looks like in the next lecture.
+:::
+
+### The Modular Monolith: A Middle Ground (5 minutes)
+
+Between "monolith" and "microservices" lies an increasingly popular middle ground: the **modular monolith**. This architecture maintains the single deployment unit of a monolith but enforces strict module boundaries *within* the codebase.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Modular Monolith                             │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐              │
+│  │   Courses   │  │ Submissions │  │   Grading   │              │
+│  │   Module    │  │   Module    │  │   Module    │              │
+│  │ ┌─────────┐ │  │ ┌─────────┐ │  │ ┌─────────┐ │              │
+│  │ │ Domain  │ │  │ │ Domain  │ │  │ │ Domain  │ │              │
+│  │ └─────────┘ │  │ └─────────┘ │  │ └─────────┘ │              │
+│  │ ┌─────────┐ │  │ ┌─────────┐ │  │ ┌─────────┐ │              │
+│  │ │   API   │ │  │ │   API   │ │  │ │   API   │ │              │
+│  │ └─────────┘ │  │ └─────────┘ │  │ └─────────┘ │              │
+│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘              │
+│         │                │                │                     │
+│         └────────────────┼────────────────┘                     │
+│                          │                                      │
+│              ┌───────────┴───────────┐                          │
+│              │    Shared Database    │                          │
+│              │  (but separate schemas)│                         │
+│              └───────────────────────┘                          │
+└─────────────────────────────────────────────────────────────────┘
+                   Single Deployment Unit
+```
+
+**Key characteristics:**
+- **Single deployment**: Still one build, one deploy—operationally simple
+- **Strong module boundaries**: Modules communicate through explicit public APIs, not by reaching into each other's internals
+- **Separate schemas (often)**: Each module owns its database tables; cross-module queries go through APIs
+- **Enforced encapsulation**: Build tools or linters prevent modules from importing each other's private code
+
+**Why is this valuable?**
+
+The modular monolith gives you **optionality**. If the Grading module eventually needs independent scaling, you can extract it to a separate service—the boundaries are already clean. But you don't pay the distributed systems tax until you need to. Many teams discover they *never* need to extract: the module boundaries solve their maintainability and team ownership problems without the complexity of network communication.
+
+**The tradeoff**: enforcing boundaries within a monolith requires discipline. There's nothing stopping a developer from bypassing the API and querying another module's tables directly—except code review, linting rules, and team norms. Microservices enforce boundaries through network calls; modular monoliths enforce them through convention and tooling.
+
+### But What About Microservices?
+
+You've probably heard the term **microservices**—it's one of the most discussed architectural styles today. A microservices architecture decomposes a system into small, independently deployable services, each responsible for a specific business capability.
+
+**Characteristics of microservices:**
+- **Independent deployment**: Each service has its own build pipeline and deploy cycle
+- **Network communication**: Services call each other via APIs, not method calls
+- **Decentralized data**: Each service owns its data; no shared database
+- **Polyglot friendly**: Different services can use different languages, frameworks, or databases
+
+The promise is compelling: independent scaling, isolated failures, team autonomy, technology flexibility. But look at that second characteristic again: *network communication*. Services don't share memory—they talk over the network.
+
+**Where do our running examples fall?**
+
+| Aspect | Bottlenose | Pawtograder |
+|--------|------------|-------------|
+| **Core application** | Monolith (Rails) | Multiple independent services |
+| **Grading execution** | Separate service (Orca) | Leverages GitHub Actions |
+| **Data ownership** | Shared PostgreSQL database | API owns data; action is stateless |
+| **Deployment** | Single deploy (mostly) | Each service deploys independently |
+| **Communication** | Method calls + one HTTP boundary | HTTP APIs between all components |
+
+**Bottlenose is a monolith with a microservice bolted on.** The core Rails application is a classic monolith, but Orca (the Docker execution service) is a separate service. Why? Because grading needs isolation that a monolith can't provide—you don't want student code running in your main web process.
+
+**Pawtograder is a distributed system.** The Grading Action runs on GitHub's infrastructure. It calls the Pawtograder API over HTTP. There's a network in between.
+
+And that network changes *everything*.
+
+### The Network Changes Everything
+
+When you call a method in a monolith, you know it will execute. The call takes nanoseconds. If something goes wrong, you get an exception with a stack trace.
+
+When you call an API over a network:
+- The call might take milliseconds... or seconds... or never return at all
+- The server might be down, overloaded, or unreachable
+- The request might succeed but the response might get lost
+- You might retry and accidentally perform the operation twice
+- You can't wrap the whole thing in a database transaction
+
+Consider what happens when Pawtograder's Grading Action tries to submit feedback to the API:
+
+```java
+feedbackApi.submit(submissionId, feedback);  // What could go wrong?
+```
+
+What if the API times out? What if it returns an error? What if the request succeeds but the response never arrives? The grading action actually implements retry logic with exponential backoff—complexity that simply doesn't exist in a monolith.
+
+This is why architects say "microservices" really means "distributed systems"—and distributed systems are *hard*.
+
+**In the next lecture**, we'll explore what makes distributed systems so challenging: the **Fallacies of Distributed Computing** (eight assumptions developers make about networks that are all false), **client-server architecture** and its variants, and the security implications of components communicating across trust boundaries. We'll see how both Pawtograder and Bottlenose handle these challenges—and why even Bottlenose, our "monolith," couldn't stay entirely monolithic.
 
 ## Architecture and Quality Attributes (10 minutes)
 
 :::note Recall
-In [Lecture 8 (Changeability III)](/lecture-notes/l8-design-for-change-2), we introduced the SOLID principles for individual classes and noted they scale to entire systems. Now we see that scaling in action: Single Responsibility becomes service boundaries (our Import, Library, and Export services each have one reason to change), Open/Closed becomes plugin architectures (new importers/exporters without modifying existing code), and Dependency Inversion becomes the foundation of Hexagonal Architecture (domain depends on abstractions, not concrete adapters).
+In [Lecture 8 (Changeability III)](/lecture-notes/l8-design-for-change-2), we introduced the SOLID principles for individual classes and noted they scale to entire systems. Now we see that scaling in action: Single Responsibility becomes service boundaries (Solution Repo, Grading Action, and API each have one reason to change), Open/Closed becomes plugin architectures (new `Builder` implementations without modifying existing code), and Dependency Inversion becomes the foundation of Hexagonal Architecture (domain depends on abstractions, not concrete adapters).
 :::
 
 Now that we've seen several architectural styles, let's examine how they affect three critical quality attributes: maintainability, scalability, and energy efficiency. These aren't abstract concerns—they have real consequences for teams, users, and the environment.
@@ -336,132 +418,142 @@ Now that we've seen several architectural styles, let's examine how they affect 
 
 Maintainability is about how easily a system can be changed over time. This includes fixing bugs, adding features, updating dependencies, and adapting to new requirements.
 
-Hexagonal and layered architectures excel at maintainability *within* their boundaries. Because the domain is isolated from infrastructure, you can swap storage mechanisms or update API clients without rewriting business logic. The tradeoff is that changes spanning multiple layers (a new field flowing from UI to storage) touch many files.
+Hexagonal and layered architectures excel at maintainability *within* their boundaries. Because the domain is isolated from infrastructure, you can swap storage mechanisms or update API clients without rewriting business logic. The tradeoff is that changes spanning multiple layers (a new field flowing from config to API) touch many files.
 
 Pipelined architectures are highly maintainable for their intended use case—adding a new processing stage is straightforward. But if you need to add cross-cutting concerns (logging, error handling, transactions), you may need to modify every stage.
 
-In CookYourBooks, maintainability matters because:
-- New recipe formats will emerge (we might want to import from Paprika, Cookmate, or other apps)
-- Export requirements will change (PDF export? Print formatting?)
-- OCR services will evolve (better models, new APIs)
+**Comparing maintainability in our running examples:**
 
-An architecture that isolates format-specific code (like our `RecipeImporter` and `RecipeExporter` ports) makes it possible to add Paprika support without touching JSON import logic.
+| Change | Pawtograder Impact | Bottlenose Impact |
+|--------|-------------------|-------------------|
+| Add Rust language support | Add one `RustCargoBuilder` class; no API changes | Add `RustGrader` subclass + UI views + Docker image + registration |
+| Change how scores are calculated | Modify `OverlayGrader`; no API or config changes | Modify `Submission#compute_grade!`; affects all graders |
+| Add a new feedback format | Modify `AutograderFeedback` record; requires API coordination | Add fields to `InlineComment`; database migration |
+
+Pawtograder's "thick action, narrow API" architecture isolates most changes to a single component. Bottlenose's monolithic architecture means changes often ripple across multiple concerns. Neither is inherently better—the tradeoffs depend on which changes are most frequent and which teams own which components.
 
 ### Scalability
 
 Scalability is about handling growth—more users, more data, more requests. Systems can scale *vertically* (bigger hardware) or *horizontally* (more instances).
 
-For CookYourBooks as a desktop application, scalability has a different meaning than for web services:
-- **Data scalability**: Can the app handle a user with 10,000 recipes? 100 cookbooks?
-- **Feature scalability**: Can we add new capabilities without the codebase becoming unmanageable?
+**Pawtograder** leverages GitHub Actions for horizontal scaling:
+- Each submission triggers an independent GitHub Actions runner
+- GitHub handles scheduling, VM provisioning, and parallelism automatically
+- Near-deadline traffic spikes are absorbed by GitHub's infrastructure
+- The Pawtograder API just receives results—it doesn't coordinate grading
 
-Our Hexagonal Architecture helps with feature scalability: new import/export formats are isolated adapters. The clean separation of concerns means the codebase can grow without becoming tangled.
+**Bottlenose** uses a different approach:
+- Backburner/Beanstalkd limits concurrent grading jobs (15 max) to stay within database connection limits
+- Orca runs Docker containers for isolation, but scales with dedicated infrastructure
+- The platform must manage the queue and handle backpressure during high-traffic periods
 
-When CookYourBooks becomes a cloud service, the architecture will need to change. The services we've designed could run on separate servers, but we'll need to address state management, caching, and other challenges of distributed computing.
+The architectural choice between "leverage someone else's infrastructure" (Pawtograder) versus "run your own infrastructure" (Bottlenose) has profound scaling implications. Pawtograder trades control for simplicity; Bottlenose retains control but must manage operational complexity.
 
 ### Energy Efficiency
 
 Energy efficiency is an increasingly important quality attribute that architects often overlook. Software doesn't consume energy directly, but the hardware it runs on does—and architectural choices determine how much.
 
-For CookYourBooks:
-- **Local-first processing** (using Tesseract for OCR) consumes energy on the user's machine but avoids network transmission costs
-- **Cloud processing** (using Claude API) offloads computation but requires network round-trips and data center energy
-- **Efficient algorithms** in recipe scaling and search affect battery life on laptops
+**Consider the grading pipeline:**
+- **Pawtograder**: Each grading run triggers a GitHub Actions workflow that spins up a fresh Docker container. GitHub's infrastructure adds overhead—runners, orchestration, logging—on top of the container itself. The container runs for the duration of grading (typically 1-5 minutes), then is discarded. This is operationally simple but comes with significant infrastructure overhead we don't control.
+- **Bottlenose + Orca**: Orca also uses Docker containers, but with less surrounding infrastructure. Orca caches Docker images by SHA hash, avoiding redundant image builds. However, Orca runs on dedicated servers that consume power even when idle, while GitHub amortizes infrastructure costs across millions of users.
 
-The choice between local and cloud OCR isn't just about accuracy or cost—it's also about energy. A user processing a hundred cookbook photos locally might drain their laptop battery; the same work via API might use less local energy but more total energy (network + data center).
+For a course with 200 students submitting 3 times per assignment across 10 assignments, that's 6,000 grading runs per semester. The energy difference between "spin up a VM every time" and "reuse cached containers" could be significant—though GitHub's shared infrastructure may amortize the overhead across millions of users.
 
-For a cookbook app, these concerns are modest. But the principle applies broadly: architectural decisions have energy implications that compound across millions of users.
+For a course grading system, these concerns are modest compared to consumer-scale applications. But the principle applies broadly: architectural decisions have energy implications that compound.
 
 ### The Tradeoffs Are Real
 
 These quality attributes often conflict:
-- A highly maintainable architecture with clean abstractions may be less efficient than hand-optimized code
-- An energy-efficient local-first design may sacrifice features that require cloud infrastructure
-- A horizontally scalable distributed system is harder to maintain than a monolith (we'll see this in the coming lectures)
+- Pawtograder's narrow API is highly maintainable but requires the action to do more work (less energy-efficient per run)
+- Bottlenose's monolithic architecture is harder to change but can optimize across components
+- GitHub Actions' horizontal scaling is effortless but potentially wasteful; Bottlenose's controlled queue is efficient but creates bottlenecks
 
-There's no free lunch. The architect's job is to understand the priorities for a particular system and make informed tradeoffs. For CookYourBooks, we prioritize maintainability (new formats are inevitable) and testability (we want confidence in our code) over extreme performance optimization.
+There's no free lunch. The architect's job is to understand the priorities for a particular system and make informed tradeoffs. For Pawtograder, the priorities are testability (run grading locally without infrastructure) and maintainability (instructors iterate on config without touching the action). For Bottlenose, the priorities may have been different—centralized control, institutional integration, and comprehensive course management.
 
 ## Compare Technical Partitioning vs. Domain Partitioning (10 minutes)
 
 Beyond choosing an architectural style, we face another fundamental question: how do we organize our code into modules or packages? There are two dominant approaches, and the choice has implications for how teams work.
 
-**Technical partitioning** organizes code by its technical role. All controllers go in one package, all services in another, all repositories in a third:
+**Technical partitioning** organizes code by its technical role. All controllers go in one package, all services in another, all parsers in a third:
 
 ```
-cookYourBooks/
-├── controllers/
-│   ├── CliController.java
-│   ├── ImportController.java
-│   └── ExportController.java
-├── services/
-│   ├── ImportService.java
-│   ├── LibraryService.java
-│   └── ExportService.java
-├── repositories/
-│   ├── RecipeRepository.java
-│   └── CookbookRepository.java
-└── domain/
-    ├── Recipe.java
-    ├── Cookbook.java
-    └── Ingredient.java
+autograder/
+├── api/
+│   └── SupabaseAPI.java
+├── grading/
+│   ├── OverlayGrader.java
+│   └── GradingService.java
+├── builders/
+│   ├── GradleBuilder.java
+│   └── PythonScriptBuilder.java
+├── parsers/
+│   ├── SurefireParser.java
+│   ├── PitestParser.java
+│   └── CheckstyleParser.java
+└── config/
+    └── PawtograderConfig.java
 ```
 
-**Domain partitioning** organizes code by business capability. Everything related to importing goes in an `import/` module—the controller, service, and format-specific adapters:
+**Domain partitioning** organizes code by business capability. Everything related to Java grading goes in a `java/` module—the builder, parsers, and language-specific logic:
 
 ```
-cookYourBooks/
-├── import/
-│   ├── ImportService.java
-│   ├── ImportController.java
-│   ├── JsonImporter.java
-│   ├── MarkdownImporter.java
-│   └── OcrImporter.java
-├── library/
-│   ├── LibraryService.java
-│   ├── RecipeRepository.java
-│   └── CookbookRepository.java
-├── export/
-│   ├── ExportService.java
-│   ├── MarkdownExporter.java
-│   └── JsonExporter.java
-└── domain/
-    ├── Recipe.java
-    ├── Cookbook.java
-    └── Ingredient.java
+autograder/
+├── grading/
+│   ├── OverlayGrader.java
+│   ├── GradingService.java
+│   └── PawtograderConfig.java
+├── languages/
+│   ├── java/
+│   │   ├── GradleBuilder.java
+│   │   ├── SurefireParser.java
+│   │   ├── PitestParser.java
+│   │   └── CheckstyleParser.java
+│   └── python/
+│       ├── PythonScriptBuilder.java
+│       └── PytestParser.java
+└── platform/
+    └── SupabaseAPI.java
 ```
 
 The tradeoffs become clear when you ask practical questions:
 
-**Where do you look to understand "how import works"?**
-- Technical: Jump between `controllers/`, `services/`, and multiple adapter packages
-- Domain: Everything is in `import/`
+**Where do you look to understand "how Java grading works"?**
+- Technical: Jump between `builders/`, `parsers/`, and `grading/`
+- Domain: Everything is in `languages/java/`
 
 **Which approach minimizes cross-package changes?**
-- Technical: Adding a new import format requires edits in `controllers/`, `services/`, and a new adapter package
-- Domain: All changes stay within `import/`
+- Technical: Adding Rust support requires new files in `builders/`, `parsers/`, and changes to `grading/`
+- Domain: All Rust changes stay within `languages/rust/`
 
 **Which supports team independence?**
-- Technical: Every feature requires coordination between "controller team," "service team," and "adapter team"
-- Domain: An "import team" can own their vertical slice independently
+- Technical: Every language requires coordination between "builder team," "parser team," and "grading team"
+- Domain: A "Rust support team" can own their vertical slice independently
 
-When moving away from a "monolithic" architecture, where services are separated by technical boundaries, these tradeoffs become more pronounced (we'll see this in the coming lectures).
+**Bottlenose uses technical partitioning** (the Rails convention):
+```
+bottlenose/
+├── controllers/
+├── models/
+│   └── graders/
+├── views/
+│   └── graders/
+└── jobs/
+```
+
+This means adding a new `RustGrader` requires changes in `models/graders/`, `views/graders/`, and potentially `controllers/`. The Rails convention prioritizes consistency across the entire application over isolation of individual features.
 
 ### Architecture and Team Topologies
 
-In [L22 (Teams and Collaboration)](./l22-teams.md), we discussed Brooks' Law and how communication overhead grows quadratically with team size. Architecture decisions directly affect how teams can be organized—and vice versa.
+In [L22 (Teams and Collaboration)](./l22-teams.md), we discuss Brooks' Law and how communication overhead grows quadratically with team size. Architecture decisions directly affect how teams can be organized—and vice versa.
 
-For CookYourBooks with a four-person team, domain partitioning works well:
-- One person owns import (all formats, CLI and GUI integration)
-- One person owns library management and storage
-- One person owns export (all formats)
-- One person owns the GUI shell and coordinates
+Consider how different team structures might own different parts of our running examples:
 
-Each person can work relatively independently, with well-defined interfaces between their domains.
+**Pawtograder** has clear ownership boundaries:
+- **Instructor**: Owns the solution repo + `pawtograder.yml` (changes weekly)
+- **Action maintainers**: Own the Grading Action code (changes monthly)
+- **Sysadmin team**: Own the Pawtograder API (changes rarely)
 
-This brings us back to **Conway's Law**:
-> "Organizations which design systems are constrained to produce designs which are copies of the communication structures of these organizations."
-
-Your system's architecture will tend to mirror your team's communication structure. If you want clean domain boundaries, organize your team around those domains. If you want clean platform boundaries for your team (e.g. "frontend" vs. "backend"), organize your team around those boundaries, and a layered architecture will naturally emerge.
+Each team can work relatively independently because the interfaces between them are narrow and stable. Your system's architecture will tend to mirror your team's communication structure.
 
 ## Recognize the Big Ball of Mud Anti-pattern (5 minutes)
 
@@ -471,29 +563,11 @@ Not every system has a discernible architecture. Some systems grow organically w
 
 The real cost isn't aesthetics—it's changeability. Eventually, the system reaches a critical point where it's cheaper to rewrite than to maintain.
 
-What would a Big Ball of Mud version of CookYourBooks look like?
-- The CLI directly parses JSON files instead of going through ImportService
-- Recipe scaling logic is duplicated in both CLI and GUI code
-- OCR results are cached in a global variable that both import and export code read
-- Adding a new export format requires changes in six different classes
-- Tests are impossible because everything depends on real files and network calls
-
 How do you prevent this decay?
 - **Discipline and code review** catch architectural violations early
 - **Continuous refactoring** pays down technical debt incrementally
 - **The coupling and cohesion metrics** from L7-L8 serve as early warning systems
 - **Clear ownership** gives someone an incentive to keep each module clean
 - **Tests that enforce boundaries** fail when code bypasses the intended architecture
+- **Narrow, stable interfaces** (like Pawtograder's two-endpoint API) make violations obvious
 
-## Preview: MVC and GUI Patterns (3 minutes)
-
-We've focused on backend architecture in this lecture, but similar patterns apply to user interfaces. The most famous is **Model-View-Controller (MVC)**, which separates domain logic (the Model) from presentation (the View) and user interaction handling (the Controller).
-
-We'll cover MVC in detail in the GUI lectures (L29-L30), where you'll apply it hands-on to build the CookYourBooks interface. For now, just recognize that layered architecture and MVC are complementary. MVC typically lives within or across the Presentation and Application layers of a layered architecture. The patterns reinforce each other: layered architecture tells you to separate presentation from domain; MVC tells you how to structure the presentation layer itself.
-
-In CookYourBooks:
-- **Model**: Recipe, Cookbook, and the services that manage them
-- **View**: JavaFX FXML layouts and the visual components
-- **Controller**: Classes that handle user actions and update the view
-
-The Hexagonal Architecture we've been discussing ensures that the Model (domain + services) is completely independent of the View—exactly what MVC prescribes.
