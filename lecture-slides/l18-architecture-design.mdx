@@ -175,20 +175,25 @@ A useful heuristic: architectural decisions are the ones that are <strong>expens
 Before we see how Pawtograder is architected, let's think about what it needs to do:
 </p>
 
-<ul style={{fontSize: '0.75em'}}>
-  <li>Accept student code submissions from GitHub repositories</li>
-  <li>Copy student files into the instructor's solution repo and build the project</li>
-  <li>Run instructor test suites and report results per graded unit</li>
-  <li>Run mutation analysis on student tests (Pitest)</li>
-  <li>Report grading results back to Pawtograder for students to see</li>
-</ul>
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px' }}}%%
+flowchart LR
+    A["1. Accept<br/>Submission"] --> B["2. Copy Student<br/>Files"]
+    B --> C["3. Build<br/>Project"]
+    C --> D["4. Run Instructor<br/>Tests"]
+    D --> E["5. Run Mutation<br/>Analysis"]
+    E --> F["6. Report<br/>Results"]
+
+    classDef step fill:#B8D4E3,stroke:#4A90A4,stroke-width:2px
+    class A,B,C,D,E,F step
+```
 
 <div className="fragment">
 <div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px', marginTop: '0.75em', fontSize: '0.8em'}}>
 
 **Discussion: What decisions would be "expensive to change"?**
 
-Think about: Where should tests run? Who can see the test code? How do instructors configure grading? What happens when 200 students submit at once?
+Where should tests run? Who can see the test code? How do instructors configure grading? What happens when 200 students submit at once?
 
 </div>
 </div>
@@ -227,8 +232,8 @@ Two systems, same problem — different architectural choices:
 | Decision | Pawtograder | Bottlenose |
 |----------|-------------|------------|
 | **Where does grading run?** | GitHub Actions (rented) | Custom job queue + Orca (owned) |
-| **Where does business logic live?** | "Grading action" component — parses, scores, normalizes | Platform — `Grader` subclasses per language |
-| **How do instructors configure?** | `pawtograder.yml` in assignment repo | Web UI forms |
+| **Where does business logic live?** | "Grading action" component — knows Java, Gradle, checkstyle etc. Parses, scores, normalizes | Platform — `Grader` subclasses per language |
+| **How do instructors configure?** | `pawtograder.yml` configuration in each assignment repo | Web UI forms |
 
 </div>
 
@@ -266,7 +271,7 @@ Two systems, same problem — different architectural choices:
 ## The Key Insight
 
 <p style={{fontSize: '0.9em', marginTop: '0.5em'}}>
-Neither architecture is "wrong" — they reflect <strong>different requirements in different contexts</strong>.
+Neither architecture is "wrong" — they likely reflect <strong>different requirements in different contexts</strong>.
 </p>
 
 <div style={{fontSize: '0.8em', marginTop: '1em'}}>
@@ -275,7 +280,7 @@ Neither architecture is "wrong" — they reflect <strong>different requirements 
 |--|-------------------|-------------------|
 | **Grading needs** | Simpler, per-language | Structured feedback, mutation testing |
 | **Instructor flexibility** | Platform defines patterns | Instructors iterate independently |
-| **Infrastructure** | Owned servers, full control | Rented (GitHub Actions), zero ops |
+| **Infrastructure** | Owned servers, full control | Rented (GitHub Actions), zero operational responsibility |
 
 </div>
 
@@ -401,25 +406,26 @@ A single monolithic script COULD do all of this. But should it? The functional r
 How <em>well</em> must the system perform? Quality attributes shape structure more than features do.
 </p>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.7em', marginTop: '0.5em'}}>
+<div style={{display: 'flex', flexDirection: 'column', gap: '1em', fontSize: '0.7em', marginTop: '0.5em', width: '100%'}}>
 
-<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px', width: '100%'}}>
 
 **You already know these:**
 
-- **Changeability** (L6-L7): New assignment = swap `pawtograder.yml`. New language = add one `Builder` class. No need to change API or affect other courses.
+- **Changeability** (L6-L7): New assignment = swap assignment config file. New language = add one `Builder` class in grader component. No need to change API or affect other courses.
 - **Testability** (L16): Run grading locally without GitHub, API, or database.
 
 *Same principles from class design — now at service scale!*
 
-</div>
+</div>  
 
-<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px', width: '100%'}}>
 
 **Coming up:**
 
 - **Security** (L20): Students must NEVER see test cases
 - **Scalability** (L21): 200 students submit at once
+- **Deployability** (L36): Ship changes to one course with zero risk of affecting others
 - **Maintainability** (L36): Small team, many courses
 
 </div>
@@ -442,10 +448,17 @@ Quality attributes often <strong>conflict</strong>. Security (download grader at
 - Changeability → `pawtograder.yml` is the ONLY thing instructors touch; adding Rust = one new Builder class
 - Testability → `npx tsimp src/grading/main.ts -s /solution -u /submission` runs locally, no network needed
 
+**Why course isolation matters — emphasize this!**
+- Imagine 10 different courses all using the same grading platform
+- If an instructor tweaks their grading config and it breaks ANOTHER course's grading, that's a nightmare
+- Worse: if an instructor is mid-semester and can't update their test cases because it requires a platform-wide deployment
+- The architecture MUST let each course evolve independently — new assignments, new tests, new grading criteria — without coordinating with other instructors or risking their stability
+- This is changeability at organizational scale: "I can ship changes to MY course without a meeting"
+
 **Preview future lectures:**
 - L20: How do we authenticate? How do we hide test cases? (Security)
 - L21: How does GitHub Actions handle 200 concurrent submissions? (Scalability)
-- L36: How do we keep this maintainable over years? (Sustainability)
+- L36: How do we deploy changes safely? How do we keep this maintainable over years? (Deployability, Sustainability)
 
 → **Transition:** Constraints also shape what's possible...
 </aside>
@@ -465,9 +478,9 @@ Constraints are non-negotiable boundaries. They limit our design space:
 | Source | Pawtograder Constraint |
 |--------|----------------------|
 | **Platform** | "Must run inside GitHub Actions runners" |
-| **Security** | "Student code is untrusted — cannot access instructor tests directly" |
-| **Authentication** | "GitHub OIDC tokens are the only identity source" |
-| **Compatibility** | "Must support Java (Gradle) and Python assignments" |
+| **Security** | "Student code is untrusted — might try to steal the secret grader code or overwrite grading results" |
+| **Authentication** | "Student code is submitted via GitHub, must use GitHub's identity framework" |
+| **Compatibility** | "Must support Pyret, Java and Python assignments" |
 
 </div>
 
@@ -554,7 +567,7 @@ Things that change at different rates should live in different components:
 
 | Component | How Often It Changes | Who Changes It |
 |-----------|---------------------|----------------|
-| **`pawtograder.yml`** | Every assignment (weekly) | Instructor |
+| **Config file: `pawtograder.yml`** | Every assignment (weekly) | Instructor |
 | **Grading Action code** | Every few months | Action maintainers |
 | **Pawtograder API** | Rarely — endpoints are stable | Sysadmin team |
 | **`PawtograderConfig` interface** | Very rarely — breaking change | Action maintainers (carefully!) |
@@ -734,7 +747,7 @@ public interface AutograderSystem {
 
 <div className="fragment">
 <p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#FF9800'}}>
-An instructor configuring a YAML file shouldn't need to know about OIDC tokens. The API shouldn't need to know how tests are run.
+An instructor configuring a YAML file shouldn't need to know about OIDC tokens. The API shouldn't need to know how tests are run. <em>We'll design the better version after finishing the heuristics.</em>
 </p>
 </div>
 
@@ -744,112 +757,9 @@ An instructor configuring a YAML file shouldn't need to know about OIDC tokens. 
 - The API only cares about receiving results — it doesn't need `buildProject`
 - Coupling everything together means changing ANY part risks breaking ALL parts
 
-→ **Transition:** Split into focused interfaces...
-</aside>
+**Don't solve it yet!** We'll design the better, segregated interfaces after we finish all four heuristics. For now, plant the seed that ISP applies at the service level too.
 
-</Slide>
-
-<Slide>
-
-## Better: Segregated Interfaces
-
-<div style={{fontSize: '0.62em'}}>
-
-```java
-// The contract between instructor and action (pawtograder.yml)
-public interface PawtograderConfig {
-    String getGrader();           // "overlay"
-    BuildConfig getBuild();       // How to build: preset, timeouts, linter
-    List<GradedPart> getGradedParts();  // What to grade: tests, points, visibility
-    SubmissionFiles getSubmissionFiles(); // Which student files to copy
-}
-
-// The contract between action and Pawtograder API
-public interface SubmissionAPI {
-    SubmissionRegistration register(String oidcToken);
-}
-
-public interface FeedbackAPI {
-    void submit(String submissionId, AutograderFeedback feedback);
-}
-```
-
-</div>
-
-<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#4CAF50'}}>
-✓ Instructor only sees `PawtograderConfig` — their "interface" is a YAML file.<br/>
-✓ Action talks to API through two narrow endpoints.<br/>
-✓ Each interface has <strong>one reason to change</strong>.
-</p>
-
-<aside className="notes">
-**Notice the data types flowing between components:**
-- Instructor → Action: `PawtograderConfig` (parsed from YAML)
-- Action → API: `AutograderFeedback` (test results, scores, output)
-- API → Action: `submissionId` + `graderUrl` (one-time download URL)
-
-**The YAML file IS an interface** — it's the contract between instructor and action. This is ISP applied at the configuration level!
-
-→ **Transition:** What do the data types flowing across the API boundary look like?
-</aside>
-
-</Slide>
-
-<Slide>
-
-## The Data Types Behind the Interfaces
-
-<p style={{fontSize: '0.85em'}}>
-What do the records that flow across the API boundary actually look like?
-</p>
-
-<div style={{fontSize: '0.55em'}}>
-
-```java
-// What the API returns when the action registers a submission
-public record SubmissionRegistration(
-    String submissionId,     // Unique ID for this grading run
-    String graderUrl,        // One-time URL to download instructor's test code
-    String graderSha         // SHA to verify the download wasn't tampered with
-) {}
-
-// What the action sends back after grading
-public record AutograderFeedback(
-    List<TestFeedback> tests,          // Results per graded part
-    LintResult lint,                    // Style check results (if configured)
-    VisibilityOutput output,            // Console output tagged by visibility level
-    Optional<Double> score,             // Overall score (if computable)
-    List<Artifact> artifacts,           // Build logs, coverage reports, etc.
-    List<FeedbackComment> annotations   // Line-level comments on student code
-) {}
-
-// One graded part (e.g., "HW3 - Part 1: Basic Tests")
-public record TestFeedback(
-    String name,                // Graded part name from pawtograder.yml
-    double score,               // Points earned
-    double maxScore,            // Points available
-    List<TestCase> testCases,   // Individual test results
-    String visibility           // "visible", "hidden", "after_due_date", "after_published"
-) {}
-
-// A comment attached to a specific line of student code
-public record FeedbackComment(
-    String file,        // e.g., "src/main/java/Student.java"
-    int line,           // Line number
-    String message,     // The feedback text
-    String severity     // "error", "warning", "info", "bonus"
-) {}
-```
-
-</div>
-
-<aside className="notes">
-**Notice how much information flows through `AutograderFeedback`:**
-- This is the "thick action" paying off: the action has already parsed JUnit XML, Pitest reports, and linter output into a clean, structured format. The API just stores it.
-- If this format were poorly designed—say, if `TestFeedback` didn't support visibility levels, or `FeedbackComment` couldn't reference specific lines—every future grading action implementation would have to work around those limitations.
-- This is why we said the `AutograderFeedback` interface deserves careful specification: it's the contract that all current and future grading implementations must speak.
-
-→ **Transition:** Can we test each piece independently?
+→ **Transition:** One more heuristic — testability...
 </aside>
 
 </Slide>
@@ -1581,11 +1491,7 @@ Use the right level of detail for your audience:
 
 </div>
 
-<div className="fragment">
-<p style={{fontSize: '0.8em', marginTop: '0.75em', color: '#9370DB'}}>
-For comparison, Bottlenose's C4 Level 2 has four containers (Bottlenose application, Backburner job queue, Orca's Docker execution service, and PostgreSQL) compared to Pawtograder's three—reflecting Bottlenose's dedicated-server approach.
-</p>
-</div>
+
 
 <aside className="notes">
 **Key insight:** Match the diagram to the audience. Don't show Level 4 code diagrams to non-technical stakeholders.
