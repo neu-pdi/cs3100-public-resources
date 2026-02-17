@@ -123,6 +123,7 @@ After this lecture, you will be able to:
     "Constructors must have the same name as the class",
     "Constructors must always create new objects -- no recycling",
     "Constructors must always return an instance of the enclosing class, not a subclass"]}
+ username="espertus"
 />
 
 <aside className="notes">
@@ -479,7 +480,7 @@ ConversionRule rule2 = StandardConversions
 
 <ul style={{fontSize: '0.7em'}}>
   <li><code>of()</code> — concise factory: <code>List.of("a", "b", "c")</code>, <code>EnumSet.of(RED, BLUE)</code></li>
-  <li><code>from()</code> — type conversion: <code>Date.from(instant)</code>, <code>Path.from(uri)</code></li>
+  <li><code>from()</code> /— type conversion: <code>Date.from(instant)</code></li>
   <li><code>valueOf()</code> — parsing/conversion: <code>Integer.valueOf("42")</code>, <code>Boolean.valueOf(true)</code></li>
   <li><code>getInstance()</code> / <code>newInstance()</code> — may cache or create: <code>Calendar.getInstance()</code></li>
   <li><code>getTypeName()</code> / <code>newTypeName()</code> — factory in different class: <code>Files.newBufferedReader(path)</code></li>
@@ -581,14 +582,14 @@ public class ConversionRule {
         this.factor = factor;
     }
 
-    // Cache coversion rules for reuse.
+    // Cache conversion rules for reuse.
     private static final Map<String, ConversionRule> cachedRules = new ConcurrentHashMap<>();
 
     public static ConversionRule cached(String from, String to, double factor) {
         String key = from + "->" + to + "@" + factor;
         // If a cached rule is present, return it; otherwise, create and cache one.
         return cachedRules.computeIfAbsent(key,
-            k -> new ConversionRule(from, to, factor, true));
+            k -> new ConversionRule(from, to, factor));
     }
 }
 ```
@@ -630,7 +631,7 @@ public class Recipe {
   Recipe(String name, List<Ingredient> ingredients, List<String> instructions, List<String> notes,
       String source, boolean isVegan) { ... }
 
-  Recipe(String name) { this(name, List.of(), List.of(), List.of(), null, false);
+  Recipe(String name) { this(name, List.of(), List.of(), List.of(), null, false); }
 
   Recipe(String name, List<Ingredient> ingredients) {
     this(name, ingredients, List.of(), List.of(), null, false);
@@ -1285,13 +1286,14 @@ All three let you swap implementations. But they differ in <strong>what invarian
 
 <Slide>
 
-## Poll: Which type of injection makes it hardest to enforce invariants?
+## Poll: Which injection types make it hard to enforce invariants?
 
 <PollSlide
     choices={[
         "Constructor injection",
         "Setter injection",
         "Field injection"]}
+    username="espertus"
     />
 
 <aside className="notes">
@@ -1614,7 +1616,7 @@ public class ImportService {
 
 <Slide>
 
-## Configuring the Service Locator for Testss
+## Configuring the Service Locator for Tests
 
 <div>
 
