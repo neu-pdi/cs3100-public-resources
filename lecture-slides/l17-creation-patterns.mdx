@@ -420,7 +420,7 @@ ConversionRule rule2 = StandardConversions
 
 <ul style={{fontSize: '0.7em'}}>
   <li><code>of()</code> — concise factory: <code>List.of("a", "b", "c")</code>, <code>EnumSet.of(RED, BLUE)</code></li>
-  <li><code>from()</code> — type conversion: <code>Date.from(instant)</code>, <code>Path.from(uri)</code></li>
+  <li><code>from()</code> — type conversion: <code>Date.from(instant)</code>, <code>Instant.from(temporal)</code></li>
   <li><code>valueOf()</code> — parsing/conversion: <code>Integer.valueOf("42")</code>, <code>Boolean.valueOf(true)</code></li>
   <li><code>getInstance()</code> / <code>newInstance()</code> — may cache or create: <code>Calendar.getInstance()</code></li>
   <li><code>getType()</code> / <code>newType()</code> — factory in different class: <code>Files.newBufferedReader(path)</code></li>
@@ -474,7 +474,7 @@ public class ConversionRule {
     private static final Map<String, ConversionRule> CACHE = new ConcurrentHashMap<>();
 
     public static ConversionRule cached(String from, String to, double factor) {
-        String key = from + "->" + to;
+        String key = from + "->" + to + "@" + factor;
         return CACHE.computeIfAbsent(key,
             k -> new ConversionRule(from, to, factor, true));
     }
@@ -1129,7 +1129,7 @@ ConversionRegistry realRegistry = new StandardConversionRegistry();
 RecipeConverter converter = new RecipeConverter(realRegistry);
 
 // Test: swap in a test double — exactly what we did in L16!
-ConversionRegistry stubRegistry = () -> new ConversionRule("cups", "mL", 236.588);
+ConversionRegistry stubRegistry = (from, to) -> new ConversionRule("cups", "mL", 236.588);
 RecipeConverter testConverter = new RecipeConverter(stubRegistry);
 ```
 
@@ -1240,140 +1240,21 @@ All three let you swap implementations. But they differ in <strong>what invarian
 - What state can the object be in?
 - Can it be null? Partially initialized? Changed unexpectedly?
 
-→ **Transition:** Field injection has a fascinating history...
+→ **Transition:** Why not just use field injection?
 </aside>
 
 </Slide>
 
 <Slide>
 
-## The Rise of Field Injection: @Autowired (2007)
-
-<p style={{fontSize: '0.85em'}}>
-Spring 2.5 introduced <code>@Autowired</code>. The framework scans for annotated fields and injects matching implementations:
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.7em'}}>
-
-```java
-// The SERVICE — just annotate what you need
-@Service
-public class ImportService {
-    @Autowired 
-    private LibraryService library;
-    
-    @Autowired 
-    private ConversionRegistry conversions;
-    
-    // No constructor needed!
-    
-    public void importRecipe(Path file) {
-        Recipe recipe = parse(file);
-        conversions.normalize(recipe);
-        library.save(recipe);
-    }
-}
-```
-
-```java
-// The IMPLEMENTATIONS — Spring finds these
-@Service
-public class InMemoryLibraryService 
-        implements LibraryService {
-    // Spring creates one instance
-}
-
-@Service  
-public class StandardConversionRegistry 
-        implements ConversionRegistry {
-    // Spring creates one instance
-}
-
-// At startup, Spring:
-// 1. Creates InMemoryLibraryService
-// 2. Creates StandardConversionRegistry
-// 3. Creates ImportService
-// 4. Sets library field via reflection
-// 5. Sets conversions field via reflection
-```
-
-</div>
-
-<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#4CAF50'}}>
-Less code! No configuration files! It felt like magic. Field injection became <strong>wildly popular</strong> (2007-2015).
-</p>
-
-<aside className="notes">
-**How @Autowired actually works:**
-1. Spring scans classpath for @Service/@Component classes
-2. Creates instances of each (using default constructor)
-3. For each @Autowired field, finds a bean matching that type
-4. Uses **reflection** to set the private field directly
-5. This bypasses the constructor entirely!
-
-**Why it felt revolutionary:**
-- No XML configuration to maintain
-- Add a dependency? Just add a field
-- The framework "just works"
-
-**The zeitgeist of 2007-2015:**
-- "Convention over configuration" (Ruby on Rails influence)
-- Less code is better
-- Testing was less mainstream
-- Null safety wasn't a major concern
-
-→ **Transition:** So what changed? Why don't we like this anymore?
-</aside>
-
-</Slide>
-
-<Slide>
-
-## What We Didn't Care About (But Should Have)
-
-<p style={{fontSize: '0.85em'}}>
-Field injection became popular because the industry hadn't yet internalized:
-</p>
-
-<div style={{fontSize: '0.75em', marginTop: '0.5em'}}>
-
-| Concern | 2007 Attitude | 2025 Attitude |
-|---------|---------------|---------------|
-| **Nullness** | "Just check for null before using" | Nullability in type systems; `@NonNull`; NullPointerException is a bug |
-| **Immutability** | "Mutable is fine, just be careful" | Immutable by default; `final` fields; value objects |
-| **Testability** | "We test the whole app in staging" | Unit tests run on every commit; mocking is standard |
-| **Invariants** | "Objects initialize eventually" | Objects must be valid immediately after construction |
-| **Explicit deps** | "The framework handles it" | Dependencies are documentation; constructor is API |
-
-</div>
-
-<aside className="notes">
-**The cultural shift:**
-- Testing became mainstream (JUnit, Mockito, TDD)
-- Functional programming influenced Java (immutability, null safety)
-- Static analysis tools got better (find unused dependencies)
-- "Clean Code" movement emphasized explicit design
-
-**What this means for field injection:**
-- It optimizes for WRITING code
-- But we spend more time READING and TESTING code
-- The convenience trade-off looks different now
-
-→ **Transition:** Let's see the concrete problems...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Remember: Programming Over Time
+## Why Not Field Injection?
 
 <p style={{fontSize: '0.85em'}}>
 From Lecture 1: <em>"Software Engineering is the Integral of Programming Over Time"</em>
 </p>
 
 <p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
-Field injection optimizes for <strong>writing</strong> code. But code is written once and read/maintained many times:
+Field injection (using <code>@Autowired</code> annotations) optimizes for <strong>writing</strong> code. But code is written once and read/maintained many times:
 </p>
 
 <div style={{fontSize: '0.75em', marginTop: '0.5em'}}>
@@ -1408,34 +1289,8 @@ Technical sustainability means optimizing for the <em>lifetime</em> of the code,
 - Explicit > implicit
 - Boring > clever
 
-→ **Transition:** Let's see the concrete problems with field injection...
+→ **Transition:** The sidebar slides have more detail if you want to dig in...
 </aside>
-
-</Slide>
-
-<Slide>
-
-<Img
-  src="/img/lectures/web/l17-cost-over-time.webp"
-  prompt="A graph illustration showing the 'programming over time' cost comparison between field injection and constructor injection.
-
-X-AXIS: 'Time' with markers at 'Day 1', '1 month', '6 months', '1 year', '2 years'.
-Y-AXIS: 'Cumulative Effort' from low to high.
-
-TWO CURVES:
-1. FIELD INJECTION (red/orange line): Starts LOW at Day 1 (labeled 'Less boilerplate to write!'). Then climbs steeply as time passes. Annotations along the curve: 'Adding tests... need Spring runner', 'New dev: where do these come from?', 'Refactoring... IDE can't trace deps', 'Debugging NPE from partial init'. The curve keeps climbing.
-
-2. CONSTRUCTOR INJECTION (green line): Starts SLIGHTLY HIGHER at Day 1 (labeled 'More code upfront'). Then stays nearly FLAT. Annotations: 'Tests: just call new with mocks', 'New dev: constructor documents deps', 'Refactoring: compiler catches errors'. The line barely rises.
-
-CROSSOVER POINT: Around 3-6 months, the curves cross. A callout marks this: 'The crossover: constructor injection becomes cheaper.'
-
-SHADED REGIONS: Area under field injection curve after crossover is shaded red ('Technical debt accumulating'). Area under constructor injection curve is shaded green ('Sustainable').
-
-BOTTOM CALLOUT: 'Software engineering = the integral of programming over time. Optimize for the LIFETIME, not Day 1.'
-
-Style: Clean technical graph with warm colors, educational feel, clear labels."
-  alt="Graph comparing cumulative effort over time. Field injection starts low but climbs steeply (testing pain, debugging, onboarding). Constructor injection starts slightly higher but stays flat. Curves cross around 6 months. Callout: Optimize for the lifetime, not Day 1."
-/>
 
 </Slide>
 
