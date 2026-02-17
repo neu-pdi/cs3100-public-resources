@@ -1032,97 +1032,11 @@ No constructor parameters, no field declarations, no wiring. What's not to love?
 - How do we get "one shared instance" without these problems?
 - Answer: Don't make the object responsible for its own uniqueness!
 
-→ **Transition:** Before we look at DI, let's see how other languages handle this...
+→ **Transition:** Here's how to fix it...
 </aside>
 
 </Slide>
 
-<Slide>
-
-## Language Comparison: Do You Need Singleton?
-
-<p style={{fontSize: '0.85em'}}>
-The Singleton pattern exists because <strong>Java lacks module-level state</strong>. Other languages provide natural singletons:
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.55em', marginTop: '0.5em'}}>
-
-<div>
-
-**TypeScript/JavaScript: Module is the singleton**
-
-```typescript
-// conversionRegistry.ts
-// Module state IS the singleton — no pattern needed!
-const rules = new Map<string, ConversionRule>();
-
-export function addRule(rule: ConversionRule) {
-  rules.set(`${rule.from}->${rule.to}`, rule);
-}
-
-export function getRule(from: string, to: string) {
-  return rules.get(`${from}->${to}`);
-}
-
-// Usage: import { getRule } from './conversionRegistry';
-// Every importer gets the SAME module instance
-```
-
-</div>
-
-<div>
-
-**Kotlin: `object` declaration**
-
-```kotlin
-// Built-in language support for singletons
-object ConversionRegistry {
-    private val rules = mutableMapOf<String, ConversionRule>()
-
-    fun addRule(rule: ConversionRule) {
-        rules["${rule.from}->${rule.to}"] = rule
-    }
-
-    fun getRule(from: String, to: String): ConversionRule? {
-        return rules["$from->$to"]
-    }
-}
-
-// Usage: ConversionRegistry.getRule("cups", "mL")
-// Kotlin guarantees single instance, thread-safe init
-```
-
-</div>
-
-</div>
-
-<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#FF9800'}}>
-⚠ These are still global state with the same testability problems! The <em>pattern</em> is unnecessary, but the <em>problem</em> remains.
-</p>
-
-<aside className="notes">
-**The key insight:**
-- Java needs Singleton PATTERN because it lacks module-level state
-- TypeScript modules, Kotlin `object`, Python modules — singletons are built-in
-- BUT: They still have hidden dependencies and testability issues!
-
-**The real solution in ANY language:**
-- Don't use global state (whether via pattern or language feature)
-- Pass dependencies explicitly
-- DI works in every language
-
-**Python example:**
-```python
-# config.py — module IS the singleton
-_settings = {}
-def get(key): return _settings.get(key)
-def set(key, value): _settings[key] = value
-```
-
-→ **Transition:** The solution is the same regardless of language...
-</aside>
-
-</Slide>
 
 {/* ============================================ */}
 {/* ARC 3: DEPENDENCY INJECTION AS CREATION PATTERN (10 min) */}
@@ -1168,7 +1082,7 @@ Same technique, two perspectives: testability enabler AND creation pattern.
 The fundamental difference is <strong>control over dependencies</strong>.
 </p>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.55em'}}>
 
 <div>
 
@@ -1176,17 +1090,18 @@ The fundamental difference is <strong>control over dependencies</strong>.
 
 ```java
 public class RecipeConverter {
-    // No hint of what this depends on!
+  // No hint this depends on ConversionRegistry,
+  // which is hardcoded in the convert() method.
 
-    public Recipe convert(Recipe recipe,
-                          String toUnit) {
-        // Object fetches its own dependency
-        ConversionRule rule =
-            ConversionRegistry.getInstance()
-                .getRule(recipe.getUnit(),
-                         toUnit);
-        return recipe.scaleTo(rule);
-    }
+
+
+
+
+  public Recipe convert(Recipe recipe, String toUnit) {
+    ConversionRule rule = ConversionRegistry.getInstance()
+            .getRule(recipe.getUnit(), toUnit);
+    return recipe.scaleTo(rule);
+  }
 }
 ```
 
@@ -1202,21 +1117,18 @@ public class RecipeConverter {
 
 ```java
 public class RecipeConverter {
-    private final ConversionRegistry registry;
+  private final ConversionRegistry registry;
 
-    // Caller decides which registry
-    public RecipeConverter(
-            ConversionRegistry registry) {
-        this.registry = registry;
-    }
+  // Caller decides which registry
+  public RecipeConverter(ConversionRegistry registry) {
+    this.registry = registry;
+  }
 
-    public Recipe convert(Recipe recipe,
-                          String toUnit) {
-        ConversionRule rule =
-            registry.getRule(
-                recipe.getUnit(), toUnit);
-        return recipe.scaleTo(rule);
-    }
+  public Recipe convert(Recipe recipe, String toUnit) {
+    ConversionRule rule = registry
+        .getRule(recipe.getUnit(), toUnit);
+    return recipe.scaleTo(rule);
+  }
 }
 ```
 
@@ -1254,7 +1166,7 @@ ConversionRegistry realRegistry = new StandardConversionRegistry();
 RecipeConverter converter = new RecipeConverter(realRegistry);
 
 // Test: swap in a test double — exactly what we did in L16!
-ConversionRegistry stubRegistry = () -> new ConversionRule("cups", "mL", 236.588);
+ConversionRegistry stubRegistry = (from, to) -> new ConversionRule("cups", "mL", 236.588);
 RecipeConverter testConverter = new RecipeConverter(stubRegistry);
 ```
 
@@ -1299,12 +1211,12 @@ RecipeConverter testConverter = new RecipeConverter(stubRegistry);
 
 ```java
 public class ImportService {
-    private final LibraryService lib;
+  private final LibraryService lib;
 
-    public ImportService(
-            LibraryService lib) {
-        this.lib = lib;
-    }
+  public ImportService(
+      LibraryService lib) {
+    this.lib = lib;
+  }
 }
 ```
 
@@ -1318,12 +1230,12 @@ Dependencies clear, immutable, always valid.
 
 ```java
 public class ImportService {
-    private LibraryService lib;
+  private LibraryService lib;
 
-    public void setLibrary(
-            LibraryService lib) {
-        this.lib = lib;
-    }
+  public void setLibrary(
+      LibraryService lib) {
+    this.lib = lib;
+  }
 }
 ```
 
@@ -1337,11 +1249,12 @@ For optional dependencies. Object might be in invalid state.
 
 ```java
 public class ImportService {
-    @Inject
-    private LibraryService lib;
+  @Inject
+  private LibraryService lib;
 
-    // No constructor needed!
-    // Framework sets field directly
+  // No constructor needed!
+  // Framework sets field directly
+  // using reflection
 }
 ```
 
@@ -1365,327 +1278,68 @@ All three let you swap implementations. But they differ in <strong>what invarian
 - What state can the object be in?
 - Can it be null? Partially initialized? Changed unexpectedly?
 
-→ **Transition:** Field injection has a fascinating history...
+→ **Transition:** Why not just use field injection?
 </aside>
 
 </Slide>
 
 <Slide>
 
-## The Rise of Field Injection: @Autowired (2007)
+## Poll: Which type of injection makes it hardest to enforce invariants?
 
-<p style={{fontSize: '0.85em'}}>
-Spring 2.5 introduced <code>@Autowired</code>. The framework scans for annotated fields and injects matching implementations:
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.7em'}}>
-
-```java
-// The SERVICE — just annotate what you need
-@Service
-public class ImportService {
-    @Autowired
-    private LibraryService library;
-
-    @Autowired
-    private ConversionRegistry conversions;
-
-    // No constructor needed!
-
-    public void importRecipe(Path file) {
-        Recipe recipe = parse(file);
-        conversions.normalize(recipe);
-        library.save(recipe);
-    }
-}
-```
-
-```java
-// The IMPLEMENTATIONS — Spring finds these
-@Service
-public class InMemoryLibraryService
-        implements LibraryService {
-    // Spring creates one instance
-}
-
-@Service
-public class StandardConversionRegistry
-        implements ConversionRegistry {
-    // Spring creates one instance
-}
-
-// At startup, Spring:
-// 1. Creates InMemoryLibraryService
-// 2. Creates StandardConversionRegistry
-// 3. Creates ImportService
-// 4. Sets library field via reflection
-// 5. Sets conversions field via reflection
-```
-
-</div>
-
-<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#4CAF50'}}>
-Less code! No configuration files! It felt like magic. Field injection became <strong>wildly popular</strong> (2007-2015).
-</p>
+<PollSlide
+    choices={[
+        "Constructor injection",
+        "Setter injection",
+        "Field injection"]}
+    />
 
 <aside className="notes">
-**How @Autowired actually works:**
-1. Spring scans classpath for @Service/@Component classes
-2. Creates instances of each (using default constructor)
-3. For each @Autowired field, finds a bean matching that type
-4. Uses **reflection** to set the private field directly
-5. This bypasses the constructor entirely!
 
-**Why it felt revolutionary:**
-- No XML configuration to maintain
-- Add a dependency? Just add a field
-- The framework "just works"
-
-**The zeitgeist of 2007-2015:**
-- "Convention over configuration" (Ruby on Rails influence)
-- Less code is better
-- Testing was less mainstream
-- Null safety wasn't a major concern
-
-→ **Transition:** So what changed? Why don't we like this anymore?
 </aside>
 
 </Slide>
 
 <Slide>
 
-## What We Didn't Care About (But Should Have)
+## Comparing Dependency Injection Approaches
 
-<p style={{fontSize: '0.85em'}}>
-Field injection became popular because the industry hadn't yet internalized:
-</p>
+<div style={{fontSize: '0.85em'}}>
 
-<div style={{fontSize: '0.75em', marginTop: '0.5em'}}>
+| Aspect | Constructor | Setter | Field |
+|--------|------------|--------|-------|
+| **Immutability** | ✅ Dependencies are final | ❌ Mutable after construction | ❌ Mutable after construction |
+| **Required dependencies** | ✅ Clear at construction | ⚠️ May be optional | ⚠️ Unclear if required |
+| **Invariants** | ✅ Enforced at construction | ❌ Hard to enforce | ❌ Hard to enforce |
+| **Testability** | ✅ Easy to substitute | ✅ Easy to substitute | ⚠️ Requires reflection/framework |
+| **Object validity** | ✅ Always valid after construction | ❌ May be invalid temporarily | ❌ May be invalid temporarily |
 
-| Concern | 2007 Attitude | 2025 Attitude |
-|---------|---------------|---------------|
-| **Nullness** | "Just check for null before using" | Nullability in type systems; `@NonNull`; NullPointerException is a bug |
-| **Immutability** | "Mutable is fine, just be careful" | Immutable by default; `final` fields; value objects |
-| **Testability** | "We test the whole app in staging" | Unit tests run on every commit; mocking is standard |
-| **Invariants** | "Objects initialize eventually" | Objects must be valid immediately after construction |
-| **Explicit deps** | "The framework handles it" | Dependencies are documentation; constructor is API |
+**Winner for enforcing invariants: Constructor injection** — object is guaranteed valid from the moment it's created.
 
 </div>
 
 <aside className="notes">
-**The cultural shift:**
-- Testing became mainstream (JUnit, Mockito, TDD)
-- Functional programming influenced Java (immutability, null safety)
-- Static analysis tools got better (find unused dependencies)
-- "Clean Code" movement emphasized explicit design
+**Key points:**
+- Constructor injection enforces that all dependencies are provided before the object can be used
+- Setter/field injection allow objects to exist in partially-initialized states
+- Constructor injection aligns with "design by contract" — preconditions met at construction
+- Setter injection useful for optional dependencies or circular references (rare cases)
+- Field injection convenient but couples you to framework and makes testing harder
 
-**What this means for field injection:**
-- It optimizes for WRITING code
-- But we spend more time READING and TESTING code
-- The convenience trade-off looks different now
-
-→ **Transition:** Let's see the concrete problems...
+**Transition:** Now let's see how these patterns work in practice...
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Remember: Programming Over Time
+## Field Injection Violates Encapsulation
 
-<p style={{fontSize: '0.85em'}}>
-From Lecture 1: <em>"Software Engineering is the Integral of Programming Over Time"</em>
-</p>
-
-<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
-Field injection optimizes for <strong>writing</strong> code. But code is written once and read/maintained many times:
-</p>
-
-<div style={{fontSize: '0.75em', marginTop: '0.5em'}}>
-
-| Activity | Field Injection | Constructor Injection |
-|----------|-----------------|----------------------|
-| **Writing** (once) | ✓ Less boilerplate | More code to write |
-| **Reading** (many times) | ❌ Dependencies hidden | ✓ Dependencies visible in constructor |
-| **Testing** (many times) | ❌ Requires framework magic | ✓ Just call `new` with mocks |
-| **Refactoring** (many times) | ❌ IDE can't trace dependencies | ✓ Compiler catches missing deps |
-| **Onboarding new devs** | ❌ "Where do these come from?" | ✓ Constructor documents requirements |
-
-</div>
-
-<p style={{fontSize: '0.85em', marginTop: '0.5em', fontWeight: 'bold', color: '#9370DB'}}>
-Technical sustainability means optimizing for the <em>lifetime</em> of the code, not just the moment of writing.
-</p>
-
+<Img src="/img/lectures/web/l17-field-injection.jpg"
+width={700}
+alt="Two-panel jousting meme. Top panel: knight with lance labeled 'CLASS WITH PRIVATE FIELDS'. Bottom panel: same knight with lance piercing through helmet visor, labeled 'FIELD INJECTION'" />
 <aside className="notes">
-**Connection to L1 sustainability framework:**
-- **Technical sustainability:** Can we maintain it? Constructor injection = yes
-- Field injection optimized for initial development, hurt long-term maintenance
-- 60-80% of software cost is maintenance, not initial development!
 
-**The "programming over time" lens:**
-- Field injection: cheaper to write, more expensive to maintain
-- Constructor injection: more to write, cheaper to maintain over years
-- The math favors constructor injection for any code that lives > 6 months
-
-**This is a recurring theme:**
-- Readability > writability
-- Explicit > implicit
-- Boring > clever
-
-→ **Transition:** Let's see the concrete problems with field injection...
-</aside>
-
-</Slide>
-
-<Slide>
-
-<Img
-  src="/img/lectures/web/l17-cost-over-time.webp"
-  prompt="A graph illustration showing the 'programming over time' cost comparison between field injection and constructor injection.
-
-X-AXIS: 'Time' with markers at 'Day 1', '1 month', '6 months', '1 year', '2 years'.
-Y-AXIS: 'Cumulative Effort' from low to high.
-
-TWO CURVES:
-1. FIELD INJECTION (red/orange line): Starts LOW at Day 1 (labeled 'Less boilerplate to write!'). Then climbs steeply as time passes. Annotations along the curve: 'Adding tests... need Spring runner', 'New dev: where do these come from?', 'Refactoring... IDE can't trace deps', 'Debugging NPE from partial init'. The curve keeps climbing.
-
-2. CONSTRUCTOR INJECTION (green line): Starts SLIGHTLY HIGHER at Day 1 (labeled 'More code upfront'). Then stays nearly FLAT. Annotations: 'Tests: just call new with mocks', 'New dev: constructor documents deps', 'Refactoring: compiler catches errors'. The line barely rises.
-
-CROSSOVER POINT: Around 3-6 months, the curves cross. A callout marks this: 'The crossover: constructor injection becomes cheaper.'
-
-SHADED REGIONS: Area under field injection curve after crossover is shaded red ('Technical debt accumulating'). Area under constructor injection curve is shaded green ('Sustainable').
-
-BOTTOM CALLOUT: 'Software engineering = the integral of programming over time. Optimize for the LIFETIME, not Day 1.'
-
-Style: Clean technical graph with warm colors, educational feel, clear labels."
-  alt="Graph comparing cumulative effort over time. Field injection starts low but climbs steeply (testing pain, debugging, onboarding). Constructor injection starts slightly higher but stays flat. Curves cross around 6 months. Callout: Optimize for the lifetime, not Day 1."
-/>
-
-</Slide>
-
-<Slide>
-
-## SIDEBAR: Field Injection's Hidden Costs (skippable)
-
-```java
-public class ImportService {
-    @Autowired private LibraryService library;
-    @Autowired private ConversionRegistry conversions;
-    @Autowired private ValidationService validator;
-
-    public void importRecipe(Path file) {
-        Recipe recipe = parse(file);
-        validator.validate(recipe);           // What if validator is null?
-        conversions.normalize(recipe);        // What if conversions is null?
-        library.save(recipe);                 // What if library is null?
-    }
-}
-```
-
-<div style={{fontSize: '0.75em', marginTop: '0.5em'}}>
-
-| Problem | Why It Hurts |
-|---------|--------------|
-| **Nullable fields** | Fields are `null` until framework injects them. Call a method too early? NPE. |
-| **No `final`** | Can't mark fields `final` — framework sets them after construction |
-| **Hidden dependencies** | Constructor has no parameters — dependencies invisible in API |
-| **Untestable without framework** | Can't do `new ImportService(mock, mock, mock)` — no constructor! |
-| **Reflection magic** | Framework bypasses access control to set `private` fields |
-
-</div>
-
-<aside className="notes">
-**The core issue:**
-- Object exists in an INVALID state between construction and injection
-- `new ImportService()` creates an object where all dependencies are null
-- You're trusting the framework to fix this before anyone uses it
-
-**Testing pain:**
-- To test, you need Spring's test runner, or reflection hacks
-- Can't just `new ImportService(mockLib, mockConv, mockVal)`
-
-→ **Transition:** Let's visualize this timeline problem...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## SIDEBAR: The Inconsistent State Window (skippable)
-
-<p style={{fontSize: '0.85em'}}>
-With field injection, the object exists in an <strong>invalid state</strong> between construction and injection:
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.55em', marginTop: '0.5em'}}>
-
-<div>
-
-**Field Injection: Invalid state window**
-
-```mermaid
-sequenceDiagram
-    participant F as Framework
-    participant S as ImportService
-    participant L as LibraryService
-
-    F->>S: new ImportService()
-    Note over S: library = null ❌<br/>conversions = null ❌<br/>validator = null ❌
-    Note over S: ⚠️ INVALID STATE<br/>Object exists but can't work!
-
-    F->>S: set library field (reflection)
-    Note over S: library = ✓<br/>conversions = null ❌<br/>validator = null ❌
-    Note over S: ⚠️ STILL INVALID
-
-    F->>S: set conversions field
-    F->>S: set validator field
-    Note over S: library = ✓<br/>conversions = ✓<br/>validator = ✓
-    Note over S: ✓ Finally valid!
-
-    F->>S: importRecipe()
-    S->>L: save(recipe)
-```
-
-</div>
-
-<div>
-
-**Constructor Injection: Always valid**
-
-```mermaid
-sequenceDiagram
-    participant F as Framework
-    participant S as ImportService
-    participant L as LibraryService
-
-    F->>S: new ImportService(lib, conv, val)
-    Note over S: library = ✓<br/>conversions = ✓<br/>validator = ✓
-    Note over S: ✓ VALID IMMEDIATELY<br/>Object ready to use!
-
-    F->>S: importRecipe()
-    S->>L: save(recipe)
-```
-
-</div>
-
-</div>
-
-<aside className="notes">
-**The key difference:**
-- Field injection: Object is constructed FIRST, then fields are set one by one
-- Constructor injection: Object receives ALL dependencies AT construction time
-
-**Why the window matters:**
-- What if something calls `importRecipe()` before injection completes?
-- What if injection fails halfway through?
-- What if you're debugging and inspect the object mid-injection?
-
-**The invariant:**
-- Constructor injection: "After `new`, object is ALWAYS valid"
-- Field injection: "After `new`, object is INVALID until framework finishes"
-
-→ **Transition:** Constructor injection eliminates this problem entirely...
 </aside>
 
 </Slide>
@@ -1720,7 +1374,7 @@ public class ImportService {
 ```
 
 <p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#4CAF50'}}>
-✓ Object is <strong>always valid</strong> after construction. Dependencies are <strong>documented in the API</strong>. Testing is trivial.
+✓ Object is <strong>always valid</strong> after construction. Dependencies are <strong>documented in the API</strong>. Testing is straightforward.
 </p>
 
 <aside className="notes">
@@ -1740,54 +1394,6 @@ verify(mockLib).save(any());
 No framework needed. No reflection. No magic.
 
 → **Transition:** Spring now recommends constructor injection...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## The Industry Has Shifted: Constructor Injection Wins
-
-<p style={{fontSize: '0.85em'}}>
-Spring Framework's official documentation now states:
-</p>
-
-<blockquote style={{fontSize: '0.8em', borderLeft: '4px solid #9370DB', paddingLeft: '1em', marginTop: '0.5em'}}>
-"The Spring team generally advocates constructor injection, as it lets you implement application components as immutable objects and ensures that required dependencies are not null."
-<br/><span style={{fontSize: '0.7em', color: '#666'}}>— Spring Framework Documentation, 2024</span>
-</blockquote>
-
-<div style={{fontSize: '0.75em', marginTop: '1em'}}>
-
-| Era | Dominant Style | Optimized For | Sustainability |
-|-----|----------------|---------------|----------------|
-| **2003-2007** | XML configuration | Decoupling from code | ❌ Fragile, hard to refactor |
-| **2007-2015** | Field injection | Writing speed | ❌ Technical debt over time |
-| **2015-present** | Constructor injection | Maintainability | ✓ Sustainable long-term |
-
-</div>
-
-<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
-The industry learned: <strong>optimize for the lifetime of the code, not the moment of creation.</strong>
-</p>
-
-<aside className="notes">
-**The sustainability lesson:**
-- Field injection: low upfront cost, high maintenance cost
-- Constructor injection: slightly higher upfront cost, low maintenance cost
-- The integral over time favors constructor injection
-
-**This is the "programming over time" principle in action:**
-- 2007: "This saves me 5 minutes now!"
-- 2015: "Why is this so hard to test and refactor?"
-- 2020: "Oh, that's why constructor injection is better"
-
-**For this course:**
-- We use constructor injection exclusively
-- It aligns with technical sustainability
-- The math is clear when you think in years, not hours
-
-→ **Transition:** Now let's look at an alternative approach: Service Locator...
 </aside>
 
 </Slide>
@@ -1876,100 +1482,6 @@ How does the app use these importers if it doesn't know they exist at compile ti
 - Browser extensions
 - Game mods
 
-→ **Transition:** Let's see what these plugins might look like...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## BONUS: Plugin Complexity Can Vary Wildly
-
-<p style={{fontSize: '0.85em'}}>
-Same interface, vastly different implementations — core app doesn't care:
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.52em'}}>
-
-<div>
-
-**JsonRecipeImporter: Simple parsing**
-
-```java
-public class JsonRecipeImporter
-        implements RecipeImporter {
-
-    public boolean canHandle(Path file) {
-        return file.toString().endsWith(".json");
-    }
-
-    public Recipe importFrom(Path file) {
-        // Simple: read JSON, map to Recipe
-        String json = Files.readString(file);
-        return objectMapper.readValue(json,
-                                       Recipe.class);
-    }
-}
-```
-
-</div>
-
-<div>
-
-**GeminiImporter: Complex LLM workflow**
-
-```java
-public class GeminiImporter
-        implements RecipeImporter {
-    private final GeminiClient gemini;
-
-    public boolean canHandle(Path file) {
-        // Can handle images, PDFs, screenshots!
-        return isImage(file) || isPdf(file);
-    }
-
-    public Recipe importFrom(Path file) {
-        // 1. Send image to Gemini Vision
-        String extracted = gemini.analyzeImage(file,
-            "Extract recipe: name, ingredients, steps");
-
-        // 2. Parse LLM response into structured data
-        Recipe draft = parseGeminiResponse(extracted);
-
-        // 3. Validate and normalize units
-        return normalizeUnits(draft);
-    }
-}
-```
-
-</div>
-
-</div>
-
-<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#4CAF50'}}>
-✓ Core app just calls <code>importer.importFrom(file)</code> — doesn't know or care if it's parsing JSON or calling an LLM API!
-</p>
-
-<aside className="notes">
-**The power of the abstraction:**
-- JsonImporter: 10 lines, reads a file
-- GeminiImporter: API calls, prompt engineering, response parsing, unit normalization
-- PaprikaImporter: Might decrypt proprietary format, parse XML, handle versioning
-
-**Core app code is identical:**
-```java
-for (RecipeImporter importer : importers) {
-    if (importer.canHandle(file)) {
-        return importer.importFrom(file);  // Might be JSON parse OR LLM call!
-    }
-}
-```
-
-**This is information hiding at its finest:**
-- Interface hides MASSIVE complexity differences
-- User can install GeminiImporter without core app changing
-- Could add ClaudeImporter, GPT4Importer later — same interface
-
 → **Transition:** Service Locator enables this plugin discovery...
 </aside>
 
@@ -2019,6 +1531,35 @@ public class ServiceLocator {
 
 → **Transition:** Let's see how the core app uses this...
 </aside>
+
+</Slide>
+
+
+<Slide>
+
+<Img
+  src="/img/lectures/web/l17-plugin-discovery.webp"
+  prompt="An illustration explaining plugin architecture with Service Locator, designed to teach students who don't yet know what a JAR file is.
+
+CENTER: A building representing the 'Core Recipe App' with a prominent loading dock labeled 'PLUGINS'. The building's interior shows a desk labeled 'Service Locator Registry' with a ledger book. A sign on the building reads: 'I only know the RecipeImporter INTERFACE — I don't know what plugins exist!'
+
+LEFT SIDE - 'What's a JAR?': A callout box explaining: 'A JAR (Java ARchive) is a ZIP file containing compiled Java code. It's how you package and distribute Java programs or plugins.' Below, three JAR files are shown as gift-wrapped packages with '.jar' labels, each from a different source:
+- 'JsonImporter.jar' arriving from a 'Standard Library' shelf
+- 'PaprikaImporter.jar' being downloaded from a cloud icon labeled 'Third Party'
+- 'GeminiImporter.jar' being dropped in by a user hand labeled 'Custom Plugin'
+
+RIGHT SIDE - 'How It Works': A numbered flow:
+1. JAR files are dropped into the plugins folder (shown as packages entering loading dock)
+2. Service Locator scans and registers each plugin (desk clerk adding to ledger)
+3. Core app asks: 'Give me all RecipeImporters' (speech bubble from building)
+4. Service Locator returns the list (clerk handing over a list)
+5. Core app uses them without knowing their implementation (building using generic 'importer' interface)
+
+KEY INSIGHT callout: 'The core app NEVER imports or references JsonImporter, PaprikaImporter, or GeminiImporter directly. It only knows the interface. New plugins can be added by dropping a JAR — no recompilation needed!'
+
+Style: Clean technical illustration, warm colors, educational diagram feel with clear labels and flow."
+  alt="Plugin architecture diagram. Center: Core App building with Service Locator desk. Left: Explanation that JARs are ZIP files of compiled Java code, with three example plugin JARs arriving from different sources. Right: Numbered flow showing how plugins register and get discovered. Key insight: core app never directly references plugin implementations."
+/>
 
 </Slide>
 
@@ -2073,71 +1614,112 @@ public class ImportService {
 
 <Slide>
 
-<Img
-  src="/img/lectures/web/l17-plugin-discovery.webp"
-  prompt="An illustration explaining plugin architecture with Service Locator, designed to teach students who don't yet know what a JAR file is.
+## Configuring the Service Locator for Testss
 
-CENTER: A building representing the 'Core Recipe App' with a prominent loading dock labeled 'PLUGINS'. The building's interior shows a desk labeled 'Service Locator Registry' with a ledger book. A sign on the building reads: 'I only know the RecipeImporter INTERFACE — I don't know what plugins exist!'
+<div>
 
-LEFT SIDE - 'What's a JAR?': A callout box explaining: 'A JAR (Java ARchive) is a ZIP file containing compiled Java code. It's how you package and distribute Java programs or plugins.' Below, three JAR files are shown as gift-wrapped packages with '.jar' labels, each from a different source:
-- 'JsonImporter.jar' arriving from a 'Standard Library' shelf
-- 'PaprikaImporter.jar' being downloaded from a cloud icon labeled 'Third Party'
-- 'GeminiImporter.jar' being dropped in by a user hand labeled 'Custom Plugin'
+```java
+// You must configure the registry for every test
+@BeforeEach
+void setUp() {
+  ServiceLocator.clear();
+  ServiceLocator.register(RecipeImporter.class, mockJsonImporter);
+  ServiceLocator.register(RecipeImporter.class, mockPaprikaImporter);
+}
 
-RIGHT SIDE - 'How It Works': A numbered flow:
-1. JAR files are dropped into the plugins folder (shown as packages entering loading dock)
-2. Service Locator scans and registers each plugin (desk clerk adding to ledger)
-3. Core app asks: 'Give me all RecipeImporters' (speech bubble from building)
-4. Service Locator returns the list (clerk handing over a list)
-5. Core app uses them without knowing their implementation (building using generic 'importer' interface)
+@AfterEach
+void tearDown() {
+  ServiceLocator.clear();
+  // Clean up to avoid test pollution
+}
+```
 
-KEY INSIGHT callout: 'The core app NEVER imports or references JsonImporter, PaprikaImporter, or GeminiImporter directly. It only knows the interface. New plugins can be added by dropping a JAR — no recompilation needed!'
+<p style={{color: '#FF9800', fontSize: '0.9em'}}>
+⚠️ Manual setup required for each test<br/>
+⚠️ Global state must be managed carefully
+</p>
 
-Style: Clean technical illustration, warm colors, educational diagram feel with clear labels and flow."
-  alt="Plugin architecture diagram. Center: Core App building with Service Locator desk. Left: Explanation that JARs are ZIP files of compiled Java code, with three example plugin JARs arriving from different sources. Right: Numbered flow showing how plugins register and get discovered. Key insight: core app never directly references plugin implementations."
-/>
+</div>
+
+<aside className="notes">
+**Key insight:**
+- Service Locator is just a global registry — it has no awareness of context
+- In production, plugins self-register via static initializers
+- In tests, YOU become responsible for setup and teardown
+
+**Common pitfalls:**
+- Forgetting to clear() between tests → test pollution
+- Forgetting to register a dependency → runtime failures in tests
+- Order dependencies between tests if registry isn't properly isolated
+
+**Contrast with DI:**
+- DI: Just pass different objects to constructor in each test
+- Service Locator: Must manage global state across all tests
+
+**This is why DI is preferred for application code** — testing is simpler because there's no global state to manage.
+
+→ **Transition:** Let's look at how the Service Locator is configured for tests.
+</aside>
 
 </Slide>
 
 <Slide>
 
-## Service Locator Through the Coupling Lens (L7)
+## Review of Types of Coupling (L7)
 
-<p style={{fontSize: '0.85em'}}>
+<p style={{fontSize: '0.75em', marginTop: '0.5em'}}>
+* **Data coupling** shares common types, such as `String`
+* Stamp coupling shares user-defined types that might change
+* Control Coupling happens when a parameter to a method controls the flow of execution
+* **Common Coupling** involves multiple modules sharing a common data structure without proper encapsulation
+* **Content Coupling** violates encapsulation (using reflection)
+</p>
+
+</Slide>
+
+<Slide>
+
+## Service Locator Through the Coupling Lens
+
+<div style={{ fontSize: '.75em' }}>
+
+<p>
 Remember our coupling types from L7? DI and Service Locator make <strong>different coupling tradeoffs</strong>:
 </p>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.75em', marginTop: '1em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', fontSize: '.8em', gap: '1.5em', marginTop: '1em'}}>
 
 <div style={{padding: '1em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
 
 **Dependency Injection: Data Coupling**
-
 ```java
 // Caller KNOWS the implementation
 new ImportService(libraryService);
 ```
 
-- Caller passes data (the dependency) to constructor
-- **Visible:** Constructor documents what's needed
-- **Testable:** Pass mocks directly
-- **Limitation:** Caller must have a reference to pass
+<ul style={{marginLeft: '-1em'}}>
+<li>Caller passes data (the dependency) to constructor</li>
+<li><strong>Visible:</strong> Constructor documents what's needed</li>
+<li><strong>Testable:</strong> Pass mocks directly</li>
+<li><strong>Limitation:</strong> Caller must have a reference to pass</li>
+</ul>
 
 </div>
 
 <div style={{padding: '1em', border: '2px solid #FF9800', borderRadius: '8px'}}>
 
 **Service Locator: Common Coupling**
-
 ```java
 // Caller knows NOTHING about implementation
 ServiceLocator.get(LibraryService.class);
 ```
 
-- All code shares the global registry
-- **Hidden:** Dependencies discovered at runtime
-- **Test setup:** Must configure global registry
-- **Power:** Modules never reference each other
+<ul style={{marginLeft: '-1em'}}>
+<li>All code shares the global registry</li>
+<li><strong>Hidden:</strong> Dependencies discovered at runtime</li>
+<li><strong>Test setup:</strong> Must configure global registry</li>
+<li><strong>Power:</strong> Modules never reference each other</li>
+</ul>
 
 </div>
 
@@ -2146,6 +1728,7 @@ ServiceLocator.get(LibraryService.class);
 <p style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
 Data coupling (DI) is usually preferable. Common coupling (Service Locator) is the price you pay for true runtime extensibility.
 </p>
+</div>
 
 <aside className="notes">
 **The key tradeoff:**
@@ -2177,31 +1760,6 @@ Data coupling (DI) is usually preferable. Common coupling (Service Locator) is t
 
 <div>
 
-**Service Locator**
-
-```java
-public class ImportService {
-    // What does this depend on?
-    // You must read every line to know!
-
-    public void importRecipe(Path file) {
-        Recipe recipe = parseRecipe(file);
-        ServiceLocator
-            .get(LibraryService.class)
-            .addRecipe(recipe);
-        ServiceLocator
-            .get(ConversionRegistry.class)
-            .validate(recipe);
-    }
-}
-```
-
-<p style={{color: '#FF9800'}}>Dependencies discovered at runtime</p>
-
-</div>
-
-<div>
-
 **Dependency Injection**
 
 ```java
@@ -2229,22 +1787,67 @@ public class ImportService {
 
 </div>
 
+<div>
+
+**Service Locator**
+
+```java
+public class ImportService {
+    // What does this depend on?
+    // You must read every line to know!
+
+    public void importRecipe(Path file) {
+        Recipe recipe = parseRecipe(file);
+        ServiceLocator
+            .get(LibraryService.class)
+            .addRecipe(recipe);
+        ServiceLocator
+            .get(ConversionRegistry.class)
+            .validate(recipe);
+    }
+}
+```
+
+<p style={{color: '#FF9800'}}>Dependencies discovered at runtime</p>
+
+</div>
+
 </div>
 
 <aside className="notes">
 **The critical difference:**
-- Service Locator: Dependencies hidden in method bodies
 - DI: Constructor is a complete dependency manifest
+- Service Locator: Dependencies hidden in method bodies
 
 **IDE tooling test:**
 - DI: "Find Usages" on `LibraryService` shows all classes that depend on it
 - Service Locator: Dependency is a string/class lookup — invisible to static analysis
 
 **Decision guide:**
-- **Service Locator:** Plugin architecture, framework code, true module independence
 - **DI:** Application code (99%), explicit dependencies, easy testing
+- **Service Locator:** Plugin architecture, framework code, true module independence
 
 → **Transition:** Now let's see how these patterns scale to systems...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Which is Better? It Depends...
+
+<Img src="/img/lectures/web/l17-it-depends.png"
+  width={550}
+  alt="Book cover in the style of O'Reilly.
+    Title: 'It Depends'
+    Subtitle: 'The Definitive Guide'
+    Heading: 'The answer to every programming question ever conceived'
+    Bottom: 'O RLY?'
+    Credit: @ThePracticleDev"
+/>
+
+<aside className="notes">
+
 </aside>
 
 </Slide>
