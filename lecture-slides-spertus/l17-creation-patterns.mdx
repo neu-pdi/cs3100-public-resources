@@ -52,7 +52,7 @@ import PollSlide from '@site/src/components/PollSlide';
 ## Lecture 17: From Code Patterns to Architecture Patterns
 
 <p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
-  ©2026 Jonathan Bell, CC-BY-SA
+  ©2026 Jonathan Bell & Ellen Spertus, CC-BY-SA
 </p>
 
 <aside className="notes">
@@ -482,7 +482,7 @@ ConversionRule rule2 = StandardConversions
   <li><code>from()</code> — type conversion: <code>Date.from(instant)</code>, <code>Path.from(uri)</code></li>
   <li><code>valueOf()</code> — parsing/conversion: <code>Integer.valueOf("42")</code>, <code>Boolean.valueOf(true)</code></li>
   <li><code>getInstance()</code> / <code>newInstance()</code> — may cache or create: <code>Calendar.getInstance()</code></li>
-  <li><code>getType()</code> / <code>newType()</code> — factory in different class: <code>Files.newBufferedReader(path)</code></li>
+  <li><code>getTypeName()</code> / <code>newTypeName()</code> — factory in different class: <code>Files.newBufferedReader(path)</code></li>
 </ul>
 </div>
 
@@ -533,10 +533,10 @@ public class ConversionRule {
 ```
 
 ```java
-// old
-ConversionRule cupsToMilliliters = new ConversionRule("cups", "mL", 236.588);
+// old (4 arguments)
+ConversionRule cupsToMilliliters = new ConversionRule("cups", "mL", 236.588, true);
 
-// new
+// new (clearer, with fewer arguments)
 ConversionRule cupsToMilliliters = ConversionRule.bidirectional("cups", "mL", 236.588);
 ```
 </div>
@@ -581,13 +581,13 @@ public class ConversionRule {
         this.factor = factor;
     }
 
-    // Can return cached instances!
-    private static final Map<String, ConversionRule> CACHE = new ConcurrentHashMap<>();
+    // Cache coversion rules for reuse.
+    private static final Map<String, ConversionRule> cachedRules = new ConcurrentHashMap<>();
 
     public static ConversionRule cached(String from, String to, double factor) {
-        String key = from + "->" + to; // for example, "cups->mL"
+        String key = from + "->" + to + "@" + factor;
         // If a cached rule is present, return it; otherwise, create and cache one.
-        return CACHE.computeIfAbsent(key,
+        return cachedRules.computeIfAbsent(key,
             k -> new ConversionRule(from, to, factor, true));
     }
 }
@@ -704,9 +704,11 @@ Recipe recipe = new RecipeBuilder("Pasta Carbonara")
     .build();
 ```
 
-<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#4CAF50'}}>
+<div style={{fontSize: '0.8em', marginTop: '0.5em', color: '#4CAF50'}}>
 ✓ Each method call is self-documenting. Set only what you need. Order doesn't matter.
-</p>
+
+✓ Each method both mutates and returns the RecipeBuilder.
+</div>
 
 <div className="fragment" style={{fontSize: '0.75em', marginTop: '1em'}}>
 
@@ -903,9 +905,10 @@ val recipe = Recipe(
 <Slide>
 
 ## The Singleton Pattern: Convenient But Dangerous
+<div style={{ fontSize: '.8em' }}>
 
-<p style={{fontSize: '0.9em', fontWeight: 'bold', color: '#9370DB'}}>
-  Effective Java Items 3-4: The Singleton
+<p style={{fontWeight: 'bold'}}>
+  Effective Java Items 3-4: Singleton
 </p>
 
 <p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
@@ -933,6 +936,7 @@ public class ConversionRegistry {
 <p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
 <strong>The appeal:</strong> Simple access. No need to pass the registry around. Just call <code>getInstance()</code> anywhere.
 </p>
+</div>
 
 <aside className="notes">
 **Why Singleton exists:**
@@ -953,6 +957,7 @@ public class ConversionRegistry {
 <Slide>
 
 ## Singleton Seems Convenient...
+<div style={{ fontSize: '.85em' }}>
 
 ```java
 // Any code anywhere can access the registry — no passing required!
@@ -975,16 +980,16 @@ public class RecipeExporter {
 }
 ```
 
-<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+<p >
 No constructor parameters, no field declarations, no wiring. What's not to love?
 </p>
 
 <div className="fragment">
-<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#f44336'}}>
+<p style={{marginTop: '0.5em', color: '#f44336'}}>
 <strong>Everything.</strong> This convenience hides serious problems.
 </p>
 </div>
-
+</div>
 <aside className="notes">
 **The seduction of Singleton:**
 - No need to thread dependencies through constructors
