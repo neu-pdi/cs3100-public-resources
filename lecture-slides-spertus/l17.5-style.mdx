@@ -131,32 +131,32 @@ Open-ended poll
 <div className="fragment">
 Readability
 ```java
-static final int SECONDS_PER_MINUTE = 60
-static final int MINUTES_PER_HOUR = 60
-static final int SECONDS_PER_HOUR = 3_600
-static final int HOURS_PER_DAY = 24
-static final int SECONDS_PER_DAY = SECONDS_PER_HOUR * HOURS_PER_DAY
+static final int SECONDS_PER_MINUTE = 60;
+static final int MINUTES_PER_HOUR = 60;
+static final int SECONDS_PER_HOUR = 3_600;
+static final int HOURS_PER_DAY = 24;
+static final int SECONDS_PER_DAY = SECONDS_PER_HOUR * HOURS_PER_DAY;
 ```
 </div>
 
 <div className="fragment">
 Safety
 ```java
-startTimer(SECONDS_PER_DAY)
-startTime(86400)
+startTimer(SECONDS_PER_DAY);
+startTimer(86400);
 ```
 </div>
 
 <div className="fragment">
 Maintainability
 ```java
-static final int CREDITS_TO_GRADUATE = 128
-static final int NUMBER_OF_CAMPUSES = 14
+static final int CREDITS_TO_GRADUATE = 128;
+static final int NUMBER_OF_CAMPUSES = 14;
 ```
 </div>
 
 <aside className="notes">
-
+* Point out use of underscore in 3_600
 </aside>
 
 </Slide>
@@ -303,7 +303,9 @@ This is an instance of: Code tells us how; comments tell us why.
 <Slide>
 ## Don't Write Cat Comments
 
-<Img src="/img/lectures/web/l17.5-cat-comments.webp" width={600} />
+<Img src="/img/lectures/web/l17.5-cat-comments.webp" width={600}
+  alt="Title '90% of all code comments:' above a hoto of a cat with a label reading 'cat' stuck to its head."
+ />
 
 </Slide>
 
@@ -432,6 +434,7 @@ if (value == null || value == JSONObject.NULL) {
 Why might it be useful to include a link to a StackOverflow post?
 <PollSlide username="espertus"
   image="/img/lectures/web/l17.5-stack-overflow-keyboard.png"
+  imageAlt="Three-key keyboard with Stack Overflow, C, ,and V keys"
   />
 
 <aside className="notes">
@@ -454,7 +457,7 @@ Why might it be useful to include a link to a StackOverflow post?
 
 Example: <code>/** Converts a Drawable to Bitmap. via https://stackoverflow.com/a/46018816/2219998. */</code>
 
-This also honors the open source license.
+This also honors the open-source license.
 
 <aside className="notes">
 * Clicking through lets you see the user is highly-rated.
@@ -506,7 +509,7 @@ Best practice: Include the issue number:
 </div>
 
 <aside className="notes">
-Helps reader understand code and determining whether it is still needed and how to test it
+Helps reader understand code and determine whether it is still needed and how to test it.
 </aside>
 
 </Slide>
@@ -526,11 +529,12 @@ Sometimes, it's necessary to commit incomplete code:
 ```
 
 Better yet, add an issue to your tracker, and reference the issue in the comment.
-</Slide>
 
 <aside className="notes">
 Resist the temptation to hide known deficiencies.
 </aside>
+
+</Slide>
 
 <Slide>
 ## Summary
@@ -557,7 +561,13 @@ Your colleagues and future you will appreciate it.
 <Slide>
 ## Bonus Slide
 
-<Img src="/img/lectures/web/l17.5-copied-from-stack-overflow.png" />
+<Img src="/img/lectures/web/l17.5-copied-from-stack-overflow.png"
+  alt="3-frame geek & poke cartoon titled 'good questions' featuring a man and a woman in front of a computer.
+  In frame 1, the man says: 'Don't know. I copied it from Stack Overflow'
+  In frame 2, both are silent.
+  In frame 3, the woman asks: 'From one of the answers or from the question'
+  "
+/>
 </Slide>
 
 </RevealJS>
