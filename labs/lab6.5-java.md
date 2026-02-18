@@ -32,3 +32,10 @@ By the end of this lab, you will be able to explain:
 3. [Exit survey](https://forms.office.com/r/cPX3n3ziUT) (5 minutes)
 
 Students may leave when they have completed the exit survey and been excused by a lab leader.
+
+## Resources
+
+These resources were shared after lab for students who were unable to attend.
+
+* [video of lecture](https://northeastern.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=3ea5ff15-326b-4372-8ef0-b3f30164038b) presented by Ellen Spertus
+* [PowerPoint slides](https://northeastern-my.sharepoint.com/:p:/g/personal/e_spertus_northeastern_edu/IQC4A4kVHBcCTrsp311X6uVTAXVPvGIIq8oaqsnubCOpHMA?e=lL3RGX)
