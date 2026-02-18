@@ -7,22 +7,6 @@ title: "Architectural Styles: From Hexagons to Monoliths"
 Suggested background reading for a deeper dive:
 - [Fundamentals of Software Architecture, 2nd Edition by Mark Richards and Neal Ford](https://learning.oreilly.com/library/view/fundamentals-of-software/9781098175504/ch09.html#id72) - especially Chapter 9
 
-## Learning Objectives
-
-After this lecture, you will be able to:
-
-1. Define **quality attributes** that architectural styles affect: maintainability, scalability, deployability, fault tolerance, and more
-2. Distinguish between **architectural styles** and **architectural patterns**
-3. **Recognize and compare** architectural styles like **Hexagonal**, **Layered**, **Pipelined**, and **Monolithic**
-4. Explain the tradeoffs of **monoliths**, **modular monoliths**, and **microservices**
-5. Analyze how architectural choices **affect quality attributes differently** for specific scenarios
-
-:::note Important Framing
-You are **not** expected to become a master architect by the end of this lecture. The goal is to *understand systems that use these styles* and reason about how architectural decisions impact quality attributes. When you encounter a hexagonal or layered architecture in the wild, you'll be able to read it—not necessarily design it from scratch.
-
-Junior engineers read existing architectures far more than they design new ones. Understanding *why* a system is structured a certain way is 90% of the skill. Design skills come later with experience—comprehension comes first.
-:::
-
 In [L16 (Design for Testability)](./l16-testing2.md), we introduced **Hexagonal Architecture** (Ports and Adapters) as a way to separate domain logic from infrastructure, making code testable. That was architecture in service of a specific quality attribute: testability. In [L18](./l18-architecture-design.md), we identified component boundaries for Pawtograder's autograder—the Solution Repo, Grading Action, and Pawtograder API—by applying heuristics about rate of change, actors, interface segregation, and testability.
 
 Now we zoom out to look at architectural styles more broadly—recurring structures that help organize entire applications. We'll continue with our **Pawtograder** and **Bottlenose** running examples to see how these styles apply in practice.
@@ -317,13 +301,13 @@ Pawtograder's grading logic doesn't care *how* results are sent to the API or *w
 public class OverlayGrader implements Grader {
     private final Builder builder;
     private final Logger logger;
-    
+
     public OverlayGrader(Builder builder, Logger logger) {
         this.builder = builder;
         this.logger = logger;
     }
-    
-    public AutograderFeedback grade(Path solutionDir, Path submissionDir, 
+
+    public AutograderFeedback grade(Path solutionDir, Path submissionDir,
                                      PawtograderConfig config) {
         // 1. Copy solution to grading directory
         // 2. Overlay student files onto solution
@@ -332,11 +316,11 @@ public class OverlayGrader implements Grader {
         if (!buildResult.success()) {
             return createBuildFailureFeedback(buildResult);
         }
-        
+
         // 4. Parse test results and compute scores
         List<TestResult> testResults = builder.parseTestResults(gradingDir);
         List<TestFeedback> feedback = gradeUnits(config.getGradedParts(), testResults);
-        
+
         // 5. Return normalized feedback
         return new AutograderFeedback(feedback, lintResult, output, score);
     }
@@ -387,13 +371,13 @@ public class GradleBuilder implements Builder {
         ProcessResult result = runGradle(projectDir, "test", config.getTimeouts());
         return new BuildResult(result.exitCode() == 0, result.output());
     }
-    
+
     @Override
     public List<TestResult> parseTestResults(Path reportDir) {
         // Parse Surefire XML format
         return SurefireParser.parse(reportDir.resolve("build/test-results"));
     }
-    
+
     @Override
     public Optional<LintResult> lint(Path projectDir, LinterConfig config) {
         // Run checkstyle, parse XML output
@@ -417,13 +401,13 @@ public class PythonScriptBuilder implements Builder {
 public class SupabaseAPI implements SubmissionAPI, FeedbackAPI {
     private final HttpClient client;
     private final String baseUrl;
-    
+
     @Override
     public SubmissionRegistration register(String oidcToken) {
         // POST to createSubmission endpoint with OIDC token
         // Returns submission ID, grader URL, and SHA for verification
     }
-    
+
     @Override
     public void submit(String submissionId, AutograderFeedback feedback) {
         // POST normalized feedback to submitFeedback endpoint
@@ -441,26 +425,26 @@ public class GradingPipeline {
     private final SubmissionAPI submissionApi;
     private final FeedbackAPI feedbackApi;
     private final Grader grader;
-    
-    public GradingPipeline(SubmissionAPI submissionApi, 
+
+    public GradingPipeline(SubmissionAPI submissionApi,
                            FeedbackAPI feedbackApi,
                            Grader grader) {
         this.submissionApi = submissionApi;
         this.feedbackApi = feedbackApi;
         this.grader = grader;
     }
-    
+
     public void run(String oidcToken, Path submissionDir) {
         // 1. Register submission (infrastructure concern)
         SubmissionRegistration reg = submissionApi.register(oidcToken);
-        
+
         // 2. Download and extract grader (infrastructure concern)
         Path solutionDir = downloadGrader(reg.graderUrl(), reg.graderSha());
-        
+
         // 3. Grade (pure domain logic)
         PawtograderConfig config = parseConfig(solutionDir);
         AutograderFeedback feedback = grader.grade(solutionDir, submissionDir, config);
-        
+
         // 4. Submit results (infrastructure concern)
         feedbackApi.submit(reg.submissionId(), feedback);
     }
