@@ -69,6 +69,21 @@ import PollSlide from '@site/src/components/PollSlide';
 </Slide>
 
 {/* ============================================ */}
+{/* POLLS FROM JON */}
+{/* ============================================ */}
+
+<Slide>
+
+## HW3 Survey from Prof. Bell
+
+<PollSlide username="espertus" />
+
+Responses are anonymous but count toward participation.
+
+</Slide>
+
+
+{/* ============================================ */}
 {/* LEARNING OBJECTIVES */}
 {/* ============================================ */}
 
@@ -221,11 +236,13 @@ Other languages solve these problems differently. We'll note alternatives as we 
 Constructors have limitations that become painful as classes evolve:
 </p>
 
+<div style={{fontSize: '0.7em'}}>
 ```java
 // Constructor with many parameters — what do these values mean?
 ConversionRule rule = new ConversionRule("cups", "mL", 236.588, true, false, "volume");
 //                                        ???     ???   ???      ???   ???    ???
 ```
+</div>
 
 <div className="fragment">
 <div style={{fontSize: '0.75em', marginTop: '1em'}}>
@@ -624,7 +641,7 @@ public class ConversionRule {
   EJ Item 2: "Consider a builder when faced with many constructor parameters"
 </p>
 
-<div style={{ fontSize: '.65em' }}>
+<div style={{ fontSize: '.6em' }}>
 ```java
 public class Recipe {
   // Most general constructor
@@ -638,7 +655,7 @@ public class Recipe {
   }
 
   Recipe(String name, List<Ingredient> ingredients, List<String> instructions) { ... }
-  Recipe(String name, List<Ingredient> ingredients, List<String> instructions, List<String> notes) { ... }
+  Recipe(String name, List<Ingredient> ingredients, List<String> instructions, List<String> notes) {...}
   Recipe(String name, List<Ingredient> ingredients, List<String> instructions, List<String> notes,
       String source) { ... }
 
@@ -694,6 +711,7 @@ Style: Clean technical illustration, warm colors, slight humor in the developer 
 
 ## The Builder Pattern: Fluent, Readable, Extensible
 
+<div style={{ fontSize: '.6em' }}>
 ```java
 Recipe recipe = new RecipeBuilder("Pasta Carbonara")
     .addIngredient(new Ingredient("spaghetti", 400, "g"))
@@ -705,13 +723,13 @@ Recipe recipe = new RecipeBuilder("Pasta Carbonara")
     .build();
 ```
 
-<div style={{fontSize: '0.8em', marginTop: '0.5em', color: '#4CAF50'}}>
+<div style={{color: '#4CAF50'}}>
 ✓ Each method call is self-documenting. Set only what you need. Order doesn't matter.
 
 ✓ Each method both mutates and returns the RecipeBuilder.
 </div>
 
-<div className="fragment" style={{fontSize: '0.75em', marginTop: '1em'}}>
+<div className="fragment">
 
 | | Telescoping Constructors | Builder Pattern |
 |---|---|---|
@@ -719,6 +737,7 @@ Recipe recipe = new RecipeBuilder("Pasta Carbonara")
 | **Readability at call site** | `new Recipe("X", null, null, notes, null, false)` | `.addNote("...").build()` |
 | **Can accumulate values** | No — must pass complete list | Yes — `addIngredient()` multiple times |
 
+</div>
 </div>
 
 <aside className="notes">
@@ -752,8 +771,8 @@ public class RecipeBuilder {
         this.name = name;
     }
 
-    public RecipeBuilder addIngredient(Ingredient ing) {
-        this.ingredients.add(ing);
+    public RecipeBuilder addIngredient(Ingredient ingredient) {
+        this.ingredients.add(ingredient);
         return this;  // Return 'this' enables method chaining
     }
 
@@ -1350,6 +1369,7 @@ alt="Two-panel jousting meme. Top panel: knight with lance labeled 'CLASS WITH P
 
 ## Constructor Injection: Explicit, Immutable, Always Valid
 
+<div style={{ fontSize: '.65em' }}>
 ```java
 public class ImportService {
     private final LibraryService library;        // final = immutable
@@ -1374,6 +1394,7 @@ public class ImportService {
     }
 }
 ```
+</div>
 
 <p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#4CAF50'}}>
 ✓ Object is <strong>always valid</strong> after construction. Dependencies are <strong>documented in the API</strong>. Testing is straightforward.
@@ -1497,6 +1518,7 @@ How does the app use these importers if it doesn't know they exist at compile ti
 A Service Locator is a registry that maps interfaces to implementations:
 </p>
 
+<div style={{ fontSize: '.65em' }}>
 ```java
 public class ServiceLocator {
     private static final Map<Class<?>, List<Object>> services = new HashMap<>();
@@ -1514,11 +1536,13 @@ public class ServiceLocator {
     // Find a single implementation
     public static <T> T get(Class<T> type) {
         List<T> impls = getAll(type);
-        if (impls.isEmpty()) throw new IllegalStateException("No " + type.getSimpleName());
+        if (impls.isEmpty()) 
+                throw new IllegalStateException("No " + type.getSimpleName());
         return impls.get(0);
     }
 }
 ```
+</div>
 
 <aside className="notes">
 **What this enables:**
@@ -1569,6 +1593,7 @@ Style: Clean technical illustration, warm colors, educational diagram feel with 
 
 ## Using Service Locator for Plugin Discovery
 
+<div style={{ fontSize: '.65em' }}>
 ```java
 // At application startup: plugins register themselves
 public class JsonRecipeImporterPlugin {
@@ -1593,6 +1618,7 @@ public class ImportService {
     }
 }
 ```
+</div>
 
 <p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#4CAF50'}}>
 ✓ New plugins can be added by dropping a JAR file — no recompilation of core app!
