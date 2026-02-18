@@ -1,0 +1,321 @@
+---
+sidebar_position: 18
+title: "Code Style"
+---
+
+import RevealJS, { Slide } from '@site/src/components/RevealJS';
+import Img from '@site/src/components/Img';
+import PollSlide from '@site/src/components/PollSlide';
+
+<RevealJS transition="slide">
+
+<Slide>
+  <Img
+    src="/img/lectures/web/l17.5.jpg"
+    prompt="Concept: 'Magic Numbers and Code Comments' (Program Design & Implementation)
+Tagline: 'Beware the Enchanted Numbers. Seek the Truth in Named Constants.'
+Subtitle: 'Writing Code That Explains Itself'
+
+A pixel art style educational illustration showing a D&D-style adventuring party navigating through a dangerous dungeon of code. The scene is split between a perilous left side and a safe right side.
+
+Header banner:
+'CS 3100: Program Design & Implementation 2' with subtitle 'Magic Numbers and Code Comments: A Quest for Clarity'
+
+Left side — 'The Dungeon of Magic Numbers':
+A fantasy party (warrior, mage, rogue, cleric) cautiously navigates a dark, twisted corridor made of code blocks. Glowing, ominous numbers float in the air like magical traps: '98.6', '42', '0.59', '1750', each pulsing with mysterious energy. The numbers are unlabeled and dangerous-looking.
+
+Scattered throughout are misleading comment scrolls on the walls:
+- 'i = i + 1;  // Add one to i' (completely redundant)
+- '} // end if' (useless clutter)
+- 'RIPJSB' pointing to '1750' (cryptic and confusing)
+- '// Magical formula from stackoverflow' with no link (unhelpful)
+
+The party members show distress:
+- Warrior tries to shield against a floating '42' with confused expression
+- Mage studies a scroll saying '// You are not expected to understand this'
+- Rogue carefully steps around a trap labeled with just 'temp > 98.6'
+
+Thorny vines of bad code wrap around the walls. Fog and darkness obscure the path forward. A sign reads: 'Danger: Magic Numbers Ahead'
+
+Right side — 'The Path of Clear Code':
+The same party emerges into a bright, clean stone corridor with well-lit torches. Named constants appear as helpful signposts and guideposts:
+- 'BODY_TEMP_FAHRENHEIT = 98.6' on a friendly sign post
+- 'MEANING_OF_LIFE = 42' clearly labeled
+- 'LUMINANCE_GREEN_WEIGHT = 0.59' with explanation
+
+Helpful comment scrolls on the walls provide context:
+- '// Human vision perception formula' with a link icon
+- '// via stackoverflow.com/a/12345678' with a chain link symbol
+- '// NOTE: Firefox 2 bug workaround (issue #1425)' with helpful context
+- '// TODO(hal): Add comma support for decimal separator'
+
+The party members are relaxed and confident:
+- Warrior reads a clear signpost with a smile
+- Mage nods approvingly at a well-documented comment
+- Rogue gives a thumbs up to a 'const DAYS_IN_WEEK = 7' sign
+
+Flowers and clear paths mark the way. Sunshine streams through. A sign reads: 'Safe Passage: Named Constants & Good Comments'
+
+Center divider:
+A doorway/portal separates the two sides. An arrow points from the dangerous dungeon to the safe path. Label reads: 'Refactor Your Way to Safety'
+
+Bottom elements:
+- A treasure chest (right side) labeled 'Maintainable Code' overflowing with gems
+- A trapped chest (left side) labeled 'Technical Debt' with warning symbols
+- A scroll at the bottom showing '9 Rules for Code Comments' with a quill icon
+
+Bottom banner:
+'Beware the Enchanted Numbers. Seek the Truth in Named Constants.' with subtitle 'Code Tells You How. Comments Tell You Why.'
+
+Visual style:
+Retro pixel art dungeon crawler aesthetic with a cohesive color palette of teals, purples (#9370DB), dungeon grays, and warm torch-light accents. Fantasy RPG elements (torches, stone walls, scrolls, signposts) mixed with code visualization. Clear contrast between the dangerous left (dark, mysterious, confusing) and safe right (bright, clear, helpful) sides."
+    alt="Pixel art dungeon split in two. Left: Dark corridor where D&D party (warrior, mage, rogue, cleric) encounters dangerous floating magic numbers (98.6, 42, 1750) and bad comments ('i=i+1 //Add one to i', 'RIPJSB', '//You are not expected to understand this'). Trapped chest labeled 'Technical Debt'. Right: Bright corridor where same party confidently reads clear signposts (BODY_TEMP_FAHRENHEIT = 98.6, MEANING_OF_LIFE = 42) and helpful comments with links and context. Treasure chest labeled 'Maintainable Code'. Center portal labeled 'Refactor Your Way to Safety'. Banner: 'Beware the Enchanted Numbers. Seek the Truth in Named Constants.'"
+  />
+</Slide>
+
+<Slide>
+
+## Magic Number
+
+<div style={{ fontSize: '.8em' }}>
+Definition: An unnamed numeric literal in code (except for -1, 0, 1, and 2)
+
+Example from L16:
+```java
+public class EnergyPriceService {
+    private final EnergyPriceApi api;
+    private final Clock clock;
+
+    public EnergyPriceService(
+        EnergyPriceApi api, Clock clock) {
+        this.api = api;
+        this.clock = clock;
+    }
+
+    public boolean isOffPeakHours() {
+        int hour = LocalTime.now(clock).getHour();
+        return hour >= 22 || hour < 6;
+    }
+}
+```
+</div>
+</Slide>
+
+<Slide>
+
+## Poll: What's wrong with magic numbers?
+
+<PollSlide username="espertus"
+    code={`
+    public boolean isOffPeakHours() {
+        int hour = LocalTime.now(clock).getHour();
+        return hour >= 22 || hour < 6;
+    }`}
+/>
+
+<aside className="notes">
+Open-ended poll
+</aside>
+</Slide>
+
+<Slide>
+
+## Benefits of Named Constants
+
+<div style={{ fontSize: '.8em' }}>
+
+<div className="fragment">
+Readability
+```java
+static final int SECONDS_PER_MINUTE = 60
+static final int MINUTES_PER_HOUR = 60
+static final int SECONDS_PER_HOUR = 3_600
+static final int HOURS_PER_DAY = 24
+static final int SECONDS_PER_DAY = SECONDS_PER_HOUR * HOURS_PER_DAY
+```
+</div>
+
+<div className="fragment">
+Safety
+```java
+startTimer(SECONDS_PER_DAY)
+startTime(86400)
+```
+</div>
+
+<div className="fragment">
+Maintainability
+```java
+static final int CREDITS_TO_GRADUATE = 128
+static final int NUMBER_OF_CAMPUSES = 14
+```
+</div>
+
+</div>
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Think-Pair-Share: What would be good names?
+
+```java
+    private static final int ______________ = 6;
+    private static final int ______________ = 22;
+
+    public boolean isOffPeakHours() {
+        int hour = LocalTime.now(clock).getHour();
+        return hour >= 22 || hour < 6;
+    }
+```
+
+<aside className="notes">
+I considered making this a word cloud, but PollEV converts `START_PEAK_TIME` to `start peak time`.
+</aside>
+</Slide>
+
+<Slide>
+
+## Notorious Example: Fast inverse square root
+
+```C
+ float Q_rsqrt( float number )
+    {
+        long i;
+        float x2, y;
+        float threehalfs = 1.5F;
+
+        x2 = number * 0.5F;
+        y  = number;
+        i  = * ( long * ) &y;  // evil floating point bit level hacking
+        i  = 0x5f3760df - ( i >> 1 );               // wtf?
+        y  = * ( float * ) &i;
+        y  = y * ( threehalfs - ( x2 * y * y ) );   // 1st iteration
+    //  y  = y * ( threehalfs - ( x2 * y * y ) );   // 2nd iteration, this can be removed
+
+        return y;
+    }
+```
+<div style={{ fontSize: '.8em' }}>
+Source: Quake III Arena source code, via [Wikipedia](https://en.wikipedia.org/wiki/Fast_inverse_square_root
+)
+</div>
+
+<aside className="notes">
+- This calculates the fast inverse square root of a number (1/sqrt(x))
+- This was part of the 1999 first-person shooter game, Quake III Arena
+- The name "threehalfs" is no better than just using 1.5
+- Note that this also has terrible comments, which leads us to our next topic
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Poll: What were you taught about in-line comments in previous classes?
+
+<PollSlide username="espertus" />
+
+<aside className="notes">
+* Another open-ended poll
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Best Practice for Writing Code Comments
+
+<Img src="/img/lectures/web/l17.5-best-practices.png"
+  alt="Screenshot of a web page showing a large colorful graphic of annotations to a document.
+  Article headline: 'Best practices for writing code comments'
+  Date: December 23, 2021"
+/>
+
+<aside className="notes">
+* This lecture is based on an article I wrote for the Overflow (Stack Overflow blog).
+* I wrote it because I couldn't find any good existing article.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Rule 1: Comments should not duplicate the code
+
+<div style={{ fontSize: '.8em' }}>
+Don't do this:
+```java
+i = i + 1; // Add one to i
+```
+
+<div className="fragment">
+What should you write instead?
+</div>
+
+<div className="fragment">
+Probably nothing, unless the behavior is non-obvious:
+</div>
+
+<div className="fragment">
+```java
+// Remove consecutive duplicates from array: [1,1,2,2,2,3] -> [1,2,3]
+int writePos = 0;
+for (int i = 0; i < arr.length; i++) {
+    arr[writePos++] = arr[i];
+
+    // Skip all consecutive duplicates
+    while (i + 1 < arr.length && arr[i] == arr[i + 1]) {
+        i = i + 1; // Skip duplicate; already wrote this value
+    }
+}
+```
+</div>
+</div>
+<div className="fragment">
+Code tells us how; comments tell us why.
+</div>
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+## Rule 2: Good comments do not excuse unclear code
+
+```java
+private static Node getBestChildNode(Node node) {
+    Node n; // best child node candidate
+    for (Node node: node.getChildren()) {
+        // update n if the current state is better
+        if (n == null || utility(node) > utility(n)) {
+            n = node;
+        }
+    }
+    return n;
+}
+```
+Instead, rewrite:
+```java
+private static Node getBestChildNode(Node node) {
+    Node bestNode;
+    for (Node currentNode: node.getChildren()) {
+        if (bestNode == null || utility(currentNode) > utility(bestNode)) {
+            bestNode = currentNode;
+        }
+    }
+    return bestNode;
+}
+```
+
+
+</Slide>
+
+
+</RevealJS>
