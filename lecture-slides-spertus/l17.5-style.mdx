@@ -1,0 +1,573 @@
+---
+sidebar_position: 18
+title: "Code Style"
+---
+<style>
+{`
+  .reveal {
+    font-size: 30px !important;
+  }
+`}
+</style>
+
+import RevealJS, { Slide } from '@site/src/components/RevealJS';
+import Img from '@site/src/components/Img';
+import PollSlide from '@site/src/components/PollSlide';
+import QuoteSlide from '@site/src/components/QuoteSlide';
+
+<RevealJS transition="slide">
+
+<Slide>
+  <Img
+    src="/img/lectures/web/l17.5.jpg"
+    prompt="Concept: 'Magic Numbers and Code Comments' (Program Design & Implementation)
+Tagline: 'Beware the Enchanted Numbers. Seek the Truth in Named Constants.'
+Subtitle: 'Writing Code That Explains Itself'
+
+A pixel art style educational illustration showing a D&D-style adventuring party navigating through a dangerous dungeon of code. The scene is split between a perilous left side and a safe right side.
+
+Header banner:
+'CS 3100: Program Design & Implementation 2' with subtitle 'Magic Numbers and Code Comments: A Quest for Clarity'
+
+Left side — 'The Dungeon of Magic Numbers':
+A fantasy party (warrior, mage, rogue, cleric) cautiously navigates a dark, twisted corridor made of code blocks. Glowing, ominous numbers float in the air like magical traps: '98.6', '42', '0.59', '1750', each pulsing with mysterious energy. The numbers are unlabeled and dangerous-looking.
+
+Scattered throughout are misleading comment scrolls on the walls:
+- 'i = i + 1;  // Add one to i' (completely redundant)
+- '} // end if' (useless clutter)
+- 'RIPJSB' pointing to '1750' (cryptic and confusing)
+- '// Magical formula from stackoverflow' with no link (unhelpful)
+
+The party members show distress:
+- Warrior tries to shield against a floating '42' with confused expression
+- Mage studies a scroll saying '// You are not expected to understand this'
+- Rogue carefully steps around a trap labeled with just 'temp > 98.6'
+
+Thorny vines of bad code wrap around the walls. Fog and darkness obscure the path forward. A sign reads: 'Danger: Magic Numbers Ahead'
+
+Right side — 'The Path of Clear Code':
+The same party emerges into a bright, clean stone corridor with well-lit torches. Named constants appear as helpful signposts and guideposts:
+- 'BODY_TEMP_FAHRENHEIT = 98.6' on a friendly sign post
+- 'MEANING_OF_LIFE = 42' clearly labeled
+- 'LUMINANCE_GREEN_WEIGHT = 0.59' with explanation
+
+Helpful comment scrolls on the walls provide context:
+- '// Human vision perception formula' with a link icon
+- '// via stackoverflow.com/a/12345678' with a chain link symbol
+- '// NOTE: Firefox 2 bug workaround (issue #1425)' with helpful context
+- '// TODO(hal): Add comma support for decimal separator'
+
+The party members are relaxed and confident:
+- Warrior reads a clear signpost with a smile
+- Mage nods approvingly at a well-documented comment
+- Rogue gives a thumbs up to a 'const DAYS_IN_WEEK = 7' sign
+
+Flowers and clear paths mark the way. Sunshine streams through. A sign reads: 'Safe Passage: Named Constants & Good Comments'
+
+Center divider:
+A doorway/portal separates the two sides. An arrow points from the dangerous dungeon to the safe path. Label reads: 'Refactor Your Way to Safety'
+
+Bottom elements:
+- A treasure chest (right side) labeled 'Maintainable Code' overflowing with gems
+- A trapped chest (left side) labeled 'Technical Debt' with warning symbols
+- A scroll at the bottom showing '9 Rules for Code Comments' with a quill icon
+
+Bottom banner:
+'Beware the Enchanted Numbers. Seek the Truth in Named Constants.' with subtitle 'Code Tells You How. Comments Tell You Why.'
+
+Visual style:
+Retro pixel art dungeon crawler aesthetic with a cohesive color palette of teals, purples (#9370DB), dungeon grays, and warm torch-light accents. Fantasy RPG elements (torches, stone walls, scrolls, signposts) mixed with code visualization. Clear contrast between the dangerous left (dark, mysterious, confusing) and safe right (bright, clear, helpful) sides."
+    alt="Pixel art dungeon split in two. Left: Dark corridor where D&D party (warrior, mage, rogue, cleric) encounters dangerous floating magic numbers (98.6, 42, 1750) and bad comments ('i=i+1 //Add one to i', 'RIPJSB', '//You are not expected to understand this'). Trapped chest labeled 'Technical Debt'. Right: Bright corridor where same party confidently reads clear signposts (BODY_TEMP_FAHRENHEIT = 98.6, MEANING_OF_LIFE = 42) and helpful comments with links and context. Treasure chest labeled 'Maintainable Code'. Center portal labeled 'Refactor Your Way to Safety'. Banner: 'Beware the Enchanted Numbers. Seek the Truth in Named Constants.'"
+  />
+</Slide>
+
+<Slide>
+
+## Magic Number
+
+Definition: An unnamed numeric literal in code (except for -1, 0, 1, and 2)
+
+Example from L16:
+```java
+public class EnergyPriceService {
+    private final EnergyPriceApi api;
+    private final Clock clock;
+
+    public EnergyPriceService(
+        EnergyPriceApi api, Clock clock) {
+        this.api = api;
+        this.clock = clock;
+    }
+
+    public boolean isOffPeakHours() {
+        int hour = LocalTime.now(clock).getHour();
+        return hour >= 22 || hour < 6;
+    }
+}
+```
+</Slide>
+
+<Slide>
+
+## Poll: What's wrong with magic numbers?
+
+<PollSlide username="espertus"
+    code={`
+    public boolean isOffPeakHours() {
+        int hour = LocalTime.now(clock).getHour();
+        return hour >= 22 || hour < 6;
+    }`}
+/>
+
+<aside className="notes">
+Open-ended poll
+</aside>
+</Slide>
+
+<Slide>
+
+## Benefits of Named Constants
+
+<div className="fragment">
+Readability
+```java
+static final int SECONDS_PER_MINUTE = 60;
+static final int MINUTES_PER_HOUR = 60;
+static final int SECONDS_PER_HOUR = 3_600;
+static final int HOURS_PER_DAY = 24;
+static final int SECONDS_PER_DAY = SECONDS_PER_HOUR * HOURS_PER_DAY;
+```
+</div>
+
+<div className="fragment">
+Safety
+```java
+startTimer(SECONDS_PER_DAY);
+startTimer(86400);
+```
+</div>
+
+<div className="fragment">
+Maintainability
+```java
+static final int CREDITS_TO_GRADUATE = 128;
+static final int NUMBER_OF_CAMPUSES = 14;
+```
+</div>
+
+<aside className="notes">
+* Point out use of underscore in 3_600
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Think-Pair-Share: What would be good names?
+
+```java
+    private static final int ______________ = 6;
+    private static final int ______________ = 22;
+
+    public boolean isOffPeakHours() {
+        int hour = LocalTime.now(clock).getHour();
+        return hour >= 22 || hour < 6;
+    }
+```
+
+<aside className="notes">
+I considered making this a word cloud, but PollEV converts `START_PEAK_TIME` to `start peak time`.
+</aside>
+</Slide>
+
+<Slide>
+
+## Notorious Example: Fast inverse square root
+
+```C
+ float Q_rsqrt( float number )
+    {
+        long i;
+        float x2, y;
+        float threehalfs = 1.5F;
+
+        x2 = number * 0.5F;
+        y  = number;
+        i  = * ( long * ) &y;  // evil floating point bit level hacking
+        i  = 0x5f3760df - ( i >> 1 );               // wtf?
+        y  = * ( float * ) &i;
+        y  = y * ( threehalfs - ( x2 * y * y ) );   // 1st iteration
+    //  y  = y * ( threehalfs - ( x2 * y * y ) );   // 2nd iteration, this can be removed
+
+        return y;
+    }
+```
+<div style={{ fontSize: '.8em' }}>
+Source: Quake III Arena source code, via [Wikipedia](https://en.wikipedia.org/wiki/Fast_inverse_square_root
+)
+</div>
+
+<aside className="notes">
+- This calculates the fast inverse square root of a number (1/sqrt(x))
+- This was part of the 1999 first-person shooter game, Quake III Arena
+- The name "threehalfs" is no better than just using 1.5
+- Note that this also has terrible comments, which leads us to our next topic
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Poll: What were you taught about in-line comments in previous classes?
+
+<PollSlide username="espertus" />
+
+<aside className="notes">
+* Another open-ended poll
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Best Practice for Writing Code Comments
+
+<Img src="/img/lectures/web/l17.5-best-practices.png"
+  alt="Screenshot of a web page showing a large colorful graphic of annotations to a document.
+  Article headline: 'Best practices for writing code comments'
+  Date: December 23, 2021"
+/>
+
+<aside className="notes">
+* This lecture is based on an article I wrote for the Overflow (Stack Overflow blog).
+* I wrote it because I couldn't find any good existing article.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Principles
+
+* "Code tells you how. Comments tell you why." — Jeff Atwood, co-founder of Stack Overflow
+<div className="fragment">
+* Record your brain state for future you and other readers.
+
+<br/>
+
+<Img src="/img/lectures/web/l17.5-ill-remember.png"
+  alt="Fake book cover with title 'I'll remember this code without comments And Other Hilarious Jokes You Can Tell Yourself, Volume II' "
+/>
+</div>
+
+</Slide>
+
+<Slide>
+
+## Rule 1: Comments should not duplicate the code
+
+Don't do this:
+```java
+i = i + 1; // Add one to i
+```
+
+<div className="fragment">
+What should you write instead?
+</div>
+
+<div className="fragment">
+Probably nothing, unless the behavior is non-obvious:
+</div>
+
+<div className="fragment">
+```java
+// Remove consecutive duplicates from array: [1,1,2,2,2,3] -> [1,2,3]
+int writePos = 0;
+for (int i = 0; i < arr.length; i++) {
+    arr[writePos++] = arr[i];
+
+    // Skip all consecutive duplicates
+    while (i + 1 < arr.length && arr[i] == arr[i + 1]) {
+        i = i + 1; // Skip duplicate; already wrote this value
+    }
+}
+```
+</div>
+
+<aside className="notes">
+This is an instance of: Code tells us how; comments tell us why.
+</aside>
+
+</Slide>
+
+<Slide>
+## Don't Write Cat Comments
+
+<Img src="/img/lectures/web/l17.5-cat-comments.webp" width={600}
+  alt="Title '90% of all code comments:' above a photo of a cat with a label reading 'cat' stuck to its head."
+ />
+
+</Slide>
+
+<Slide>
+## Rule 2: Good comments do not excuse unclear code
+
+```java
+private static Node getBestChildNode(Node node) {
+    Node n; // best child node candidate
+    for (Node node: node.getChildren()) {
+        // update n if the current state is better
+        if (n == null || utility(node) > utility(n)) {
+            n = node;
+        }
+    }
+    return n;
+}
+```
+<div className="fragment">
+Instead, rewrite:
+```java
+private static Node getBestChildNode(Node node) {
+    Node bestNode;
+    for (Node currentNode : node.getChildren()) {
+        if (bestNode == null || utility(currentNode) > utility(bestNode)) {
+            bestNode = currentNode;
+        }
+    }
+    return bestNode;
+}
+```
+</div>
+
+<aside className="notes">
+This leads us to Rule 3...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Rule 3: If you can't write a clear comment, there may be a problem with the code
+
+```C
+	/*
+	 * If the new process paused because it was swapped out, set the stack level
+   * to the last call to savu(u_ssav).  This means that the return which is
+   * executed immediately after the call to aretu actually returns from the
+   * last routine which did the savu.
+	 *
+	 * You are not expected to understand this.
+	 */
+	if(rp->p_flag&SSWAP) {
+		rp->p_flag =& ~SSWAP;
+		aretu(u.u_ssav);
+	}
+```
+
+Source: [Unix source code](https://web.archive.org/web/20070220094221/http://cm.bell-labs.com/cm/cs/who/dmr/odd.html)
+
+</Slide>
+
+<Slide>
+
+## Rule 4: Comments should dispel confusion, not cause it
+
+<QuoteSlide
+quote="[Peter Samson] was particularly obscure in refusing to add comments to his source code explaining what he was doing at a given time. One well-distributed program Samson wrote went on for hundreds of assembly-language instructions, with only one comment beside an instruction that contained the number 1750. The comment was RIPJSB, and people racked their brains about its meaning until someone figured out..."
+author="Steven Levy"
+/>
+**Any guesses for the connection between 1750 and RIPJSB?**
+
+<div style={{ fontSize: '.75em' }}>
+Source: <em>Hackers: Heroes of the Computer Revolution</em>
+</div>
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Rule 4: Comments should dispel confusion, not cause it
+
+<QuoteSlide
+quote="[Peter Samson] was particularly obscure in refusing to add comments to his source code explaining what he was doing at a given time. One well-distributed program Samson wrote went on for hundreds of assembly-language instructions, with only one comment beside an instruction that contained the number 1750. The comment was RIPJSB, and people racked their brains about its meaning until someone figured out that 1750 was the year Bach died, and that Samson had written an abbreviation for Rest In Peace Johann Sebastian Bach."
+author="Steven Levy"
+imageSrc="/img/lectures/web/l17.5-bach.jpg"
+imageAlt="Black-and-white drawing of Johann Sebastian Bach"
+/>
+
+<div style={{ fontSize: '.75em' }}>
+Source: <em>Hackers: Heroes of the Computer Revolution</em>
+</div>
+
+</Slide>
+
+<Slide>
+## Rule 5: Explain unidiomatic code in comments
+
+```java
+final Object value = (new JSONTokener(jsonString)).nextValue();
+// Note that JSONTokener.nextValue() may return a value equals() to null.
+if (value == null || value.equals(null)) {
+    return null;
+}
+```
+
+<div className="fragment">
+Eran Yarkon, who commented on the article, suggested this rewrite:
+```java
+final Object value = (new JSONTokener(jsonString)).nextValue();
+if (value == null || value == JSONObject.NULL) {
+    return null;
+}
+```
+</div>
+</Slide>
+
+<Slide>
+
+## Rule 6: Provide links to the original source of copied code
+
+Why might it be useful to include a link to a StackOverflow post?
+<PollSlide username="espertus"
+  image="/img/lectures/web/l17.5-stack-overflow-keyboard.png"
+  imageAlt="Three-key keyboard with Stack Overflow, C, and V keys"
+  />
+
+<aside className="notes">
+* Open-ended poll
+* The Stack Overflow keyboard was originally an April Fool's Joke but was really sold
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Linking to Source Code Provides Readers with...
+
+* what problem was being solved
+* who provided the code
+* why the solution is recommended
+* what commenters thought of it
+* whether it still works
+* how it can be improved
+
+Example: <code>/** Converts a Drawable to Bitmap. via https://stackoverflow.com/a/46018816/2219998. */</code>
+
+This also honors the open-source license.
+
+<aside className="notes">
+* Clicking through lets you see the user is highly-rated.
+* A comment provides information on an edge case.
+</aside>
+
+</Slide>
+
+<Slide>
+## Rule 7: Include links to external references where they will be most helpful
+
+Links to specifications are especially useful.
+
+<code>
+// http://tools.ietf.org/html/rfc4180 suggests that CSV lines<br/>
+// should be terminated by CRLF, hence the \r\n.<br/>
+csvStringBuilder.append("\r\n");
+</code>
+
+You can get the full details and see if there are any updates.
+
+<aside className="notes">
+* Sidebar shows standard has been updated by RFC 7111
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Rule 8: Add comments when modifying code
+
+This is especially important when fixing bugs.
+
+```java
+  // NOTE: At least in Firefox 2, if the user drags outside of the browser window,
+  // mouse-move (and even mouse-down) events will not be received until
+  // the user drags back inside the window. A workaround for this issue
+  // exists in the implementation for onMouseLeave().
+  @Override
+  public void onMouseMove(Widget sender, int x, int y) { .. }
+```
+
+<div className="fragment">
+Best practice: Include the issue number:
+
+```java
+// Use the name as the title if the properties did not include one (issue #1425)
+```
+</div>
+
+<aside className="notes">
+Helps reader understand code and determine whether it is still needed and how to test it.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Rule 9: Use comments to mark incomplete implementations
+
+Sometimes, it's necessary to commit incomplete code:
+
+```java
+// TODO(hal): We are making the decimal separator be a period,
+// regardless of the locale of the phone. We need to think about
+// how to allow comma as decimal separator, which will require
+// updating number parsing and other places that transform numbers
+// to strings, such as FormatAsDecimal
+```
+
+Better yet, add an issue to your tracker, and reference the issue in the comment.
+
+<aside className="notes">
+Resist the temptation to hide known deficiencies.
+</aside>
+
+</Slide>
+
+<Slide>
+## Summary
+
+It is well worth taking the time to:
+* give good name to constants
+* write and update comments
+
+Your colleagues and future you will appreciate it.
+
+</Slide>
+
+<Slide>
+## Words of wisdom
+
+<QuoteSlide
+  quote="Always code as if the guy who ends up maintaining your code will be a violent psychopath who knows where you live. Code for readability."
+  author="John F. Woods"
+  credit="https://stackoverflow.com/a/878436/631051"
+  />
+
+</Slide>
+
+<Slide>
+## Bonus Slide
+
+<Img src="/img/lectures/web/l17.5-copied-from-stack-overflow.png"
+  alt="3-frame geek & poke cartoon titled 'good questions' featuring a man and a woman in front of a computer.
+  In frame 1, the man says: 'Don't know. I copied it from Stack Overflow'
+  In frame 2, both are silent.
+  In frame 3, the woman asks: 'From one of the answers or from the question'
+  "
+/>
+</Slide>
+
+</RevealJS>
