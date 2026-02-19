@@ -40,23 +40,26 @@ Warm teals, blues, purples (#9370DB), and orange (#FF9800) accents in retro pixe
 
 <aside className="notes">
 **Lecture overview:**
-- **Total time:** ~60 minutes
-- **Prerequisites:** L16 (testability, hexagonal intro), L17 (creation patterns, DI), L18 (architectural thinking, boundaries, C4, ADRs, Pawtograder/Bottlenose)
+- **Total time:** ~65 minutes
+- **Prerequisites:** L16 (testability, hexagonal intro), L17 (creation patterns, DI), L18 (architectural thinking, boundaries, C4, ADRs, Pawtograder/Bottlenose, **four heuristics**)
 - **Connects to:** L20–L21 (distributed architecture, networks, client-server, serverless), L22 (Conway's Law, teams), L29–L30 (MVC/GUI)
 
 **Structure:**
 - Motivating Question: "How do we organize our code?" + Big Ball of Mud (~3 min)
 - Quality Attributes vocabulary + scenarios (~10 min)
-- Architectural Styles vs. Patterns (~3 min)
+- Styles vs. Patterns (~3 min)
 - Running Examples Recap: Pawtograder & Bottlenose (~5 min)
-- Hexagonal in Pawtograder (review from L16, applied) (~8 min)
-- Layered & Pipelined Styles (~10 min)
+- Hexagonal in Pawtograder — with heuristics emergence lens (~10 min)
+- Layered & Pipelined Styles — each with emergence explanation (~12 min)
+- **Styles Emerge from Heuristics + Pawtograder Worked Example (~8 min) — synthesis after all styles introduced**
 - Monolithic Architecture: Bottlenose (~10 min)
 - Modular Monolith & Microservices Teaser (~8 min)
 - Quality Attributes Applied & Tradeoffs (~8 min)
+- **Domain Understanding Guides Flexibility (L12 reference) (~3 min)**
 - Partitioning: Technical vs. Domain (~5 min)
+- Key Takeaway: Architecture Is Discovered, Not Chosen (~3 min)
 
-**Key theme:** Architecture is about tradeoffs. Every style affects quality attributes differently. We use Pawtograder and Bottlenose — two real systems solving the same problem differently — to see these tradeoffs in action.
+**Key theme:** Architectural styles EMERGE from applying principled heuristics (L18), but only when grounded in domain understanding (L12). This lecture shows how the same four heuristics — Rate of Change, Actor, ISP, Testability — lead to different styles depending on the problem. Architecture is about tradeoffs — but without understanding your domain, you might invest flexibility in axes of change that will never occur.
 
 → **Transition:** Let's start with the title...
 </aside>
@@ -110,7 +113,25 @@ After this lecture, you will be able to:
   <li>Analyze how architectural choices <strong>affect quality attributes differently</strong> using Pawtograder and Bottlenose</li>
 </ol>
 
+<div className="fragment">
+<p style={{fontSize: '0.75em', marginTop: '0.75em', fontStyle: 'italic', color: '#666'}}>
+<strong>Note:</strong> We won't drill you on memorizing these styles. Real systems are messier than any textbook diagram. The point is learning to <em>reason about quality attributes</em> — styles are just a useful vehicle for comparison.
+</p>
+</div>
+
 <aside className="notes">
+**SET EXPECTATIONS CLEARLY:**
+- "You won't be tested on 'draw a hexagonal architecture diagram from memory'"
+- Real systems rarely fit neatly into one style — they're hybrids, compromises, and evolved messes
+- The ACTUAL skill we're building: reasoning about quality attributes
+- "Given this change in requirements, which quality attributes are affected? Which architectural decisions help or hurt?"
+
+**Why teach styles at all if they're idealized?**
+- They give us VOCABULARY for discussing tradeoffs
+- Comparing "pure" versions makes the tradeoffs visible
+- Like physics: we study frictionless planes not because they exist, but because they reveal principles
+- Once you understand the principles, you can reason about messy real systems
+
 **Time allocation:**
 - Objective 1: Quality Attributes vocabulary (~8 min)
 - Objective 2: Styles vs. Patterns (~3 min)
@@ -743,20 +764,31 @@ Technology-specific. Swappable. Multiple per port.
 </div>
 
 <div className="fragment">
-<p style={{fontSize: '0.82em', marginTop: '0.75em', color: '#9370DB'}}>
-Now let's see how this same pattern manifests in a <strong>real system</strong> — Pawtograder's Grading Action.
-</p>
+<div style={{padding: '0.5em', border: '2px solid #FF9800', borderRadius: '8px', marginTop: '0.5em', fontSize: '0.68em'}}>
+
+**Why did this structure emerge?** L18 heuristics in action:
+- **Rate of Change:** Domain (grading rules) stable; infrastructure (APIs, databases) volatile
+- **Testability:** Domain testable without real price feeds or databases
+- **ISP:** Each port is a narrow interface — domain doesn't see full infrastructure complexity
+
+</div>
 </div>
 
 <aside className="notes">
-**This is a REVIEW — don't re-teach!**
+**This is a REVIEW — but now with the emergence lens!**
 - Students learned domain/port/adapter in L16 with the smart home example
 - They saw DI wiring in L17 (creation patterns)
-- They found service boundaries in L18 (Pawtograder)
-- Today: see hex arch applied to real production code
+- They found service boundaries in L18 (Pawtograder) using four heuristics
+- Today: see how those heuristics LED to hex arch — it wasn't a random choice
+
+**The emergence connection:**
+- In L16, we motivated hex arch with testability — "how do we test without real infrastructure?"
+- In L18, we learned the broader heuristics — rate of change, actor, ISP, testability
+- Now: see that hexagonal is what emerges when you apply those heuristics to a domain-centric problem
 
 **Quick check for understanding:**
 - "Can someone remind me: what's a port? What's an adapter?"
+- "Why does this structure help with testability?"
 - If they're solid, move quickly. If shaky, spend an extra minute.
 
 → **Transition:** Here's what hexagonal looks like in Pawtograder...
@@ -768,79 +800,58 @@ Now let's see how this same pattern manifests in a <strong>real system</strong> 
 
 ## Hexagonal Architecture in Pawtograder
 
-<p style={{fontSize: '0.8em'}}>
-The Grading Action's domain doesn't care <em>how</em> results are sent or <em>where</em> the grader comes from:
-</p>
+<Img
+    src="/img/lectures/web/l19-hexagonal-pawtograder2.webp"
+    prompt="A side-by-side comparison showing hexagonal architecture in two systems: Pawtograder's Grading Action and CookYourBooks recipe app. No title.
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.5em', marginTop: '0.5em'}}>
+LEFT SIDE — PAWTOGRADER GRADING ACTION:
+A hexagon with the domain core in the center labeled 'OverlayGrader - Pure Grading Logic'. Around the hexagon, ports are shown as socket-like interfaces:
+- Left port: 'Builder' (interface icon)
+- Right port: 'FeedbackAPI' (interface icon)
+- Bottom port: 'SubmissionAPI' (interface icon)
 
-<div style={{padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px'}}>
+Adapters plugged into each port:
+- GradleBuilder plugged into Builder port
+- PythonScriptBuilder also available for Builder port
+- SupabaseAPI plugged into FeedbackAPI and SubmissionAPI ports
 
-**Domain: Pure Grading Logic**
-
-```java
-public class OverlayGrader implements Grader {
-    private final Builder builder;
-
-    public AutograderFeedback grade(
-            Path solutionDir, Path submissionDir,
-            PawtograderConfig config) {
-        // Build and run tests
-        BuildResult result = builder.build(
-            gradingDir, config.getBuild());
-        // Parse results and compute scores
-        List<TestResult> testResults =
-            builder.parseTestResults(gradingDir);
-        return new AutograderFeedback(
-            feedback, lintResult, output, score);
-    }
-}
+Code snippet visible in the center:
+```
+grade(solution, submission, config)
+// Knows nothing about
+// GitHub, HTTP, or databases
 ```
 
-*Knows nothing about GitHub, HTTP, or databases*
+RIGHT SIDE — COOKYOURBOOKS (PREVIEW):
+A smaller hexagon showing how the same pattern applies to a recipe app:
+- Center: 'RecipeService - Pure Recipe Logic'
+- Ports: 'RecipeRepository', 'UserPreferences', 'ConversionService'
+- Adapters: 'PostgresRecipeRepo', 'InMemoryPrefs', 'KingArthurDensityConverter'
 
-</div>
+BOTTOM CALLOUT: 'Same pattern, different domains. The hexagon emerges when domain logic needs to be testable without infrastructure.'
 
-<div style={{padding: '0.75em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
-
-**Ports: What the Domain Needs**
-
-```java
-// How do we build and test?
-public interface Builder {
-    BuildResult build(Path projectDir,
-        BuildConfig config);
-    List<TestResult> parseTestResults(
-        Path reportDir);
-    Optional<LintResult> lint(
-        Path projectDir, LinterConfig config);
-}
-
-// How do we submit feedback?
-public interface FeedbackAPI {
-    void submit(String submissionId,
-        AutograderFeedback feedback);
-}
-```
-
-*Say WHAT, not HOW*
-
-</div>
-
-</div>
+Style: Clean educational diagram, hexagons clearly showing domain-at-center structure. Use warm colors: purple (#9370DB) for domain, blue (#4A90A4) for ports, green (#4CAF50) for adapters."
+    alt="Two hexagonal architectures side by side: Pawtograder (OverlayGrader with Builder, FeedbackAPI ports) and CookYourBooks preview (RecipeService with Repository, Preferences ports). Callout: Same pattern emerges when domain needs infrastructure isolation."
+  />
 
 <aside className="notes">
-**Walk through the code:**
-- **OverlayGrader**: Takes a solution and submission, grades it. Pure domain logic — no HTTP, no GitHub, no Supabase.
+**Walk through Pawtograder's hexagon:**
+- **OverlayGrader (center)**: Takes a solution and submission, grades it. Pure domain logic — no HTTP, no GitHub, no Supabase.
 - **Builder port**: Says "I need to build and test" without specifying Gradle vs. Python vs. anything else
 - **FeedbackAPI port**: Says "I need to submit results" without specifying where they go
 
-**The key point (connecting to L16):**
-- Same pattern as EnergyOptimizer — domain at center, ports as interfaces
-- But now in a REAL system, not a textbook example
-- Students should see: "Oh, this is what it looks like in production code"
+**The emergence connection:**
+- This structure wasn't picked from a menu — it emerged from applying L18 heuristics
+- Rate of Change: Domain (grading rules) changes rarely; adapters (Gradle, Supabase) change when technologies change
+- Testability: Domain testable by injecting stub adapters — `java -jar grader.jar` runs locally
+- ISP: Each port is narrow — Builder doesn't know about API, API doesn't know about building
 
-→ **Transition:** Now let's see the adapters...
+**Preview of CookYourBooks:**
+- Students will apply this pattern themselves in upcoming assignments
+- Same structure: RecipeService at center, Repository and Conversion ports, adapters for persistence
+- The hexagon emerges in ANY domain-centric system where you need infrastructure isolation
+
+→ **Transition:** Now let's see the adapters in more detail...
 </aside>
 
 </Slide>
@@ -1030,7 +1041,89 @@ graph TD
 - The bottom layers change less often (business rules are more stable than UIs)
 - The dependency direction means changes in volatile layers don't cascade downward
 
-→ **Transition:** What quality attributes does this serve?
+→ **Transition:** This style also emerges from heuristics...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Layered Architecture Emerges from Heuristics
+
+<p style={{fontSize: '0.82em'}}>
+The same L18 heuristics that led to hexagonal architecture can also lead to layered — depending on what they reveal:
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.6em', marginTop: '0.5em'}}>
+
+<div style={{padding: '0.75em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
+
+**Rate of Change → Layers Separate Volatility**
+
+| Layer | Stability |
+|-------|-----------|
+| Presentation | Changes often (UI redesigns) |
+| Application | Changes moderately (new workflows) |
+| Domain | Changes rarely (core rules are stable) |
+| Infrastructure | Changes when tech changes |
+
+*Dependency direction protects stable layers from volatile ones*
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+
+**Actor Ownership → Layers Map to Roles**
+
+| Actor | Primary Layer |
+|-------|---------------|
+| UI/UX designer | Presentation |
+| Product owner | Application (use cases) |
+| Domain expert | Domain |
+| DevOps | Infrastructure |
+
+*Different expertise naturally falls into different layers*
+
+</div>
+
+</div>
+
+<div className="fragment">
+<div style={{padding: '0.5em', border: '2px solid #9370DB', borderRadius: '8px', marginTop: '0.5em', fontSize: '0.72em'}}>
+
+**When do heuristics lead to layers vs. hexagons?**
+
+- **Layered** emerges when responsibilities stack vertically (UI → logic → data) and teams map to technical roles
+- **Hexagonal** emerges when the domain needs multiple entry points (web, CLI, tests) and multiple exit points (DB, API, files)
+- They're not mutually exclusive — many systems exhibit BOTH perspectives
+
+</div>
+</div>
+
+<aside className="notes">
+**The key insight: same heuristics, different contexts, different emergent structures**
+
+**When Rate of Change leads to layers:**
+- If your volatility pattern is "top changes most, bottom changes least"
+- UI redesigns happen every sprint; database schema changes once a year
+- The dependency direction (down only) protects stable lower layers from rippling changes
+
+**When Actor Ownership leads to layers:**
+- If your team structure maps to technical roles: frontend team, backend team, DBA
+- Each team owns a layer; the interfaces between layers are their contracts
+- This is Conway's Law in action (preview for L22)
+
+**Layers vs. Hexagons — when each emerges:**
+- **Layers:** When data flows through a clear stack, and volatility decreases as you go down
+- **Hexagons:** When the domain is the stable center and needs to connect to multiple volatile technologies (different UIs, different databases, different external services)
+
+**The both/and insight:**
+- Pawtograder has BOTH perspectives
+- Hexagonal: domain core (grading logic) with ports (Builder, FeedbackAPI) and adapters (GradleBuilder, SupabaseAPI)
+- Layered: Main.ts (presentation) → GradingPipeline (application) → OverlayGrader (domain) → parsers (infrastructure)
+- These aren't contradictory — they're different lenses on the same structure
+
+→ **Transition:** What quality attributes does layering serve?
 </aside>
 
 </Slide>
@@ -1304,7 +1397,346 @@ Stage failure stops the pipeline
 - Use when data truly flows in one direction through transformations
 - Avoid when you need interactive back-and-forth or complex state
 
-→ **Transition:** So far, all these styles describe code within a single deployment unit. Let's name that...
+→ **Transition:** This style also emerges from heuristics...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Pipelined Architecture Emerges from Heuristics
+
+<p style={{fontSize: '0.82em'}}>
+When does applying heuristics lead to a pipeline? When the problem has a natural <strong>transformation flow</strong>:
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.6em', marginTop: '0.5em'}}>
+
+<div style={{padding: '0.75em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
+
+**Rate of Change → Stage Independence**
+
+| Stage | When It Changes |
+|-------|-----------------|
+| File overlay | Rarely (mechanism stable) |
+| Build runner | Per language (Gradle → Cargo) |
+| Test runner | Rarely (JUnit is JUnit) |
+| Report parsers | When tool versions change |
+| Scoring logic | When rubric structure changes |
+
+*Each stage changes for different reasons — natural seams for separation*
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px'}}>
+
+**Testability → Stage-Level Testing**
+
+```
+testOverlay()    → known input → expected output
+testBuild()      → sample project → BuildResult
+testParser()     → sample XML → TestResult[]
+testScoring()    → TestResult[] → GradedPart[]
+```
+
+*Each stage is a pure function: input → output. Perfect for unit testing.*
+
+</div>
+
+</div>
+
+<div className="fragment">
+<div style={{padding: '0.5em', border: '2px solid #4CAF50', borderRadius: '8px', marginTop: '0.5em', fontSize: '0.72em'}}>
+
+**When does a pipeline emerge?**
+
+Apply heuristics and ask: "Does data flow one direction? Is each transformation independently testable? Do stages change for different reasons?"
+
+If yes → pipeline structure emerges naturally.
+
+</div>
+</div>
+
+<aside className="notes">
+**The pipeline emerged because the problem has transformation structure:**
+- Input: student code + solution repo + config
+- Output: graded feedback
+- The transformation is a series of steps, each taking the previous output as input
+
+**Rate of Change reveals stage boundaries:**
+- The overlay mechanism changes rarely (just "copy files")
+- The build runner changes when we add languages (Gradle → Maven → Cargo)
+- The parsers change when tool versions update (JUnit 4 → JUnit 5 format)
+- The scoring logic changes when we add features (dependencies, mutation hints)
+- Each has its own reason to change → each becomes a stage
+
+**Testability is PERFECT for pipelines:**
+- Each stage is a pure function (mostly): given this input, produce that output
+- No shared mutable state between stages
+- Test each stage with sample inputs/outputs — no need for full integration
+- This is why compilers are pipelines — each pass is testable in isolation
+
+**The emergence pattern:**
+- We didn't say "let's use pipes and filters"
+- We asked: what changes independently? What can we test independently?
+- A linear flow of transformations emerged
+- The name "pipeline" describes what we discovered
+
+→ **Transition:** Now that we've seen all three styles, let's step back and see the pattern...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* SYNTHESIS: STYLES EMERGE FROM HEURISTICS */}
+{/* ============================================ */}
+
+<Slide>
+
+## Styles Emerge from Heuristics
+
+<p style={{fontSize: '0.85em'}}>
+We've now seen three styles: Hexagonal, Layered, and Pipelined. Here's the key insight: <strong>these styles aren't arbitrary choices — they emerge naturally when you apply the L18 heuristics consistently</strong>.
+</p>
+
+<Img
+    src="/img/lectures/web/l19-styles-emerge2.webp"
+    prompt="An educational illustration showing four heuristic lenses converging to reveal architectural styles. No title.
+
+TOP: Four colored lenses arranged in a row, each labeled:
+- BLUE lens: 'Rate of Change' with a clock/calendar icon
+- GREEN lens: 'Actor Ownership' with person icons
+- ORANGE lens: 'Interface Segregation' with puzzle pieces
+- PURPLE lens: 'Testability' with a checkmark icon
+
+CENTER: Light rays from all four lenses converge onto a prism in the middle. The prism is labeled 'Apply Consistently'.
+
+BOTTOM: From the prism, a rainbow of light fans out to reveal three architectural shapes:
+- A hexagon labeled 'Hexagonal' (ports and adapters visible)
+- A stack of horizontal layers labeled 'Layered'
+- A series of connected stages labeled 'Pipelined'
+
+CALLOUT at bottom: 'You don't PICK a style from a menu — you DISCOVER it by applying principles consistently.'
+
+Style: Clean educational illustration, warm colors with the four heuristic colors prominent (blue, green, orange, purple). The convergence/emergence effect should be visually clear."
+    alt="Four heuristic lenses (Rate of Change, Actor Ownership, Interface Segregation, Testability) converge through a prism labeled 'Apply Consistently' to reveal emergent architectural styles: Hexagonal, Layered, Pipelined. Callout: You don't pick a style — you discover it."
+  />
+
+<aside className="notes">
+**This is the synthesis insight:**
+- In L18, we asked "where do the boundaries go?" and used four heuristics to find them
+- We DIDN'T say "let's use hexagonal architecture" and then force boundaries to fit
+- Instead, we applied Rate of Change, Actor, ISP, and Testability heuristics — and structures EMERGED
+- The same heuristics, applied to different problems, lead to different styles
+
+**Critical prerequisite: Domain Understanding (L12)**
+- These heuristics only work if you understand your domain first
+- "Rate of Change" requires knowing ACTUAL rates of change from domain analysis
+- "Actor Ownership" requires understanding who actually uses the system and what they care about
+- Without L12 domain modeling, you might apply heuristics to imaginary scenarios
+
+**The four heuristics from L18 (review):**
+1. **Rate of Change:** Things that change at different speeds should be separate
+2. **Actor Ownership:** Different people/teams should own different components
+3. **Interface Segregation:** Clients that need different things should get different interfaces
+4. **Testability:** Things that need independent testing should be separable
+
+**The emergence insight:**
+- Hexagonal emerges when: domain changes rarely, infrastructure changes often, you need to test domain without infrastructure
+- Layered emerges when: responsibilities stack naturally (UI → logic → data), each layer has different stability
+- Pipelined emerges when: data flows in one direction through transformations, each stage is independently testable
+
+→ **Transition:** Let's see this concretely with Pawtograder...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## How Pawtograder's Style Emerged
+
+<p style={{fontSize: '0.82em'}}>
+We didn't start by saying "let's use hexagonal architecture." We applied L18's heuristics — and the style emerged:
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.58em', marginTop: '0.5em'}}>
+
+<div style={{padding: '0.75em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
+
+**Rate of Change** → Domain/Adapter Split
+
+| Component | Change Frequency |
+|-----------|-----------------|
+| `pawtograder.yml` | Weekly |
+| Grading Action | Monthly |
+| Builder interface | Rarely |
+| API endpoints | Very rarely |
+
+*Things that change at different rates ended up in different components — domain (stable) separated from adapters (volatile)*
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+
+**Actor Ownership** → Port Boundaries
+
+| Actor | Owns |
+|-------|------|
+| Instructor | Config (yaml) |
+| Action maintainer | Grading logic |
+| Sysadmin | API/platform |
+
+*Each actor's changes stay within their component — ports emerged as the contracts between them*
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+
+**Interface Segregation** → Narrow Ports
+
+- Instructors only see `PawtograderConfig`
+- API only sees `SubmissionAPI`, `FeedbackAPI`
+- Builders only see `BuildConfig`
+
+*No fat "AutograderSystem" interface — each client gets exactly what it needs*
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px'}}>
+
+**Testability** → Adapters as Seams
+
+- Test grading locally without API
+- Test config parsing without network
+- Mock builders for fast unit tests
+
+*The places we needed test seams became the adapter boundaries*
+
+</div>
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.78em', marginTop: '0.5em', fontWeight: 'bold', color: '#9370DB'}}>
+Apply the heuristics → boundaries emerge → name the pattern afterward. We call it "hexagonal" because that's the name the community gave to this shape.
+</p>
+</div>
+
+<aside className="notes">
+**Walk through each quadrant:**
+
+**Rate of Change → Domain/Adapter Split:**
+- Config changes weekly (instructor iterations)
+- Grading logic changes monthly (new features)
+- The Builder interface changes rarely (stable contract)
+- API endpoints change very rarely (stability for all grading actions)
+- Result: fast-changing things (config, adapters) separated from slow-changing things (domain, interfaces)
+
+**Actor Ownership → Port Boundaries:**
+- Instructor owns config — their changes shouldn't touch TypeScript
+- Action maintainer owns grading logic — their changes shouldn't touch API
+- Sysadmin owns API — their changes shouldn't touch grading
+- Result: each actor works independently — ports are the contracts between them
+
+**Interface Segregation → Narrow Ports:**
+- We showed the "bad" fat interface in L18 — `AutograderSystem` with everything
+- Instead, each client gets a narrow interface: instructors see config schema, API sees feedback format
+- Result: changes to what the API needs don't affect what instructors see
+
+**Testability → Adapters as Seams:**
+- We need to test grading without deploying to GitHub Actions
+- We need to test config parsing without hitting the API
+- The places where we need to inject test doubles became our adapter boundaries
+- Result: `GradleBuilder` can be stubbed, `SupabaseAPI` can be mocked
+
+**The meta-insight:**
+- We didn't start with "hexagonal architecture"
+- We asked: what changes together? Who owns what? What do clients need? Where do we need test seams?
+- The answers formed a shape — and that shape has a name
+
+→ **Transition:** Let's see all three styles side by side...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Styles Overview: Same Heuristics, Different Shapes
+
+<Img
+    src="/img/lectures/web/l19-styles-overview-v1.webp"
+    prompt="A comprehensive overview illustration showing how the four L18 heuristics lead to different architectural styles. No title.
+
+TOP: Four heuristic icons in a row with labels:
+- Clock icon: 'Rate of Change'
+- Person icon: 'Actor'  
+- Puzzle pieces: 'Interface Segregation'
+- Checkmark: 'Testability'
+
+CENTER: Three columns, each showing a different architectural style with annotations showing WHICH heuristics were most influential:
+
+COLUMN 1 — HEXAGONAL:
+- A hexagon with ports on each face and adapters connecting to external systems
+- Annotations pointing to it:
+  - 'Rate of Change: Domain stable, adapters volatile' (highlighted)
+  - 'Testability: Domain testable without infrastructure' (highlighted)
+  - 'ISP: Each port is a narrow interface' (highlighted)
+- Caption: 'Emerges when domain needs isolation from multiple volatile technologies'
+
+COLUMN 2 — LAYERED:
+- Four horizontal strata stacked vertically (Presentation → Application → Domain → Infrastructure)
+- Annotations:
+  - 'Rate of Change: Top layers change faster' (highlighted)
+  - 'Actor: Different teams own different layers'
+- Caption: 'Emerges when responsibilities stack and volatility decreases downward'
+
+COLUMN 3 — PIPELINED:
+- A horizontal flow of connected stages with data flowing left to right
+- Annotations:
+  - 'Rate of Change: Stages change independently' (highlighted)
+  - 'Testability: Each stage is a pure transformation' (highlighted)
+- Caption: 'Emerges when data flows through a series of transformations'
+
+BOTTOM: A callout box with the key insight: 'The heuristics are the cause; the styles are the effect. You discover architecture by asking the right questions, not by picking from a menu.'
+
+Style: Clean educational diagram with warm colors. The three architectural shapes should be visually distinct. Blue (#4A90A4), green (#4CAF50), orange (#FF9800), purple (#9370DB) for the heuristic colors."
+    alt="Overview showing four heuristics (Rate of Change, Actor, ISP, Testability) leading to three architectural styles: Hexagonal (domain isolation), Layered (stacked responsibilities), Pipelined (transformation flow). Callout: Heuristics are the cause; styles are the effect."
+  />
+
+<aside className="notes">
+**This is the synthesis slide — bring it all together:**
+
+**The key insight:**
+- We've now seen three styles: Hexagonal, Layered, Pipelined
+- Each emerged from applying the same four heuristics to different problem characteristics
+- You don't pick a style from a menu — you discover it by asking the L18 questions
+
+**When each style emerges:**
+
+**Hexagonal emerges when:**
+- Rate of Change: Domain is stable, but technologies around it change (databases, UIs, APIs)
+- Testability: You need to test the domain without real infrastructure
+- ISP: Different clients (web, CLI, tests) need different entry points
+- Actor: Domain experts vs. infrastructure experts have different concerns
+- RESULT: Domain at center, ports as interfaces, adapters as swappable technology connections
+
+**Layered emerges when:**
+- Rate of Change: Volatility decreases as you go from UI to data (top changes most)
+- Actor: Teams map to technical roles (frontend, backend, DBA)
+- RESULT: Horizontal strata with downward-only dependencies, protecting stable lower layers
+
+**Pipelined emerges when:**
+- Rate of Change: Each transformation stage has its own reason to change
+- Testability: Each stage is a pure function (input → output)
+- Data flows one direction through transformations
+- RESULT: Linear sequence of independent, testable stages
+
+**The meta-lesson:**
+- Architecture isn't about memorizing style names
+- It's about asking the right questions and letting structure emerge
+- The vocabulary (hexagonal, layered, pipelined) lets us COMMUNICATE what we discovered
+
+→ **Transition:** All these styles so far describe organization WITHIN a single deployment. What about deployment itself?
 </aside>
 
 </Slide>
@@ -2105,7 +2537,81 @@ Style: Warm, educational illustration, the balance should feel dynamic, showing 
 
 **The architect's job:** match the architecture to the constraints. Not every system needs microservices. Not every system needs hexagonal architecture.
 
-→ **Transition:** Beyond choosing a style, how do we organize the code?
+→ **Transition:** But there's a crucial question beneath these tradeoffs: how do we KNOW which axes of change matter?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Domain Understanding Guides Flexibility (L12)
+
+<p style={{fontSize: '0.85em'}}>
+Recall from L12: <strong>domain modeling isn't just about naming classes — it reveals which changes are likely and which are fantasy</strong>.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em', marginTop: '0.75em'}}>
+
+<div style={{padding: '0.75em', border: '2px solid #FF5722', borderRadius: '8px'}}>
+
+**Building Flexibility for Unlikely Changes**
+
+"We might need to support multiple databases someday..."
+- Adds abstraction layers now
+- Increases cognitive overhead
+- Makes simple queries harder to optimize
+- Testing complexity grows
+
+*But if that change never comes, you've traded real simplicity for imaginary flexibility.*
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+
+**Understanding What Actually Changes**
+
+Pawtograder's domain analysis revealed:
+- **Config files change weekly** → make them declarative YAML
+- **Grading logic changes monthly** → isolate it in adapters  
+- **Unlikely to want to change database vendors** → tight coupling with PostgreSQL is fine
+
+*The L18 heuristics only work if you understand your domain first.*
+
+</div>
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.8em', marginTop: '0.75em', fontWeight: 'bold', color: '#9370DB'}}>
+Flexibility along unlikely axes adds complexity that makes <em>everything else</em> harder. Domain understanding tells you where to invest.
+</p>
+</div>
+
+<aside className="notes">
+**Connection to L12 (Domain Modeling):**
+- L12 taught: "Small assumptions can have catastrophic consequences" — the flip side is also true
+- Making something easy to change when it will NEVER change is also a catastrophic assumption
+- Every abstraction has a cost: indirection, cognitive load, testing overhead
+- Domain modeling is how you figure out which changes are REAL and which are hypothetical
+
+**The flexibility trap:**
+- Junior architects often think "more flexibility = better architecture"
+- Reality: flexibility has a cost, and you pay that cost EVERY DAY
+- If you add a Repository pattern because "we might switch databases" but you never will — you've made every data access harder for no benefit
+- Pawtograder uses Supabase directly because the domain analysis showed database changes are rare and well-isolated
+
+**The L12 → L18 → L19 pipeline:**
+1. **L12 (Domain Modeling):** Understand the domain — what changes, what doesn't, who cares about what
+2. **L18 (Heuristics):** Apply Rate of Change, Actor, ISP, Testability — but these questions only work if you understood the domain first
+3. **L19 (Styles):** Recognize the pattern that emerged — the style is an OUTPUT of domain understanding + heuristics
+
+**Concrete Pawtograder example:**
+- We COULD have built an abstract "GradingPlatform" interface to support "any grading system"
+- But domain understanding said: this is tightly coupled to GitHub Actions and Supabase by design
+- Building for imaginary flexibility would have made the real code harder to understand and test
+- Instead, we invested flexibility where it matters: config files (high rate of change) and parsing adapters (different languages)
+
+→ **Transition:** Now let's look at how we organize code within a style...
 </aside>
 
 </Slide>
@@ -2242,6 +2748,98 @@ Pawtograder has clear ownership: **Instructor** owns config (changes weekly), **
 </Slide>
 
 {/* ============================================ */}
+{/* KEY TAKEAWAY: EMERGENCE */}
+{/* ============================================ */}
+
+<Slide>
+
+## Key Takeaway: Architecture Is Discovered, Not Chosen
+
+<p style={{fontSize: '0.85em'}}>
+Domain understanding (L12) + heuristics (L18) + style recognition (L19) = a complete approach:
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.6em', marginTop: '0.5em'}}>
+
+<div style={{padding: '0.75em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
+
+**The Heuristics (L18)**
+
+*Questions that reveal structure*
+
+1. **Rate of Change:** What changes together? What changes independently?
+2. **Actor:** Who owns what? Whose changes should stay isolated?
+3. **ISP:** What does each client actually need?
+4. **Testability:** Where do we need seams for testing?
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px'}}>
+
+**The Emergent Styles (L19)**
+
+*Patterns that have names*
+
+- **Hexagonal:** Domain isolation with swappable adapters
+- **Layered:** Stacked responsibilities, downward dependencies
+- **Pipelined:** Transformation flow, stage independence
+- **Monolithic:** Single deployment, shared memory
+- **Modular Monolith:** Enforced boundaries in one deployment
+
+</div>
+
+</div>
+
+<div className="fragment">
+<div style={{padding: '0.5em', border: '2px solid #4CAF50', borderRadius: '8px', marginTop: '0.5em', fontSize: '0.72em'}}>
+
+**The Process:**
+
+Understand the domain (L12) → Apply heuristics (L18) → Boundaries emerge → Recognize the style (L19) → Communicate it
+
+*You don't pick "hexagonal" from a menu. You discover it by understanding what actually matters.*
+
+</div>
+</div>
+
+<aside className="notes">
+**This is the synthesis of L12, L18, and L19:**
+
+**The unified approach:**
+1. **L12 (Domain Modeling):** Understand your domain — what concepts matter, what changes, what's stable, who cares about what. This prevents building flexibility for imaginary changes.
+2. **L18 (Heuristics):** Apply Rate of Change, Actor, ISP, Testability — but these questions only produce GOOD answers if you understood the domain first.
+3. Let boundaries emerge from the answers
+4. Recognize the pattern that emerged (is it hexagonal? layered? pipelined?)
+5. Use the vocabulary to communicate what you discovered
+
+**Why domain understanding comes first:**
+- Without L12, you might add flexibility for changes that will NEVER happen
+- Every abstraction has a cost: indirection, cognitive load, testing overhead
+- Domain modeling tells you which abstractions will PAY OFF and which are waste
+- "Rate of Change" heuristic requires knowing ACTUAL rates of change, not hypothetical ones
+
+**Why this matters:**
+- Students often think "pick a style and follow it"
+- Reality: you discover architecture by understanding your domain and asking the right questions
+- The style names are vocabulary for communication, not a menu of choices
+- Different problems → same heuristics → different emergent structures
+
+**The Pawtograder example:**
+- We started with domain understanding: grading systems, instructors, students, what changes when
+- We DIDN'T build a "GradingPlatformAdapter" because domain analysis showed platform changes are unlikely
+- We DID build parsing adapters because domain analysis showed language support changes often
+- We asked: What changes at different rates? (config weekly, action monthly, API rarely)
+- We asked: Who owns what? (instructor, maintainer, sysadmin)
+- We asked: Where do we need test seams? (domain testable without API)
+- The hexagonal structure EMERGED from those answers
+- We call it "hexagonal" because that's the vocabulary that lets us communicate it
+
+→ **Transition:** Let's look at where these ideas go next...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
 {/* LOOKING FORWARD */}
 {/* ============================================ */}
 
@@ -2256,7 +2854,7 @@ Pawtograder has clear ownership: **Instructor** owns config (changes weekly), **
 | **"The Network Changes Everything"** | **L20:** Fallacies of Distributed Computing, client-server architecture, security across trust boundaries |
 | **Monolith vs. Microservices** | **L20-21:** Distributed architecture styles, when to break the monolith, serverless |
 | **Quality Attribute Tradeoffs** | **L21:** How platform constraints (serverless, containers) shape architecture — like GitHub Actions shaped Pawtograder |
-| **Domain Partitioning & Conway's Law** | **L22:** Conway's Law in depth — how team structure affects (and is affected by) architecture |
+| **Heuristics → Emergent Styles** | **L22:** Conway's Law — team structure is another heuristic that shapes architecture |
 
 </div>
 
@@ -2268,16 +2866,23 @@ We opened with "how do we organize our code?" — and now you have styles, quali
 **The arc ahead:**
 - **L20 (Networks & Security):** When components communicate over a network, everything gets harder. Fallacies of Distributed Computing. Client-server architecture. Security.
 - **L21 (Serverless):** Infrastructure building blocks — databases, blob storage, queues. Serverless as an architectural style.
-- **L22 (Teams):** Conway's Law — architecture isn't just technical, it's social.
+- **L22 (Teams):** Conway's Law — team structure is ANOTHER heuristic. "Organizations design systems that mirror their communication structure."
 
-**The throughline:**
-- L16: "How do we design for testability?" (Hexagonal Architecture)
-- L18: "Where do the boundaries go?" (Pawtograder vs. Bottlenose)
-- **L19: "What styles exist? What are the tradeoffs? What's a monolith — and when should we break it?"**
-- L20-21: "What happens when boundaries cross networks?"
-- L22: "What happens when boundaries cross teams?"
+**The throughline with heuristics:**
+- L16: "How do we design for testability?" → Hexagonal Architecture emerges
+- L18: "Where do the boundaries go?" → Four heuristics: Rate of Change, Actor, ISP, Testability
+- **L19: "What styles emerge from those heuristics?" → Hexagonal, Layered, Pipelined, Monolith**
+- L20-21: "What happens when boundaries cross networks?" → Distributed styles emerge
+- L22: "What happens when boundaries cross teams?" → Conway's Law as another heuristic
 
-**Final thought:** The vocabulary from these lectures — styles, quality attributes, tradeoffs, partitioning, monolith, modular monolith — is the language architects use every day. You're learning to speak it.
+**The meta-lesson:**
+- Architecture isn't about memorizing style names
+- It's about asking the right questions (the heuristics)
+- The styles are patterns that the community has NAMED
+- When you apply heuristics consistently, recognizable patterns emerge
+- The vocabulary lets you communicate with other architects
+
+**Final thought:** The vocabulary from these lectures — styles, quality attributes, tradeoffs, heuristics, emergence — is how architects think. You're not just learning terms; you're learning a way of analyzing systems.
 </aside>
 
 </Slide>
