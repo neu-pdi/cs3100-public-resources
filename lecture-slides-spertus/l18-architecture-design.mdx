@@ -28,7 +28,7 @@ import PollSlide from '@site/src/components/PollSlide';
 - **Connects to:** L19 (Architectural Qualities), L20 (Networks & Security), L36 (Sustainability)
 
 **Structure:**
-- Architecture vs. Design (~8 min)
+- Design vs. Architecture (~8 min)
 - Architectural Drivers (~10 min)
 - Finding Service Boundaries (~20 min)
 - Communicating Architecture: C4 & ADRs (~12 min)
@@ -90,7 +90,7 @@ After this lecture, you will be able to:
 
 <aside className="notes">
 **Time allocation:**
-- Objective 1: Architecture vs Design (~8 min)
+- Objective 1: Design vs Architecture (~8 min)
 - Objective 2: Architectural Drivers (~10 min)
 - Objective 3: Finding Boundaries (~20 min)
 - Objective 4-5: C4 + ADRs (~12 min)
@@ -110,24 +110,13 @@ After this lecture, you will be able to:
 
 <Slide>
 
-## Architecture vs. Design: A Continuum
+## Design vs. Architecture: A Continuum
 
 <p style={{fontSize: '0.9em', marginTop: '0.5em'}}>
-Architecture and design exist on a continuum. They ask different questions at different scales.
+Design and architecture exist on a continuum. They ask different questions at different scales.
 </p>
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.7em', marginTop: '1em'}}>
-
-<div style={{padding: '1em', border: '2px solid #FF9800', borderRadius: '8px'}}>
-
-**Architecture — The Big Picture**
-
-- What are the major components?
-- How do they communicate?
-- What are the quality requirements?
-- Which decisions are hard to change later?
-
-</div>
 
 <div style={{padding: '1em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
 
@@ -137,6 +126,17 @@ Architecture and design exist on a continuum. They ask different questions at di
 - What data structures should we use?
 - How do these methods collaborate?
 - Which pattern fits this problem?
+
+</div>
+
+<div style={{padding: '1em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+
+**Architecture — The Big Picture**
+
+- What are the major components?
+- How do they communicate?
+- What are the quality requirements?
+- Which decisions are hard to change later?
 
 </div>
 
@@ -194,7 +194,10 @@ flowchart LR
 
 **Discussion: What decisions would be "expensive to change"?**
 
-Where should tests run? Who can see the test code? How do instructors configure grading? What happens when 200 students submit at once?
+* Where should tests run?
+* Who can see the test code?
+* How do instructors configure grading?
+* What happens when 200 students submit at once?
 
 </div>
 </div>
@@ -222,6 +225,47 @@ Prompt students to think before revealing the answers:
 
 <Slide>
 
+## Why Is "Where Tests Run" Expensive to Change?
+
+<p style={{fontSize: '0.85em'}}>
+Switching from GitHub Actions to your own servers sounds like one decision — but it touches everything:
+</p>
+
+<div style={{fontSize: '0.72em', marginTop: '0.75em'}}>
+
+| What must change | Why |
+|-----------------|-----|
+| **Packaging & deployment** | GitHub Actions use their own syntax and semantics |
+| **Authentication & repo access** | GitHub Actions gets built-in access to the repo; your own server needs separate credentials and permissions |
+| **Scaling** | GitHub Actions scales automatically; a custom server needs a job queue, worker pool, and ops team |
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.82em', marginTop: '0.75em', color: '#9370DB', fontWeight: 'bold'}}>
+No single module "owns" the decision — but all of them depend on it. That's what makes it architectural.
+</p>
+</div>
+
+<aside className="notes">
+**Key point to emphasize:**
+- Students may initially think "it's just one config change" — the point is that the execution environment is a foundational assumption baked into many other pieces
+- The action's packaging format, its trigger mechanism, its credential model, its scaling model — all of these were designed around GitHub Actions
+- Reversing it means revisiting every one of those pieces, not just editing a single file
+
+**Analogy if helpful:**
+- Switching from municipal water to a private well isn't just replacing one pipe — it means a pump, a pressure tank, filtration, maintenance, and your own monitoring. The "where does water come from" decision is woven into everything downstream.
+
+**Bridge:**
+- This is why we say architecture = decisions that are expensive to change
+- The *cost* comes from how many other decisions were made assuming this one was already settled
+</aside>
+
+</Slide>
+
+
+<Slide>
+
 ## Architecture: Pawtograder vs. Bottlenose
 
 <p style={{fontSize: '0.85em'}}>
@@ -232,8 +276,8 @@ Two systems, same problem — different architectural choices:
 
 | Decision | Pawtograder | Bottlenose |
 |----------|-------------|------------|
-| **Where does grading run?** | GitHub Actions (rented) | Custom job queue + Orca (owned) |
-| **Where does business logic live?** | "Grading action" component — knows Java, Gradle, checkstyle etc. Parses, scores, normalizes | Platform — `Grader` subclasses per language |
+| **Where does grading run?** | GitHub Actions (rented) | Custom job queue on local server |
+| **Where does business logic live?** | "Grading action" component — knows Java, Gradle, checkstyle etc. Parses, scores, normalizes | Per-language `Grader` subclasses running locally |
 | **How do instructors configure?** | `pawtograder.yml` configuration in each assignment repo | Web UI forms |
 
 </div>
@@ -485,7 +529,7 @@ Constraints are non-negotiable boundaries. They limit our design space:
 </div>
 
 <div className="fragment">
-<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#9370DB'}}>
+<p style={{fontSize: '0.7em', marginTop: '0.5em', color: '#9370DB'}}>
 Constraints aren't negotiable the way quality attributes are. They're the fixed boundaries within which we architect. Sometimes constraints <strong>ARE</strong> the architecture — the GitHub Actions sandbox essentially dictates the deployment model.
 </p>
 </div>
@@ -508,6 +552,70 @@ Constraints aren't negotiable the way quality attributes are. They're the fixed 
 {/* ============================================ */}
 {/* ARC 3: FINDING BOUNDARIES (20 min) */}
 {/* ============================================ */}
+
+<Slide>
+
+## Review: What's a Service?
+
+<div style={{ fontSize: '.8em' }}>
+One definition: A cohesive unit of functionality with a well-defined interface
+
+Best practices for scaleable systems:
+
+* Services are interfaces or abstract classes, not concrete classes
+* Services support dependency injection
+* Services follow the Single Responsibility Principle
+* Interfaces are:
+   * general enough for multiple implementations
+   * specific enough to meet the needs of clients
+</div>
+
+</Slide>
+
+<Slide>
+
+## Example: NotificationService
+
+<div style={{ fontSize: '.8em' }}>
+A library system might include a NotificationService:
+
+```mermaid
+classDiagram
+    class NotificationService {
+        <<interface>>
+        +notifyHoldReady(Patron, Hold)*
+        +notifyHoldExpired(Patron, Hold)*
+    }
+
+    class SmsNotificationService {
+        +notifyHoldReady(Patron, Hold)
+        +notifyHoldExpired(Patron, Hold)
+    }
+
+    class EmailNotificationService {
+        +notifyHoldReady(Patron, Hold)
+        +notifyHoldExpired(Patron, Hold)
+    }
+
+    class AppNotificationService {
+        +notifyHoldReady(Patron, Hold)
+        +notifyHoldExpired(Patron, Hold)
+    }
+
+    NotificationService <|.. SmsNotificationService
+    NotificationService <|.. EmailNotificationService
+    NotificationService <|.. AppNotificationService
+
+    style NotificationService fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+
+</div>
+<aside className="notes">
+
+</aside>
+
+</Slide>
 
 <Slide>
 
@@ -575,7 +683,7 @@ Things that change at different rates should live in different components:
 </div>
 
 <div className="fragment">
-<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#4CAF50'}}>
+<p style={{fontSize: '0.75em', marginTop: '0.5em', color: '#4CAF50'}}>
 ✓ The config file (`pawtograder.yml`) changes weekly → it SHOULD be separate from the action code that changes monthly. And both should be separate from the API that changes rarely.
 </p>
 </div>
@@ -670,7 +778,7 @@ This file IS the interface between instructor and grading action — it changes 
 ## Heuristic 2: Each Actor Gets Their Own Slice
 
 <Img
-  src="/img/lectures/web/l18-actors.webp"
+  src="/img/lectures/web/l18-actors-v2.jpg"
   prompt="An illustration showing four actors interacting with the Pawtograder autograder system. No title.
 
 CENTER — THE SYSTEM as buildings, sized by importance/stability:
@@ -880,9 +988,10 @@ graph TD
 
 **Bottlenose: "Platform-Driven"**
 
-- `Grader` subclasses per language
+- `Grader` subclasses per language/check
+  - java_style_grader, junit_grader
+  - questions_grader
 - Platform interprets raw output
-- Orca is a thin execution layer
 
 </div>
 
@@ -908,7 +1017,7 @@ graph TD
 - This is information hiding at the data layer
 
 **Pattern connection (L17):**
-- Bottlenose's `Grader.find_by_type()` is Service Locator at architecture scale
+- Bottlenose's `Grader.find_grader()` is Service Locator at architecture scale
 - Pawtograder's `Builder` interface is Dependency Injection — explicit, testable
 
 → **Transition:** Let's see how data coupling affects testability...
@@ -942,10 +1051,10 @@ No network, no database, no GitHub runner needed.
 
 **Bottlenose (shared database)**
 
-You *could* test a `Grader` subclass by feeding it canned TAP output, but you'd need to:
+You *could* test a `Grader` subclass by feeding it canned test output, but you'd need to:
 - Stub ActiveRecord (Grader inherits from it)
 - Mock Backburner job dispatch
-- Simulate Orca's Docker execution responses
+- Simulate execution output
 
 Possible, but the architecture works against you.
 
@@ -985,7 +1094,8 @@ Coupling makes itself felt at test time: isolated testing isn't impossible in Bo
 
 ## A Design Decision: Where Does Language Logic Live?
 
-<p style={{fontSize: '0.85em', margin: '0 0 0.5em 0'}}>
+<div style={{ fontSize: '.8em' }}>
+<p style={{margin: '0 0 0.5em 0'}}>
 We need to support multiple languages (Java, Python). Where should the language-specific build/test logic live?
 </p>
 
@@ -995,7 +1105,7 @@ We need to support multiple languages (Java, Python). Where should the language-
 
 **Option A: Logic in the Action**
 
-The action knows how to build Java (Gradle) and Python. It normalizes results before sending to API.
+The action (TypeScript code in the GitHub Action) knows how to build Java (Gradle) and Python. It normalizes results before sending to API.
 
 - **Pros:** API stays language-agnostic (simple!)
 - **Cons:** Action grows with every new language support
@@ -1018,9 +1128,10 @@ Action sends raw logs/XML to API. API parses and normalizes.
 </div>
 
 <div className="fragment">
-<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#9370DB', margin: '0.5em 0 0 0'}}>
-Pawtograder chooses <strong>Option A</strong>. The action normalizes everything into a standard `AutograderFeedback` format. The API remains simple and scalable.
+<p style={{marginTop: '0.5em', color: '#9370DB', margin: '0.5em 0 0 0'}}>
+Pawtograder chooses <strong>Option A</strong>. The action normalizes everything into a standard `AutograderFeedback` format. The web API remains simple and scalable.
 </p>
+</div>
 </div>
 
 <aside className="notes">
@@ -1121,6 +1232,8 @@ public class GradingAction {
 }
 ```
 
+{/* This doesn't seem to fit with the first half of the slide.
+
 **Use the Strategy pattern for extensibility:**
 
 ```java
@@ -1132,7 +1245,7 @@ public interface Builder {
     Optional<List<MutantResult>> mutationTest(Path projectDir, MutationConfig config);
 }
 ```
-
+*/}
 </div>
 
 {/* can't fit
@@ -1163,7 +1276,7 @@ public interface Builder {
 
 ## The Contracts: Data Types That Cross Boundaries
 
-<p style={{fontSize: '0.8em'}}>
+<p style={{fontSize: '0.75em'}}>
 The interface isn't just method signatures — it's the <strong>data types</strong> that flow across. These are the contracts that must remain stable:
 </p>
 
@@ -1179,7 +1292,7 @@ public record SubmissionRegistration(
 
 // What the action sends back after grading — THE KEY CONTRACT
 public record AutograderFeedback(
-    List<TestFeedback> tests,          // Results per graded part
+    List<TestFeedback> tests,           // Results per graded part
     LintResult lint,                    // Style check results
     Optional<Double> score,             // Overall score
     List<FeedbackComment> annotations   // Line-level comments on student code
@@ -1194,7 +1307,7 @@ public record FeedbackComment(
 </div>
 
 <div className="fragment">
-<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#FF9800'}}>
+<p style={{fontSize: '0.75em', marginTop: '0.5em', color: '#FF9800'}}>
 If `AutograderFeedback` were poorly designed — no visibility levels, no line-level comments — every future grading implementation would have to work around those limitations. <strong>This contract deserves careful design.</strong>
 </p>
 </div>
@@ -1303,6 +1416,7 @@ Let's walk through all four levels for Pawtograder's autograder, so you can see 
 Who uses the system, and what external systems does it talk to? This is the "napkin sketch" level.
 </p>
 
+<div style={{transform: 'scale(0.75)', transformOrigin: 'top center', marginBottom: '-4em'}}>
 ```mermaid
 graph TD
     subgraph Actors
@@ -1330,8 +1444,9 @@ graph TD
     Autograder -->|stores grades| Pawtograder
     Pawtograder -->|job summary| GitHubRepo
 ```
+</div>
 
-<p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+<p style={{fontSize: '0.8em', marginTop: '-0.5em'}}>
 At this level, the autograder is a single box. We don't care what's inside—only what it interacts with.
 </p>
 
