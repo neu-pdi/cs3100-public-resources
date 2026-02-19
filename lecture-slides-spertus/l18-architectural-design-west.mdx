@@ -999,4 +999,548 @@ If <code>Post</code> were poorly designed — no <code>originServer</code>, no s
 
 </Slide>
 
+{/* ============================================ */}
+{/* ARC 4: COMMUNICATING ARCHITECTURE (12 min) */}
+{/* ============================================ */}
+
+<Slide>
+
+## Architecture in Your Head Is Folklore
+
+<Img
+  src="/img/lectures/web/l18-communication.webp"
+  prompt="A dramatic illustration showing the problem of architecture as 'folklore'. On the left, a single developer with a glowing brain full of architectural diagrams — service boundaries, interface connections, design decisions. They look confident. On the right, three other team members look confused, each imagining a DIFFERENT architecture in thought bubbles above their heads — completely inconsistent with each other AND with the original developer's actual design.
+
+CENTER: A broken telephone game line connecting them, symbolizing how architectural knowledge degrades when only communicated verbally.
+
+BOTTOM: Two solutions shown as golden books:
+1. 'C4 Diagrams' — a book of maps showing the system at four zoom levels
+2. 'ADRs' — a book of decision records capturing WHY choices were made
+
+CALLOUT: 'Architecture that exists only in one person's head isn't architecture — it's folklore. We need ways to communicate structural decisions.'
+
+Style: Warm, slightly humorous illustration showing the communication problem, then the solution. Educational feel."
+  alt="Left: One developer with architecture in their head. Right: Three confused team members each imagining different architectures. Center: broken telephone effect. Bottom: C4 Diagrams and ADRs as solutions. Callout: Architecture in one head is folklore."
+/>
+
+<aside className="notes">
+**The communication challenge:**
+- We just covered: three components, four heuristics, data coupling decisions, interface contracts, record types...
+- How would you explain all of that to a new team member?
+- How would you explain it to a community moderator who just wants to set rules for their server?
+- How would you explain it to a sysadmin who needs to debug the platform?
+
+**The problem:**
+- If this architecture only exists in one person's head, it degrades like a game of telephone
+- Six months later, everyone has a DIFFERENT mental model
+- New contributors make changes that violate boundaries they didn't know existed
+- "Why doesn't the feed service just query identity directly?" — because they never saw the ADR
+
+**Structured approaches help:**
+1. **C4 Diagrams** — Show the system at different zoom levels (different audiences need different detail)
+2. **ADRs** — Capture WHY we made decisions, not just WHAT we built
+
+→ **Transition:** Let's look at C4 first — four levels of zoom...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The C4 Model: Four Levels of Zoom
+
+<div style={{fontSize: '0.72em', marginTop: '0.5em'}}>
+
+| Level | Shows | Chirp/Flock Example |
+|-------|-------|---------------------|
+| **1. System Context** | System + Users + External | User ↔ Device ↔ **Microblogging System** ↔ Moderator |
+| **2. Container** | Deployable Units | **Feed Service**, **Identity Service**, **Platform API**, **Database** |
+| **3. Component** | Internals of one Container | Inside Feed Service: `PostRepository`, `RankingStrategy`, `FeedController` |
+| **4. Code** | Classes / Interfaces | `RankingStrategy` interface, `Post` record |
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.78em', marginTop: '1em'}}>
+Let's walk through all four levels for Chirp, so you can see how each level zooms in on a different scale of the same system.
+</p>
+</div>
+
+<aside className="notes">
+**The C4 model**, created by Simon Brown, provides four levels of abstraction for architectural diagrams.
+
+**Key insight:** You don't always need all four levels. Use the level that answers the question your audience is asking.
+
+→ **Transition:** Let's start at the widest zoom level...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## C4 Level 1: System Context
+
+<p style={{fontSize: '0.78em'}}>
+Who uses the system, and what external systems does it talk to? This is the "napkin sketch" level.
+</p>
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '15px' }}}%%
+graph TD
+    User([User])
+    Moderator([Moderator])
+
+    subgraph System Under Design
+        Microblog[Microblogging System]
+    end
+
+    User -->|posts and reads| Microblog
+    Moderator -->|configures content policy| Microblog
+```
+
+<p style={{fontSize: '0.72em', marginTop: '0.5em'}}>
+At this level, the entire platform is a single box. We don't care what's inside — only what it interacts with.
+</p>
+
+<aside className="notes">
+**The "elevator pitch" diagram:**
+- A non-technical stakeholder could read this and understand the system's role
+- No internal details — just actors and external systems
+
+**Chirp vs. Flock at Level 1:**
+- Chirp's Level 1 looks like this — one central system
+- Flock's Level 1 would show MULTIPLE microblogging systems talking to each other via federation
+- That difference at Level 1 already tells you something fundamental about the architecture
+
+→ **Transition:** Zoom in to see the deployable units...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## C4 Level 2: Container
+
+<p style={{fontSize: '0.78em'}}>
+Zoom into the "Microblogging System" box. What are the major deployable units?
+</p>
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px' }}}%%
+graph TD
+    subgraph Microblogging System
+        Identity["Identity Service<br/>(accounts, auth)<br/><br/><i>Changes rarely,<br/>owned by security team</i>"]
+        Feed["Feed Service<br/>(posts, follows, ranking)<br/><br/><i>Changes frequently,<br/>owned by product team</i>"]
+        API["Platform API<br/>(storage, delivery)<br/><br/><i>Changes rarely,<br/>owned by sysadmin team</i>"]
+        DB[("Database")]
+
+        Identity -->|authenticates| Feed
+        Feed -->|"publishPost(),<br/>getFeed()<br/>(HTTPS + JSON)"| API
+        API --> DB
+    end
+```
+
+<p style={{fontSize: '0.72em', marginTop: '0.5em'}}>
+The narrow API boundary between the Feed Service and Platform API is deliberate — the feed service never touches the database directly.
+</p>
+
+<aside className="notes">
+**What this reveals:**
+- The three components we identified earlier, plus the database
+- Communication mechanism: HTTPS + JSON through well-defined endpoints
+- Rate of change is visible: feed service changes fast, identity and API change slowly
+
+**Flock's Level 2 would look different:**
+- Each server is its own container
+- A federation layer appears between servers
+- The database is local to each server, not shared
+
+→ **Transition:** Zoom into the Feed Service...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## C4 Level 3: Component (Feed Service)
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px' }}}%%
+graph TD
+    Controller["FeedController<br/><br/>Handles incoming requests,<br/>orchestrates the pipeline"]
+
+    Controller --> Auth["AuthFilter<br/><br/>Verifies user identity<br/>via Identity Service"]
+    Controller --> Repo["PostRepository<br/><br/>Fetches candidate posts<br/>for this user"]
+    Controller --> Ranker["FeedRanker<br/><br/>Applies RankingStrategy<br/>to order posts"]
+    Controller --> Notifier["NotificationService<br/><br/>Sends mention and<br/>follow notifications"]
+
+    Ranker --> Strategy["RankingStrategy<br/>(interface)<br/><br/>Chronological,<br/>Engagement,<br/>Community"]
+```
+
+<p style={{fontSize: '0.72em', marginTop: '0.5em'}}>
+This view shows how <code>FeedController</code> orchestrates the internal components. <code>RankingStrategy</code> is the extension point — swapping algorithms doesn't touch anything else.
+</p>
+
+<aside className="notes">
+**What this reveals:**
+- The central role of the FeedController
+- Dependency direction: deeper components don't know about the controller
+- RankingStrategy is the key extension point — this is the Level 3 view a developer needs to add a new algorithm
+- NotificationService is a separate concern — mentions and follows don't need to know about ranking
+
+→ **Transition:** Zoom into the RankingStrategy to see actual code...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## C4 Level 4: Code (RankingStrategy)
+
+<p style={{fontSize: '0.78em'}}>
+Zoom into the <code>RankingStrategy</code> extension point. What are the actual classes and interfaces?
+</p>
+
+```mermaid
+classDiagram
+    class RankingStrategy {
+        <<interface>>
+        +rank(candidates List~Post~, user UserProfile) List~Post~*
+    }
+    class ChronologicalStrategy {
+        Newest posts first
+        +rank(candidates List~Post~, user UserProfile) List~Post~
+    }
+    class EngagementStrategy {
+        Ranked by likes and replies
+        +rank(candidates List~Post~, user UserProfile) List~Post~
+    }
+    class CommunityStrategy {
+        Server operator configures weights
+        +rank(candidates List~Post~, user UserProfile) List~Post~
+    }
+
+    RankingStrategy <|.. ChronologicalStrategy
+    RankingStrategy <|.. EngagementStrategy
+    RankingStrategy <|.. CommunityStrategy : adding algorithm = adding one class
+
+    style RankingStrategy fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+<p style={{fontSize: '0.72em', marginTop: '0.5em'}}>
+Level 4 shows actual code structure. You'd rarely draw this for the whole system — it's useful for specific extension points or critical interfaces.
+</p>
+
+<aside className="notes">
+**When to use Level 4:**
+- Documenting extension points (like RankingStrategy)
+- Critical interfaces where getting the design right matters (like Post)
+- NOT for the entire system — too much detail
+
+**The connection back to Arc 3:**
+- We designed this interface earlier when discussing the Strategy pattern
+- Level 4 is where architecture and design meet — the interface is an architectural decision, the implementations are design decisions
+
+→ **Transition:** Choosing the right level for your audience...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Choosing the Right Level
+
+<p style={{fontSize: '0.78em'}}>
+Use the right level of detail for your audience:
+</p>
+
+<div style={{fontSize: '0.68em', marginTop: '0.5em'}}>
+
+| Audience | Useful Levels | Why |
+|----------|--------------|-----|
+| Non-technical stakeholders | Level 1 | Need to understand what the system does, not how |
+| Community moderators | Levels 1–2 | Need to see where moderation rules fit in the system |
+| Platform engineers | Levels 2–3 | Need to understand component responsibilities and dependencies |
+| Contributors adding a ranking algorithm | Levels 3–4 | Need to see the extension point and its interface |
+
+</div>
+
+<aside className="notes">
+**Key insight:** Match the diagram to the audience. Don't show Level 4 code diagrams to non-technical stakeholders.
+
+**Flock note:**
+- A Flock server operator needs a Level 1 diagram showing how their server federates with others
+- They don't need to know about the internal RankingStrategy hierarchy
+
+In L20 and L21, we'll see how network boundaries and serverless platforms influence container topology.
+
+→ **Transition:** Diagrams show WHAT. ADRs show WHY.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Architecture Decision Records (ADRs)
+
+<p style={{fontSize: '0.78em'}}>
+Diagrams show <em>what</em>. <strong>ADRs capture <em>why</em></strong>. An ADR documents: <strong>Context</strong>, <strong>Decision</strong>, and <strong>Consequences</strong>.
+</p>
+
+<div style={{fontSize: '0.58em', padding: '0.75em', backgroundColor: 'rgba(147, 112, 219, 0.1)', borderRadius: '8px', border: '1px solid rgba(147, 112, 219, 0.3)'}}>
+
+**ADR-001: Centralized Feed Algorithm vs. Per-Server Algorithm**
+
+**Context:** We need to rank posts for each user's feed. We could rank centrally using global engagement signals, or let each server (or user) choose their own algorithm.
+
+**Decision:** Chirp will **rank feeds centrally** using a shared EngagementStrategy. The RankingStrategy interface is retained to allow A/B testing of algorithms internally.
+
+**Consequences:**
+- ✅ **Consistency:** All users get a coherent, optimized experience
+- ✅ **Changeability:** New algorithms can be tested without touching the Feed Service
+- ✅ **Scalability:** Ranking infrastructure can be optimized centrally
+- ⚠️ **Autonomy:** Users cannot opt out of the platform's ranking choices
+- ⚠️ **Coupling:** Feed quality is tied to the platform's data — if engagement data degrades, all feeds degrade
+
+</div>
+
+<aside className="notes">
+**Why is this an ADR?**
+- This is the most fundamental content decision in Chirp
+- Six months from now, someone will ask: "Why don't we let users choose chronological order? It would be so much simpler!"
+- The ADR answers: "We evaluated this — the RankingStrategy interface supports it technically, but we chose not to expose it because it fragments the user experience and reduces our ability to optimize engagement."
+
+**ADRs create institutional memory** — they prevent re-litigating settled decisions.
+
+→ **Transition:** Here's another ADR example...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## ADR Example: Identity Decision
+
+<div style={{fontSize: '0.58em', padding: '0.75em', backgroundColor: 'rgba(147, 112, 219, 0.1)', borderRadius: '8px', border: '1px solid rgba(147, 112, 219, 0.3)'}}>
+
+**ADR-002: Centralized Identity vs. Federated Identity**
+
+**Context:** Users need accounts to post and follow others. We could own all identity centrally, or allow identity to be distributed across servers as in Flock.
+
+**Decision:** Chirp will **own all identity centrally**. Every account lives on Chirp's Identity Service. There is no federation.
+
+**Consequences:**
+- ✅ **Consistency:** Usernames are globally unique; mentions always resolve correctly
+- ✅ **Security:** One place to enforce authentication, rate limiting, and abuse prevention
+- ✅ **Simplicity:** No cryptographic key management or cross-server trust needed
+- ⚠️ **Single point of failure:** If Identity Service goes down, no one can log in
+- ⚠️ **Autonomy:** Users cannot move their identity to another platform
+- ⚠️ **Trust:** Users must trust Chirp with their identity data
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.72em', marginTop: '0.75em', color: '#9370DB'}}>
+ADRs create <strong>institutional memory</strong>. Without this record, someone might ask "Why not let users bring their own identity?" — the ADR explains the tradeoffs we considered.
+</p>
+</div>
+
+<aside className="notes">
+**Two ADRs, two types of tradeoffs:**
+- ADR-001: User experience & scalability vs. autonomy (feed algorithm decision)
+- ADR-002: Simplicity & security vs. autonomy & portability (identity decision)
+
+**Flock made the opposite choice on ADR-002:**
+- Flock's founding constraint was exactly the ⚠️ items here — no single point of control, users own their identity
+- A Flock ADR-002 would look like the mirror image of this one
+
+**Key point:** Both could have gone the other way with different values and requirements. The ADR captures WHY we chose this path — and what we gave up.
+
+→ **Transition:** How much of this do we decide upfront?
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 5: UPFRONT vs PIECEMEAL (10 min) */}
+{/* ============================================ */}
+
+<Slide>
+
+## Plan the Infrastructure, Let the System Emerge
+
+<Img
+  src="/img/lectures/web/l18-planning-spectrum3.webp"
+  prompt="A three-panel illustration showing different approaches to city planning, as a metaphor for software architecture planning. Warm educational style, no title.
+
+LEFT PANEL — 'The Master Plan': A city planner at a massive drafting table covered with elaborate blueprints, zoning maps, and traffic flow simulations. Behind them, a window shows an empty lot with a sign: 'Future City — Coming Soon (Year 5 of Planning).' The planner has a speech bubble: 'Once we finalize the optimal park placement, we can begin!' A calendar on the wall shows years passing. The blueprints are beautiful but the city doesn't exist yet.
+
+RIGHT PANEL — 'No Plan at All': A chaotic urban sprawl — buildings at odd angles blocking each other's light, roads that dead-end into walls, a highway running through a residential neighborhood, utility poles tangled with wires. A developer stands in the mess with a speech bubble: 'We'll add infrastructure later!' Traffic is gridlocked. Signs point in contradictory directions.
+
+CENTER PANEL — 'The Living City' (glowing warmly): A vibrant, walkable neighborhood that grew organically within a planned framework. You can see the intentional infrastructure: main transit lines, utility corridors, green space preserves, clear zoning boundaries. But WITHIN that framework, diverse buildings have emerged — different heights, styles, uses — creating a neighborhood that feels alive and coherent. People are actually using the spaces: a market, a café with outdoor seating, kids in a park. Easter egg: A small café in the center panel has a sign that reads 'QWAN Coffee' with a subtitle 'The Quality Within' — and the café looks particularly warm and inviting.
+
+BOTTOM: A spectrum bar labeled: 'Big Design Up Front' (left, red) → 'Just Enough Architecture' (center, green glow) → 'No Design' (right, red).
+
+CALLOUT below center panel: 'Plan the infrastructure. Let the neighborhoods emerge.'
+
+Style: Warm, educational illustration with clear contrast between the three approaches. The center panel should feel notably more alive and inviting than the other two."
+  alt="Three-panel city planning metaphor: Left shows planner with elaborate blueprints but empty lot (BDUF). Right shows chaotic sprawl with no infrastructure (No Design). Center shows vibrant living city with planned infrastructure but organic growth (Just Enough Architecture). A café named 'QWAN Coffee' is visible in the center."
+/>
+
+<aside className="notes">
+**The city planning metaphor:**
+- **Left (Master Plan):** Beautiful blueprints, but nothing built. Years of planning, no city.
+- **Right (No Plan):** Buildings thrown up wherever, roads to nowhere, infrastructure chaos.
+- **Center (Living City):** Key infrastructure was planned (roads, utilities, zoning), but neighborhoods grew organically within those constraints.
+
+**The key insight:**
+"Plan the infrastructure. Let the neighborhoods emerge."
+- In Chirp: we planned the component boundaries (Feed Service, Identity Service, Platform API) and the key contracts (Post, FeedResponse)
+- But we didn't plan every feature — direct messaging, hashtag trending, and community lists all emerged from use
+
+**Christopher Alexander connection:**
+- Alexander was a real architect who influenced software patterns deeply
+- His book *The Timeless Way of Building* (1979) argues: the most livable spaces emerge through gradual, adaptive growth, not master plans
+- The same is true for software — we discover what the architecture should be by building and using the system
+
+**Easter egg for the curious:**
+- "QWAN Coffee" = "Quality Without A Name" — Alexander's term for the ineffable quality that makes spaces feel alive
+- He couldn't quite define it, but you know it when you see it
+- If students ask: "It's a reference to Christopher Alexander — look him up!"
+
+→ **Transition:** Let's see how a microblogging platform grows this way...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Piecemeal Growth: Features That Emerged
+
+<p style={{fontSize: '0.78em'}}>
+Chirp's first version could post messages and follow users. Features were added as real needs emerged:
+</p>
+
+<div style={{fontSize: '0.62em', marginTop: '0.5em'}}>
+
+| Feature | When it was added | What prompted it |
+|---------|------------------|------------------|
+| **Hashtags** | After users invented them organically | Users were already tagging posts with #topic — the platform just made them clickable |
+| **Direct messages** | After users asked for private communication | A new `MessageService` was added behind the existing Identity boundary — no changes to Feed Service |
+| **Content warnings** | After communities asked for sensitive content controls | An optional field added to `Post` — existing clients ignore it, new clients display it |
+| **Algorithmic feed toggle** | After users complained about missing posts | A new `ChronologicalStrategy` implementation — no changes to `FeedService` itself |
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.75em', marginTop: '0.5em', color: '#9370DB'}}>
+None of these were in the original design. But the <strong>architecture made each addition cheap</strong> because the right boundaries were in place from the start.
+</p>
+</div>
+
+<aside className="notes">
+**Key insight:** Each new feature was contained within one component or added a new implementation of an existing interface.
+- Hashtags: contained in the Feed Service — no identity or platform changes needed
+- Direct messages: new service behind the existing Identity boundary — Feed Service unchanged
+- Content warnings: optional Post field — backward compatible, no component boundary changes
+- Algorithmic toggle: new RankingStrategy implementation — FeedService unchanged
+
+**This is piecemeal growth working correctly:**
+- The architecture didn't predict these features
+- But the boundaries were drawn in the right places so each feature could be added cheaply
+- If identity and feed had been tangled together, direct messages would have required touching both
+
+→ **Transition:** So how much do we decide upfront?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Just Enough Architecture
+
+<p style={{fontSize: '0.78em'}}>
+Decide what's <strong>hard to reverse</strong>; defer what's <strong>easy to change</strong>; design the system so deferred decisions stay cheap.
+</p>
+
+<div style={{fontSize: '0.55em', marginTop: '-0.5em'}}>
+
+| Decision | Why it was decided early | Cost of getting it wrong |
+|----------|------------------------|--------------------------|
+| Centralized identity | Every post, follow, and mention depends on it | Moving to federated identity means rewriting every component that touches users |
+| Narrow API boundary between Feed and Platform | Decouples feed evolution from storage — each evolves independently | Every feed change would require a platform deployment |
+| RankingStrategy interface | New algorithms = new class, not new architecture | Adding an algorithm would require forking the entire feed pipeline |
+| Post as the stable data contract | Every component reads and writes Posts | Changing Post shape means touching every component simultaneously |
+
+</div>
+
+<div className="fragment">
+<div style={{fontSize: '0.55em', marginTop: '0.5em'}}>
+
+| Decision | Why it was safe to defer | Where it lives |
+|----------|-------------------------|----------------|
+| Which ranking algorithm to use by default | Behind the RankingStrategy interface — swap without touching FeedService | `EngagementStrategy`, `ChronologicalStrategy` |
+| How posts are stored | Behind the PostRepository interface — swap storage engine without touching Feed Service | Can switch from Postgres to a document store without rippling |
+| Content warning display format | Optional field in Post — clients that don't know about it just ignore it | UI layer only |
+
+</div>
+</div>
+
+<aside className="notes">
+**The "decide now" items are all about separation:**
+- How components talk to each other (narrow API vs. shared database)
+- Where intelligence lives (Feed Service vs. Platform)
+- Getting these wrong means rewriting multiple components simultaneously
+
+**The "defer" items are contained within a single component:**
+- They can change without rippling across boundaries
+- The RankingStrategy and PostRepository interfaces are exactly what make deferral safe
+
+**Chirp vs. Flock:**
+- Chirp decided centralized identity early — and that decision is now very expensive to reverse
+- Flock decided federated identity early — and that decision is also very expensive to reverse
+- Neither is wrong; both are just foundational, and foundational decisions are the ones you have to get right upfront
+
+→ **Transition:** Summary...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* LOOKING FORWARD */}
+{/* ============================================ */}
+
+<Slide>
+
+## Looking Forward: Where These Ideas Go Next
+
+<div style={{fontSize: '0.68em'}}>
+
+| Concept from Today | Where It Goes |
+|-------------------|---------------|
+| **Quality Attributes** (testability, changeability...) | **L19:** Deep dive into architectural qualities — hexagonal architecture applied to CookYourBooks, tradeoffs between -ilities |
+| **Component Boundaries & APIs** | **L20-21:** What happens when boundaries cross networks? Distributed architecture, fallacies of distributed computing, serverless |
+| **Data Coupling Decisions** | **L20-21:** Distributed data is even harder — consistency, latency, the CAP theorem |
+| **Architecture Communication** (C4, ADRs) | **L22:** Conway's Law — how team structure affects (and is affected by) architecture |
+
+</div>
+
+<p style={{fontSize: '0.75em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
+The vocabulary you learned today — drivers, boundaries, coupling, expensive decisions — will be your lens for the rest of the course.
+</p>
+
+<aside className="notes">
+**The arc ahead:**
+- **L19 (Architectural Qualities):** We'll apply hexagonal architecture to CookYourBooks, seeing how ports and adapters create testable, changeable systems. Deep dive into how architectural choices affect the -ilities.
+- **L20 (Networks):** When your components communicate over a network, everything gets harder. The Fallacies of Distributed Computing. Client-server architecture.
+- **L21 (Serverless):** Infrastructure building blocks — databases, blob storage, queues. Serverless as an architectural style.
+- **L22 (Teams):** Conway's Law — "Organizations design systems that mirror their communication structure." Architecture isn't just technical; it's social.
+
+**The throughline:** Today's question was "what boundaries should we draw?" The next lectures ask "what happens at those boundaries?" — first within a process, then across networks, then across teams.
+
+**Final thought:** Next time you use a social platform, think about the architecture making it happen. The boundaries between identity, feed, and storage are deliberate choices — each made for a reason. Now you have the vocabulary to discuss why.
+</aside>
+
+</Slide>
+
 </RevealJS>
