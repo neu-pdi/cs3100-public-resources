@@ -28,7 +28,7 @@ import PollSlide from '@site/src/components/PollSlide';
 - **Connects to:** L19 (Architectural Qualities), L20 (Networks & Security), L36 (Sustainability)
 
 **Structure:**
-- Architecture vs. Design (~8 min)
+- Design vs. Architecture (~8 min)
 - Architectural Drivers (~10 min)
 - Finding Service Boundaries (~20 min)
 - Communicating Architecture: C4 & ADRs (~12 min)
@@ -52,7 +52,7 @@ import PollSlide from '@site/src/components/PollSlide';
 ## Lecture 18: Thinking Architecturally
 
 <p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
-  ©2026 Jonathan Bell, CC-BY-SA
+  ©2026 Jonathan Bell & Ellen Spertus, CC-BY-SA
 </p>
 
 <aside className="notes">
@@ -90,7 +90,7 @@ After this lecture, you will be able to:
 
 <aside className="notes">
 **Time allocation:**
-- Objective 1: Architecture vs Design (~8 min)
+- Objective 1: Design vs Architecture (~8 min)
 - Objective 2: Architectural Drivers (~10 min)
 - Objective 3: Finding Boundaries (~20 min)
 - Objective 4-5: C4 + ADRs (~12 min)
@@ -110,24 +110,13 @@ After this lecture, you will be able to:
 
 <Slide>
 
-## Architecture vs. Design: A Continuum
+## Design vs. Architecture: A Continuum
 
 <p style={{fontSize: '0.9em', marginTop: '0.5em'}}>
-Architecture and design exist on a continuum. They ask different questions at different scales.
+Design and architecture exist on a continuum. They ask different questions at different scales.
 </p>
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.7em', marginTop: '1em'}}>
-
-<div style={{padding: '1em', border: '2px solid #FF9800', borderRadius: '8px'}}>
-
-**Architecture — The Big Picture**
-
-- What are the major components?
-- How do they communicate?
-- What are the quality requirements?
-- Which decisions are hard to change later?
-
-</div>
 
 <div style={{padding: '1em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
 
@@ -137,6 +126,17 @@ Architecture and design exist on a continuum. They ask different questions at di
 - What data structures should we use?
 - How do these methods collaborate?
 - Which pattern fits this problem?
+
+</div>
+
+<div style={{padding: '1em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+
+**Architecture — The Big Picture**
+
+- What are the major components?
+- How do they communicate?
+- What are the quality requirements?
+- Which decisions are hard to change later?
 
 </div>
 
@@ -163,27 +163,27 @@ A useful heuristic: architectural decisions are the ones that are <strong>expens
 - We'll cover networks, authentication, deployment in L20-L21
 - Today: the *thinking process* — how do we identify which decisions matter most?
 
-→ **Transition:** Let's see what this means for a system you already know...
 </aside>
 
 </Slide>
 
+
 <Slide>
 
-## Case Study: Pawtograder Autograder Requirements
+## Case Study: Microblogging Requirements
 
 <p style={{fontSize: '0.85em'}}>
-Before we see how Pawtograder is architected, let's think about what it needs to do:
+Before we compare two microblogging systems, let's think about what any microblogging platform needs to do:
 </p>
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px' }}}%%
 flowchart LR
-    A["1. Accept<br/>Submission"] --> B["2. Copy Student<br/>Files"]
-    B --> C["3. Build<br/>Project"]
-    C --> D["4. Run Instructor<br/>Tests"]
-    D --> E["5. Run Mutation<br/>Analysis"]
-    E --> F["6. Report<br/>Results"]
+    A["1. Create<br/>Account"] --> B["2. Post<br/>Message"]
+    B --> C["3. Follow<br/>Users"]
+    C --> D["4. Build<br/>Feed"]
+    D --> E["5. Moderate<br/>Content"]
+    E --> F["6. Notify<br/>Users"]
 
     classDef step fill:#B8D4E3,stroke:#4A90A4,stroke-width:2px
     class A,B,C,D,E,F step
@@ -194,7 +194,7 @@ flowchart LR
 
 **Discussion: What decisions would be "expensive to change"?**
 
-Where should tests run? Who can see the test code? How do instructors configure grading? What happens when 200 students submit at once?
+Where does user identity live? Who controls the feed algorithm? Who decides what content is allowed? What happens when millions of users post at once?
 
 </div>
 </div>
@@ -203,26 +203,26 @@ Where should tests run? Who can see the test code? How do instructors configure 
 **PAUSE FOR DISCUSSION (2-3 min):**
 
 Prompt students to think before revealing the answers:
-- "If we wanted to switch from GitHub Actions to our own servers later, how hard would that be?"
-- "What if we want to add support for a new language like Rust?"
-- "What if we want instructors to configure grading differently?"
+- "If we wanted to move user accounts from one server to another, how hard would that be?"
+- "What if we want communities to set their own moderation rules?"
+- "What if we want to change who controls what appears in a user's feed?"
 
 **Common student responses to watch for:**
-- **Where tests run:** Some may say "doesn't matter" — push back: switching from GitHub Actions to dedicated servers would require rewriting the entire deployment model
-- **Test visibility:** Security concern — students can't see instructor tests, but how do we enforce that?
-- **Configuration:** Will instructors use a config file? A web UI? This affects who can change what and how quickly
+- **Identity:** Some may say "just a database table" — push back: every post, follow, and mention links back to identity. Moving it touches everything.
+- **Moderation:** Who enforces rules? A central team? Each community? This shapes the entire permission model.
+- **Feed algorithm:** Centrally ranked vs. user-controlled — changing this after the fact means rethinking what data you even store.
 
 **Key insight to plant:**
-"Your instincts about what's 'easy' or 'hard' to change — those instincts ARE architectural thinking. We're going to see how Pawtograder actually made these decisions, and compare it to Bottlenose which made different choices."
+"Your instincts about what's 'easy' or 'hard' to change — those instincts ARE architectural thinking. We're going to compare two systems that made very different choices about exactly these questions."
 
-→ **Transition:** Let's see what decisions Pawtograder actually made, and compare them to Bottlenose...
+→ **Transition:** Let's see how two different systems answered these questions...
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Architecture: Pawtograder vs. Bottlenose
+## Architecture: Chirp vs. Flock
 
 <p style={{fontSize: '0.85em'}}>
 Two systems, same problem — different architectural choices:
@@ -230,39 +230,34 @@ Two systems, same problem — different architectural choices:
 
 <div style={{fontSize: '0.65em', marginTop: '0.5em'}}>
 
-| Decision | Pawtograder | Bottlenose |
-|----------|-------------|------------|
-| **Where does grading run?** | GitHub Actions (rented) | Custom job queue + Orca (owned) |
-| **Where does business logic live?** | "Grading action" component — knows Java, Gradle, checkstyle etc. Parses, scores, normalizes | Platform — `Grader` subclasses per language |
-| **How do instructors configure?** | `pawtograder.yml` configuration in each assignment repo | Web UI forms |
+| Decision | Chirp (centralized) | Flock (federated) |
+|----------|--------------------|--------------------|
+| **Where does identity live?** | Central server owns all accounts | Each server owns its own users |
+| **Where is content stored?** | Single platform database | Distributed across servers |
+| **Who controls the feed?** | Platform algorithm | Each server (or user) |
+| **Who moderates content?** | The platform | Each server independently |
 
 </div>
 
 <div className="fragment" style={{marginTop: '1em'}}>
 <p style={{fontSize: '0.8em', fontWeight: 'bold'}}>Why these are architectural:</p>
 <ul style={{fontSize: '0.7em'}}>
-  <li><strong>Execution:</strong> Own vs. rent infrastructure — months to reverse</li>
-  <li><strong>Business logic:</strong> Determines where complexity lives - crucial for changeability</li>
-  <li><strong>Config:</strong> Shapes who can change behavior and how fast</li>
+  <li><strong>Identity:</strong> Every post, follow, and mention depends on it — changing it touches everything</li>
+  <li><strong>Content storage:</strong> Determines what queries are even possible and who can run them</li>
+  <li><strong>Moderation:</strong> Shapes the entire permission model and who has authority over what</li>
 </ul>
 </div>
 
 <aside className="notes">
-**Make this concrete — you use this system!**
-- "When you push code and see the autograder run, GitHub Actions is executing the grading action"
-- "The reason you can't see our test cases? That's an architectural decision — the private grader is downloaded at runtime"
+**Make this concrete:**
+- "Think about what happens when you @mention someone. In Chirp, that's a lookup in one database. In Flock, that mention might need to reach a completely different server."
+- "Think about what happens when a server in Flock shuts down — those users and their posts are gone. That's a consequence of the identity decision."
 
-**Caveat about speculation:**
-- We're comparing these systems to illustrate architectural thinking
-- We didn't interview the Bottlenose creators — we're inferring from the code and documentation
-- The point is to see *types* of architectural differences, not to claim we know exactly why they chose what they chose
+**These are design choices, not mistakes:**
+- Chirp's centralization makes some things easy: consistent experience, powerful recommendations, fast search
+- Flock's federation makes other things possible: user autonomy, community self-governance, no single point of control
 
-**Expand on each row:**
-1. **Execution:** GitHub Actions = zero ops burden but less control; custom scheduler = full control but you build and maintain it
-2. **Business logic:** Thick grader enables richer feedback; centralizing in platform is simpler per-grader but platform grows complex
-3. **Config:** Config file in repo = instructors iterate independently; web UI = platform must support every pattern
-
-→ **Transition:** So what drives these decisions?
+→ **Transition:** So what drives a system toward one of these architectures?
 </aside>
 
 </Slide>
@@ -272,38 +267,31 @@ Two systems, same problem — different architectural choices:
 ## The Key Insight
 
 <p style={{fontSize: '0.9em', marginTop: '0.5em'}}>
-Neither architecture is "wrong" — they likely reflect <strong>different requirements in different contexts</strong>.
+Neither architecture is "wrong" — they reflect <strong>different requirements and different values</strong>.
 </p>
 
 <div style={{fontSize: '0.8em', marginTop: '1em'}}>
 
-| | Bottlenose (then) | Pawtograder (now) |
-|--|-------------------|-------------------|
-| **Grading needs** | Simpler, per-language | Structured feedback, mutation testing |
-| **Instructor flexibility** | Platform defines patterns | Instructors iterate independently |
-| **Infrastructure** | Owned servers, full control | Rented (GitHub Actions), zero operational responsibility |
+| | Chirp (centralized) | Flock (federated) |
+|--|---------------------|-------------------|
+| **Primary goal** | Consistent experience, powerful recommendations | User autonomy, community self-governance |
+| **Moderation** | Platform enforces global rules | Each server sets its own rules |
+| **Scalability** | Easier to optimize centrally | Naturally distributed load |
+| **User trust** | Trust the platform | Trust your own server |
 
 </div>
 
 <div className="fragment" style={{marginTop: '1.5em'}}>
 <p style={{fontSize: '0.9em', color: '#9370DB', fontWeight: 'bold'}}>
-This raises a question: What forces <em>might</em> push a system toward a particular architecture?
-</p>
-<p style={{fontSize: '0.75em', color: '#888', marginTop: '0.25em'}}>
-(We're speculating here — we didn't interview the original creators!)
+This raises a question: What forces push a system toward a particular architecture?
 </p>
 </div>
 
 <aside className="notes">
-**Important caveat:**
-- We're using these systems as *examples* to illustrate architectural thinking
-- We didn't interview the original Bottlenose creators — we're speculating based on the artifacts
-- The goal is to learn the *types* of forces that shape architecture, not to definitively explain these specific systems
-
 **The point to land:**
-- Neither system is "wrong" — different contexts lead to different choices
-- The computing landscape changed: GitHub Actions didn't exist when Bottlenose was built
-- Requirements likely differed: richer feedback, more instructor control, multi-language support
+- Neither system is "wrong" — different contexts and values lead to different choices
+- Chirp optimizes for the platform's ability to curate and monetize; Flock optimizes for user and community control
+- These aren't just technical decisions — they reflect what the builders believed the system should be *for*
 
 **Bridge to next section:**
 - "So what ARE the kinds of forces that shape architecture?"
@@ -361,7 +349,7 @@ graph TD
 - But they don't dictate HOW to structure them
 - Quality attributes and constraints shape the structure
 
-→ **Transition:** Let's look at each driver for Pawtograder...
+→ **Transition:** Let's look at each driver for Chirp and Flock...
 </aside>
 
 </Slide>
@@ -371,27 +359,28 @@ graph TD
 ## Driver 1: Functional Requirements
 
 <p style={{fontSize: '0.85em'}}>
-What must the Pawtograder autograder do?
+What must any microblogging platform do?
 </p>
 
 <ul style={{fontSize: '0.75em'}}>
-  <li>Accept student code submissions from GitHub repositories</li>
-  <li>Copy student files into the instructor's solution repo and build the project</li>
-  <li>Run instructor test suites and report results per graded unit</li>
-  <li>Run mutation analysis on student tests</li>
-  <li>Report grading results back to Pawtograder for students to see</li>
+  <li>Create and authenticate user accounts</li>
+  <li>Post short messages, with support for mentions and hashtags</li>
+  <li>Follow other users and see their posts in a feed</li>
+  <li>Moderate content that violates community standards</li>
+  <li>Notify users of replies, mentions, and follows</li>
 </ul>
 
 <div className="fragment">
 <p style={{fontSize: '0.85em', marginTop: '1em', color: '#FF9800'}}>
-A single monolithic script COULD do all of this. But should it? The functional requirements alone don't tell us how to structure it.
+A single monolithic application COULD do all of this. But should it? The functional requirements alone don't tell us how to structure it — or whether identity should be centralized or federated.
 </p>
 </div>
 
 <aside className="notes">
 **The point:**
-- A bash script that does everything sequentially COULD work
-- But would it be testable? Maintainable? Extensible to new languages?
+- Both Chirp and Flock satisfy all of these functional requirements
+- A single server with a database and a web app could technically do everything on this list
+- But would it be scalable? Maintainable? Changeable to meet local regulations?
 - That's where quality attributes come in
 
 → **Transition:** Quality attributes shape the structure...
@@ -401,40 +390,41 @@ A single monolithic script COULD do all of this. But should it? The functional r
 
 <Slide>
 
-## Driver 2: Quality Attributes (the "-ilities")!
-<p style={{fontSize: '0.8em'}}>
-How <em>well</em> must the system perform? Quality attributes shape structure more than features do.
+## Driver 2: Quality Attributes (the "-ilities")
+
+<p style={{fontSize: '0.75em'}}>
+Both Chirp and Flock must address the same quality attributes — but their architectures lead to very different tradeoffs.
 </p>
 
-<div style={{display: 'flex', flexDirection: 'column', gap: '0.75em', fontSize: '0.65em', marginTop: '0.5em', width: '100%'}}>
+<div style={{display: 'flex', flexDirection: 'column', gap: '1em', fontSize: '0.7em', marginTop: '-0.5em', width: '100%'}}>
 
-<div style={{padding: '0.6em', border: '2px solid #4CAF50', borderRadius: '8px', width: '100%'}}>
+<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '2px', width: '100%'}}>
 
 **You already know these:**
 
-- **Changeability** (L6-L7): New assignment = swap assignment config file. New language = add one `Builder` class in grader component. No need to change API or affect other courses.
-- **Testability** (L16): Run grading locally without GitHub, API, or database.
+- **Changeability** (L6-L7): Chirp must update globally to comply with new regulations. A Flock server operator can adapt independently.
+- **Testability** (L16): Chirp's services can be tested in isolation. Flock's federated interactions require simulating multiple servers.
 
 *Same principles from class design — now at service scale!*
 
 </div>
 
-<div style={{padding: '0.6em', border: '2px solid #FF9800', borderRadius: '8px', width: '100%'}}>
+<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '2px', width: '100%'}}>
 
 **Coming up:**
 
-- **Security** (L20): Students must NEVER see test cases
-- **Scalability** (L21): 200 students submit at once
-- **Deployability** (L36): Ship changes to one course with zero risk of affecting others
-- **Maintainability** (L36): Small team, many courses
+- **Security** (L20): Keep real user identities secret — one central target vs. distributed exposure
+- **Scalability** (L21): Millions of posts per day — central infrastructure vs. distributed load
+- **Deployability** (L36): Chirp pushes updates instantly; Flock servers update independently
+- **Maintainability** (L36): Well-funded corporation vs. mostly volunteer server operators
 
 </div>
 
 </div>
 
-<div className="fragment" style={{marginTop: '0.5em'}}>
-<p style={{fontSize: '0.75em', color: '#9370DB'}}>
-Quality attributes often <strong>conflict</strong>. Security (download grader at runtime) creates a network dependency that hurts reliability. Architecture = making these tradeoffs consciously.
+<div className="fragment" style={{marginTop: '0.75em'}}>
+<p style={{fontSize: '0.8em', color: '#9370DB'}}>
+Quality attributes often <strong>conflict</strong>. Flock's distribution improves autonomy but hurts consistency. Architecture = making these tradeoffs consciously.
 </p>
 </div>
 
@@ -444,21 +434,15 @@ Quality attributes often <strong>conflict</strong>. Security (download grader at
 - "You already know testability — observability, controllability, separating 'what to do' from 'how to connect'"
 - "Today we're applying those SAME principles at a bigger scale"
 
-**Pawtograder examples:**
-- Changeability → `pawtograder.yml` is the ONLY thing instructors touch; adding Rust = one new Builder class
-- Testability → `npx tsimp src/grading/main.ts -s /solution -u /submission` runs locally, no network needed
-
-**Why course isolation matters — emphasize this!**
-- Imagine 10 different courses all using the same grading platform
-- If an instructor tweaks their grading config and it breaks ANOTHER course's grading, that's a nightmare
-- Worse: if an instructor is mid-semester and can't update their test cases because it requires a platform-wide deployment
-- The architecture MUST let each course evolve independently — new assignments, new tests, new grading criteria — without coordinating with other instructors or risking their stability
-- This is changeability at organizational scale: "I can ship changes to MY course without a meeting"
+**Chirp vs. Flock tradeoffs to highlight:**
+- Changeability: Chirp can enforce a regulation change globally overnight; a Flock server in another jurisdiction can simply not comply — or adapt faster
+- Testability: Testing a Chirp service is straightforward — mock its dependencies. Testing Flock federation means you need two servers talking to each other, which is much harder to set up in a test environment
+- Maintainability: Chirp has engineers on call 24/7; a Flock server might be run by one volunteer who goes on vacation
 
 **Preview future lectures:**
-- L20: How do we authenticate? How do we hide test cases? (Security)
-- L21: How does GitHub Actions handle 200 concurrent submissions? (Scalability)
-- L36: How do we deploy changes safely? How do we keep this maintainable over years? (Deployability, Sustainability)
+- L20: How do we authenticate across servers? How do we keep identities secure? (Security)
+- L21: How does each architecture handle millions of concurrent posts? (Scalability)
+- L36: How do we deploy changes safely across a federated network? (Deployability, Maintainability)
 
 → **Transition:** Constraints also shape what's possible...
 </aside>
@@ -473,38 +457,43 @@ Quality attributes often <strong>conflict</strong>. Security (download grader at
 Constraints are non-negotiable boundaries. They limit our design space:
 </p>
 
-<div style={{fontSize: '0.75em', marginTop: '0.5em'}}>
+<div style={{fontSize: '0.72em', marginTop: '0.5em'}}>
 
-| Source | Pawtograder Constraint |
-|--------|----------------------|
-| **Platform** | "Must run inside GitHub Actions runners" |
-| **Security** | "Student code is untrusted — might try to steal the secret grader code or overwrite grading results" |
-| **Authentication** | "Student code is submitted via GitHub, must use GitHub's identity framework" |
-| **Compatibility** | "Must support Pyret, Java and Python assignments" |
+| Source | Chirp | Flock |
+|--------|-------|-------|
+| **Platform** | Large data centers, owned infrastructure | Distributed volunteer-run servers |
+| **Legal** | Must comply with laws in every jurisdiction globally | Each server complies with its own local laws |
+| **Identity** | Must authenticate millions of users centrally | Must federate identity across independent servers |
+| **Moderation** | Must enforce a single global content policy | Each server enforces its own rules |
 
 </div>
 
 <div className="fragment">
-<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#9370DB'}}>
-Constraints aren't negotiable the way quality attributes are. They're the fixed boundaries within which we architect. Sometimes constraints <strong>ARE</strong> the architecture — the GitHub Actions sandbox essentially dictates the deployment model.
+<p style={{fontSize: '0.85em', marginTop: '0.75em', color: '#9370DB'}}>
+Constraints aren't negotiable the way quality attributes are. They're the fixed boundaries within which we architect. Sometimes constraints <strong>ARE</strong> the architecture — Flock's requirement that no single entity owns the network dictates its entire structure.
 </p>
 </div>
 
 <aside className="notes">
 **Constraints vs. quality attributes:**
 - Quality attributes are things we WANT (security, scalability)
-- Constraints are things we MUST accept (GitHub Actions, OIDC, untrusted code)
+- Constraints are things we MUST accept (data center limits, legal jurisdiction, volunteer infrastructure)
 - Together they shape WHAT architectures are even possible
 
-**Platform constraints shaping architecture:**
-- We'll see more examples in L21: Serverless — platform constraints often dictate the deployment model
-- GitHub Actions constrains how Pawtograder works; Bottlenose had different constraints (dedicated servers, Docker, PostgreSQL)
+**The Flock point is worth dwelling on:**
+- The decision that no single entity should control the network isn't just a preference — it's a founding constraint
+- Once you accept that constraint, federation follows almost automatically
+- The architecture IS the constraint made concrete
+
+**Chirp's legal constraint is also interesting:**
+- A centralized platform is legally responsible for ALL content globally
+- This creates pressure toward aggressive moderation and content policies
+- Flock sidesteps this by distributing legal responsibility to individual server operators
 
 → **Transition:** Now that we know the drivers, how do we find the right boundaries?
 </aside>
 
 </Slide>
-
 {/* ============================================ */}
 {/* ARC 3: FINDING BOUNDARIES (20 min) */}
 {/* ============================================ */}
@@ -513,34 +502,35 @@ Constraints aren't negotiable the way quality attributes are. They're the fixed 
 
 ## Drivers Tell Us What; Heuristics Help Us Find Where
 
-<Img
-  src="/img/lectures/web/l18-boundary-heuristics2.webp"
-  prompt="An educational illustration showing four boundary-finding heuristics as lenses or filters. No title. A developer examines a system diagram through each lens:
+<p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+We know we need changeability, testability, scalability. But where do we actually draw the lines?
+</p>
 
-Lens 1 (blue): 'Rate of Change' — highlights components by how often they change
-Lens 2 (green): 'Actor' — highlights components by who cares about them
-Lens 3 (orange): 'Interface Segregation' — highlights what each client actually needs
-Lens 4 (purple): 'Testability' — highlights what can be tested independently
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em', marginTop: '1em'}}>
 
-The system being examined shows: 'Grading Action', 'Solution Repo + pawtograder.yml', 'Pawtograder API' with clean interfaces between them.
+<div style={{padding: '0.75em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
+**Rate of Change** — Things that change at different speeds should be separate
+</div>
 
-CALLOUT: 'Four heuristics that help us find natural boundaries.'
+<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+**Actor** — Things owned by different people should be separate
+</div>
 
-Style: Clean, warm educational illustration with the four colored lenses as the focal point."
-  alt="Four boundary-finding heuristics shown as colored lenses: Rate of Change, Actor, Interface Segregation, Testability — used to examine system boundaries."
-/>
+<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+**Interface Segregation** — Clients that need different things should get different interfaces
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px'}}>
+**Testability** — Things that need independent testing should be separable
+</div>
+
+</div>
 
 <aside className="notes">
 **Bridge from drivers to heuristics:**
 - We just identified WHAT we care about: functional requirements, quality attributes, constraints
 - But knowing we need "changeability" or "testability" doesn't tell us WHERE to draw the lines
-- These four heuristics are *lenses* for examining a system to find natural boundaries
-
-**The four lenses (preview):**
-1. **Rate of Change:** Things that change at different speeds should be separate
-2. **Actor:** Things owned by different people should be separate
-3. **Interface Segregation:** Clients that need different things should get different interfaces
-4. **Testability:** Things that need independent testing should be separable
+- These four heuristics are lenses for examining a system to find natural boundaries
 
 **How they connect to drivers:**
 - Changeability driver → Rate of Change heuristic helps us isolate fast-changing parts
@@ -548,7 +538,7 @@ Style: Clean, warm educational illustration with the four colored lenses as the 
 - Testability driver → Testability heuristic helps us design components that can be tested alone
 
 **Coming up:**
-We'll apply each heuristic to Pawtograder and see how the same boundaries emerge from multiple angles — that's a sign we've found a natural seam.
+We'll apply each heuristic to Chirp and Flock and see how the same boundaries emerge from multiple angles — that's a sign we've found a natural seam.
 
 → **Transition:** Let's start with rate of change...
 </aside>
@@ -567,98 +557,33 @@ Things that change at different rates should live in different components:
 
 | Component | How Often It Changes | Who Changes It |
 |-----------|---------------------|----------------|
-| **Config file: `pawtograder.yml`** | Every assignment (weekly) | Instructor |
-| **Grading Action code** | Every few months | Action maintainers |
-| **Pawtograder API** | Rarely — endpoints are stable | Sysadmin team |
-| **`PawtograderConfig` interface** | Very rarely — breaking change | Action maintainers (carefully!) |
+| **A user's posts and follows** | Continuously — every interaction | The user |
+| **Feed ranking algorithm** | Every few weeks | Platform engineers |
+| **Identity & authentication** | Rarely — breaking change | Security team |
+| **The post data format** | Very rarely — affects everything | Architects (carefully!) |
 
 </div>
 
 <div className="fragment">
 <p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#4CAF50'}}>
-✓ The config file (`pawtograder.yml`) changes weekly → it SHOULD be separate from the action code that changes monthly. And both should be separate from the API that changes rarely.
+✓ User data changes constantly → it SHOULD be separate from the feed algorithm that changes monthly. And both should be separate from identity that almost never changes.
 </p>
 </div>
 
 <aside className="notes">
 **Four things, four rates of change:**
-- `pawtograder.yml` (the config) — changes per assignment (weekly)
-- Grading Action (the engine) — changes per semester
-- Pawtograder API (the platform) — changes very rarely
-- `PawtograderConfig` interface — the contract between action and API, changes almost NEVER
+- User posts and follows — change with every interaction, continuously
+- Feed algorithm — tweaked regularly to improve recommendations or address abuse
+- Identity and authentication — very stable; changing this is a major undertaking
+- Post data format — the contract everything depends on; changes almost NEVER
 
-**The interface is the most stable:**
-- The `PawtograderConfig` interface defines what the API expects from the action
-- If we change this interface, BOTH the action AND the API must change together
-- That's why it changes "very rarely — breaking change" — it's the stable contract that lets the other pieces evolve independently
+**The data format is the most stable:**
+- If the structure of a post changes, every component that reads or writes posts must change together
+- That's why it changes "very rarely" — it's the stable contract that lets other pieces evolve independently
 
-**If they were all one thing:**
-- Changing a test case configuration would mean re-deploying the entire platform
-- Updating the action to support Python would risk breaking the API
-- Rate of change tells us: keep them apart!
-
-→ **Transition:** What does this config file actually look like?
-</aside>
-
-</Slide>
-
-<Slide>
-
-## What's in a `pawtograder.yml`?
-
-<p style={{fontSize: '0.8em'}}>
-<strong>YAML</strong> (Yet Another Markup Language) is a human-readable data format — like JSON but with less punctuation. Here's a simplified example:
-</p>
-
-<div style={{fontSize: '0.5em', marginTop: '0.5em'}}>
-
-```yaml
-grader: 'overlay'
-build:
-  preset: 'java-gradle'           # How to build: Java with Gradle
-  student_tests:
-    run_tests: true               # Run student's tests against instructor impl
-    run_mutation: true            # Check if student tests catch buggy versions
-
-gradedParts:
-  - name: "Domain Model"
-    gradedUnits:
-      - name: "Cookbook"
-        tests: ["Cookbook addRecipe", "Cookbook removeRecipe"]
-        points: 4
-      - name: "UserLibrary"
-        tests: ["UserLibrary findRecipesByTitle"]
-        points: 3
-
-submissionFiles:
-  files: ['src/main/**/*.java']   # Which student files to grade
-  testFiles: ['src/test/**/*.java']
-```
-
-</div>
-
-<p style={{fontSize: '0.75em', marginTop: '0.5em', color: '#9370DB'}}>
-This file IS the interface between instructor and grading action — it changes weekly, the action code doesn't.
-</p>
-
-<aside className="notes">
-**YAML basics:**
-- Indentation shows structure (like Python)
-- Key-value pairs with colons
-- Lists with dashes
-- Comments with #
-- Much more readable than JSON for config files
-
-**Walk through the example:**
-- `grader: 'overlay'` — the grading strategy (copy student files over instructor solution)
-- `build.preset` — which language/build tool (Java + Gradle)
-- `gradedParts` — what to grade: names, which tests, how many points
-- `submissionFiles` — which student files to copy
-
-**The key insight:**
-- Instructor changes THIS FILE every week — new tests, new point values, new graded parts
-- They never touch the TypeScript action code
-- The action reads this file and does what it says
+**Chirp vs. Flock difference:**
+- In Chirp, all of these live on the same platform — but they should still be separate services internally
+- In Flock, rate of change also determines what must be standardized across servers (the post format) vs. what each server controls independently (the feed algorithm)
 
 → **Transition:** Different people care about different parts...
 </aside>
@@ -670,44 +595,48 @@ This file IS the interface between instructor and grading action — it changes 
 ## Heuristic 2: Each Actor Gets Their Own Slice
 
 <Img
-  src="/img/lectures/web/l18-actors.webp"
-  prompt="An illustration showing four actors interacting with the Pawtograder autograder system. No title.
+  src="/img/lectures/web/l18-chirp-actors.png"
+  prompt="An illustration showing four actors interacting with a microblogging system. No title.
 
 CENTER — THE SYSTEM as buildings, sized by importance/stability:
-- LARGE building: 'Pawtograder API' (the platform, tallest and most prominent)
-- MEDIUM building: 'Grading Action' (the engine, connected to API by a bridge)
-- SMALL building: 'Solution Repo' (config + tests, connected to Grading Action)
-- ROW OF TINY HOUSES: Multiple 'Student Repos' (showing there are many), each with a small GitHub icon
+- LARGE building: 'Chirp Server' (the platform, tallest and most prominent)
+- MEDIUM building: 'Feed Service' (connected to Chirp Server by a bridge)
+- SMALL building: 'User Profile & Identity' (connected to Feed Service)
+- ROW OF TINY HOUSES: Multiple 'User Devices' (showing there are many)
 
 FOUR ACTORS around the edges, each with an arrow to their part:
 
-TOP-LEFT: 'The Student' — A student at a laptop, pushing code to GitHub. They see a green checkmark or red X with grading results. Arrow connects them to the row of student repos. Speech bubble: 'I just push code and see my grade.'
+TOP-LEFT: 'The User' — A young Black woman at a phone, posting messages and scrolling her feed. Arrow connects her to User Devices. Speech bubble: 'I just post and scroll.'
 
-TOP-RIGHT: 'The Instructor' — A professor at a desk with a pawtograder.yml file open in their editor. They define test cases, point values, and graded parts. Arrow connects them to Solution Repo. Speech bubble: 'I configure what to grade and how many points.'
+TOP-RIGHT: 'The Community Moderator' — A middle-aged Latino man at a laptop reviewing flagged posts. Arrow connects him to User Profile & Identity. Speech bubble: 'I set the rules for our server.'
 
-BOTTOM-LEFT: 'The Sysadmin' — A developer at a server dashboard, monitoring API health and uptime metrics. Arrow connects them to Pawtograder API. Speech bubble: 'I keep the platform running and secure.'
+BOTTOM-LEFT: 'The Sysadmin' — A young South Asian woman at a server dashboard monitoring uptime. Arrow connects her to Chirp Server. Speech bubble: 'I keep the platform running.'
 
-BOTTOM-RIGHT: 'The Intrepid Instructor' — A professor examining the GitHub action code, wanting to add LLM-driven feedback or new grading methodologies. Arrow points to Grading Action. Speech bubble: 'I can change how grading works without touching the API!'
+BOTTOM-RIGHT: 'The Developer' — A young East Asian man examining feed algorithm code. Arrow points to Feed Service. Speech bubble: 'I can improve recommendations without touching identity!'
 
 CAPTION: 'Each actor owns a different slice. Changes shouldn't ripple across boundaries.'
 
-Style: Warm, educational, clear building size hierarchy, with four distinct character types, make sure the intrepid instructor is a much more hip version of the instructor but same person."
-  alt="Four actors: Student (pushes code, sees grades), Instructor (configures pawtograder.yml), Sysadmin (maintains API), Intrepid Instructor (changes grading action without touching API). Each connects to their part of the system."
+Style: Warm, educational, clear building size hierarchy, four distinct character types with visible ethnic diversity. Teal, blue, purple, and warm accent colors."
+  alt="Four actors in quadrants around a central system diagram. Top-left: The User, a young Black woman with a phone saying 'I just post and scroll', arrow pointing to User Devices. Top-right: The Moderator, a middle-aged Latino man at a laptop saying 'I set the rules for our server', arrow pointing to Identity Service. Bottom-left: The Sysadmin, a young South Asian woman at a server dashboard saying 'I keep the platform running', arrow pointing to Chirp Server. Bottom-right: The Developer, a young East Asian man at a desk saying 'I can change the feed without touching identity', arrow pointing to Feed Service. Caption: Each actor owns a different slice. Changes shouldn't ripple across boundaries."
 />
 
 <aside className="notes">
 **Walk through the graphic — four actors, four slices:**
-- **Student:** Pushes code, sees grades — never touches config or action
-- **Instructor:** Writes `pawtograder.yml` — never modifies TypeScript
-- **Sysadmin:** Maintains API infrastructure — doesn't write grading configs
-- **Intrepid Instructor:** Can change how grading works by modifying the action — without touching the API!
+- **User:** Posts messages, scrolls their feed — never touches server config
+- **Community Moderator:** Sets moderation rules for their server — never modifies feed algorithm code
+- **Sysadmin:** Maintains platform infrastructure — doesn't write moderation policies
+- **Developer:** Can improve the feed algorithm without touching identity or moderation
 
 **Key insight: changes from one actor shouldn't ripple to another's code.**
-- When instructor changes pawtograder.yml → action and API unchanged
-- When sysadmin updates API → instructor config unchanged
-- When intrepid instructor adds LLM feedback → API unchanged
+- When a moderator updates rules → feed algorithm and identity unchanged
+- When a developer tweaks the algorithm → moderation policies unchanged
+- When a sysadmin updates infrastructure → users see no difference
 
 **Connection to L8 (SOLID):** This is Single Responsibility Principle at architectural scale — each component has one reason to change, corresponding to one actor.
+
+**Chirp vs. Flock:**
+- In Chirp, the sysadmin and developer are the same company — but the slice separation still matters
+- In Flock, the community moderator is often a completely different person from the sysadmin — the architecture must enforce this separation
 
 → **Transition:** What if we forced all clients to use one fat interface?
 </aside>
@@ -718,7 +647,7 @@ Style: Warm, educational, clear building size hierarchy, with four distinct char
 
 ## Heuristic 3: Apply Interface Segregation
 
-<p style={{fontSize: '0.85em'}}>
+<p style={{fontSize: '0.75em'}}>
 Don't force clients to depend on interfaces they don't use. What if we had one fat interface?
 </p>
 
@@ -726,35 +655,36 @@ Don't force clients to depend on interfaces they don't use. What if we had one f
 
 ```java
 // BAD: One monolithic interface for everything
-public interface AutograderSystem {
-    // Instructor concerns
-    PawtograderConfig parseConfig(String yaml);
-    void validateGradedParts(PawtograderConfig config);
+public interface MicrobloggingSystem {
+    // User concerns
+    void post(String userId, String message);
+    List<Post> getFeed(String userId);
 
-    // Action engine concerns
-    void copySubmissionFiles(Path src, Path dest);
-    BuildResult buildProject(BuildPreset preset);
-    List<TestResult> runTests(PawtograderConfig config);
-    List<MutantResult> runMutationAnalysis(List<String> locations);
+    // Moderation concerns
+    void removePost(String moderatorId, String postId);
+    void banUser(String moderatorId, String userId);
+    List<Post> getFlaggedPosts(String serverId);
 
-    // API concerns
-    SubmissionRegistration registerSubmission(String oidcToken);
-    void submitFeedback(String submissionId, AutograderFeedback results);
+    // Federation concerns
+    void receivePost(String originServer, Post post);
+    void syncFollows(String originServer, List<Follow> follows);
+    String getPublicKey(String serverId);
 }
 ```
 
 </div>
 
 <div className="fragment">
-<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#FF9800'}}>
-An instructor configuring a YAML file shouldn't need to know about OIDC tokens. The API shouldn't need to know how tests are run. <em>We'll design the better version after finishing the heuristics.</em>
+<p style={{fontSize: '0.7em', marginTop: '-0.5em', color: '#FF9800'}}>
+A regular user shouldn't need to know about federation keys. A remote server syncing posts shouldn't need to know about moderation. <em>We'll design the better version after finishing the heuristics.</em>
 </p>
 </div>
 
 <aside className="notes">
 **What's wrong with this?**
-- Instructor only cares about config structure — they don't need `registerSubmission`
-- The API only cares about receiving results — it doesn't need `buildProject`
+- Users only care about posting and reading — they don't need `syncFollows` or `getPublicKey`
+- Remote servers syncing content don't need `banUser`
+- Moderators don't need federation methods
 - Coupling everything together means changing ANY part risks breaking ALL parts
 
 **Don't solve it yet!** We'll design the better, segregated interfaces after we finish all four heuristics. For now, plant the seed that ISP applies at the service level too.
@@ -776,37 +706,34 @@ Can you test a component <em>without</em> deploying the whole system?
 
 | Component | Testable in Isolation? | How? |
 |-----------|----------------------|------|
-| **Grading logic** | ✅ Yes | `npx tsimp src/grading/main.ts -s /path/to/solution -u /path/to/submission` — runs locally, no API needed |
-| **Config parsing** | ✅ Yes | Parse a `pawtograder.yml` file and validate — no network, no GitHub |
-| **API endpoints** | ✅ Yes | Edge functions tested independently with mock OIDC tokens |
-| **Full pipeline** | ⚠️ Integration | Requires GitHub Actions runner + API — regression test suite |
+| **Feed algorithm** | ✅ Yes | Pass a list of posts and follows, check ranked output — no network needed |
+| **Post validation** | ✅ Yes | Check character limits, banned words, media types — pure logic |
+| **Identity & auth** | ✅ Yes | Test token generation and verification independently |
+| **Federation (Flock)** | ⚠️ Hard | Requires two servers talking to each other — integration test |
 
 </div>
 
 <div className="fragment">
-<p style={{fontSize: '0.82em', marginTop: '0.5em', color: '#9370DB'}}>
-The grading action can run locally without Pawtograder. That's not an accident — it's an architectural choice that enables fast development iteration.
+<p style={{fontSize: '0.75em', marginTop: '0.5em', color: '#9370DB'}}>
+Chirp's services can be tested independently with mocks. Flock's federation is an architectural boundary that's genuinely harder to test — simulating two servers is more complex than simulating a function call. That's a real tradeoff.
 </p>
 </div>
 
 <aside className="notes">
 **Connection to L16 (Testability):**
 - Same principle: separate "what to do" from "how to connect"
-- The action doesn't need a real API to test grading logic
-- The API doesn't need a real GitHub runner to test submission handling
+- The feed algorithm doesn't need a real database to test ranking logic
+- Identity doesn't need a real network to test token verification
 
-**The local testing command is key:**
-```
-npx tsimp src/grading/main.ts -s /path/to/solution -u /path/to/submission
-```
-- No GitHub Actions, no Pawtograder API, no network
-- Just: "here's a solution repo and a student repo — grade it"
+**The Flock federation point is important:**
+- This is a case where the architectural choice (federation) makes one quality attribute (autonomy) better and another (testability) harder
+- That's not a mistake — it's a conscious tradeoff
+- Architecture = making tradeoffs consciously
 
 → **Transition:** Putting the four heuristics together...
 </aside>
 
 </Slide>
-
 
 {/* ============================================ */}
 {/* ARC 3 CONTINUED: EMERGING ARCHITECTURE */}
@@ -817,342 +744,191 @@ npx tsimp src/grading/main.ts -s /path/to/solution -u /path/to/submission
 ## Emerging Architecture: Three Components
 
 <p style={{fontSize: '0.85em'}}>
-Applying our four heuristics, a natural structure emerges:
+Applying our four heuristics, a natural structure emerges for both systems:
 </p>
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '18px' }}}%%
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px' }}}%%
 graph TD
-    User["Student / Instructor"]
-    Repo["Student Repo + <br/>Solution Repo with pawtograder.yml"]
-    Action["Grading Action<br/>(TypeScript)"]
-    API["Pawtograder API<br/>(Edge Functions)"]
+    User(["User / Moderator"])
+    Identity["Identity Service<br/>(accounts, auth)"]
+    Feed["Feed Service<br/>(posts, follows, ranking)"]
+    Platform["Platform API<br/>(storage, delivery)"]
 
-    User --> Repo
-    Repo --> Action
-    Action --> API
+    User --> Identity
+    User --> Feed
+    Feed --> Platform
+    Identity --> Platform
 
-    classDef actor fill:#E0E0E0,stroke:#757575,stroke-width:2px
+    classDef actor fill:#f8f8f8,stroke:#cccccc,stroke-width:1px,color:#999999
     classDef fast fill:#C8E6C9,stroke:#4CAF50,stroke-width:2px
     classDef medium fill:#B8D4E3,stroke:#4A90A4,stroke-width:2px
     classDef slow fill:#D4C4E8,stroke:#9370DB,stroke-width:2px
 
     class User actor
-    class Repo fast
-    class Action medium
-    class API slow
+    class Feed fast
+    class Identity medium
+    class Platform slow
 ```
 
 <aside className="notes">
 **How we got here:**
-- Rate of change → config changes fast, action medium, API slow
-- Actor → instructor touches config, maintainer touches action, sysadmin touches API
-- ISP → config is simple interface for instructor; API is simple interface for action
-- Testability → action testable locally without API
+- Rate of change → feed changes fast, identity medium, platform slow
+- Actor → users touch feed, moderators touch identity, sysadmins touch platform
+- ISP → users get a posting interface; remote servers get a federation interface
+- Testability → feed and identity testable locally without full platform
 
-**The components:**
-- **Solution Repo:** Config source + test cases
-- **Grading Action:** The engine (builds, tests, parses, reports)
-- **Pawtograder API:** The platform (auth, submission tracking, persistence)
+**Chirp vs. Flock:**
+- In Chirp, all three components live on one platform — but the separation still matters for changeability and testability
+- In Flock, this separation is enforced across servers — the Identity Service may live on a different server than the Feed Service
 
-→ **Transition:** How do Pawtograder's boundaries compare to Bottlenose's?
+→ **Transition:** A key design decision within this structure...
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Comparing Boundaries: Two approaches for grading student code
+## A Design Decision: Where Does the Feed Algorithm Live?
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.7em', marginTop: '1em'}}>
+<p style={{fontSize: '0.75em'}}>
+We need to rank posts for each user's feed. Where should that logic live?
+</p>
 
-<div style={{padding: '1em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+<div style={{display: 'flex', flexDirection: 'column', gap: '1em', fontSize: '0.65em', marginTop: '-1em'}}>
 
-**Pawtograder: "Smart Action"**
+<div style={{padding: '0.25em', border: '2px solid #4CAF50', borderRadius: '2px'}}>
 
-- Action parses, scores, normalizes
-- Sends structured `AutograderFeedback` to API
-- API just stores it — language-agnostic
+**Option A: Algorithm in the Platform (Chirp)**
 
-</div>
+The platform ranks all feeds centrally using global signals (engagement, recency, relationships).
 
-<div style={{padding: '1em', border: '2px solid #FF9800', borderRadius: '8px'}}>
-
-**Bottlenose: "Platform-Driven"**
-
-- `Grader` subclasses per language
-- Platform interprets raw output
-- Orca is a thin execution layer
+- **Pros:** Powerful recommendations, consistent experience, easy to improve globally
+- **Cons:** Platform controls what users see; hard to customize per community
 
 </div>
 
-</div>
+<div style={{padding: '0.25em', border: '2px solid #FF9800', borderRadius: '2px'}}>
 
-<div className="fragment" style={{marginTop: '1em'}}>
+**Option B: Algorithm per Server (Flock)**
 
-| | Pawtograder | Bottlenose |
-|--|-------------|------------|
-| **Data coupling** | Narrow API (2 endpoints) | Shared Database |
-| **Adding a language** | One new `Builder` class | New `Grader` + views + Docker image |
+Each server ranks feeds independently. Users may even choose their own algorithm.
 
-</div>
-
-<aside className="notes">
-**The fundamental difference:**
-- Pawtograder: intelligence in the action → simple API
-- Bottlenose: intelligence in the platform → simple worker
-
-**Why data coupling matters (next slide goes deeper):**
-- Bottlenose: application, job queue, and Orca all share PostgreSQL — schema changes ripple everywhere
-- Pawtograder: action NEVER touches database — only two API endpoints
-- This is information hiding at the data layer
-
-**Pattern connection (L17):**
-- Bottlenose's `Grader.find_by_type()` is Service Locator at architecture scale
-- Pawtograder's `Builder` interface is Dependency Injection — explicit, testable
-
-→ **Transition:** Let's see how data coupling affects testability...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Data Coupling Affects Testability
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
-
-**Pawtograder (narrow API)**
-
-Test the entire grading pipeline on your laptop:
-
-```bash
-npx tsimp src/grading/main.ts \
-  -s /path/to/solution \
-  -u /path/to/submission
-```
-
-No network, no database, no GitHub runner needed.
-
-</div>
-
-<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
-
-**Bottlenose (shared database)**
-
-You *could* test a `Grader` subclass by feeding it canned TAP output, but you'd need to:
-- Stub ActiveRecord (Grader inherits from it)
-- Mock Backburner job dispatch
-- Simulate Orca's Docker execution responses
-
-Possible, but the architecture works against you.
+- **Pros:** Community autonomy, no single point of control
+- **Cons:** No global signals; harder to build powerful recommendations; inconsistent experience
 
 </div>
 
 </div>
 
 <div className="fragment">
-<p style={{fontSize: '0.82em', marginTop: '0.75em', color: '#9370DB'}}>
-Coupling makes itself felt at test time: isolated testing isn't impossible in Bottlenose, but the architecture makes it unnatural—you're working against the grain instead of with it.
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB'}}>
+Neither is wrong — Chirp optimizes for recommendation quality, Flock optimizes for autonomy. But this decision is <strong>expensive to change</strong>: switching from centralized to federated ranking would require rearchitecting how posts are stored and shared across the entire network.
 </p>
 </div>
 
 <aside className="notes">
-**Connection to L16 (Testability):**
-- Same principle: the more dependencies a component has, the harder it is to test
-- Pawtograder's narrow API boundary means: no DB dependency → easy local testing
-- Bottlenose's shared database means: you *can* test a Grader with canned output, but you're fighting ActiveRecord inheritance, job dispatch coupling, etc.
+**Why is this expensive to change?**
+- Centralized ranking requires all posts to flow through one place — the database schema, the storage model, and the delivery pipeline all assume this
+- Switching to federated ranking means posts must be stored and indexed on each server — every component that touches posts must change
+- Six months in, if you try to extract ranking into per-server logic, it's intertwined with storage, with the UI, with notification delivery...
+- "Should I throw it away and start over?" — that's the definition of an expensive decision
 
-**Connection to L17 (Service Locator vs DI):**
-- Bottlenose's Service Locator approach means: grader code implicitly depends on the platform's registry
-- Testing a `JavaGrader` in isolation requires mocking the lookup mechanism, the ActiveRecord base class, etc.
-- Pawtograder's DI approach means: `GradleBuilder` depends only on what's in its constructor—easy to test by passing mocks
-- This is exactly L17's point: "DI makes dependencies explicit... Service Locator hides them"
+**Connection to Pawtograder equivalent:**
+- This is the same kind of decision as "where does language logic live?"
+- In both cases: normalizing early (in the action / in the platform) keeps the downstream component simple
+- But it concentrates power in the component that does the normalizing
 
-**Neither is wrong — different tradeoffs:**
-- Bottlenose's shared DB simplified the architecture (components just read/write the same tables)
-- But it made testing harder and changes more expensive — a schema change ripples everywhere
-- Pawtograder's narrow API adds normalization complexity but gains testability and independent deployment
-
-→ **Transition:** There's still a big decision inside the action...
+→ **Transition:** So we've found our boundaries. How do we design the interfaces between them?
 </aside>
 
 </Slide>
-
-<Slide>
-
-## A Design Decision: Where Does Language Logic Live?
-
-<p style={{fontSize: '0.85em', margin: '0 0 0.5em 0'}}>
-We need to support multiple languages (Java, Python). Where should the language-specific build/test logic live?
-</p>
-
-<div style={{display: 'flex', flexDirection: 'column', gap: '0.5em', fontSize: '0.65em'}}>
-
-<div style={{padding: '0.5em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
-
-**Option A: Logic in the Action**
-
-The action knows how to build Java (Gradle) and Python. It normalizes results before sending to API.
-
-- **Pros:** API stays language-agnostic (simple!)
-- **Cons:** Action grows with every new language support
-- **Example:** `preset: 'java-gradle' | 'python-script'` strategy pattern
-
-</div>
-
-<div style={{padding: '0.5em', border: '2px solid #FF9800', borderRadius: '8px'}}>
-
-**Option B: Logic in the API**
-
-Action sends raw logs/XML to API. API parses and normalizes.
-
-- **Pros:** Action is very thin ("dumb pipe")
-- **Cons:** API becomes coupled to every language toolchain; hard to test locally
-- **Risk:** Scaling issues if parsing is heavy
-
-</div>
-
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#9370DB', margin: '0.5em 0 0 0'}}>
-Pawtograder chooses <strong>Option A</strong>. The action normalizes everything into a standard `AutograderFeedback` format. The API remains simple and scalable.
-</p>
-</div>
-
-<aside className="notes">
-**Bottlenose's architecture is closer to Option B:**
-- Orca (the Docker execution service) is a thin pipe that returns raw output
-- Bottlenose's `Grader` subclasses interpret everything — each language has its own parsing logic
-- This worked because Bottlenose already had deep knowledge of assignment structure for each language
-
-**Pawtograder chose Option A because:**
-- The action runs in the build environment where parsing tools are available
-- Keeping the API simple enables it to serve many courses with minimal changes
-- Adding Rust support = adding a new Builder implementation, not changing the API
-
-**Reflection questions:**
-1. If we added Rust support, which components would need to change?
-2. Can you test language-specific parsing without a running API?
-3. What if we wanted to support a course platform other than Pawtograder (e.g., Canvas)?
-
-→ **Transition:** How do we wire the internal steps?
-</aside>
-
-</Slide>
-
-<Slide>
-# This decision is expensive to change
-<Img
-  src="/img/lectures/web/l18-language-logic2.webp"
-  prompt="A 'fork in the road' illustration showing where language-specific logic should live in the Pawtograder architecture.
-
-CENTER TOP: A raw JUnit XML report file with complex tags, sitting at a crossroads. A large arrow points outward from the XML file, showing it going to the Grading Action and the Pawtograder API.
-
-LEFT PATH — 'Logic in Action' (green path): The XML file goes into a factory building labeled 'Grading Action'. Inside, a machine converts it into a clean, standardized JSON card labeled 'AutograderFeedback'. The card travels easily to the API. Signpost: 'API is language-agnostic', 'Local testing easy'.
-
-RIGHT PATH — 'Logic in API' (orange path): The raw XML file travels down a long pipe directly to the 'Pawtograder API' cloud building. Inside the cloud, gears are grinding and smoke is coming out as it tries to parse Java, Python, C++, and Rust formats all at once. Signpost: 'Action is thin', 'API is complex & coupled'.
-
-BOTTOM CENTER: A wise middle-aged architect character sitting on a bench at the fork, saying: 'Pawtograder chose the green path — normalize an API early, keep the core platform simple.'
-
-Style: Whimsical fork-in-the-road illustration, warm colors, educational, clear labels on the tradeoffs."
-  alt="Fork in the road: Logic in Action (normalize early, simple API) vs Logic in API (thin action, complex/coupled API). Architect says: Normalize early."
-/>
-
-<aside className="notes">
-**Why is this "expensive to change"?**
-
-Once you take the orange path (logic in API), coupling spreads like a web:
-- API now knows about JUnit XML format → tied to Java
-- Add Python? API learns pytest format → more parsing code
-- Add Rust? More formats, more coupling
-- Database schema stores language-specific fields
-- UI displays language-specific results
-- Every new language touches EVERY layer
-
-**The extraction question:**
-- Six months later, you realize the API is bloated and hard to test
-- You think: "Let's extract the parsing into a separate service"
-- But now parsing code is intertwined with storage, with the UI, with the job queue...
-- You ask yourself: "Can I even extract this? Or should I just start from scratch?"
-
-**THAT question — "should I throw it away and start over?" — is the definition of an expensive decision.**
-
-The green path (normalize early) avoids this:
-- Action handles all language complexity
-- API just stores `AutograderFeedback` — same shape for every language
-- Adding Rust? One new `Builder` class. API unchanged. Database unchanged.
-
-**This is why we said earlier:** architectural decisions are the ones that are expensive to change. This fork is architectural.
-
-→ **Transition:** So we've found our boundaries and made the big structural decisions. But how do we design the interfaces BETWEEN these components? Turns out, the same principles from class design apply at this scale too...
-</aside>
-
-</Slide>
-
-{/* ============================================ */}
-{/* INTERFACE DESIGN AT THE SERVICE LEVEL */}
-{/* ============================================ */}
 
 <Slide>
 
 ## Interface Design at the Service Level
 
-<p style={{fontSize: '0.75em'}}>
+<p style={{fontSize: '0.85em'}}>
 Once we've identified components, we need to design their interfaces. The same principles from class design apply—and so do the same patterns from L17.
 </p>
 
-<div style={{fontSize: '0.6em', marginTop: '-1em'}}>
+<div style={{fontSize: '0.6em', marginTop: '0.5em'}}>
+
 **Dependency Injection at service scale:**
-
 ```java
-// Good: GradingAction depends on abstractions
-public class GradingAction {
-    private final SubmissionAPI submissionApi;
-    private final FeedbackAPI feedbackApi;
+// Good: FeedService depends on abstractions, not concrete implementations
+public class FeedService {
+    private final IdentityService identityService;
+    private final PostRepository postRepository;
 
-    public GradingAction(SubmissionAPI submissionApi, FeedbackAPI feedbackApi) {
-        this.submissionApi = submissionApi;
-        this.feedbackApi = feedbackApi;
+    public FeedService(IdentityService identityService,
+                       PostRepository postRepository) {
+        this.identityService = identityService;
+        this.postRepository = postRepository;
     }
 }
 ```
 
-**Use the Strategy pattern for extensibility:**
-
-```java
-// Builder is an interface—we can add new language support
-public interface Builder {
-    BuildResult build(Path projectDir, BuildConfig config);
-    List<TestResult> parseTestResults(Path reportDir);
-    Optional<LintResult> lint(Path projectDir, LinterConfig config);
-    Optional<List<MutantResult>> mutationTest(Path projectDir, MutationConfig config);
-}
-```
-
 </div>
-
-{/* can't fit
-<div className="fragment">
-<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
-**Make contracts clear:** What does `register` promise? What happens if the OIDC token is invalid? What format does `AutograderFeedback` use? These details belong in the interface's documentation.
-</p>
-</div>
-*/}
 
 <aside className="notes">
 **Connection to L17:**
-- In L17, we passed a `ConversionRegistry` to `Recipe.convert()`. At the service level, the same principle applies—but now we're injecting entire collaborating services.
-- The `GradingAction` depends on `SubmissionAPI` and `FeedbackAPI` abstractions, not concrete implementations.
-- For testing, we can inject mock implementations that don't require a real API.
+- DI handles the outward-facing dependencies (IdentityService, PostRepository)
+- For testing: inject mock implementations that don't require a real auth server or database
 
+→ **Transition:** DI handles outward dependencies — Strategy handles internal ones...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Strategy Pattern for Extensibility
+
+<p style={{fontSize: '0.85em'}}>
+Use the Strategy pattern to make the feed algorithm swappable without changing <code>FeedService</code>:
+</p>
+```mermaid
+classDiagram
+    class RankingStrategy {
+        <<interface>>
+        +rank(candidates List~Post~, user UserProfile) List~Post~*
+    }
+
+    class ChronologicalStrategy {
+        +rank(candidates List~Post~, user UserProfile) List~Post~
+    }
+
+    class EngagementStrategy {
+        +rank(candidates List~Post~, user UserProfile) List~Post~
+    }
+
+    class CommunityStrategy {
+        +rank(candidates List~Post~, user UserProfile) List~Post~
+    }
+
+    class FeedService {
+        -rankingStrategy RankingStrategy
+        +getFeed(userId String) FeedResponse
+    }
+
+    RankingStrategy <|.. ChronologicalStrategy
+    RankingStrategy <|.. EngagementStrategy
+    RankingStrategy <|.. CommunityStrategy
+    FeedService --> RankingStrategy
+
+    style RankingStrategy fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+<aside className="notes">
 **The Strategy pattern for extensibility:**
-- `Builder` is the extension point for new languages
-- Adding Rust = new `RustCargoBuilder` class, nothing else changes
-- This is exactly what we saw in the "Adding Rust Support" comparison
+- Adding a new ranking algorithm = new RankingStrategy class, nothing else changes
+- Chirp might use EngagementStrategy by default; a Flock server might prefer ChronologicalStrategy
+- CommunityStrategy could let server operators tune ranking for their community
+
+**Connection to DI:**
+- The RankingStrategy is injected into FeedService — same principle as the previous slide
+- DI handles outward dependencies; Strategy handles internal variation
 
 → **Transition:** What do these contracts actually look like?
 </aside>
@@ -1163,59 +939,62 @@ public interface Builder {
 
 ## The Contracts: Data Types That Cross Boundaries
 
-<p style={{fontSize: '0.8em'}}>
+<p style={{fontSize: '0.7em'}}>
 The interface isn't just method signatures — it's the <strong>data types</strong> that flow across. These are the contracts that must remain stable:
 </p>
 
 <div style={{fontSize: '0.5em', marginTop: '0.5em'}}>
 
 ```java
-// What the API returns when the action registers a submission
-public record SubmissionRegistration(
-    String submissionId,     // Unique ID for this grading run
-    String graderUrl,        // One-time URL to download instructor's test code
-    String graderSha         // SHA to verify the download wasn't tampered with
+// A post — the core data type that crosses every boundary
+public record Post(
+    String postId,          // Unique ID for this post
+    String authorId,        // Who wrote it (stable identity reference)
+    String content,         // The message text
+    Instant createdAt,      // When it was posted
+    String originServer     // Which server it came from (Flock only)
 ) {}
 
-// What the action sends back after grading — THE KEY CONTRACT
-public record AutograderFeedback(
-    List<TestFeedback> tests,          // Results per graded part
-    LintResult lint,                    // Style check results
-    Optional<Double> score,             // Overall score
-    List<FeedbackComment> annotations   // Line-level comments on student code
+// What the feed service returns to a client
+public record FeedResponse(
+    List<Post> posts,           // Ranked posts for this user
+    String nextPageToken,       // For pagination
+    Instant generatedAt         // When this feed was computed
 ) {}
 
-// A comment attached to a specific line of student code
-public record FeedbackComment(
-    String file, int line, String message, String severity
+// What a Flock server sends when federating a post to another server
+public record FederatedPost(
+    Post post,
+    String signature,       // Cryptographic proof of origin
+    String publicKeyUrl     // Where to fetch the signing key
 ) {}
 ```
 
 </div>
 
 <div className="fragment">
-<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#FF9800'}}>
-If `AutograderFeedback` were poorly designed — no visibility levels, no line-level comments — every future grading implementation would have to work around those limitations. <strong>This contract deserves careful design.</strong>
+<p style={{fontSize: '0.7em', marginTop: '0.5em', color: '#FF9800'}}>
+If <code>Post</code> were poorly designed — no <code>originServer</code>, no stable <code>authorId</code> — Flock's federation would be impossible to add later. <strong>This contract deserves careful design.</strong>
 </p>
 </div>
 
 <aside className="notes">
-**Why these records matter:**
-- `SubmissionRegistration`: What the action receives — a one-time URL to download the private grader
-- `AutograderFeedback`: What the action sends back — ALL the grading results in one structured format
-- `FeedbackComment`: Enables line-level feedback on student code
+**Why these contracts matter:**
+- Post is the data type that crosses every boundary — feed service reads it, identity service writes it, federation sends it
+- If Post changes shape, every component changes with it
+- That's why it's in the "very rarely changes" row of our rate-of-change table
 
-**This is the "thick action" paying off:**
-- The action has already parsed JUnit XML, Pitest reports, linter output
-- Normalized everything into this clean, structured format
-- The API just stores it — doesn't need to know about JUnit or Pitest
+**The FederatedPost type:**
+- This only matters for Flock — Chirp doesn't need cryptographic signatures
+- But designing Post to include originServer from the start means Chirp could add federation later without changing the core data type
+- That's designing for changeability at the data layer
 
-**The stability requirement:**
-- If we change `AutograderFeedback`, EVERY grading action implementation must change
-- That's why this interface changes "very rarely — breaking change"
-- Same principle as L7's stable interfaces — but now at the API level
+**Connect back to the heuristics:**
+- Rate of change: Post changes rarely — it's the stable contract
+- ISP: FeedResponse is for clients; FederatedPost is for servers — different clients, different types
+- Testability: You can test the feed service by constructing Post objects directly — no database needed
 
-→ **Transition:** How do we communicate all of this architecture to others?
+→ **Transition:** How do we communicate this architecture to others?
 </aside>
 
 </Slide>
@@ -1245,17 +1024,17 @@ Style: Warm, slightly humorous illustration showing the communication problem, t
 />
 
 <aside className="notes">
-**The communication challenge with Pawtograder:**
+**The communication challenge:**
 - We just covered: three components, four heuristics, data coupling decisions, interface contracts, record types...
 - How would you explain all of that to a new team member?
-- How would you explain it to an instructor who just wants to configure grading?
-- How would you explain it to a sysadmin who needs to debug the API?
+- How would you explain it to a community moderator who just wants to set rules for their server?
+- How would you explain it to a sysadmin who needs to debug the platform?
 
 **The problem:**
 - If this architecture only exists in one person's head, it degrades like a game of telephone
 - Six months later, everyone has a DIFFERENT mental model
 - New contributors make changes that violate boundaries they didn't know existed
-- "Why doesn't the action just write directly to the database?" — because they never saw the ADR
+- "Why doesn't the feed service just query identity directly?" — because they never saw the ADR
 
 **Structured approaches help:**
 1. **C4 Diagrams** — Show the system at different zoom levels (different audiences need different detail)
@@ -1270,25 +1049,27 @@ Style: Warm, slightly humorous illustration showing the communication problem, t
 
 ## The C4 Model: Four Levels of Zoom
 
-<div style={{fontSize: '0.7em', marginTop: '0.5em'}}>
+<div style={{fontSize: '0.72em', marginTop: '0.5em'}}>
 
-| Level | Shows | Pawtograder Example |
+| Level | Shows | Chirp/Flock Example |
 |-------|-------|---------------------|
-| **1. System Context** | System + Users + External | Student ↔ GitHub ↔ **Autograder** ↔ Instructor |
-| **2. Container** | Deployable Units | **Grading Action** (TypeScript), **API** (Edge Functions), **Database** (Supabase) |
-| **3. Component** | Internals of one Container | Inside Action: `ConfigParser`, `Builder`, `TestRunner`, `FeedbackClient` |
-| **4. Code** | Classes / Interfaces | `PawtograderConfig` interface, `Builder` class |
+| **1. System Context** | System + Users + External | User ↔ Device ↔ **Microblogging System** ↔ Moderator |
+| **2. Container** | Deployable Units | **Feed Service**, **Identity Service**, **Platform API**, **Database** |
+| **3. Component** | Internals of one Container | Inside Feed Service: `PostRepository`, `RankingStrategy`, `FeedController` |
+| **4. Code** | Classes / Interfaces | `RankingStrategy` interface, `Post` record |
 
 </div>
 
 <div className="fragment">
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
-Let's walk through all four levels for Pawtograder's autograder, so you can see how each level zooms in on a different scale of the same system.
+<p style={{fontSize: '0.78em', marginTop: '1em'}}>
+Let's walk through all four levels for Chirp, so you can see how each level zooms in on a different scale of the same system.
 </p>
 </div>
 
 <aside className="notes">
 **The C4 model**, created by Simon Brown, provides four levels of abstraction for architectural diagrams.
+
+**Key insight:** You don't always need all four levels. Use the level that answers the question your audience is asking.
 
 → **Transition:** Let's start at the widest zoom level...
 </aside>
@@ -1299,46 +1080,37 @@ Let's walk through all four levels for Pawtograder's autograder, so you can see 
 
 ## C4 Level 1: System Context
 
-<p style={{fontSize: '0.85em'}}>
+<p style={{fontSize: '0.78em'}}>
 Who uses the system, and what external systems does it talk to? This is the "napkin sketch" level.
 </p>
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '15px' }}}%%
 graph TD
-    subgraph Actors
-        Student([Student])
-        Instructor([Instructor])
-    end
-
-    subgraph External Systems
-        GitHubRepo[GitHub Repo]
-        SolutionRepo[Solution Repo]
-    end
+    User([User])
+    Moderator([Moderator])
 
     subgraph System Under Design
-        Autograder[Autograder System]
+        Microblog[Microblogging System]
     end
 
-    Pawtograder[Pawtograder Platform]
-
-    Student -->|pushes code| GitHubRepo
-    Instructor -->|"configures grading via<br/>pawtograder.yml"| SolutionRepo
-
-    GitHubRepo -->|triggers| Autograder
-    SolutionRepo -->|provides tests & config| Autograder
-
-    Autograder -->|stores grades| Pawtograder
-    Pawtograder -->|job summary| GitHubRepo
+    User -->|posts and reads| Microblog
+    Moderator -->|configures content policy| Microblog
 ```
 
-<p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
-At this level, the autograder is a single box. We don't care what's inside—only what it interacts with.
+<p style={{fontSize: '0.72em', marginTop: '0.5em'}}>
+At this level, the entire platform is a single box. We don't care what's inside — only what it interacts with.
 </p>
 
 <aside className="notes">
 **The "elevator pitch" diagram:**
-- A student or TA could read this and understand the system's role
-- No internal details—just actors and external systems
+- A non-technical stakeholder could read this and understand the system's role
+- No internal details — just actors and external systems
+
+**Chirp vs. Flock at Level 1:**
+- Chirp's Level 1 looks like this — one central system
+- Flock's Level 1 would show MULTIPLE microblogging systems talking to each other via federation
+- That difference at Level 1 already tells you something fundamental about the architecture
 
 → **Transition:** Zoom in to see the deployable units...
 </aside>
@@ -1349,121 +1121,125 @@ At this level, the autograder is a single box. We don't care what's inside—onl
 
 ## C4 Level 2: Container
 
-<p style={{fontSize: '0.85em'}}>
-Zoom into the "Autograder System" box. What are the major deployable units?
+<p style={{fontSize: '0.78em'}}>
+Zoom into the "Microblogging System" box. What are the major deployable units?
 </p>
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px' }}}%%
 graph TD
-    subgraph Autograder System
-        SolutionRepo["Solution Repo +<br/>pawtograder.yml<br/><br/><i>Changes weekly,<br/>owned by instructor</i>"]
-        GradingAction["Grading Action<br/>(TypeScript,<br/>GitHub Actions runner)<br/><br/><i>Changes every few months,<br/>owned by action maintainers</i>"]
-        API["Pawtograder API<br/>(Supabase Edge Functions)<br/><br/><i>Changes rarely,<br/>owned by sysadmin team</i>"]
-        DB[("Database<br/>Supabase Postgres")]
+    subgraph Microblogging System
+        Identity["Identity Service<br/>(accounts, auth)<br/><br/><i>Changes rarely,<br/>owned by security team</i>"]
+        Feed["Feed Service<br/>(posts, follows, ranking)<br/><br/><i>Changes frequently,<br/>owned by product team</i>"]
+        API["Platform API<br/>(storage, delivery)<br/><br/><i>Changes rarely,<br/>owned by sysadmin team</i>"]
+        DB[("Database")]
 
-        SolutionRepo -->|read| GradingAction
-        GradingAction -->|"createSubmission(),<br/>submitFeedback()<br/>(HTTPS + JSON)"| API
+        Identity -->|authenticates| Feed
+        Feed -->|"publishPost(),<br/>getFeed()<br/>(HTTPS + JSON)"| API
         API --> DB
     end
 ```
 
-<p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
-The narrow API boundary between the Grading Action and Pawtograder API is a deliberate choice—the action never touches the database directly.
+<p style={{fontSize: '0.72em', marginTop: '0.5em'}}>
+The narrow API boundary between the Feed Service and Platform API is deliberate — the feed service never touches the database directly.
 </p>
 
 <aside className="notes">
 **What this reveals:**
 - The three components we identified earlier, plus the database
-- Communication mechanism: HTTPS + JSON through two API endpoints
-- This is the level where architectural decisions become visible
+- Communication mechanism: HTTPS + JSON through well-defined endpoints
+- Rate of change is visible: feed service changes fast, identity and API change slowly
 
-**Bottlenose comparison:**
-- Bottlenose's Level 2 has four containers (Bottlenose application, Backburner job queue, Orca Docker execution, PostgreSQL)
-- This reflects the additional infrastructure required for Bottlenose's dedicated-server approach
+**Flock's Level 2 would look different:**
+- Each server is its own container
+- A federation layer appears between servers
+- The database is local to each server, not shared
 
-→ **Transition:** Zoom into the Grading Action...
+→ **Transition:** Zoom into the Feed Service...
 </aside>
 
 </Slide>
 
 <Slide>
 
-## C4 Level 3: Component (Grading Action)
+## C4 Level 3: Component (Feed Service)
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px' }}}%%
 graph TD
-    Controller["Controller<br/>(main.ts)<br/><br/>Orchestrates the pipeline"]
+    Controller["FeedController<br/><br/>Handles incoming requests,<br/>orchestrates the pipeline"]
 
-    Controller --> ConfigParser["Config Parser<br/><br/>Reads & validates<br/>pawtograder.yml"]
-    Controller --> BuildRunner[Build Runner]
-    Controller --> TestRunner[Test Runner]
-    Controller --> MutationAnalyzer[Mutation Analyzer]
-    Controller --> APIClient["API Client<br/>(SupabaseAPI.ts)"]
+    Controller --> Auth["AuthFilter<br/><br/>Verifies user identity<br/>via Identity Service"]
+    Controller --> Repo["PostRepository<br/><br/>Fetches candidate posts<br/>for this user"]
+    Controller --> Ranker["FeedRanker<br/><br/>Applies RankingStrategy<br/>to order posts"]
+    Controller --> Notifier["NotificationService<br/><br/>Sends mention and<br/>follow notifications"]
 
-    BuildRunner --> TestRunner
-    MutationAnalyzer -.->|depends on| TestRunner
-
-    TestRunner --> ReportParsers["Report Parsers<br/><br/>Surefire XML<br/>PIT XML<br/>JaCoCo CSV<br/>Checkstyle"]
+    Ranker --> Strategy["RankingStrategy<br/>(interface)<br/><br/>Chronological,<br/>Engagement,<br/>Community"]
 ```
 
-<p style={{fontSize: '0.7em', marginTop: '0em'}}>
-This view shows how `main.ts` orchestrates the internal components. **Mutation Analysis** depends on **Tests** being run first, and multiple report parsers normalize tool-specific output into `AutograderFeedback`.
+<p style={{fontSize: '0.72em', marginTop: '0.5em'}}>
+This view shows how <code>FeedController</code> orchestrates the internal components. <code>RankingStrategy</code> is the extension point — swapping algorithms doesn't touch anything else.
 </p>
 
 <aside className="notes">
 **What this reveals:**
-- The central role of the Controller (`Main`)
+- The central role of the FeedController
 - Dependency direction: deeper components don't know about the controller
-- Separation of concerns: Builder doesn't know about API Client
-- Report Parsers normalize Surefire XML, PIT XML, JaCoCo CSV, and Checkstyle output
-- This is the view a developer needs to fix a bug in result reporting
+- RankingStrategy is the key extension point — this is the Level 3 view a developer needs to add a new algorithm
+- NotificationService is a separate concern — mentions and follows don't need to know about ranking
 
-→ **Transition:** Zoom into the Build Runner to see actual code...
+→ **Transition:** Zoom into the RankingStrategy to see actual code...
 </aside>
 
 </Slide>
 
 <Slide>
 
-## C4 Level 4: Code (Build Runner)
+## C4 Level 4: Code (RankingStrategy)
 
-<p style={{fontSize: '0.85em'}}>
-Zoom into the "Build Runner" component. What are the actual classes and interfaces?
+<p style={{fontSize: '0.78em'}}>
+Zoom into the <code>RankingStrategy</code> extension point. What are the actual classes and interfaces?
 </p>
 
 ```mermaid
 classDiagram
-    class Builder {
+    class RankingStrategy {
         <<interface>>
-        +build(Path projectDir, BuildConfig config) BuildResult
-        +parseTestResults(Path reportDir) List~TestResult~
-        +lint(Path projectDir, LinterConfig config) Optional~LintResult~
-        +mutationTest(Path projectDir, MutationConfig config) Optional~List~MutantResult~~
+        +rank(candidates List~Post~, user UserProfile) List~Post~*
     }
-    class GradleBuilder {
-        Java via Gradle
+    class ChronologicalStrategy {
+        Newest posts first
+        +rank(candidates List~Post~, user UserProfile) List~Post~
     }
-    class PythonScriptBuilder {
-        Python scripts
+    class EngagementStrategy {
+        Ranked by likes and replies
+        +rank(candidates List~Post~, user UserProfile) List~Post~
     }
-    class RustCargoBuilder {
-        Future: Rust via Cargo
+    class CommunityStrategy {
+        Server operator configures weights
+        +rank(candidates List~Post~, user UserProfile) List~Post~
     }
 
-    Builder <|.. GradleBuilder
-    Builder <|.. PythonScriptBuilder
-    Builder <|.. RustCargoBuilder : adding Rust = adding one class
+    RankingStrategy <|.. ChronologicalStrategy
+    RankingStrategy <|.. EngagementStrategy
+    RankingStrategy <|.. CommunityStrategy : adding algorithm = adding one class
+
+    style RankingStrategy fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
 ```
 
-<p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
-Level 4 shows actual code structure. You'd rarely draw this for the whole system—it's useful for specific extension points or critical interfaces.
+<p style={{fontSize: '0.72em', marginTop: '0.5em'}}>
+Level 4 shows actual code structure. You'd rarely draw this for the whole system — it's useful for specific extension points or critical interfaces.
 </p>
 
 <aside className="notes">
 **When to use Level 4:**
-- Documenting extension points (like the `Builder` interface)
-- Critical interfaces where getting the design right matters (like `AutograderFeedback`)
-- NOT for the entire system—too much detail
+- Documenting extension points (like RankingStrategy)
+- Critical interfaces where getting the design right matters (like Post)
+- NOT for the entire system — too much detail
+
+**The connection back to Arc 3:**
+- We designed this interface earlier when discussing the Strategy pattern
+- Level 4 is where architecture and design meet — the interface is an architectural decision, the implementations are design decisions
 
 → **Transition:** Choosing the right level for your audience...
 </aside>
@@ -1474,25 +1250,27 @@ Level 4 shows actual code structure. You'd rarely draw this for the whole system
 
 ## Choosing the Right Level
 
-<p style={{fontSize: '0.85em'}}>
+<p style={{fontSize: '0.78em'}}>
 Use the right level of detail for your audience:
 </p>
 
-<div style={{fontSize: '0.7em', marginTop: '0.5em'}}>
+<div style={{fontSize: '0.68em', marginTop: '0.5em'}}>
 
 | Audience | Useful Levels | Why |
 |----------|--------------|-----|
-| Students and TAs | Level 1 | Need to understand what the system does, not how |
-| Instructors configuring grading | Levels 1–2 | Need to see where `pawtograder.yml` fits in the pipeline |
-| Action maintainers | Levels 2–3 | Need to understand component responsibilities and dependencies |
-| Contributors adding a new Builder | Levels 3–4 | Need to see the extension point and its interface |
+| Non-technical stakeholders | Level 1 | Need to understand what the system does, not how |
+| Community moderators | Levels 1–2 | Need to see where moderation rules fit in the system |
+| Platform engineers | Levels 2–3 | Need to understand component responsibilities and dependencies |
+| Contributors adding a ranking algorithm | Levels 3–4 | Need to see the extension point and its interface |
 
 </div>
 
-
-
 <aside className="notes">
 **Key insight:** Match the diagram to the audience. Don't show Level 4 code diagrams to non-technical stakeholders.
+
+**Flock note:**
+- A Flock server operator needs a Level 1 diagram showing how their server federates with others
+- They don't need to know about the internal RankingStrategy hierarchy
 
 In L20 and L21, we'll see how network boundaries and serverless platforms influence container topology.
 
@@ -1505,32 +1283,32 @@ In L20 and L21, we'll see how network boundaries and serverless platforms influe
 
 ## Architecture Decision Records (ADRs)
 
-<p style={{fontSize: '0.85em'}}>
+<p style={{fontSize: '0.78em'}}>
 Diagrams show <em>what</em>. <strong>ADRs capture <em>why</em></strong>. An ADR documents: <strong>Context</strong>, <strong>Decision</strong>, and <strong>Consequences</strong>.
 </p>
 
-<div style={{fontSize: '0.62em', padding: '0.75em', backgroundColor: 'rgba(147, 112, 219, 0.1)', borderRadius: '8px', border: '1px solid rgba(147, 112, 219, 0.3)'}}>
+<div style={{fontSize: '0.58em', padding: '0.75em', backgroundColor: 'rgba(147, 112, 219, 0.1)', borderRadius: '8px', border: '1px solid rgba(147, 112, 219, 0.3)'}}>
 
-**ADR-001: Thick Grading Action with Narrow API vs. Thin Action with Shared Database**
+**ADR-001: Centralized Feed Algorithm vs. Per-Server Algorithm**
 
-**Context:** The grading action needs to communicate results to the Pawtograder platform. We could have the action access the database directly (as Bottlenose's components share PostgreSQL), or we could put a narrow API in between.
+**Context:** We need to rank posts for each user's feed. We could rank centrally using global engagement signals, or let each server (or user) choose their own algorithm.
 
-**Decision:** The grading action will **communicate exclusively through two API endpoints** (`createSubmission` and `submitFeedback`). It will never access the database directly.
+**Decision:** Chirp will **rank feeds centrally** using a shared EngagementStrategy. The RankingStrategy interface is retained to allow A/B testing of algorithms internally.
 
 **Consequences:**
-- ✅ **Testability:** The action can run locally without a database, network, or GitHub runner
-- ✅ **Changeability:** Database schema can evolve freely without touching the action
-- ✅ **Decoupling:** Action and API can be developed and deployed independently
-- ⚠️ **Complexity:** The action must normalize all results into a standard `AutograderFeedback` format
-- ⚠️ **Duplication:** Some validation happens in both the action and the API
+- ✅ **Consistency:** All users get a coherent, optimized experience
+- ✅ **Changeability:** New algorithms can be tested without touching the Feed Service
+- ✅ **Scalability:** Ranking infrastructure can be optimized centrally
+- ⚠️ **Autonomy:** Users cannot opt out of the platform's ranking choices
+- ⚠️ **Coupling:** Feed quality is tied to the platform's data — if engagement data degrades, all feeds degrade
 
 </div>
 
 <aside className="notes">
 **Why is this an ADR?**
-- This is the most fundamental boundary decision in Pawtograder
-- Six months from now, someone will ask: "Why doesn't the action just write grades directly to the database? It would be so much simpler!"
-- The ADR answers: "Because we prioritize testability and independent deployment over simplicity — and we know tight data coupling makes every component harder to change and test independently."
+- This is the most fundamental content decision in Chirp
+- Six months from now, someone will ask: "Why don't we let users choose chronological order? It would be so much simpler!"
+- The ADR answers: "We evaluated this — the RankingStrategy interface supports it technically, but we chose not to expose it because it fragments the user experience and reduces our ability to optimize engagement."
 
 **ADRs create institutional memory** — they prevent re-litigating settled decisions.
 
@@ -1541,36 +1319,42 @@ Diagrams show <em>what</em>. <strong>ADRs capture <em>why</em></strong>. An ADR 
 
 <Slide>
 
-## ADR Example: Security Decision
+## ADR Example: Identity Decision
 
-<div style={{fontSize: '0.62em', padding: '0.75em', backgroundColor: 'rgba(147, 112, 219, 0.1)', borderRadius: '8px', border: '1px solid rgba(147, 112, 219, 0.3)'}}>
+<div style={{fontSize: '0.58em', padding: '0.75em', backgroundColor: 'rgba(147, 112, 219, 0.1)', borderRadius: '8px', border: '1px solid rgba(147, 112, 219, 0.3)'}}>
 
-**ADR-002: Dynamic Grader Download vs. Embedded Tests**
+**ADR-002: Centralized Identity vs. Federated Identity**
 
-**Context:** We need to run instructor tests against student code. We could embed tests in the student repo (hidden folder?) or download them at runtime.
+**Context:** Users need accounts to post and follow others. We could own all identity centrally, or allow identity to be distributed across servers as in Flock.
 
-**Decision:** The action will **download the private grader at runtime** using an authenticated one-time URL.
+**Decision:** Chirp will **own all identity centrally**. Every account lives on Chirp's Identity Service. There is no federation.
 
 **Consequences:**
-- ✅ **Security:** Students strictly cannot see test code (it's never in their repo). Student code *does* run alongside instructor code, but the design ensures that a student who submits a trojan horse to exfiltrate the secret grader is trivially detected.
-- ✅ **Changeability:** Instructors can update tests after assignment release without student pull.
-- ⚠️ **Reliability:** Grading requires active network connection to Pawtograder API, adding more points of failure.
-- ⚠️ **Complexity:** Needs a complex auth flow to get the download URL and ensure that student code is immutably recorded before receiving access to the grader code.
+- ✅ **Consistency:** Usernames are globally unique; mentions always resolve correctly
+- ✅ **Security:** One place to enforce authentication, rate limiting, and abuse prevention
+- ✅ **Simplicity:** No cryptographic key management or cross-server trust needed
+- ⚠️ **Single point of failure:** If Identity Service goes down, no one can log in
+- ⚠️ **Autonomy:** Users cannot move their identity to another platform
+- ⚠️ **Trust:** Users must trust Chirp with their identity data
 
 </div>
 
 <div className="fragment">
-<p style={{fontSize: '0.8em', marginTop: '0.75em', color: '#9370DB'}}>
-ADRs create <strong>institutional memory</strong>. Without this record, someone might ask "Just put the tests in the repo!" — the ADR explains why we don't.
+<p style={{fontSize: '0.72em', marginTop: '0.75em', color: '#9370DB'}}>
+ADRs create <strong>institutional memory</strong>. Without this record, someone might ask "Why not let users bring their own identity?" — the ADR explains the tradeoffs we considered.
 </p>
 </div>
 
 <aside className="notes">
 **Two ADRs, two types of tradeoffs:**
-- ADR-001: Testability & changeability vs. complexity (data coupling decision)
-- ADR-002: Security vs. reliability (grader visibility decision)
+- ADR-001: User experience & scalability vs. autonomy (feed algorithm decision)
+- ADR-002: Simplicity & security vs. autonomy & portability (identity decision)
 
-**Key point:** Both could have gone the other way with different requirements. The ADR captures WHY we chose this path.
+**Flock made the opposite choice on ADR-002:**
+- Flock's founding constraint was exactly the ⚠️ items here — no single point of control, users own their identity
+- A Flock ADR-002 would look like the mirror image of this one
+
+**Key point:** Both could have gone the other way with different values and requirements. The ADR captures WHY we chose this path — and what we gave up.
 
 → **Transition:** How much of this do we decide upfront?
 </aside>
@@ -1611,8 +1395,8 @@ Style: Warm, educational illustration with clear contrast between the three appr
 
 **The key insight:**
 "Plan the infrastructure. Let the neighborhoods emerge."
-- In Pawtograder: we planned the component boundaries (action, API, config) and the key interfaces (`AutograderFeedback`)
-- But we didn't plan every feature — line-level comments, mutation hints, dependency scoring all emerged from use
+- In Chirp: we planned the component boundaries (Feed Service, Identity Service, Platform API) and the key contracts (Post, FeedResponse)
+- But we didn't plan every feature — direct messaging, hashtag trending, and community lists all emerged from use
 
 **Christopher Alexander connection:**
 - Alexander was a real architect who influenced software patterns deeply
@@ -1624,7 +1408,7 @@ Style: Warm, educational illustration with clear contrast between the three appr
 - He couldn't quite define it, but you know it when you see it
 - If students ask: "It's a reference to Christopher Alexander — look him up!"
 
-→ **Transition:** Let's see how Pawtograder grew this way...
+→ **Transition:** Let's see how a microblogging platform grows this way...
 </aside>
 
 </Slide>
@@ -1633,30 +1417,38 @@ Style: Warm, educational illustration with clear contrast between the three appr
 
 ## Piecemeal Growth: Features That Emerged
 
-<p style={{fontSize: '0.85em'}}>
-Pawtograder's first version could build Java, run JUnit tests, and report a score. Features were added as real needs emerged:
+<p style={{fontSize: '0.78em'}}>
+Chirp's first version could post messages and follow users. Features were added as real needs emerged:
 </p>
 
-<div style={{fontSize: '0.65em', marginTop: '0.5em'}}>
+<div style={{fontSize: '0.62em', marginTop: '0.5em'}}>
 
 | Feature | When it was added | What prompted it |
 |---------|------------------|------------------|
-| **Line-level feedback comments** | After instructors asked for richer feedback | A `comment_script` hook lets any external script attach comments to specific lines of student code |
-| **Detailed hints for mutants not detected** | After mutation testing revealed that students struggled to understand why certain mutants weren't caught | The `mutationTest()` method returns detailed feedback on each mutant (configured via `pawtograder.yml`), not just a score |
-| **Dependency-based scoring** | After multi-part assignments revealed the need | If Part 2 depends on Part 1 and Part 1 fails, Part 2 shouldn't run—avoids cascading confusing failures |
+| **Hashtags** | After users invented them organically | Users were already tagging posts with #topic — the platform just made them clickable |
+| **Direct messages** | After users asked for private communication | A new `MessageService` was added behind the existing Identity boundary — no changes to Feed Service |
+| **Content warnings** | After communities asked for sensitive content controls | An optional field added to `Post` — existing clients ignore it, new clients display it |
+| **Algorithmic feed toggle** | After users complained about missing posts | A new `ChronologicalStrategy` implementation — no changes to `FeedService` itself |
 
 </div>
 
 <div className="fragment">
-<p style={{fontSize: '0.82em', marginTop: '0.5em', color: '#9370DB'}}>
+<p style={{fontSize: '0.75em', marginTop: '0.5em', color: '#9370DB'}}>
 None of these were in the original design. But the <strong>architecture made each addition cheap</strong> because the right boundaries were in place from the start.
 </p>
 </div>
 
 <aside className="notes">
-**Christopher Alexander** — architect (the real-buildings kind) — argued in *The Timeless Way of Building* (1979) that the most livable, enduring structures emerge through gradual, adaptive growth rather than grand master plans. Software has the same property — we discover what the architecture should be by building and using the system.
+**Key insight:** Each new feature was contained within one component or added a new implementation of an existing interface.
+- Hashtags: contained in the Feed Service — no identity or platform changes needed
+- Direct messages: new service behind the existing Identity boundary — Feed Service unchanged
+- Content warnings: optional Post field — backward compatible, no component boundary changes
+- Algorithmic toggle: new RankingStrategy implementation — FeedService unchanged
 
-**Key insight:** Each new feature was contained within the grading action. The API didn't change. Instructor configs grew new optional fields. The narrow API boundary meant new features didn't ripple across components.
+**This is piecemeal growth working correctly:**
+- The architecture didn't predict these features
+- But the boundaries were drawn in the right places so each feature could be added cheaply
+- If identity and feed had been tangled together, direct messages would have required touching both
 
 → **Transition:** So how much do we decide upfront?
 </aside>
@@ -1667,29 +1459,29 @@ None of these were in the original design. But the <strong>architecture made eac
 
 ## Just Enough Architecture
 
-<p style={{fontSize: '0.85em'}}>
-Decide what's **hard to reverse**; defer what's **easy to change**; design the system so deferred decisions stay cheap.
+<p style={{fontSize: '0.78em'}}>
+Decide what's <strong>hard to reverse</strong>; defer what's <strong>easy to change</strong>; design the system so deferred decisions stay cheap.
 </p>
 
-<div style={{fontSize: '0.55em', marginTop: '0.5em'}}>
+<div style={{fontSize: '0.55em', marginTop: '-0.5em'}}>
 
 | Decision | Why it was decided early | Cost of getting it wrong |
 |----------|------------------------|--------------------------|
-| Narrow API boundary (`createSubmission`, `submitFeedback`) | Decouples action from platform—each evolves independently | Every grading action and the entire API would need rewriting |
-| Thick action / thin API | Action normalizes results; API just stores them | Changing who interprets results means rearchitecting both sides |
-| Config-driven grading (`pawtograder.yml`) | Instructors iterate independently without touching action code | Every instructor's workflow would break; action would need a UI |
-| Strategy pattern for builders (`Builder` interface) | New languages = new class, not new architecture | Adding a language would require forking the entire grading pipeline |
+| Centralized identity | Every post, follow, and mention depends on it | Moving to federated identity means rewriting every component that touches users |
+| Narrow API boundary between Feed and Platform | Decouples feed evolution from storage — each evolves independently | Every feed change would require a platform deployment |
+| RankingStrategy interface | New algorithms = new class, not new architecture | Adding an algorithm would require forking the entire feed pipeline |
+| Post as the stable data contract | Every component reads and writes Posts | Changing Post shape means touching every component simultaneously |
 
 </div>
 
 <div className="fragment">
-<div style={{fontSize: '0.65em', marginTop: '0.5em'}}>
+<div style={{fontSize: '0.55em', marginTop: '0.5em'}}>
 
 | Decision | Why it was safe to defer | Where it lives |
 |----------|-------------------------|----------------|
-| Which linter rules to enforce | Contained in a config file within the solution repo | `checkstyle.xml` in grader tarball |
-| How artifacts are stored and uploaded | Behind the `SupabaseAPI` client—action just calls `uploadArtifact()` | Can switch from Supabase Storage to S3 without touching grading logic |
-| Specific report parsing formats | Each parser is a self-contained module | `surefire.ts`, `pitest.ts`, `jacoco.ts`—add or replace without rippling |
+| Which ranking algorithm to use by default | Behind the RankingStrategy interface — swap without touching FeedService | `EngagementStrategy`, `ChronologicalStrategy` |
+| How posts are stored | Behind the PostRepository interface — swap storage engine without touching Feed Service | Can switch from Postgres to a document store without rippling |
+| Content warning display format | Optional field in Post — clients that don't know about it just ignore it | UI layer only |
 
 </div>
 </div>
@@ -1697,17 +1489,17 @@ Decide what's **hard to reverse**; defer what's **easy to change**; design the s
 <aside className="notes">
 **The "decide now" items are all about separation:**
 - How components talk to each other (narrow API vs. shared database)
-- Where intelligence lives (thick action vs. thin pipe)
-- Getting these wrong means rewriting the action, the API, and every instructor's config
+- Where intelligence lives (Feed Service vs. Platform)
+- Getting these wrong means rewriting multiple components simultaneously
 
 **The "defer" items are contained within a single component:**
 - They can change without rippling across boundaries
-- Data coupling and thick/thin grader decisions are exactly the kind of choices that are expensive to reverse once courses depend on the system
+- The RankingStrategy and PostRepository interfaces are exactly what make deferral safe
 
-**Bottlenose context:**
-- Bottlenose's architecture reflects a context where simpler grading was sufficient — centralizing grading logic in the platform with UI-driven config was a natural fit
-- Pawtograder was designed when instructors needed richer capabilities
-- Those richer requirements drove the decision to put a narrow API between components instead of a shared database
+**Chirp vs. Flock:**
+- Chirp decided centralized identity early — and that decision is now very expensive to reverse
+- Flock decided federated identity early — and that decision is also very expensive to reverse
+- Neither is wrong; both are just foundational, and foundational decisions are the ones you have to get right upfront
 
 → **Transition:** Summary...
 </aside>
@@ -1722,7 +1514,7 @@ Decide what's **hard to reverse**; defer what's **easy to change**; design the s
 
 ## Looking Forward: Where These Ideas Go Next
 
-<div style={{fontSize: '0.72em'}}>
+<div style={{fontSize: '0.68em'}}>
 
 | Concept from Today | Where It Goes |
 |-------------------|---------------|
@@ -1733,7 +1525,7 @@ Decide what's **hard to reverse**; defer what's **easy to change**; design the s
 
 </div>
 
-<p style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
+<p style={{fontSize: '0.75em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
 The vocabulary you learned today — drivers, boundaries, coupling, expensive decisions — will be your lens for the rest of the course.
 </p>
 
@@ -1746,9 +1538,25 @@ The vocabulary you learned today — drivers, boundaries, coupling, expensive de
 
 **The throughline:** Today's question was "what boundaries should we draw?" The next lectures ask "what happens at those boundaries?" — first within a process, then across networks, then across teams.
 
-**Final thought:** Next time Pawtograder grades your submission, think about the architecture making it happen. The narrow API boundary means the grading action can change independently. The data contracts (`AutograderFeedback`, `FeedbackComment`) cross that boundary cleanly. Every choice was made for a reason — and now you have vocabulary to discuss why.
+**Final thought:** Next time you use a social platform, think about the architecture making it happen. The boundaries between identity, feed, and storage are deliberate choices — each made for a reason. Now you have the vocabulary to discuss why.
 </aside>
 
+</Slide>
+
+<Slide>
+## Bonus Slide
+
+<Img src="/img/lectures/web/l18_xkcd_the_general_problem.png"
+  alt="XKCD cartoon with 3 frames.
+Frame 1: [Cueball sits at a table, eating a meal.]
+Cueball: Can you pass the salt?
+Frame 2: [Cueball pauses, a bite of food on his fork, silently.]
+Frame 3: [Cueball still has fork in mid-air.]
+Cueball: I said-
+Off-screen person: I know! I'm developing a system to pass you arbitrary condiments.
+Cueball: It's been 20 minutes!
+Off-screen person: It'll save time in the long run!"
+ />
 </Slide>
 
 </RevealJS>
