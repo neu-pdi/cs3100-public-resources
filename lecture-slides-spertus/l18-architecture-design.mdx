@@ -1205,7 +1205,7 @@ Zoom into the <code>RankingStrategy</code> extension point. What are the actual 
 classDiagram
     class RankingStrategy {
         <<interface>>
-        +rank(candidates List~Post~, user UserProfile) List~Post~*
+        +rank(candidates List~Post~, user UserProfile)* List~Post~
     }
     class ChronologicalStrategy {
         Newest posts first
@@ -1557,6 +1557,9 @@ Off-screen person: I know! I'm developing a system to pass you arbitrary condime
 Cueball: It's been 20 minutes!
 Off-screen person: It'll save time in the long run!"
  />
+ <p style={{fontSize: '0.6em', color: '#999', marginTop: '0.5em'}}>
+  <a href="https://xkcd.com/974/">xkcd #974 "The General Problem"</a> by Randall Munroe, CC BY-NC 2.5
+</p>
 </Slide>
 
 </RevealJS>
