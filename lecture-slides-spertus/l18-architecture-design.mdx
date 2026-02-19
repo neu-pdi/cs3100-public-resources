@@ -167,30 +167,44 @@ A useful heuristic: architectural decisions are the ones that are <strong>expens
 
 </Slide>
 
-
 <Slide>
 
 ## Case Study: Microblogging Requirements
 
-<p style={{fontSize: '0.85em'}}>
+<p style={{fontSize: '0.78em'}}>
 Before we compare two microblogging systems, let's think about what any microblogging platform needs to do:
 </p>
 
-```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px' }}}%%
-flowchart LR
-    A["1. Create<br/>Account"] --> B["2. Post<br/>Message"]
-    B --> C["3. Follow<br/>Users"]
-    C --> D["4. Build<br/>Feed"]
-    D --> E["5. Moderate<br/>Content"]
-    E --> F["6. Notify<br/>Users"]
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5em', fontSize: '0.65em', marginTop: '0.5em'}}>
 
-    classDef step fill:#B8D4E3,stroke:#4A90A4,stroke-width:2px
-    class A,B,C,D,E,F step
-```
+<div style={{padding: '0.4em 0.6em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
+👤 <strong>Identity</strong> — Create and authenticate user accounts
+</div>
+
+<div style={{padding: '0.4em 0.6em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
+✏️ <strong>Publishing</strong> — Post short messages with mentions and hashtags
+</div>
+
+<div style={{padding: '0.4em 0.6em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
+👥 <strong>Social graph</strong> — Follow other users
+</div>
+
+<div style={{padding: '0.4em 0.6em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
+📰 <strong>Feed</strong> — Show relevant posts from followed users
+</div>
+
+<div style={{padding: '0.4em 0.6em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
+🛡️ <strong>Moderation</strong> — Enforce community standards
+</div>
+
+<div style={{padding: '0.4em 0.6em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
+🔔 <strong>Notifications</strong> — Alert users to replies and mentions
+</div>
+
+</div>
 
 <div className="fragment">
-<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px', marginTop: '0.75em', fontSize: '0.8em'}}>
+<div style={{padding: '0.6em', border: '2px solid #FF9800', borderRadius: '8px', marginTop: '0.5em', fontSize: '0.65em'}}>
 
 **Discussion: What decisions would be "expensive to change"?**
 
