@@ -706,7 +706,7 @@ Can you test a component <em>without</em> deploying the whole system?
 
 | Component | Testable in Isolation? | How? |
 |-----------|----------------------|------|
-| **Feed algorithm** | ✅ Yes | Feed a list of posts and follows, check ranked output — no network needed |
+| **Feed algorithm** | ✅ Yes | Pass a list of posts and follows, check ranked output — no network needed |
 | **Post validation** | ✅ Yes | Check character limits, banned words, media types — pure logic |
 | **Identity & auth** | ✅ Yes | Test token generation and verification independently |
 | **Federation (Flock)** | ⚠️ Hard | Requires two servers talking to each other — integration test |
@@ -714,7 +714,7 @@ Can you test a component <em>without</em> deploying the whole system?
 </div>
 
 <div className="fragment">
-<p style={{fontSize: '0.82em', marginTop: '0.5em', color: '#9370DB'}}>
+<p style={{fontSize: '0.75em', marginTop: '0.5em', color: '#9370DB'}}>
 Chirp's services can be tested independently with mocks. Flock's federation is an architectural boundary that's genuinely harder to test — simulating two servers is more complex than simulating a function call. That's a real tradeoff.
 </p>
 </div>
@@ -750,7 +750,7 @@ Applying our four heuristics, a natural structure emerges for both systems:
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px' }}}%%
 graph TD
-    User["User / Moderator"]
+    User(["User / Moderator"])
     Identity["Identity Service<br/>(accounts, auth)"]
     Feed["Feed Service<br/>(posts, follows, ranking)"]
     Platform["Platform API<br/>(storage, delivery)"]
@@ -760,7 +760,7 @@ graph TD
     Feed --> Platform
     Identity --> Platform
 
-    classDef actor fill:#E0E0E0,stroke:#757575,stroke-width:2px
+    classDef actor fill:#f8f8f8,stroke:#cccccc,stroke-width:1px,color:#999999
     classDef fast fill:#C8E6C9,stroke:#4CAF50,stroke-width:2px
     classDef medium fill:#B8D4E3,stroke:#4A90A4,stroke-width:2px
     classDef slow fill:#D4C4E8,stroke:#9370DB,stroke-width:2px
@@ -791,13 +791,13 @@ graph TD
 
 ## A Design Decision: Where Does the Feed Algorithm Live?
 
-<p style={{fontSize: '0.85em'}}>
+<p style={{fontSize: '0.75em'}}>
 We need to rank posts for each user's feed. Where should that logic live?
 </p>
 
-<div style={{display: 'flex', flexDirection: 'column', gap: '1em', fontSize: '0.65em', marginTop: '1em'}}>
+<div style={{display: 'flex', flexDirection: 'column', gap: '1em', fontSize: '0.65em', marginTop: '-1em'}}>
 
-<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+<div style={{padding: '0.25em', border: '2px solid #4CAF50', borderRadius: '2px'}}>
 
 **Option A: Algorithm in the Platform (Chirp)**
 
@@ -808,7 +808,7 @@ The platform ranks all feeds centrally using global signals (engagement, recency
 
 </div>
 
-<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+<div style={{padding: '0.25em', border: '2px solid #FF9800', borderRadius: '2px'}}>
 
 **Option B: Algorithm per Server (Flock)**
 
@@ -855,7 +855,6 @@ Once we've identified components, we need to design their interfaces. The same p
 <div style={{fontSize: '0.6em', marginTop: '0.5em'}}>
 
 **Dependency Injection at service scale:**
-
 ```java
 // Good: FeedService depends on abstractions, not concrete implementations
 public class FeedService {
@@ -870,34 +869,66 @@ public class FeedService {
 }
 ```
 
-**Use the Strategy pattern for extensibility:**
-
-```java
-// RankingStrategy is an interface — swap algorithms without changing FeedService
-public interface RankingStrategy {
-    List<Post> rank(List<Post> candidates, UserProfile user);
-}
-
-// ChronologicalStrategy, EngagementStrategy, CommunityStrategy...
-// Adding a new algorithm = adding a new RankingStrategy implementation
-```
-
 </div>
 
 <aside className="notes">
 **Connection to L17:**
 - DI handles the outward-facing dependencies (IdentityService, PostRepository)
-- Strategy handles the internal ones (which ranking algorithm to use)
-- Same principle, two directions
+- For testing: inject mock implementations that don't require a real auth server or database
 
-**For testing:**
-- Inject a mock IdentityService that returns a fixed user without hitting a real auth server
-- Inject a mock PostRepository that returns canned posts without a real database
-- Swap in a SimpleChronologicalStrategy for tests — no complex ranking logic to set up
+→ **Transition:** DI handles outward dependencies — Strategy handles internal ones...
+</aside>
 
+</Slide>
+
+<Slide>
+
+## Strategy Pattern for Extensibility
+
+<p style={{fontSize: '0.85em'}}>
+Use the Strategy pattern to make the feed algorithm swappable without changing <code>FeedService</code>:
+</p>
+```mermaid
+classDiagram
+    class RankingStrategy {
+        <<interface>>
+        +rank(candidates List~Post~, user UserProfile) List~Post~*
+    }
+
+    class ChronologicalStrategy {
+        +rank(candidates List~Post~, user UserProfile) List~Post~
+    }
+
+    class EngagementStrategy {
+        +rank(candidates List~Post~, user UserProfile) List~Post~
+    }
+
+    class CommunityStrategy {
+        +rank(candidates List~Post~, user UserProfile) List~Post~
+    }
+
+    class FeedService {
+        -rankingStrategy RankingStrategy
+        +getFeed(userId String) FeedResponse
+    }
+
+    RankingStrategy <|.. ChronologicalStrategy
+    RankingStrategy <|.. EngagementStrategy
+    RankingStrategy <|.. CommunityStrategy
+    FeedService --> RankingStrategy
+
+    style RankingStrategy fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+<aside className="notes">
 **The Strategy pattern for extensibility:**
 - Adding a new ranking algorithm = new RankingStrategy class, nothing else changes
-- This is exactly what makes the feed algorithm changeable independently of the rest of the system
+- Chirp might use EngagementStrategy by default; a Flock server might prefer ChronologicalStrategy
+- CommunityStrategy could let server operators tune ranking for their community
+
+**Connection to DI:**
+- The RankingStrategy is injected into FeedService — same principle as the previous slide
+- DI handles outward dependencies; Strategy handles internal variation
 
 → **Transition:** What do these contracts actually look like?
 </aside>
@@ -908,11 +939,11 @@ public interface RankingStrategy {
 
 ## The Contracts: Data Types That Cross Boundaries
 
-<p style={{fontSize: '0.8em'}}>
+<p style={{fontSize: '0.7em'}}>
 The interface isn't just method signatures — it's the <strong>data types</strong> that flow across. These are the contracts that must remain stable:
 </p>
 
-<div style={{fontSize: '0.52em', marginTop: '0.5em'}}>
+<div style={{fontSize: '0.5em', marginTop: '0.5em'}}>
 
 ```java
 // A post — the core data type that crosses every boundary
@@ -942,7 +973,7 @@ public record FederatedPost(
 </div>
 
 <div className="fragment">
-<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#FF9800'}}>
+<p style={{fontSize: '0.7em', marginTop: '0.5em', color: '#FF9800'}}>
 If <code>Post</code> were poorly designed — no <code>originServer</code>, no stable <code>authorId</code> — Flock's federation would be impossible to add later. <strong>This contract deserves careful design.</strong>
 </p>
 </div>
