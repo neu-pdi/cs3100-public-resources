@@ -892,7 +892,7 @@ Use the Strategy pattern to make the feed algorithm swappable without changing <
 classDiagram
     class RankingStrategy {
         <<interface>>
-        +rank(candidates List~Post~, user UserProfile) List~Post~*
+        +rank(candidates List~Post~, user UserProfile)* List~Post~
     }
 
     class ChronologicalStrategy {
