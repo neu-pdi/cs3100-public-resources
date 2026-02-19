@@ -494,6 +494,478 @@ Constraints aren't negotiable the way quality attributes are. They're the fixed 
 </aside>
 
 </Slide>
+{/* ============================================ */}
+{/* ARC 3: FINDING BOUNDARIES (20 min) */}
+{/* ============================================ */}
 
+<Slide>
+
+## Drivers Tell Us What; Heuristics Help Us Find Where
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+We know we need changeability, testability, scalability. But where do we actually draw the lines?
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em', marginTop: '1em'}}>
+
+<div style={{padding: '0.75em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
+**Rate of Change** — Things that change at different speeds should be separate
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+**Actor** — Things owned by different people should be separate
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+**Interface Segregation** — Clients that need different things should get different interfaces
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px'}}>
+**Testability** — Things that need independent testing should be separable
+</div>
+
+</div>
+
+<aside className="notes">
+**Bridge from drivers to heuristics:**
+- We just identified WHAT we care about: functional requirements, quality attributes, constraints
+- But knowing we need "changeability" or "testability" doesn't tell us WHERE to draw the lines
+- These four heuristics are lenses for examining a system to find natural boundaries
+
+**How they connect to drivers:**
+- Changeability driver → Rate of Change heuristic helps us isolate fast-changing parts
+- Maintainability driver → Actor heuristic helps us give each team a clear slice
+- Testability driver → Testability heuristic helps us design components that can be tested alone
+
+**Coming up:**
+We'll apply each heuristic to Chirp and Flock and see how the same boundaries emerge from multiple angles — that's a sign we've found a natural seam.
+
+→ **Transition:** Let's start with rate of change...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Heuristic 1: Group by Rate of Change
+
+<p style={{fontSize: '0.85em'}}>
+Things that change at different rates should live in different components:
+</p>
+
+<div style={{fontSize: '0.7em', marginTop: '0.5em'}}>
+
+| Component | How Often It Changes | Who Changes It |
+|-----------|---------------------|----------------|
+| **A user's posts and follows** | Continuously — every interaction | The user |
+| **Feed ranking algorithm** | Every few weeks | Platform engineers |
+| **Identity & authentication** | Rarely — breaking change | Security team |
+| **The post data format** | Very rarely — affects everything | Architects (carefully!) |
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#4CAF50'}}>
+✓ User data changes constantly → it SHOULD be separate from the feed algorithm that changes monthly. And both should be separate from identity that almost never changes.
+</p>
+</div>
+
+<aside className="notes">
+**Four things, four rates of change:**
+- User posts and follows — change with every interaction, continuously
+- Feed algorithm — tweaked regularly to improve recommendations or address abuse
+- Identity and authentication — very stable; changing this is a major undertaking
+- Post data format — the contract everything depends on; changes almost NEVER
+
+**The data format is the most stable:**
+- If the structure of a post changes, every component that reads or writes posts must change together
+- That's why it changes "very rarely" — it's the stable contract that lets other pieces evolve independently
+
+**Chirp vs. Flock difference:**
+- In Chirp, all of these live on the same platform — but they should still be separate services internally
+- In Flock, rate of change also determines what must be standardized across servers (the post format) vs. what each server controls independently (the feed algorithm)
+
+→ **Transition:** Different people care about different parts...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Heuristic 2: Each Actor Gets Their Own Slice
+
+<Img
+  src="/img/lectures/web/l18-chirp-actors.png"
+  prompt="An illustration showing four actors interacting with a microblogging system. No title.
+
+CENTER — THE SYSTEM as buildings, sized by importance/stability:
+- LARGE building: 'Chirp Server' (the platform, tallest and most prominent)
+- MEDIUM building: 'Feed Service' (connected to Chirp Server by a bridge)
+- SMALL building: 'User Profile & Identity' (connected to Feed Service)
+- ROW OF TINY HOUSES: Multiple 'User Devices' (showing there are many)
+
+FOUR ACTORS around the edges, each with an arrow to their part:
+
+TOP-LEFT: 'The User' — A young Black woman at a phone, posting messages and scrolling her feed. Arrow connects her to User Devices. Speech bubble: 'I just post and scroll.'
+
+TOP-RIGHT: 'The Community Moderator' — A middle-aged Latino man at a laptop reviewing flagged posts. Arrow connects him to User Profile & Identity. Speech bubble: 'I set the rules for our server.'
+
+BOTTOM-LEFT: 'The Sysadmin' — A young South Asian woman at a server dashboard monitoring uptime. Arrow connects her to Chirp Server. Speech bubble: 'I keep the platform running.'
+
+BOTTOM-RIGHT: 'The Developer' — A young East Asian man examining feed algorithm code. Arrow points to Feed Service. Speech bubble: 'I can improve recommendations without touching identity!'
+
+CAPTION: 'Each actor owns a different slice. Changes shouldn't ripple across boundaries.'
+
+Style: Warm, educational, clear building size hierarchy, four distinct character types with visible ethnic diversity. Teal, blue, purple, and warm accent colors."
+  alt="Four actors in quadrants around a central system diagram. Top-left: The User, a young Black woman with a phone saying 'I just post and scroll', arrow pointing to User Devices. Top-right: The Moderator, a middle-aged Latino man at a laptop saying 'I set the rules for our server', arrow pointing to Identity Service. Bottom-left: The Sysadmin, a young South Asian woman at a server dashboard saying 'I keep the platform running', arrow pointing to Chirp Server. Bottom-right: The Developer, a young East Asian man at a desk saying 'I can change the feed without touching identity', arrow pointing to Feed Service. Caption: Each actor owns a different slice. Changes shouldn't ripple across boundaries."
+/>
+
+<aside className="notes">
+**Walk through the graphic — four actors, four slices:**
+- **User:** Posts messages, scrolls their feed — never touches server config
+- **Community Moderator:** Sets moderation rules for their server — never modifies feed algorithm code
+- **Sysadmin:** Maintains platform infrastructure — doesn't write moderation policies
+- **Developer:** Can improve the feed algorithm without touching identity or moderation
+
+**Key insight: changes from one actor shouldn't ripple to another's code.**
+- When a moderator updates rules → feed algorithm and identity unchanged
+- When a developer tweaks the algorithm → moderation policies unchanged
+- When a sysadmin updates infrastructure → users see no difference
+
+**Connection to L8 (SOLID):** This is Single Responsibility Principle at architectural scale — each component has one reason to change, corresponding to one actor.
+
+**Chirp vs. Flock:**
+- In Chirp, the sysadmin and developer are the same company — but the slice separation still matters
+- In Flock, the community moderator is often a completely different person from the sysadmin — the architecture must enforce this separation
+
+→ **Transition:** What if we forced all clients to use one fat interface?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Heuristic 3: Apply Interface Segregation
+
+<p style={{fontSize: '0.75em'}}>
+Don't force clients to depend on interfaces they don't use. What if we had one fat interface?
+</p>
+
+<div style={{fontSize: '0.65em'}}>
+
+```java
+// BAD: One monolithic interface for everything
+public interface MicrobloggingSystem {
+    // User concerns
+    void post(String userId, String message);
+    List<Post> getFeed(String userId);
+
+    // Moderation concerns
+    void removePost(String moderatorId, String postId);
+    void banUser(String moderatorId, String userId);
+    List<Post> getFlaggedPosts(String serverId);
+
+    // Federation concerns
+    void receivePost(String originServer, Post post);
+    void syncFollows(String originServer, List<Follow> follows);
+    String getPublicKey(String serverId);
+}
+```
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.7em', marginTop: '-0.5em', color: '#FF9800'}}>
+A regular user shouldn't need to know about federation keys. A remote server syncing posts shouldn't need to know about moderation. <em>We'll design the better version after finishing the heuristics.</em>
+</p>
+</div>
+
+<aside className="notes">
+**What's wrong with this?**
+- Users only care about posting and reading — they don't need `syncFollows` or `getPublicKey`
+- Remote servers syncing content don't need `banUser`
+- Moderators don't need federation methods
+- Coupling everything together means changing ANY part risks breaking ALL parts
+
+**Don't solve it yet!** We'll design the better, segregated interfaces after we finish all four heuristics. For now, plant the seed that ISP applies at the service level too.
+
+→ **Transition:** One more heuristic — testability...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Heuristic 4: Optimize for Testability
+
+<p style={{fontSize: '0.85em'}}>
+Can you test a component <em>without</em> deploying the whole system?
+</p>
+
+<div style={{fontSize: '0.7em', marginTop: '0.5em'}}>
+
+| Component | Testable in Isolation? | How? |
+|-----------|----------------------|------|
+| **Feed algorithm** | ✅ Yes | Feed a list of posts and follows, check ranked output — no network needed |
+| **Post validation** | ✅ Yes | Check character limits, banned words, media types — pure logic |
+| **Identity & auth** | ✅ Yes | Test token generation and verification independently |
+| **Federation (Flock)** | ⚠️ Hard | Requires two servers talking to each other — integration test |
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.82em', marginTop: '0.5em', color: '#9370DB'}}>
+Chirp's services can be tested independently with mocks. Flock's federation is an architectural boundary that's genuinely harder to test — simulating two servers is more complex than simulating a function call. That's a real tradeoff.
+</p>
+</div>
+
+<aside className="notes">
+**Connection to L16 (Testability):**
+- Same principle: separate "what to do" from "how to connect"
+- The feed algorithm doesn't need a real database to test ranking logic
+- Identity doesn't need a real network to test token verification
+
+**The Flock federation point is important:**
+- This is a case where the architectural choice (federation) makes one quality attribute (autonomy) better and another (testability) harder
+- That's not a mistake — it's a conscious tradeoff
+- Architecture = making tradeoffs consciously
+
+→ **Transition:** Putting the four heuristics together...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 3 CONTINUED: EMERGING ARCHITECTURE */}
+{/* ============================================ */}
+
+<Slide>
+
+## Emerging Architecture: Three Components
+
+<p style={{fontSize: '0.85em'}}>
+Applying our four heuristics, a natural structure emerges for both systems:
+</p>
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px' }}}%%
+graph TD
+    User["User / Moderator"]
+    Identity["Identity Service<br/>(accounts, auth)"]
+    Feed["Feed Service<br/>(posts, follows, ranking)"]
+    Platform["Platform API<br/>(storage, delivery)"]
+
+    User --> Identity
+    User --> Feed
+    Feed --> Platform
+    Identity --> Platform
+
+    classDef actor fill:#E0E0E0,stroke:#757575,stroke-width:2px
+    classDef fast fill:#C8E6C9,stroke:#4CAF50,stroke-width:2px
+    classDef medium fill:#B8D4E3,stroke:#4A90A4,stroke-width:2px
+    classDef slow fill:#D4C4E8,stroke:#9370DB,stroke-width:2px
+
+    class User actor
+    class Feed fast
+    class Identity medium
+    class Platform slow
+```
+
+<aside className="notes">
+**How we got here:**
+- Rate of change → feed changes fast, identity medium, platform slow
+- Actor → users touch feed, moderators touch identity, sysadmins touch platform
+- ISP → users get a posting interface; remote servers get a federation interface
+- Testability → feed and identity testable locally without full platform
+
+**Chirp vs. Flock:**
+- In Chirp, all three components live on one platform — but the separation still matters for changeability and testability
+- In Flock, this separation is enforced across servers — the Identity Service may live on a different server than the Feed Service
+
+→ **Transition:** A key design decision within this structure...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## A Design Decision: Where Does the Feed Algorithm Live?
+
+<p style={{fontSize: '0.85em'}}>
+We need to rank posts for each user's feed. Where should that logic live?
+</p>
+
+<div style={{display: 'flex', flexDirection: 'column', gap: '1em', fontSize: '0.65em', marginTop: '1em'}}>
+
+<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+
+**Option A: Algorithm in the Platform (Chirp)**
+
+The platform ranks all feeds centrally using global signals (engagement, recency, relationships).
+
+- **Pros:** Powerful recommendations, consistent experience, easy to improve globally
+- **Cons:** Platform controls what users see; hard to customize per community
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+
+**Option B: Algorithm per Server (Flock)**
+
+Each server ranks feeds independently. Users may even choose their own algorithm.
+
+- **Pros:** Community autonomy, no single point of control
+- **Cons:** No global signals; harder to build powerful recommendations; inconsistent experience
+
+</div>
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB'}}>
+Neither is wrong — Chirp optimizes for recommendation quality, Flock optimizes for autonomy. But this decision is <strong>expensive to change</strong>: switching from centralized to federated ranking would require rearchitecting how posts are stored and shared across the entire network.
+</p>
+</div>
+
+<aside className="notes">
+**Why is this expensive to change?**
+- Centralized ranking requires all posts to flow through one place — the database schema, the storage model, and the delivery pipeline all assume this
+- Switching to federated ranking means posts must be stored and indexed on each server — every component that touches posts must change
+- Six months in, if you try to extract ranking into per-server logic, it's intertwined with storage, with the UI, with notification delivery...
+- "Should I throw it away and start over?" — that's the definition of an expensive decision
+
+**Connection to Pawtograder equivalent:**
+- This is the same kind of decision as "where does language logic live?"
+- In both cases: normalizing early (in the action / in the platform) keeps the downstream component simple
+- But it concentrates power in the component that does the normalizing
+
+→ **Transition:** So we've found our boundaries. How do we design the interfaces between them?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Interface Design at the Service Level
+
+<p style={{fontSize: '0.85em'}}>
+Once we've identified components, we need to design their interfaces. The same principles from class design apply—and so do the same patterns from L17.
+</p>
+
+<div style={{fontSize: '0.6em', marginTop: '0.5em'}}>
+
+**Dependency Injection at service scale:**
+
+```java
+// Good: FeedService depends on abstractions, not concrete implementations
+public class FeedService {
+    private final IdentityService identityService;
+    private final PostRepository postRepository;
+
+    public FeedService(IdentityService identityService,
+                       PostRepository postRepository) {
+        this.identityService = identityService;
+        this.postRepository = postRepository;
+    }
+}
+```
+
+**Use the Strategy pattern for extensibility:**
+
+```java
+// RankingStrategy is an interface — swap algorithms without changing FeedService
+public interface RankingStrategy {
+    List<Post> rank(List<Post> candidates, UserProfile user);
+}
+
+// ChronologicalStrategy, EngagementStrategy, CommunityStrategy...
+// Adding a new algorithm = adding a new RankingStrategy implementation
+```
+
+</div>
+
+<aside className="notes">
+**Connection to L17:**
+- DI handles the outward-facing dependencies (IdentityService, PostRepository)
+- Strategy handles the internal ones (which ranking algorithm to use)
+- Same principle, two directions
+
+**For testing:**
+- Inject a mock IdentityService that returns a fixed user without hitting a real auth server
+- Inject a mock PostRepository that returns canned posts without a real database
+- Swap in a SimpleChronologicalStrategy for tests — no complex ranking logic to set up
+
+**The Strategy pattern for extensibility:**
+- Adding a new ranking algorithm = new RankingStrategy class, nothing else changes
+- This is exactly what makes the feed algorithm changeable independently of the rest of the system
+
+→ **Transition:** What do these contracts actually look like?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Contracts: Data Types That Cross Boundaries
+
+<p style={{fontSize: '0.8em'}}>
+The interface isn't just method signatures — it's the <strong>data types</strong> that flow across. These are the contracts that must remain stable:
+</p>
+
+<div style={{fontSize: '0.52em', marginTop: '0.5em'}}>
+
+```java
+// A post — the core data type that crosses every boundary
+public record Post(
+    String postId,          // Unique ID for this post
+    String authorId,        // Who wrote it (stable identity reference)
+    String content,         // The message text
+    Instant createdAt,      // When it was posted
+    String originServer     // Which server it came from (Flock only)
+) {}
+
+// What the feed service returns to a client
+public record FeedResponse(
+    List<Post> posts,           // Ranked posts for this user
+    String nextPageToken,       // For pagination
+    Instant generatedAt         // When this feed was computed
+) {}
+
+// What a Flock server sends when federating a post to another server
+public record FederatedPost(
+    Post post,
+    String signature,       // Cryptographic proof of origin
+    String publicKeyUrl     // Where to fetch the signing key
+) {}
+```
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#FF9800'}}>
+If <code>Post</code> were poorly designed — no <code>originServer</code>, no stable <code>authorId</code> — Flock's federation would be impossible to add later. <strong>This contract deserves careful design.</strong>
+</p>
+</div>
+
+<aside className="notes">
+**Why these contracts matter:**
+- Post is the data type that crosses every boundary — feed service reads it, identity service writes it, federation sends it
+- If Post changes shape, every component changes with it
+- That's why it's in the "very rarely changes" row of our rate-of-change table
+
+**The FederatedPost type:**
+- This only matters for Flock — Chirp doesn't need cryptographic signatures
+- But designing Post to include originServer from the start means Chirp could add federation later without changing the core data type
+- That's designing for changeability at the data layer
+
+**Connect back to the heuristics:**
+- Rate of change: Post changes rarely — it's the stable contract
+- ISP: FeedResponse is for clients; FederatedPost is for servers — different clients, different types
+- Testability: You can test the feed service by constructing Post objects directly — no database needed
+
+→ **Transition:** How do we communicate this architecture to others?
+</aside>
+
+</Slide>
 
 </RevealJS>
