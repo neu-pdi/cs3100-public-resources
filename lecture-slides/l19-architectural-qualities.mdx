@@ -40,7 +40,7 @@ Warm teals, blues, purples (#9370DB), and orange (#FF9800) accents in retro pixe
 
 <aside className="notes">
 **Lecture overview:**
-- **Total time:** ~65 minutes
+- **Total time:** ~65 MINUTES
 - **Prerequisites:** L16 (testability, hexagonal intro), L17 (creation patterns, DI), L18 (architectural thinking, boundaries, C4, ADRs, Pawtograder/Bottlenose, **four heuristics**)
 - **Connects to:** L20–L21 (distributed architecture, networks, client-server, serverless), L22 (Conway's Law, teams), L29–L30 (MVC/GUI)
 
@@ -108,40 +108,46 @@ After this lecture, you will be able to:
 <ol style={{fontSize: '0.75em', textAlign: 'left'}}>
   <li>Define <strong>quality attributes</strong> that architectural styles affect: maintainability, scalability, deployability, fault tolerance, and more</li>
   <li>Distinguish between <strong>architectural styles</strong> and <strong>architectural patterns</strong></li>
-  <li>Recognize and compare styles: <strong>Hexagonal</strong> (review from L16), <strong>Layered</strong>, <strong>Pipelined</strong>, and <strong>Monolithic</strong></li>
+  <li><strong>Recognize and compare</strong> architectural styles like <strong>Hexagonal</strong>, <strong>Layered</strong>, <strong>Pipelined</strong>, and <strong>Monolithic</strong></li>
   <li>Explain the tradeoffs of <strong>monoliths</strong>, <strong>modular monoliths</strong>, and <strong>microservices</strong></li>
-  <li>Analyze how architectural choices <strong>affect quality attributes differently</strong> using Pawtograder and Bottlenose</li>
+  <li>Analyze how architectural choices <strong>affect quality attributes differently</strong> for specific scenarios</li>
 </ol>
 
 <div className="fragment">
 <p style={{fontSize: '0.75em', marginTop: '0.75em', fontStyle: 'italic', color: '#666'}}>
-<strong>Note:</strong> We won't drill you on memorizing these styles. Real systems are messier than any textbook diagram. The point is learning to <em>reason about quality attributes</em> — styles are just a useful vehicle for comparison.
+<strong>Important framing:</strong> You are NOT expected to become master architects by the end of this lecture. The goal is to <em>understand systems that use these styles</em> and reason about how architectural decisions impact quality attributes. When you encounter a hexagonal or layered architecture in the wild, you'll be able to read it — not necessarily design it from scratch.
 </p>
 </div>
 
 <aside className="notes">
-**SET EXPECTATIONS CLEARLY:**
-- "You won't be tested on 'draw a hexagonal architecture diagram from memory'"
+**SET EXPECTATIONS VERY CLEARLY — this is critical framing:**
+- "You will NOT be tested on 'design a hexagonal architecture from scratch'"
+- "You WILL be expected to READ and UNDERSTAND systems that use these styles"
 - Real systems rarely fit neatly into one style — they're hybrids, compromises, and evolved messes
-- The ACTUAL skill we're building: reasoning about quality attributes
-- "Given this change in requirements, which quality attributes are affected? Which architectural decisions help or hurt?"
+- The ACTUAL skill we're building: reasoning about quality attributes when you SEE different architectures
+- "Given this system's architecture, which quality attributes does it prioritize? What are the tradeoffs?"
 
-**Why teach styles at all if they're idealized?**
-- They give us VOCABULARY for discussing tradeoffs
-- Comparing "pure" versions makes the tradeoffs visible
-- Like physics: we study frictionless planes not because they exist, but because they reveal principles
-- Once you understand the principles, you can reason about messy real systems
+**Why teach styles at all if we're not expecting mastery?**
+- They give us VOCABULARY for discussing what we observe
+- You'll encounter these patterns in codebases you join — knowing the names helps you understand intent
+- Like learning art history: you can appreciate a painting without being able to paint it yourself
+- Once you understand the principles, you can reason about systems you encounter
+
+**The "reading vs writing" distinction:**
+- Junior engineers READ existing architectures far more than they DESIGN new ones
+- Understanding why a system is structured a certain way is 90% of the skill
+- Design skills come later with experience — comprehension comes first
 
 **Time allocation:**
 - Objective 1: Quality Attributes vocabulary (~8 min)
 - Objective 2: Styles vs. Patterns (~3 min)
 - Objective 3: Hex recap + Layered + Pipelined (~20 min)
 - Objective 4: Monolith + Modular Monolith + Microservices teaser (~18 min)
-- Objective 5: Applying quality attributes to our examples (~10 min)
+- Objective 5: Applying quality attributes to scenarios (~10 min)
 
 **Connection to L16 and L18:**
 - L16: Hexagonal Architecture introduced for testability (they already know ports, adapters, domain core)
-- L18: Where do service boundaries go? (Pawtograder case study, comparison with Bottlenose)
+- L18: Where do service boundaries go? (Pawtograder case study)
 - L19: What quality attributes matter? What styles exist? How does each style affect those attributes?
 
 → **Transition:** Let's start with a question you'll face every time you write software...
@@ -204,14 +210,335 @@ Style: Clean, modern educational illustration suitable for a university lecture.
 - Modular monolith: organize with enforced boundaries inside one deployment
 - Partitioning: organize by technical role or by domain capability
 
-→ **Transition:** To evaluate these answers, we need a vocabulary for what "good organization" means...
+→ **Transition:** Before we discuss how to evaluate these answers, let's preview the two big architectural families...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Two Big Families: Monolith vs. Microservices
+
+<p style={{fontSize: '0.82em'}}>
+At the highest level, systems fall into two broad categories based on how they're deployed:
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.62em', marginTop: '1em'}}>
+
+<div style={{padding: '1em', border: '3px solid #4CAF50', borderRadius: '8px', background: 'rgba(76, 175, 80, 0.05)'}}>
+
+**Monolith** — One Deployment Unit
+
+- All code lives in a single codebase
+- Deployed as a single artifact (JAR, binary, container)
+- Components communicate via method calls
+- One database, one process, one server (typically)
+
+*This is what you've been building so far — and it's the focus of THIS lecture.*
+
+</div>
+
+<div style={{padding: '1em', border: '3px solid #2196F3', borderRadius: '8px', background: 'rgba(33, 150, 243, 0.05)'}}>
+
+**Microservices** — Many Deployment Units
+
+- Code split across separate services
+- Each service deployed independently
+- Services communicate via network (HTTP, messages)
+- Separate databases, processes, servers
+
+*This is where industry has been moving — and it's the focus of L20-L21.*
+
+</div>
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.78em', marginTop: '1em', fontStyle: 'italic', color: '#666'}}>
+Most architectural styles are <strong>variations within the monolith family</strong>: layered, hexagonal, modular monolith, pipelined. They differ in how they organize code <em>within</em> the single deployment unit. Microservices is the leap to <em>multiple</em> deployment units.
+</p>
+</div>
+
+<aside className="notes">
+**This slide frames the entire lecture series on architecture:**
+
+**The key distinction:**
+- Monolith = ONE thing to deploy, run, monitor
+- Microservices = MANY things to deploy, run, monitor, coordinate
+
+**Why start with monoliths:**
+- It's what students know! Every project they've built is a monolith.
+- Most companies still run monoliths (even large ones)
+- Understanding monolith variations helps you understand WHY microservices exist
+- You can't appreciate the tradeoffs of microservices until you understand what monoliths give you
+
+**The fragment makes an important point:**
+- Layered, Hexagonal, Modular Monolith — all still ONE deployment
+- They differ in internal organization, not deployment topology
+- Microservices is a fundamentally different choice with different tradeoffs
+
+**Lecture roadmap:**
+- L19 (today): Monolith variations — layered, hexagonal, modular
+- L20-L21: Microservices — when and why to make the leap, and the complexity that comes with it
+
+→ **Transition:** Let's unpack what "monolith" actually means — since that's what you've been building all along...
 </aside>
 
 </Slide>
 
 {/* ============================================ */}
-{/* ARC 0: QUALITY ATTRIBUTES (8 min) */}
+{/* MONOLITH DEEP DIVE (moved from later) */}
 {/* ============================================ */}
+
+<Slide>
+
+## The Monolith: Where Most Projects Start
+
+<p style={{fontSize: '0.85em'}}>
+Here's a secret: <strong>you've been building monoliths your entire programming career</strong>. Every Java project, every Python script, every web application you've written in a single codebase — all monoliths. The term only becomes meaningful in contrast to systems that <em>aren't</em> monoliths.
+</p>
+
+<p style={{fontSize: '0.82em', marginTop: '0.5em'}}>
+A <strong>monolith</strong> is a system deployed as a single unit. All functionality — user interface, business logic, data access — lives in one codebase, compiles into one artifact, and runs in one process. This is where we start — and for many successful systems, where we stay.
+</p>
+
+<div className="fragment">
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '0.5em', fontSize: '0.6em', marginTop: '1em'}}>
+
+<div style={{padding: '0.5em', border: '2px solid #9370DB', borderRadius: '8px', textAlign: 'center'}}>
+
+**Single Deployment**
+
+One build. One deploy. One running process.
+
+</div>
+
+<div style={{padding: '0.5em', border: '2px solid #4CAF50', borderRadius: '8px', textAlign: 'center'}}>
+
+**Shared Memory**
+
+Components talk via method calls, not networks.
+
+</div>
+
+<div style={{padding: '0.5em', border: '2px solid #4A90A4', borderRadius: '8px', textAlign: 'center'}}>
+
+**Single Database**
+
+All data in one schema, one set of tables.
+
+</div>
+
+<div style={{padding: '0.5em', border: '2px solid #FF9800', borderRadius: '8px', textAlign: 'center'}}>
+
+**Unified Codebase**
+
+One repo, one build system, one language.
+
+</div>
+
+</div>
+</div>
+
+<aside className="notes">
+**Start with what's familiar:**
+- Students have been building monoliths their whole lives without knowing the name
+- Every Java project they've written? A monolith. Every Python script? A monolith.
+- The term only becomes meaningful in CONTRAST to systems that AREN'T monoliths
+
+**"Monolith" isn't an insult:**
+- It's a description of deployment topology
+- Many successful systems are monoliths — GitHub was a monolith for years, Shopify still is
+- The question isn't "is it a monolith?" but "should it be?"
+
+**We're going to unpack each of these four characteristics, then see how other styles improve on specific weaknesses...**
+
+→ **Transition:** Let's dig into what each of these means concretely...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## What "Single Deployment Unit" Really Means
+
+<p style={{fontSize: '0.82em'}}>
+In a monolith, everything ships together. One <code>git push</code>, one CI pipeline, one artifact, one deploy.
+</p>
+
+<div style={{fontSize: '0.65em', marginTop: '0.5em'}}>
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px' }}}%%
+flowchart LR
+    A["One Codebase"] --> B["One Build<br/>(compile, test, package)"]
+    B --> C["One Artifact<br/>(Docker image)"]
+    C --> D["One Deploy<br/>(Bottlenose core)"]
+
+    classDef step fill:#D4C4E8,stroke:#9370DB,stroke-width:2px
+    class A,B,C,D step
+```
+
+</div>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em', marginTop: '0.5em'}}>
+
+<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+
+**This means:**
+- Fix a typo in the grading UI? Redeploy the whole app.
+- Update a dependency for course management? Redeploy the whole app.
+- Every change goes through the same pipeline.
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+
+**The consequence:**
+- You can't deploy grading fixes without also deploying whatever else changed
+- A broken test in course management blocks a grading deploy
+- Deployment frequency is limited by the slowest-moving part
+
+</div>
+
+</div>
+
+<aside className="notes">
+**Make this visceral for students:**
+- "You fixed a one-line bug in how grading jobs are queued. To get that fix to students, you have to redeploy the ENTIRE application."
+- "Your CI pipeline takes 20 minutes. Every change — no matter how small — waits 20 minutes."
+- "Someone merged a broken migration for courses. Your grading fix can't deploy until that's fixed too."
+
+**The positive spin:**
+- One deploy means ONE thing to monitor, ONE rollback strategy, ONE set of health checks
+- You always know exactly what's running in production — the latest build
+
+→ **Transition:** What about shared memory?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## What "Shared Memory" Really Means
+
+<p style={{fontSize: '0.82em'}}>
+In a monolith, components communicate by calling methods on objects that live in the <strong>same process</strong>. This is so natural you've never had to think about it:
+</p>
+
+<div style={{display: 'flex', flexDirection: 'column', gap: '1em', fontSize: '0.55em', marginTop: '0.75em'}}>
+
+<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+
+**What a monolith feels like** *(illustrative)*
+
+```java
+// All in one process, one memory space
+Course course = courseRepo.findById(courseId);
+Assignment assignment = course.createAssignment(
+    name, dueDate);
+
+// This is a method call — nanoseconds, guaranteed
+Grader grader = GraderFactory.buildFor(
+    assignment, config);
+
+// One database transaction wraps everything
+transaction(() -> {
+    assignment.setGrader(grader);
+    for (Registration reg : course.getRegistrations())
+        notificationService.notifyNewAssignment(
+            reg, assignment);
+});
+// If ANY step fails, ALL steps roll back
+```
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+
+**What you get for free:**
+- **Speed:** Method calls take nanoseconds
+- **Reliability:** If you call a method, it runs
+- **Transactions:** Wrap multiple operations in one atomic unit — all succeed or all roll back
+- **Objects by reference:** Pass an `Assignment` object around; everyone sees the same data
+- **Debugging:** Set a breakpoint, step through the entire flow in one debugger session
+
+</div>
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.78em', marginTop: '0.5em', color: '#FF9800'}}>
+These guarantees are <strong>invisible until you lose them</strong>. When components move to different processes or different machines, every one of these guarantees disappears.
+</p>
+</div>
+
+<aside className="notes">
+**This is the most important point to internalize:**
+- Students take shared memory for granted because it's all they've experienced
+- "When you call `GraderFactory.buildFor(assignment, config)`, have you ever worried that the method might not run? That it might take 30 seconds to start? That it might run TWICE?"
+- "No? That's because you're in a monolith. Those guarantees come from shared memory."
+
+**The transaction point is crucial:**
+- In a monolith: create the assignment, configure the grader, and notify students — all in one transaction
+- If notifications fail, the assignment creation AND grader config roll back
+- In a distributed system, there's no way to do this across services — you need sagas, compensating transactions, eventual consistency
+
+→ **Transition:** And what about working in one codebase?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## What "Unified Codebase" Really Means
+
+<p style={{fontSize: '0.82em'}}>
+In a monolith, everyone works in the <strong>same repository</strong>, with the <strong>same language</strong>, the <strong>same build system</strong>, and the <strong>same dependency tree</strong>.
+</p>
+
+<div style={{display: 'flex', flexDirection: 'column', gap: '1em', fontSize: '0.65em', marginTop: '0.75em'}}>
+
+<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+
+**Benefits of one codebase**
+- **Refactoring is easy:** rename a method and your IDE finds every caller
+- **Code sharing is free:** import any class from any package
+- **Consistency:** one style guide, one set of linters, one test framework
+- **Onboarding:** new developers learn ONE system, not twelve
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+
+**Costs of one codebase**
+- **Merge conflicts:** Unless there's a strong enforcement of modularity, it's easy to step on each other's toes
+- **Slow builds:** the whole app rebuilds even for small changes
+- **Technology lock-in:** The whole system uses one language, one framework
+- **Blast radius:** a bad commit affects everything
+
+</div>
+
+</div>
+
+<aside className="notes">
+**Make the benefits tangible:**
+- "If you want to understand how grading works, you grep one codebase. Every caller, every test, every reference — it's all right there."
+- "Rename a method? Your IDE handles it. Every caller updates. One commit."
+
+**Make the costs tangible:**
+- "If 20 developers are all pushing to the same repo, merge conflicts are a daily occurrence"
+- "Your CI runs ALL the tests — even if you only changed one file"
+- "Want to use a different language for a new feature? Too bad — the monolith is locked in"
+
+**The big picture:**
+- A monolith gives you simplicity at the cost of flexibility
+- This is a VALID tradeoff for many, many systems
+
+→ **Transition:** Now that we understand what a monolith IS, let's build vocabulary for evaluating architectural choices...
+</aside>
+
+</Slide>
 
 <Slide>
 
@@ -330,86 +657,126 @@ Style: Clean, minimal, educational. Use the color palette: purple #9370DB, blue 
 
 <Slide>
 
-## Same Scenario, Different Architecture
+## Why "Scalable" Isn't Specific Enough
 
-<Img
-    src="/img/lectures/web/l19-qa-scenario-compared.webp"
-    prompt="A side-by-side comparison illustration showing the SAME quality attribute scenario playing out on two different architectures. No title.
+<p style={{fontSize: '0.82em'}}>
+Imagine someone says: "The grading system should be scalable." What does that actually mean? Consider three very different situations Pawtograder might face:
+</p>
 
-TOP: A banner showing the shared scenario: 'STIMULUS: 200 students submit within 10 minutes of deadline'
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.6em', fontSize: '0.52em', marginTop: '0.5em'}}>
 
-LEFT SIDE — 'Pawtograder (Distributed)':
-Show 200 small submission icons fanning out into many parallel GitHub Actions runners (like 200 conveyor belts running simultaneously). A clock shows '30 minutes'. A green checkmark and label: 'All graded, none dropped.' The visual conveys PARALLEL processing — horizontal scaling.
+<div style={{padding: '0.6em', border: '2px solid #FF5722', borderRadius: '8px'}}>
 
-RIGHT SIDE — 'Bottlenose (Monolith)':
-Show 200 small submission icons funneling into a narrow bottleneck of just 15 slots (like 200 people trying to enter through a door that fits 15). A long queue forms behind. A clock shows '60+ minutes'. CRITICALLY, also show the monolith castle serving OTHER users at the same time — students checking grades, instructors managing courses — and those users are getting slow, laggy responses because the grading work is eating CPU and database connections. The visual conveys not just QUEUING but RESOURCE CONTENTION — the entire platform degrades.
+**Scenario A: Spike**
 
-BOTTOM: A callout box: 'Scalability isn't just throughput — it's whether the rest of the system stays responsive under load. In a monolith, grading competes with everything else for the same resources.'
+200 students submit **all at once** at 11:59pm deadline
 
-Style: Clean educational illustration, warm colors, the contrast between parallel fan-out (left) and funnel/contention (right) should be immediately visually obvious. Use purple #9370DB, green #4CAF50, orange #FF9800."
-    alt="Side-by-side comparison: same stimulus (200 students submit near deadline). Pawtograder fans out to 200 parallel runners, finishes in 30 min, API stays responsive. Bottlenose funnels through 15 job slots, queues for 60+ min, AND the whole platform slows down because grading competes with web requests for CPU and database connections."
-  />
+*What happens?*
+- 200 parallel GitHub Actions runners spin up
+- Each builds, tests, parses, scores independently
+- All are accepted before the deadline, complete in ~30 minutes
+- **API receives 200 results simultaneously**
+
+*Very different from Scenario B or C!*
+
+</div>
+
+<div style={{padding: '0.6em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+
+**Scenario B: Sustained**
+
+1800 students submit **over 1 hour** during an exam
+
+*What happens?*
+- ~30 new runners start every minute
+- ~30 complete every minute (steady state)
+- Load is spread over time
+- **API handles ~30 results/min continuously**
+
+*Very different from Scenario A or C!*
+
+</div>
+
+<div style={{padding: '0.6em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+
+**Scenario C: Trickle**
+
+1800 students submit **over 24 hours** for a homework
+
+*What happens?*
+- ~1-2 runners at any time
+- Never more than a handful concurrent
+- Minimal system stress
+- **API barely notices**
+
+*Very different from Scenario A or B!*
+
+</div>
+
+</div>
 
 <div className="fragment">
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.52em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0.5em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
-
-**Scalability scenario (Pawtograder)**
-
-Source: 200 students · Stimulus: submit near deadline · Environment: normal ops · Artifact: grading pipeline · Response: all graded, **API stays responsive** · **Measure: &lt; 30 min**
-
-</div>
-
-<div style={{padding: '0.5em', border: '2px solid #FF9800', borderRadius: '8px'}}>
-
-**Scalability scenario (Bottlenose)**
-
-Source: 200 students · Stimulus: submit near deadline · Environment: 15-job limit, shared process · Artifact: grading queue **+ web app** · Response: all graded, but **platform slows for everyone** · **Measure: 60+ min, degraded UX**
-
-</div>
-
-</div>
+<p style={{fontSize: '0.75em', marginTop: '0.5em', fontWeight: 'bold', color: '#9370DB'}}>
+All three scenarios involve "grading many submissions" — but they place <strong>completely different demands</strong> on the system. A system that handles Scenario C perfectly might completely fail at Scenario A. This is why we need a vocabulary for being <em>specific</em> about what we mean.
+</p>
 </div>
 
 <aside className="notes">
-**Walk through the comparison:**
+**The pedagogical goal: motivate WHY we need quality attribute vocabulary.**
 
-**Scalability (runtime):**
-- Same stimulus: 200 near-deadline submissions
-- Pawtograder: GitHub Actions spins up 200 parallel runners — each one handles building, testing, parsing results, computing scores. All that heavy work happens OFF the main API. The API just receives normalized feedback. It stays fast and responsive throughout.
-- Bottlenose: Even if you raised the limit above 15 concurrent jobs, every grading job shares the same process — parsing test output, computing grades, running linters, writing to the database. That work competes with students checking their grades, instructors managing courses, TAs browsing submissions. The whole platform slows to a crawl.
-- This is the deeper scalability insight: it's not just "can we grade 200 submissions?" It's "does the system REMAIN RESPONSIVE while grading 200 submissions?" Pawtograder: yes. Bottlenose: no.
-- The scenario REVEALS this — "the system should be scalable" would have hidden it.
+**The problem with vague requirements:**
+- "The system should be scalable" — which scenario are we optimizing for?
+- A system designed for Scenario C might fail catastrophically at Scenario A
+- A system over-engineered for Scenario A might be wasteful for Scenario C
 
-**This works for development-time qualities too:**
-- Changeability scenario: instructor requests Rust language support
-- Pawtograder: Add one `RustCargoBuilder` class implementing the `Builder` port. One developer, one day.
-- Bottlenose: New `RustGrader` subclass + views + Docker image + registration. Multiple developers, multiple days.
-- Same stimulus, same desired response — architecture determines the measure.
+**Walk through each scenario — make them vivid:**
 
-**The key takeaway:**
-- Scenarios make quality attributes concrete and comparable
-- The same scenario applied to two architectures reveals EXACTLY where each one excels and struggles
-- This is how we'll evaluate every style in this lecture — not with vague labels, but with specific scenarios
-- The star ratings we'll see on each style's quality attribute card are shorthand for these scenarios
+**Scenario A (Spike):**
+- "200 students all hit submit at 11:59pm. What happens?"
+- This is a BURST — everything at once
+- Questions: What if 10 runners fail? Can the API handle 200 simultaneous writes? Race conditions?
 
-→ **Transition:** Now let's define each attribute...
+**Scenario B (Sustained):**
+- "An exam where students have 1 hour, 1800 students in the class"
+- This is CONTINUOUS PRESSURE — not a spike, but sustained load
+- Questions: Can we maintain throughput for an hour? Database connection pools? Memory leaks?
+
+**Scenario C (Trickle):**
+- "Homework due in a week, students submit throughout"
+- This is the EASY case — most systems handle this fine
+- BUT: testing only under Scenario C gives false confidence!
+
+**The key insight:**
+- The word "scalable" hides these distinctions
+- We need SPECIFIC vocabulary to discuss what we actually mean
+- That's what quality attributes give us — precision instead of hand-waving
+
+**Discussion prompt:**
+- "Which scenario do you think CS3100 assignment deadlines look like?" (Usually A or B)
+- "If you tested only during office hours (Scenario C), would you catch problems?"
+
+→ **Transition:** Now that we understand the two big families, let's build vocabulary to compare them...
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Defining the Quality Attributes
+## Review: Quality Attributes You Already Know
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.55em', marginTop: '0.5em'}}>
+<p style={{fontSize: '0.82em'}}>
+You've already encountered these quality attributes in earlier lectures. They're foundational — and they apply at the architectural level too:
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75em', fontSize: '0.55em', marginTop: '0.75em'}}>
 
 <div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
 
 **Simplicity**
 
-How easy is the system to understand and reason about? Fewer moving parts, fewer deployment units, fewer technologies. *Simple doesn't mean easy — it means less to go wrong.*
+How easy is the system to understand and reason about? Fewer moving parts, fewer deployment units, fewer technologies.
+
+*L7: Low coupling and high cohesion make code easier to understand. Readable code is understandable code. These principles scale up to architecture.*
 
 </div>
 
@@ -417,143 +784,185 @@ How easy is the system to understand and reason about? Fewer moving parts, fewer
 
 **Modularity**
 
-How well is the system divided into independent, interchangeable components? High cohesion within modules, low coupling between them. *Recall L7-L8: this is coupling and cohesion at system scale.*
+How well is the system divided into independent, interchangeable components? High cohesion within modules, low coupling between them.
+
+*L7: Coupling and cohesion at the class level. Now we scale it up to system components and deployment boundaries.*
 
 </div>
 
-<div style={{padding: '0.75em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
+<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
 
 **Testability**
 
-How easily can we verify the system behaves correctly? Can components be tested in isolation? Do we need real infrastructure to run tests? *Recall L16: hex arch was motivated by this.*
+How easily can we verify the system behaves correctly? Can components be tested in isolation? Do we need real infrastructure to run tests?
 
-</div>
-
-<div style={{padding: '0.75em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
-
-**Deployability**
-
-How easily and frequently can we release changes to production? One deploy for the whole system, or independent deploys per component? How risky is each deploy?
-
-</div>
-
-<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
-
-**Responsiveness**
-
-How quickly does the system respond to user requests? Includes latency (how long until the first byte?) and throughput (how many requests per second?).
-
-</div>
-
-<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
-
-**Fault Tolerance**
-
-How does the system behave when something fails? Does a bug in one component take down everything, or can the rest keep running?
-
-</div>
-
-</div>
-
-<aside className="notes">
-**Walk through each briefly — don't belabor, we'll revisit each one as we discuss styles:**
-
-**Simplicity:**
-- The most underrated quality attribute
-- A monolith is SIMPLE: one thing to build, deploy, monitor
-- Simplicity has real value — it reduces cognitive load, onboarding time, and operational mistakes
-- "The simplest thing that could possibly work" is a legitimate architectural choice
-
-**Modularity:**
-- This is L7-L8 scaled up: coupling and cohesion at the system level
-- A system with good modularity lets you change one module without affecting others
-- Hex arch achieves this through ports/adapters; layered through strata
-
-**Testability:**
-- L16 already covered this in depth — hex arch separates domain from infrastructure for testing
-- At the architectural level: can you test the grading engine without a real database? Without GitHub Actions?
-
-**Deployability:**
-- NEW concept for most students
-- "How often can you ship? How risky is each ship?"
-- A monolith deploys everything at once — simple but all-or-nothing
-- Microservices deploy independently — flexible but complex to coordinate
-
-**Responsiveness:**
-- How fast does the system respond?
-- In-process calls (monolith) are nanoseconds; network calls are milliseconds to seconds
-- This directly affects user experience
-
-**Fault Tolerance:**
-- What happens when something breaks?
-- In a monolith: a bug in one module can crash the entire process
-- In a distributed system: a failed service can be isolated (but the network adds new failure modes)
-
-→ **Transition:** Three more to define...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Maintainability, Changeability, and Scalability
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75em', fontSize: '0.55em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px'}}>
-
-**Maintainability**
-
-The umbrella term. How easily can the system be changed over time? Maintainability *decomposes* into the other attributes:
-
-- **Modularity** makes changes local
-- **Testability** gives confidence changes work
-- **Simplicity** makes the system understandable
-- **Changeability** makes modifications safe
-
-*A system is maintainable when all these work together.*
-
-</div>
-
-<div style={{padding: '0.75em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
-
-**Changeability**
-
-How safely can we modify existing behavior? Can we add a feature without breaking unrelated ones? How many files must we touch?
-
-Changeability depends on:
-- Clean interfaces between components
-- Low coupling (L7)
-- The Open/Closed Principle (L8)
-- Good test coverage (L16)
-
-*Different from deployability: a change can be easy to make but hard to deploy, or vice versa.*
-
-</div>
-
-<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
-
-**Scalability**
-
-How does the system handle growth in load, data, or users? Not just "can it finish?" but "does the rest of the system stay responsive while it works?"
-
-<div style={{marginTop: '0.5em'}}>
-
-**Vertical scaling:** bigger hardware — more CPU, more RAM. *Simple but has a ceiling, and heavy work still competes for shared resources.*
-
-**Horizontal scaling:** more instances — offload work so the core stays responsive. *No ceiling in theory, but requires architecture that supports it.*
-
-</div>
-
-*We'll return to scaling in depth in L20-21.*
+*L16: Hexagonal architecture was motivated by this — domain logic testable without real databases or APIs.*
 
 </div>
 
 </div>
 
 <div className="fragment">
-<p style={{fontSize: '0.78em', marginTop: '0.75em', fontWeight: 'bold', color: '#9370DB'}}>
-These attributes often <strong>conflict</strong>. Maximizing simplicity hurts scalability. Maximizing deployability adds complexity. Architecture is choosing which attributes matter most for <em>your</em> system.
+<p style={{fontSize: '0.78em', marginTop: '0.75em', fontStyle: 'italic', color: '#666'}}>
+We've already seen a tension between simplicity and modularity: adding interfaces and abstractions increases modularity but decreases simplicity. This tension continues at the architectural level.
+</p>
+</div>
+
+<aside className="notes">
+**This is a REVIEW slide — students should recognize these from L7:**
+
+**Simplicity — connect to L7 concepts:**
+- Low coupling contributes to simplicity: when components don't depend on each other's internals, the system is easier to understand
+- High cohesion contributes to simplicity: when related things are grouped together, you don't have to hunt across the codebase
+- Readability contributes to simplicity: clear names, consistent style, self-documenting code
+- At the architectural level: a monolith is SIMPLE (one thing to deploy/monitor). Microservices add complexity.
+- "The simplest thing that could possibly work" is a legitimate architectural choice
+
+**Modularity — also from L7:**
+- High cohesion within modules, low coupling between them
+- This is coupling/cohesion scaled UP to system components
+- Architectural version: Can we change the grading pipeline without touching the course management module?
+- Hex arch achieves this through ports/adapters; modular monolith through enforced boundaries
+
+**Testability — from L16:**
+- Hexagonal architecture separates domain from infrastructure
+- Architectural version: Can you test the grading engine without a real database? Without GitHub Actions?
+
+**The tension callout:**
+- This previews the tradeoffs we'll discuss after defining all attributes
+- Adding an interface (modularity ↑) means adding code (simplicity ↓)
+- Low coupling between modules might require MORE code (adapters, interfaces) — a tradeoff!
+- This isn't a flaw — it's a conscious tradeoff
+
+→ **Transition:** Now let's introduce the vocabulary for NEW quality attributes...
+
+**IMPORTANT FRAMING for the next few slides:**
+- We're building VOCABULARY first, not deep understanding
+- Students need to know these terms exist and roughly what they mean
+- The deep exploration of how architectural choices affect these attributes comes LATER in this lecture (when we examine styles) and in L20
+- Don't get bogged down in details — keep it brisk, definitional
+</aside>
+
+</Slide>
+
+<Slide>
+
+## New Attributes: Deployability, Responsiveness, Fault Tolerance
+
+<p style={{fontSize: '0.78em', fontStyle: 'italic', color: '#666', marginBottom: '0.75em'}}>
+These three attributes become critical when comparing monoliths vs. distributed systems. We'll explore them in depth in L20 — for now, just the vocabulary:
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75em', fontSize: '0.52em'}}>
+
+<div style={{padding: '0.75em', border: '2px solid #2196F3', borderRadius: '8px'}}>
+
+**Deployability**
+
+*How easily can we release changes to production?*
+
+- **High:** Independent deploys, small blast radius, quick rollback
+- **Low:** All-or-nothing deployment, coordinate across teams
+
+*Monoliths: one deploy = everything. Distributed: deploy pieces independently.*
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #2196F3', borderRadius: '8px'}}>
+
+**Responsiveness**
+
+*How quickly does the system respond to requests?*
+
+- **High:** In-process calls (nanoseconds), shared memory
+- **Lower:** Network calls (milliseconds), serialization overhead
+
+*Monoliths win here — no network between components.*
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #2196F3', borderRadius: '8px'}}>
+
+**Fault Tolerance**
+
+*How does the system behave when something fails?*
+
+- **High:** Failed component doesn't crash others, graceful degradation
+- **Low:** One crash = entire system down
+
+*Distributed systems isolate failures — but introduce NEW failure modes.*
+
+</div>
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.75em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
+Notice the pattern: Monoliths tend to have <strong>better responsiveness</strong> but <strong>worse deployability and fault tolerance</strong>. Distributed systems flip this. These tradeoffs are central to L20.
+</p>
+</div>
+
+<aside className="notes">
+**This is a PREVIEW slide — keep it brisk:**
+
+These three attributes are where monoliths and microservices diverge most sharply. We're just planting vocabulary seeds here.
+
+**Deployability:**
+- Monolith: fix a typo → redeploy everything
+- Distributed: fix a typo → redeploy just that service
+
+**Responsiveness:**
+- Method call: ~1-10 nanoseconds
+- Network call: ~1-100 milliseconds (5-7 orders of magnitude slower!)
+- Monoliths win on raw speed
+
+**Fault Tolerance:**
+- Monolith: one bad component poisons the whole process
+- Distributed: failures are isolated... but network adds new failure modes (timeouts, partial failures)
+
+**The fragment reveals the core tradeoff:**
+- This is the heart of the monolith vs. microservices debate
+- L20 will unpack this in detail with real examples
+
+→ **Transition:** Now the umbrella term that ties these together...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Umbrella Attribute: Maintainability
+
+<p style={{fontSize: '0.82em'}}>
+<strong>Maintainability</strong> is the umbrella term for how easily a system can be changed over time. It <em>decomposes</em> into the other attributes:
+</p>
+
+<p style={{fontSize: '0.65em', fontStyle: 'italic', color: '#666', marginTop: '-0.25em', marginBottom: '0.5em'}}>
+This is the "big picture" attribute — we'll see how styles affect it throughout this lecture and L20.
+</p>
+
+<div style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px' }}}%%
+graph TD
+    M["Maintainability<br/><em>How easily can the system evolve?</em>"] --> MOD["Modularity<br/><em>Changes stay local</em>"]
+    M --> TEST["Testability<br/><em>Confidence that changes work</em>"]
+    M --> SIMP["Simplicity<br/><em>System is understandable</em>"]
+    M --> CHANGE["Changeability<br/><em>Modifications are safe</em>"]
+
+    classDef umbrella fill:#D4C4E8,stroke:#9370DB,stroke-width:2px
+    classDef component fill:#C8E6C9,stroke:#4CAF50,stroke-width:2px
+
+    class M umbrella
+    class MOD,TEST,SIMP,CHANGE component
+```
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.78em', marginTop: '0.5em', fontStyle: 'italic', color: '#666'}}>
+When someone says "this system is hard to maintain," ask: Is it hard to <em>understand</em> (simplicity)? Hard to <em>change safely</em> (changeability)? Hard to <em>test</em> (testability)? Hard to <em>modify without affecting other parts</em> (modularity)? Decomposing "maintainability" gives us precision.
 </p>
 </div>
 
@@ -564,24 +973,261 @@ These attributes often <strong>conflict</strong>. Maximizing simplicity hurts sc
 - Is it hard to understand? (simplicity)
 - Is it hard to change safely? (changeability)
 - Is it hard to test? (testability)
-- Is it hard to deploy? (deployability)
-- Decomposing "maintainability" into component attributes gives us precision
+- Is it modular enough that changes don't ripple? (modularity)
 
-**Changeability vs. deployability:**
-- A monolith can be highly changeable (easy refactoring, IDE support) but poorly deployable (every change requires full redeploy)
-- A microservices system can be highly deployable (independent deploys) but poorly changeable (cross-service changes require coordination)
-- These are DIFFERENT attributes even though they're often conflated
+**Why decomposition matters:**
+- A system can be highly modular but hard to understand (complexity from abstraction)
+- A system can be simple but hard to change safely (no tests)
+- A system can be testable but hard to deploy (monolith)
+- "Maintainability" hides which problem you actually have
 
-**Scalability — introduce horizontal vs vertical:**
-- Vertical: "buy a bigger server" — works until you hit the biggest server available. But even with a bigger server, in a monolith ALL the work happens in one process. Grading jobs compete with web requests for CPU, memory, and database connections. More grading = slower everything.
-- Horizontal: "offload work" — Pawtograder does this naturally. Each GitHub Actions runner handles building, testing, parsing, scoring independently. The API just receives the final result. It stays fast even during a near-deadline spike.
-- Bottlenose can't do this — all that parsing/grading work runs in the same process as the web app. Even Orca only offloads the container execution, not the result processing.
-- We'll go much deeper in L20-21 when we discuss distributed architecture
+**This connects to root cause analysis:**
+- Don't say "we have a maintainability problem"
+- Say "we have a testability problem" or "we have a modularity problem"
+- Then you know what to fix
 
-**The conflict callout is the KEY TAKEAWAY:**
-- Architecture is about tradeoffs, not maximizing everything
-- "If someone tells you their architecture is the best at everything, they're selling something"
-- This is why quality attribute SCENARIOS (the previous slide) matter — when you write competing scenarios, you can see the tension concretely
+→ **Transition:** Two more attributes to define...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Review: Changeability
+
+<p style={{fontSize: '0.82em'}}>
+How safely can we modify existing behavior?
+</p>
+
+<p style={{fontSize: '0.65em', fontStyle: 'italic', color: '#666', marginTop: '-0.5em', marginBottom: '0.5em'}}>
+You've seen this at the code level (L7-L8: OCP, low coupling). Now we scale it to architecture.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em', marginTop: '0.75em'}}>
+
+<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+
+**High Changeability**
+
+- Clean interfaces between components
+- Low coupling — changes don't ripple
+- Open/Closed Principle (L8) applied
+- Good test coverage gives confidence
+
+*Hex arch: Add Rust support = one new `RustCargoBuilder` adapter. Domain untouched.*
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+
+**Low Changeability**
+
+- Components tightly coupled
+- Changes ripple across many files
+- No clear interfaces to program against
+- Fear of breaking unrelated features
+
+*Big Ball of Mud: Add Rust support = touch files throughout the codebase.*
+
+</div>
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.78em', marginTop: '0.75em', fontWeight: 'bold', color: '#9370DB'}}>
+<strong>Changeability ≠ Deployability:</strong> A change can be <em>easy to make</em> (high changeability — one file) but <em>hard to deploy</em> (low deployability — requires full system redeploy). Or vice versa: easy to deploy (independent service) but hard to change (requires coordinating multiple services).
+</p>
+</div>
+
+<aside className="notes">
+**Changeability = how safely can we modify:**
+
+**The distinction from deployability is crucial:**
+- Changeability: How many files do I touch? Do changes ripple? Is refactoring safe?
+- Deployability: How do I get those changes to production? How risky is the deploy?
+
+**A monolith can have HIGH changeability:**
+- IDE refactoring works across the entire codebase
+- Rename a method → all callers updated automatically
+- But LOW deployability — every change requires full redeploy
+
+**A microservices system can have HIGH deployability:**
+- Each service deploys independently
+- But LOW changeability for cross-service features — coordinate multiple repos, multiple teams
+
+**The Pawtograder example:**
+- Adding Rust = one `RustCargoBuilder` class
+- The port interface is stable, the domain is untouched
+- This is HIGH changeability because of architectural boundaries
+
+→ **Transition:** Finally, scalability...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## New Attribute: Scalability
+
+<p style={{fontSize: '0.82em'}}>
+How does the system handle growth in load, data, or users?
+</p>
+
+<p style={{fontSize: '0.65em', fontStyle: 'italic', color: '#666', marginTop: '-0.5em', marginBottom: '0.5em'}}>
+Scaling strategies vary by architecture — we'll explore this in depth in L20.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em', marginTop: '0.75em'}}>
+
+<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+
+**Vertical Scaling**
+
+"Buy a bigger server" — more CPU, more RAM.
+
+- Simple to implement
+- No code changes required
+- Has a ceiling (biggest server available)
+- Heavy work STILL competes for shared resources
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+
+**Horizontal Scaling**
+
+"Add more instances" — offload work to independent workers.
+
+- No theoretical ceiling
+- Heavy work happens elsewhere
+- Core system stays responsive
+- Requires architecture that supports it
+
+</div>
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.78em', marginTop: '0.75em', fontWeight: 'bold', color: '#9370DB'}}>
+Key insight: Scalability isn't just "can the system handle more load?" It's "does the <em>rest</em> of the system stay responsive while handling that load?" We'll return to this distinction in L20-21.
+</p>
+</div>
+
+<aside className="notes">
+**Scalability = handling growth:**
+
+**Vertical scaling:**
+- The intuitive approach: "slow? buy more hardware"
+- But there's a ceiling — you can only buy so big a server
+- More importantly: even with a huge server, in a monolith ALL work shares resources
+- Grading jobs compete with web requests for CPU, memory, DB connections
+- Adding more grading jobs just makes contention worse
+
+**Horizontal scaling:**
+- The distributed approach: "slow? add more workers"
+- Pawtograder naturally does this — GitHub Actions spins up N runners
+- The API never touches the heavy work — it just receives normalized feedback
+- So the API stays fast even during a near-deadline spike
+
+**The "rest of the system" insight:**
+- This connects back to our Scenario A (200 at once) from earlier
+- The question isn't just "can we grade 200 submissions?"
+- It's "does the web UI stay responsive WHILE we grade 200 submissions?"
+- Pawtograder: yes. Monolith: no (without architectural changes).
+
+**Foreshadow L20-21:**
+- We'll go much deeper into distributed architecture
+- Horizontal scaling requires infrastructure: queues, workers, coordination
+- There's no free lunch — distributed systems add complexity
+
+→ **Transition:** Now that we've defined all attributes, let's talk tradeoffs...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Quality Attributes Trade Off Against Each Other
+
+<p style={{fontSize: '0.82em'}}>
+Here's the uncomfortable truth: <strong>you can't maximize every quality attribute</strong>. They're in tension with each other.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.58em', marginTop: '0.75em'}}>
+
+<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+
+**Simplicity vs. Modularity**
+
+Adding interfaces and abstractions → more modular → less simple
+
+*We saw this in L7-L8: ISP means more interfaces to understand.*
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+
+**Simplicity vs. Scalability**
+
+Horizontal scaling requires workers, queues, coordination → more complexity
+
+*A monolith is simple but hits a ceiling. Distributed systems scale but aren't simple.*
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+
+**Deployability vs. Responsiveness**
+
+Independent services → independent deploys → network calls → more latency
+
+*High deployability often means more service boundaries = more network overhead.*
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+
+**Fault Tolerance vs. Simplicity**
+
+Isolation requires boundaries → boundaries add complexity
+
+*A monolith is simpler but a single point of failure. Distributed systems isolate failures but add coordination complexity.*
+
+</div>
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.78em', marginTop: '0.75em', fontWeight: 'bold', color: '#9370DB'}}>
+Architecture is choosing which attributes matter most for <em>your</em> system. If someone tells you their architecture maximizes everything, they're selling something.
+</p>
+</div>
+
+<aside className="notes">
+**This is the KEY INSIGHT for the lecture:**
+
+**Every decision has costs:**
+- Adding modularity = adding abstractions = reducing simplicity
+- Adding scalability = adding workers = adding coordination complexity
+- Adding deployability = adding service boundaries = adding network latency
+- Adding fault isolation = adding boundaries = adding complexity
+
+**The role of the architect:**
+- NOT to find the "best" architecture (there isn't one)
+- TO understand the priorities for THIS system
+- TO make conscious tradeoffs based on those priorities
+- TO communicate those tradeoffs to the team
+
+**Connect to domain understanding (L12):**
+- Domain modeling tells you WHICH quality attributes matter most
+- A grading system needs scalability at deadline time
+- A banking system needs fault tolerance and consistency
+- A startup MVP might just need simplicity
+
+**The "selling something" callout:**
+- Vendors often promise architectures that do everything well
+- In practice, every architectural style makes tradeoffs
+- Understanding the tradeoffs is the skill — not finding the magic solution
 
 → **Transition:** Now we have the vocabulary. Let's clarify what "styles" and "patterns" mean...
 </aside>
@@ -621,7 +1267,7 @@ A bundle of characteristics about a system:
 **Architectural Pattern — The Solution**
 
 A contextualized solution to a recurring problem:
-- Circuit Breaker for failure handling
+- Service Locator for dependency resolution
 - Repository for data access abstraction
 - Strategy for extensible behavior
 
@@ -712,279 +1358,70 @@ Both must: accept submissions, run tests, compute scores, report feedback. Today
 - Same problem, different styles, different tradeoffs
 - Neither is "right" — they're better or worse fits for particular constraints
 
-→ **Transition:** Let's start with a style you already know — Hexagonal Architecture...
+→ **Transition:** Let's start with what you already know — the monolith...
 </aside>
 
 </Slide>
 
 {/* ============================================ */}
-{/* ARC 3: HEXAGONAL IN PAWTOGRADER (10 min) */}
+{/* ARC 3: MONOLITH QUALITY PROFILE */}
+{/* (Conceptual slides moved earlier) */}
 {/* ============================================ */}
 
 <Slide>
 
-## Recall: Hexagonal Architecture (L16)
+## Monolith: Quality Attribute Profile
 
-<p style={{fontSize: '0.85em'}}>
-In L16, you learned Hexagonal Architecture with the smart home energy optimizer. Quick recap:
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75em', fontSize: '0.7em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px'}}>
-
-**Domain Core**
-
-Pure business logic. No infrastructure imports. Testable with zero mocks.
-
-*L16: `EnergyOptimizer`*
-
-</div>
-
-<div style={{padding: '0.75em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
-
-**Ports**
-
-Interfaces defined by the domain. Say WHAT is needed, not HOW.
-
-*L16: `EnergyPricePort`*
-
-</div>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em', marginTop: '0.5em'}}>
 
 <div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
 
-**Adapters**
+**Where Monoliths Excel**
 
-Technology-specific. Swappable. Multiple per port.
-
-*L16: `StubPriceAdapter`*
-
-</div>
-
-</div>
-
-<div className="fragment">
-<div style={{padding: '0.5em', border: '2px solid #FF9800', borderRadius: '8px', marginTop: '0.5em', fontSize: '0.68em'}}>
-
-**Why did this structure emerge?** L18 heuristics in action:
-- **Rate of Change:** Domain (grading rules) stable; infrastructure (APIs, databases) volatile
-- **Testability:** Domain testable without real price feeds or databases
-- **ISP:** Each port is a narrow interface — domain doesn't see full infrastructure complexity
-
-</div>
-</div>
-
-<aside className="notes">
-**This is a REVIEW — but now with the emergence lens!**
-- Students learned domain/port/adapter in L16 with the smart home example
-- They saw DI wiring in L17 (creation patterns)
-- They found service boundaries in L18 (Pawtograder) using four heuristics
-- Today: see how those heuristics LED to hex arch — it wasn't a random choice
-
-**The emergence connection:**
-- In L16, we motivated hex arch with testability — "how do we test without real infrastructure?"
-- In L18, we learned the broader heuristics — rate of change, actor, ISP, testability
-- Now: see that hexagonal is what emerges when you apply those heuristics to a domain-centric problem
-
-**Quick check for understanding:**
-- "Can someone remind me: what's a port? What's an adapter?"
-- "Why does this structure help with testability?"
-- If they're solid, move quickly. If shaky, spend an extra minute.
-
-→ **Transition:** Here's what hexagonal looks like in Pawtograder...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Hexagonal Architecture in Pawtograder
-
-<Img
-    src="/img/lectures/web/l19-hexagonal-pawtograder2.webp"
-    prompt="A side-by-side comparison showing hexagonal architecture in two systems: Pawtograder's Grading Action and CookYourBooks recipe app. No title.
-
-LEFT SIDE — PAWTOGRADER GRADING ACTION:
-A hexagon with the domain core in the center labeled 'OverlayGrader - Pure Grading Logic'. Around the hexagon, ports are shown as socket-like interfaces:
-- Left port: 'Builder' (interface icon)
-- Right port: 'FeedbackAPI' (interface icon)
-- Bottom port: 'SubmissionAPI' (interface icon)
-
-Adapters plugged into each port:
-- GradleBuilder plugged into Builder port
-- PythonScriptBuilder also available for Builder port
-- SupabaseAPI plugged into FeedbackAPI and SubmissionAPI ports
-
-Code snippet visible in the center:
-```
-grade(solution, submission, config)
-// Knows nothing about
-// GitHub, HTTP, or databases
-```
-
-RIGHT SIDE — COOKYOURBOOKS (PREVIEW):
-A smaller hexagon showing how the same pattern applies to a recipe app:
-- Center: 'RecipeService - Pure Recipe Logic'
-- Ports: 'RecipeRepository', 'UserPreferences', 'ConversionService'
-- Adapters: 'PostgresRecipeRepo', 'InMemoryPrefs', 'KingArthurDensityConverter'
-
-BOTTOM CALLOUT: 'Same pattern, different domains. The hexagon emerges when domain logic needs to be testable without infrastructure.'
-
-Style: Clean educational diagram, hexagons clearly showing domain-at-center structure. Use warm colors: purple (#9370DB) for domain, blue (#4A90A4) for ports, green (#4CAF50) for adapters."
-    alt="Two hexagonal architectures side by side: Pawtograder (OverlayGrader with Builder, FeedbackAPI ports) and CookYourBooks preview (RecipeService with Repository, Preferences ports). Callout: Same pattern emerges when domain needs infrastructure isolation."
-  />
-
-<aside className="notes">
-**Walk through Pawtograder's hexagon:**
-- **OverlayGrader (center)**: Takes a solution and submission, grades it. Pure domain logic — no HTTP, no GitHub, no Supabase.
-- **Builder port**: Says "I need to build and test" without specifying Gradle vs. Python vs. anything else
-- **FeedbackAPI port**: Says "I need to submit results" without specifying where they go
-
-**The emergence connection:**
-- This structure wasn't picked from a menu — it emerged from applying L18 heuristics
-- Rate of Change: Domain (grading rules) changes rarely; adapters (Gradle, Supabase) change when technologies change
-- Testability: Domain testable by injecting stub adapters — `java -jar grader.jar` runs locally
-- ISP: Each port is narrow — Builder doesn't know about API, API doesn't know about building
-
-**Preview of CookYourBooks:**
-- Students will apply this pattern themselves in upcoming assignments
-- Same structure: RecipeService at center, Repository and Conversion ports, adapters for persistence
-- The hexagon emerges in ANY domain-centric system where you need infrastructure isolation
-
-→ **Transition:** Now let's see the adapters in more detail...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Adapters Connect to Real Infrastructure
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.5em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
-
-**GradleBuilder (Java adapter)**
-
-```java
-public class GradleBuilder implements Builder {
-    @Override
-    public BuildResult build(Path projectDir,
-            BuildConfig config) {
-        ProcessResult result = runGradle(
-            projectDir, "test",
-            config.getTimeouts());
-        return new BuildResult(
-            result.exitCode() == 0,
-            result.output());
-    }
-
-    @Override
-    public List<TestResult> parseTestResults(
-            Path reportDir) {
-        return SurefireParser.parse(
-            reportDir.resolve(
-                "build/test-results"));
-    }
-}
-```
+- **Simplicity** ★★★ — One thing to build, test, deploy, monitor
+- **Responsiveness** ★★★ — In-process calls are orders of magnitude faster than network calls
+- **Testability** ★★☆ — One environment to set up, but may need full infrastructure
+- **Changeability** ★★☆ — IDE refactoring across entire codebase, but changes may ripple
 
 </div>
 
 <div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
 
-**SupabaseAPI (platform adapter)**
+**Where Monoliths Struggle**
 
-```java
-public class SupabaseAPI
-        implements SubmissionAPI, FeedbackAPI {
-
-    @Override
-    public SubmissionRegistration register(
-            String oidcToken) {
-        // POST to createSubmission endpoint
-        // Returns submission ID + grader URL
-    }
-
-    @Override
-    public void submit(String submissionId,
-            AutograderFeedback feedback) {
-        // POST normalized feedback
-        // Includes retry with backoff
-    }
-}
-```
+- **Scalability** ★☆☆ — Must scale the entire app; heavy work competes with everything else
+- **Deployability** ★☆☆ — Every deploy is all-or-nothing; a bug anywhere blocks everything
+- **Fault Tolerance** ★☆☆ — A crash in any component takes down the entire process
+- **Modularity** ★☆☆ — Boundaries are conventions, not enforcement (without discipline → Big Ball of Mud)
 
 </div>
 
 </div>
 
 <div className="fragment">
-<div style={{padding: '0.5em', border: '2px solid #9370DB', borderRadius: '8px', fontSize: '0.7em', marginTop: '0.5em'}}>
+<div style={{padding: '0.75em', border: '2px solid #4A90A4', borderRadius: '8px', marginTop: '0.5em', fontSize: '0.75em'}}>
 
-**The payoff:** Adding Python support = add a `PythonScriptBuilder`. The grading domain **never changes**. Testing locally = swap in mock APIs. The grader doesn't know the difference.
-
-</div>
-</div>
-
-<div className="fragment">
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '0.4em', fontSize: '0.48em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0.4em', border: '2px solid #4CAF50', borderRadius: '6px', textAlign: 'center'}}>
-
-**Testability** ★★★
-
-Test domain with zero infrastructure
-
-</div>
-
-<div style={{padding: '0.4em', border: '2px solid #4CAF50', borderRadius: '6px', textAlign: 'center'}}>
-
-**Changeability** ★★★
-
-Swap adapters, domain untouched
-
-</div>
-
-<div style={{padding: '0.4em', border: '2px solid #4A90A4', borderRadius: '6px', textAlign: 'center'}}>
-
-**Modularity** ★★★
-
-Ports enforce clean boundaries
-
-</div>
-
-<div style={{padding: '0.4em', border: '2px solid #FF9800', borderRadius: '6px', textAlign: 'center'}}>
-
-**Simplicity** ★☆☆
-
-More interfaces, more indirection
-
-</div>
+**The Monolith-First Approach (Fowler):**
+Start with a monolith. You can understand the whole system. You can refactor freely. You can deploy with confidence. Only break it apart when you have specific scaling, team, or deployment problems that a monolith can't solve.
 
 </div>
 </div>
 
 <aside className="notes">
-**Two adapters implementing the same port pattern:**
-- GradleBuilder: runs `./gradlew test`, parses Surefire XML — adapter for Java builds
-- PythonScriptBuilder: runs configured Python test command — adapter for Python builds
-- SupabaseAPI: implements BOTH SubmissionAPI and FeedbackAPI — adapter for Pawtograder's backend
+**Walk through the ratings:**
+- Simplicity ★★★: One thing to build, deploy, monitor. The defining strength.
+- Responsiveness ★★★: Method calls in nanoseconds, database transactions, full stack traces.
+- Scalability ★☆☆: Vertical only — bigger hardware. Heavy work competes for shared resources.
+- Deployability ★☆☆: All-or-nothing. A broken test anywhere blocks everything.
+- Fault Tolerance ★☆☆: Bug in one module crashes everything — one process, one fate.
+- Modularity ★☆☆: Boundaries exist only as conventions. Without discipline → Big Ball of Mud.
 
-**The critical "why this matters" moment:**
-- The grading action can run LOCALLY: `java -jar grader.jar -s /path/to/solution -u /path/to/submission`
-- No dependency on GitHub Actions or Pawtograder API — those are just adapters
-- This is why hex arch isn't just academic — it enables practical local development and testing
+**Fowler's advice is key:**
+- Many experienced architects recommend starting monolithic
+- The alternative (microservices) adds significant complexity
+- Only decompose when you have specific, concrete problems
 
-**Quality attribute connection:**
-- Testability: THE original motivation from L16. Domain tested with zero mocks of real infrastructure.
-- Changeability: Adding a language = one adapter class. Open/Closed Principle at the architectural level.
-- Modularity: Ports create explicit contracts. Coupling is low because the domain doesn't import infrastructure.
-- Simplicity: The cost — more interfaces, more abstraction layers, more files. Worth it for Pawtograder, might be overkill for a small script.
-
-**Don't linger — this sets up the styles comparison ahead.**
-
-→ **Transition:** Hexagonal is one lens. Let's see how other styles describe these same systems...
+→ **Transition:** Is there a middle ground?
 </aside>
 
 </Slide>
@@ -1736,372 +2173,13 @@ Style: Clean educational diagram with warm colors. The three architectural shape
 - It's about asking the right questions and letting structure emerge
 - The vocabulary (hexagonal, layered, pipelined) lets us COMMUNICATE what we discovered
 
-→ **Transition:** All these styles so far describe organization WITHIN a single deployment. What about deployment itself?
+→ **Transition:** We've seen how styles emerge from heuristics. Now let's look at middle ground between a basic monolith and full distribution...
 </aside>
 
 </Slide>
 
 {/* ============================================ */}
-{/* ARC 5: MONOLITHIC ARCHITECTURE (15 min) */}
-{/* ============================================ */}
-
-<Slide>
-
-## The Monolith
-
-<p style={{fontSize: '0.85em'}}>
-Every style we've seen so far — Hexagonal, Layered, Pipelined — is an answer to our opening question: <em>how do we organize our code?</em> But they all organize code <strong>within a single deployment unit</strong>. This is the world of the <strong>monolith</strong>.
-</p>
-
-<p style={{fontSize: '0.82em', marginTop: '0.5em'}}>
-A <strong>monolith</strong> is a system deployed as a single unit. All functionality — user interface, business logic, data access — lives in one codebase, compiles into one artifact, and runs in one process.
-</p>
-
-<div className="fragment">
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '0.5em', fontSize: '0.6em', marginTop: '1em'}}>
-
-<div style={{padding: '0.5em', border: '2px solid #9370DB', borderRadius: '8px', textAlign: 'center'}}>
-
-**Single Deployment**
-
-One build. One deploy. One running process.
-
-</div>
-
-<div style={{padding: '0.5em', border: '2px solid #4CAF50', borderRadius: '8px', textAlign: 'center'}}>
-
-**Shared Memory**
-
-Components talk via method calls, not networks.
-
-</div>
-
-<div style={{padding: '0.5em', border: '2px solid #4A90A4', borderRadius: '8px', textAlign: 'center'}}>
-
-**Single Database**
-
-All data in one schema, one set of tables.
-
-</div>
-
-<div style={{padding: '0.5em', border: '2px solid #FF9800', borderRadius: '8px', textAlign: 'center'}}>
-
-**Unified Codebase**
-
-One repo, one build system, one language.
-
-</div>
-
-</div>
-</div>
-
-<aside className="notes">
-**This is a BIG concept — take your time here.**
-- Students have been building monoliths their whole lives without knowing the name
-- Every Java project they've written? A monolith. Every Python script? A monolith.
-- The term only becomes meaningful in CONTRAST to systems that AREN'T monoliths
-
-**"Monolith" isn't an insult:**
-- It's a description of deployment topology
-- Many successful systems are monoliths — GitHub was a monolith for years, Shopify still is
-- The question isn't "is it a monolith?" but "should it be?"
-
-**Bottlenose as our monolith example:**
-- The core Bottlenose application is our monolith example — controllers, models, views, grader subclasses, background jobs
-- Note: Bottlenose ALSO has Orca, a separate service that runs Docker containers for grading. So Bottlenose isn't a *pure* monolith — but the core Rails app is, and that's what we'll focus on.
-- Even Bottlenose couldn't stay fully monolithic — running untrusted student code in the main web process is too dangerous. We'll come back to this when we discuss microservices.
-
-**We're going to unpack each of these four characteristics...**
-
-→ **Transition:** Let's dig into what each of these means concretely...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## What "Single Deployment Unit" Really Means
-
-<p style={{fontSize: '0.82em'}}>
-In a monolith, everything ships together. One <code>git push</code>, one CI pipeline, one artifact, one deploy.
-</p>
-
-<div style={{fontSize: '0.65em', marginTop: '0.5em'}}>
-
-```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px' }}}%%
-flowchart LR
-    A["One Codebase"] --> B["One Build<br/>(compile, test, package)"]
-    B --> C["One Artifact<br/>(Docker image)"]
-    C --> D["One Deploy<br/>(Bottlenose core)"]
-
-    classDef step fill:#D4C4E8,stroke:#9370DB,stroke-width:2px
-    class A,B,C,D step
-```
-
-</div>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
-
-**This means:**
-- Fix a typo in the grading UI? Redeploy the whole app.
-- Update a dependency for course management? Redeploy the whole app.
-- Every change goes through the same pipeline.
-
-</div>
-
-<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
-
-**The consequence:**
-- You can't deploy grading fixes without also deploying whatever else changed
-- A broken test in course management blocks a grading deploy
-- Deployment frequency is limited by the slowest-moving part
-
-</div>
-
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.78em', marginTop: '0.5em', color: '#9370DB'}}>
-Bottlenose's core application: <strong>controllers, models, views, grader subclasses, background jobs, migrations</strong> — all one deploy. The grading <em>orchestration</em> lives in the same deployment as user authentication, course management, and the admin interface. (Orca, the service that actually <em>executes</em> student code in Docker containers, is a separate deployment — even Bottlenose couldn't keep everything in one process.)
-</p>
-</div>
-
-<aside className="notes">
-**Make this visceral for students:**
-- "You fixed a one-line bug in how grading jobs are queued. To get that fix to students, you have to redeploy the ENTIRE application — user management, course creation, admin dashboards, everything."
-- "Your CI pipeline takes 20 minutes. Every change — no matter how small — waits 20 minutes."
-- "Someone merged a broken migration for courses. Your grading fix can't deploy until that's fixed too."
-
-**The Orca exception is instructive:**
-- Even Bottlenose couldn't stay purely monolithic
-- Running untrusted student code in the same process as the web app is too dangerous
-- So Orca runs separately — it's a Docker-based service that executes grading containers
-- But the grading LOGIC (which grader to use, how to compute scores, where to store results) still lives in the monolith
-- This is a very common pattern: monolith + one extracted service for isolation/safety
-
-**Contrast with Pawtograder:**
-- The Grading Action and the API deploy independently
-- Fix grading logic? Deploy just the action. Fix the API? Deploy just the API.
-- But that independence comes with its own costs (we'll see later)
-
-**The positive spin:**
-- One deploy means ONE thing to monitor, ONE rollback strategy, ONE set of health checks
-- You always know exactly what's running in production — the latest build
-
-→ **Transition:** What about shared memory?
-</aside>
-
-</Slide>
-
-<Slide>
-
-## What "Shared Memory" Really Means
-
-<p style={{fontSize: '0.82em'}}>
-In a monolith, components communicate by calling methods on objects that live in the <strong>same process</strong>. This is so natural you've never had to think about it:
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.55em', marginTop: '0.75em'}}>
-
-<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
-
-**What a monolith feels like** *(illustrative, not actual Bottlenose code)*
-
-```java
-// All in one process, one memory space
-Course course = courseRepo.findById(courseId);
-Assignment assignment = course.createAssignment(
-    name, dueDate);
-
-// This is a method call — nanoseconds, guaranteed
-Grader grader = GraderFactory.buildFor(
-    assignment, config);
-
-// One database transaction wraps everything
-transaction(() -> {
-    assignment.setGrader(grader);
-    for (Registration reg : course.getRegistrations())
-        notificationService.notifyNewAssignment(
-            reg, assignment);
-});
-// If ANY step fails, ALL steps roll back
-```
-
-</div>
-
-<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
-
-**What you get for free:**
-- **Speed:** Method calls take nanoseconds
-- **Reliability:** If you call a method, it runs
-- **Transactions:** Wrap multiple operations in one atomic unit — all succeed or all roll back
-- **Objects by reference:** Pass an `Assignment` object around; everyone sees the same data
-- **Debugging:** Set a breakpoint, step through the entire flow in one debugger session
-
-</div>
-
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.78em', marginTop: '0.5em', color: '#FF9800'}}>
-These guarantees are <strong>invisible until you lose them</strong>. When components move to different processes or different machines, every one of these guarantees disappears.
-</p>
-</div>
-
-<aside className="notes">
-**This is the most important point to internalize:**
-- Students take shared memory for granted because it's all they've experienced
-- "When you call `GraderFactory.buildFor(assignment, config)`, have you ever worried that the method might not run? That it might take 30 seconds to start? That it might run TWICE?"
-- "No? That's because you're in a monolith. Those guarantees come from shared memory."
-
-**The transaction point is crucial:**
-- In Bottlenose: create the assignment, configure the grader, and notify students — all in one transaction
-- If notifications fail, the assignment creation AND grader config roll back
-- In a distributed system, there's no way to do this across services — you need sagas, compensating transactions, eventual consistency
-- Note: even Bottlenose breaks out of shared memory for grading EXECUTION — that's why Orca exists as a separate service. But the orchestration, scoring, and data management all stay in-process.
-
-**Foreshadow the "Network Changes Everything" slide:**
-- "We'll see later exactly what happens when you lose these guarantees"
-- "Spoiler: it's why distributed systems are hard"
-
-→ **Transition:** And what about working in one codebase?
-</aside>
-
-</Slide>
-
-<Slide>
-
-## What "Unified Codebase" Really Means
-
-<p style={{fontSize: '0.82em'}}>
-In a monolith, everyone works in the <strong>same repository</strong>, with the <strong>same language</strong>, the <strong>same build system</strong>, and the <strong>same dependency tree</strong>.
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em', marginTop: '0.75em'}}>
-
-<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
-
-**Benefits of one codebase**
-- **Refactoring is easy:** rename a method and your IDE finds every caller
-- **Code sharing is free:** import any class from any package
-- **Consistency:** one style guide, one set of linters, one test framework
-- **Onboarding:** new developers learn ONE system, not twelve
-
-</div>
-
-<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
-
-**Costs of one codebase**
-- **Merge conflicts:** 20 developers pushing to the same repo
-- **Slow builds:** the whole app rebuilds even for small changes
-- **Technology lock-in:** The whole system uses one language, one framework, one set of dependencies
-- **Blast radius:** a bad commit affects everything
-
-</div>
-
-</div>
-
-<div className="fragment">
-<div style={{padding: '0.5em', border: '2px solid #9370DB', borderRadius: '8px', fontSize: '0.72em', marginTop: '0.5em'}}>
-
-**Bottlenose** is one language, one framework, top to bottom. Graders, controllers, views, background jobs — all in one repo, one build system, one dependency file. That's a monolith.
-
-</div>
-</div>
-
-<aside className="notes">
-**Make the benefits tangible:**
-- "In Bottlenose, if you want to understand how grading works, you grep one codebase. Every caller, every test, every reference — it's all right there."
-- "Rename `Grader.grade()` to `Grader.evaluate()`? Your IDE handles it. Every caller updates. One commit."
-- "Compare that to Pawtograder: renaming an API field requires coordinating changes across the action AND the API, deploying both, and hoping nothing breaks in between."
-
-**Make the costs tangible:**
-- "If 20 developers are all pushing to the same repo, merge conflicts are a daily occurrence"
-- "Your CI runs ALL the tests — even if you only changed one file — because in a monolith, anything could affect anything"
-- "Want to use a different language for a new feature? Too bad — the monolith is locked in"
-
-**The big picture:**
-- A monolith gives you simplicity at the cost of flexibility
-- This is a VALID tradeoff for many, many systems
-- Most successful software started as a monolith
-
-→ **Transition:** Let's summarize the benefits and drawbacks...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Monolith: Quality Attribute Profile
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
-
-**Where Monoliths Excel**
-
-- **Simplicity** ★★★ — One thing to build, test, deploy, monitor
-- **Responsiveness** ★★★ — In-process calls are orders of magnitude faster than network calls
-- **Testability** ★★☆ — One environment to set up, but may need full infrastructure
-- **Changeability** ★★☆ — IDE refactoring across entire codebase, but changes may ripple
-
-</div>
-
-<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
-
-**Where Monoliths Struggle**
-
-- **Scalability** ★☆☆ — Must scale the entire app; heavy work (grading) competes with everything else for CPU and DB connections
-- **Deployability** ★☆☆ — Every deploy is all-or-nothing; a bug in one feature can take down everything
-- **Fault Tolerance** ★☆☆ — A crash in any component takes down the entire process
-- **Modularity** ★☆☆ — Boundaries are conventions, not enforcement (without discipline → Big Ball of Mud)
-
-</div>
-
-</div>
-
-<div className="fragment">
-<div style={{padding: '0.75em', border: '2px solid #4A90A4', borderRadius: '8px', marginTop: '0.5em', fontSize: '0.75em'}}>
-
-**The Monolith-First Approach (Fowler):**
-Start with a monolith. You can understand the whole system. You can refactor freely. You can deploy with confidence. Only break it apart when you have specific scaling, team, or deployment problems that a monolith can't solve.
-
-</div>
-</div>
-
-<aside className="notes">
-**This slide summarizes using our quality attribute vocabulary — the previous three slides unpacked the mechanics.**
-
-**Walk through the ratings — connect each to what we just learned:**
-- Simplicity ★★★: One thing to build, deploy, monitor. The defining strength of a monolith.
-- Responsiveness ★★★: Method calls in nanoseconds, database transactions, full stack traces.
-- Testability ★★☆: One environment, but you may need a database, Docker, Orca to run integration tests.
-- Changeability ★★☆: IDE refactoring is powerful across one codebase, but changes in shared code ripple.
-- Scalability ★☆☆: Vertical only — bigger hardware. Can't scale grading independently from course management. Even if you could run more grading jobs, they'd compete with the web app for CPU, memory, and database connections — the whole platform degrades under load.
-- Deployability ★☆☆: All-or-nothing. Broken migration in courses blocks grading deploy.
-- Fault Tolerance ★☆☆: Bug in course management crashes grading too — one process, one fate.
-- Modularity ★☆☆: Boundaries exist only as conventions. Without discipline, you get a Big Ball of Mud.
-
-**Make it concrete with Bottlenose:**
-- "Bottlenose limits concurrent grading jobs to 15 because background jobs share database connections with the web process" → scalability
-- "A bug in the course management code could take down grading" → fault tolerance
-- "You can't deploy a grading fix without redeploying everything else" → deployability
-
-**Fowler's advice:**
-- Many experienced architects recommend starting monolithic
-- The alternative (microservices) adds significant complexity
-- We'll see exactly what that complexity looks like shortly
-
-→ **Transition:** Is there a middle ground?
-</aside>
-
-</Slide>
-
-{/* ============================================ */}
-{/* ARC 6: MODULAR MONOLITH & MICROSERVICES (8 min) */}
+{/* ARC 5: MODULAR MONOLITH */}
 {/* ============================================ */}
 
 <Slide>
