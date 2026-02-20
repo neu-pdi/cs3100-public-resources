@@ -1,0 +1,226 @@
+---
+sidebar_position: 19
+title: "Architectural Styles: From Hexagons to Monoliths"
+image: /img/lectures/web/l19.png
+---
+
+import RevealJS, { Slide } from '@site/src/components/RevealJS';
+import Img from '@site/src/components/Img';
+
+<RevealJS transition="slide">
+
+<aside className="notes">
+- Arc 1: Spaghetti code
+</aside>
+
+{/* ============================================ */}
+{/* COVER IMAGE */}
+{/* ============================================ */}
+
+<Slide>
+  <Img
+    src="/img/lectures/web/l19.png"
+    prompt="
+    Concept: 'How Do We Organize Our Code?'. A lo-fi 8 bit retro pixel art educational illustration showing a single long road stretching from left to right, with architectural styles as off-ramps.
+    TOP: Centered header text 'CS 3100: Program Design & Implementation 2' prominently displayed above all graphics.
+
+FAR LEFT — THE BIG BALL OF MUD: The road begins in a swampy, tangled mess. Spaghetti wires and crumbling buildings surround the starting point. A stressed developer looks back at the chaos they're leaving behind.
+
+THE MAIN ROAD stretches from left to right across the landscape. Along it, OFF-RAMPS branch off to different architectural destinations:
+- First off-ramp: leads to a clean four-layered building with horizontal strata. Sign: 'LAYERED ARCHITECTURE'
+- Second off-ramp: leads to a hexagonal fortress with labeled ports on each face (e.g. 'Web UI', 'REST API', 'Database', 'GitHub API', 'Email'). Sign: 'HEXAGONAL ARCHITECTURE'
+- Third off-ramp: leads to a towering monolithic castle — massive, orderly, everything inside one set of walls. Sign: 'MONOLITH' (this is the biggest, most prominent off-ramp — most projects take this exit)
+- Fourth off-ramp: leads to the same monolith but with clean internal dividers visible inside, each section labeled (e.g. 'Users', 'Grading', 'Submissions', 'Courses'). Sign: 'MODULAR MONOLITH'
+
+INSET GRAPHIC (bottom-right corner, like a floating card or thought bubble): A radar chart showing all nine quality attributes — Simplicity, Modularity, Testability, Deployability, Changeability, Responsiveness, Scalability, Fault Tolerance, Maintainability — with their values all at different levels, some high, some low, creating a jagged profile. Above the chart, a bold question: 'Which tradeoffs can you live with?' The chart is semi-transparent so the road scene shows through behind it.
+
+THE ROAD CONTINUES into the far distance, past the last off-ramp, growing more treacherous. The pavement gets cracked, fog rolls in, and ominous signs appear: 'DISTRIBUTED SYSTEMS AHEAD', 'HERE BE DRAGONS', 'L20-21 →'. In the misty distance, you can barely make out multiple small buildings connected by network cables stretching across chasms — microservices territory. It looks exciting but dangerous.
+
+A developer walks along the main road, approaching the off-ramps, deciding which exit to take.
+
+Warm teals, blues, purples (#9370DB), and orange (#FF9800) accents in retro pixel art style. The visual narrative flows LEFT to RIGHT: from chaos, past well-known exits, toward the unknown frontier. Tagline: 'How Do We Organize Our Code?'"
+    alt="A pixel art road stretching left to right. Far left: Big Ball of Mud swamp. Off-ramps lead to Layered, Hexagonal, Monolith, and Modular Monolith architectures. An inset radar chart shows nine quality attributes at varying levels with the question: Which tradeoffs can you live with? The road continues into fog: Distributed Systems Ahead, Here Be Dragons. Tagline: How Do We Organize Our Code?"
+  />
+
+<aside className="notes">
+**Lecture overview:**
+- **Total time:** ~65 MINUTES
+- **Prerequisites:** L16 (testability, hexagonal intro), L17 (creation patterns, DI), L18 (architectural thinking, boundaries, C4, ADRs, Pawtograder/Bottlenose, **four heuristics**)
+- **Connects to:** L20–L21 (distributed architecture, networks, client-server, serverless), L22 (Conway's Law, teams), L29–L30 (MVC/GUI)
+
+**Structure:**
+- Motivating Question: "How do we organize our code?" + Big Ball of Mud (~3 min)
+- **Monolith: Where We Start** — characteristics + quality profile (~8 min)
+- **Modular Monolith** — best of both worlds, the answer to Big Ball of Mud (~5 min)
+- **Partitioning: Technical vs Domain** — fundamental organizing principle (~5 min)
+- Quality Attributes vocabulary + scenarios (~10 min)
+- Styles vs. Patterns + Running Examples Intro (~5 min)
+- **Hexagonal Recap** + Layered + Pipelined Styles (~15 min)
+- **★ THE EMERGENCE ARC (key synthesis) ★** (~12 min):
+  - Styles Emerge from Heuristics — the diagram showing heuristics → styles
+  - **"But Wait: Where Do Those Answers Come From?"** — Domain Understanding is the prerequisite
+  - How Pawtograder's Architecture Emerged — concrete worked example
+  - The Complete Picture: L12 → L18 → L19 — the discovery process
+- **Two Big Families: Monolith vs Microservices** — the deployment question (~5 min)
+- Network Changes Everything + Quality Attribute Tradeoffs (~8 min)
+- Quality Attributes Applied: Pawtograder vs Bottlenose (~5 min)
+- Key Takeaway: Architecture Is Discovered, Not Chosen (~3 min)
+
+**Key theme:** Architectural styles EMERGE from applying principled heuristics (L18), but only when grounded in domain understanding (L12). This lecture shows how the same four heuristics — Rate of Change, Actor, ISP, Testability — lead to different styles depending on the problem. Architecture is about tradeoffs — but without understanding your domain, you might invest flexibility in axes of change that will never occur.
+
+→ **Transition:** Let's start with the title...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* TITLE SLIDE */}
+{/* ============================================ */}
+
+<Slide>
+
+# CS 3100: Program Design and Implementation II
+
+## Lecture 19: Architectural Styles — From Hexagons to Monoliths
+
+<p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
+  ©2026 Jonathan Bell, CC-BY-SA
+</p>
+
+<aside className="notes">
+**Context:**
+- L18 ended with C4 diagrams, ADRs, and "just enough architecture" — applied to Pawtograder
+- Today: we continue with Pawtograder and Bottlenose to explore architectural styles
+- Running examples: Pawtograder (the grading system from L18) and Bottlenose (its predecessor)
+
+**Key message:** "Hexagonal architecture is one of several architectural styles. Today we learn to recognize them, compare them, and evaluate how each affects quality attributes — using two real systems that solve the same problem differently."
+
+→ **Transition:** Here's what you'll be able to do after today...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* LEARNING OBJECTIVES */}
+{/* ============================================ */}
+
+<Slide>
+
+## Learning Objectives
+
+<p style={{fontSize: '0.85em', textAlign: 'left'}}>
+After this lecture, you will be able to:
+</p>
+
+<ol style={{fontSize: '0.75em', textAlign: 'left'}}>
+  <li>Define <strong>quality attributes</strong> that architectural styles affect: maintainability, scalability, deployability, fault tolerance, and more</li>
+  <li>Distinguish between <strong>architectural styles</strong> and <strong>architectural patterns</strong></li>
+  <li><strong>Recognize and compare</strong> architectural styles like <strong>Hexagonal</strong>, <strong>Layered</strong>, <strong>Pipelined</strong>, and <strong>Monolithic</strong></li>
+  <li>Explain the tradeoffs of <strong>monoliths</strong>, <strong>modular monoliths</strong>, and <strong>microservices</strong></li>
+  <li>Analyze how architectural choices <strong>affect quality attributes differently</strong> for specific scenarios</li>
+</ol>
+
+<div className="fragment">
+<p style={{fontSize: '0.75em', marginTop: '0.75em', fontStyle: 'italic', color: '#666'}}>
+<strong>Important framing:</strong> You are NOT expected to become master architects by the end of this lecture. The goal is to <em>understand systems that use these styles</em> and reason about how architectural decisions impact quality attributes. When you encounter a hexagonal or layered architecture in the wild, you'll be able to read it — not necessarily design it from scratch.
+</p>
+</div>
+
+<aside className="notes">
+**SET EXPECTATIONS VERY CLEARLY — this is critical framing:**
+- "You will NOT be tested on 'design a hexagonal architecture from scratch'"
+- "You WILL be expected to READ and UNDERSTAND systems that use these styles"
+- Real systems rarely fit neatly into one style — they're hybrids, compromises, and evolved messes
+- The ACTUAL skill we're building: reasoning about quality attributes when you SEE different architectures
+- "Given this system's architecture, which quality attributes does it prioritize? What are the tradeoffs?"
+
+**Why teach styles at all if we're not expecting mastery?**
+- They give us VOCABULARY for discussing what we observe
+- You'll encounter these patterns in codebases you join — knowing the names helps you understand intent
+- Like learning art history: you can appreciate a painting without being able to paint it yourself
+- Once you understand the principles, you can reason about systems you encounter
+
+**The "reading vs writing" distinction:**
+- Junior engineers READ existing architectures far more than they DESIGN new ones
+- Understanding why a system is structured a certain way is 90% of the skill
+- Design skills come later with experience — comprehension comes first
+
+**Time allocation:**
+- Objective 1: Quality Attributes vocabulary (~8 min)
+- Objective 2: Styles vs. Patterns (~3 min)
+- Objective 3: Hex recap + Layered + Pipelined (~20 min)
+- Objective 4: Monolith + Modular Monolith + Microservices teaser (~18 min)
+- Objective 5: Applying quality attributes to scenarios (~10 min)
+
+**Connection to L16 and L18:**
+- L16: Hexagonal Architecture introduced for testability (they already know ports, adapters, domain core)
+- L18: Where do service boundaries go? (Pawtograder case study)
+- L19: What quality attributes matter? What styles exist? How does each style affect those attributes?
+
+→ **Transition:** Let's start with a question you'll face every time you write software...
+</aside>
+
+</Slide>
+
+
+{/* ============================================ */}
+{/* MOTIVATING QUESTION: CODE ORGANIZATION */}
+{/* ============================================ */}
+
+<Slide>
+
+## How Do We Organize Our Code?
+
+<p style={{fontSize: '0.85em'}}>
+This is the question at the heart of every architectural decision — from your first class project to production systems serving millions of users. Every pattern and style we study today is an answer to this question.
+</p>
+
+<Img
+    src="/img/lectures/web/l19-big-ball-of-mud.webp"
+    prompt="A dramatic, slightly humorous educational illustration showing the 'Big Ball of Mud' anti-pattern. No title.
+
+A tangled, sprawling mess of buildings connected by spaghetti-like wires, pipes, and passages going in every direction. Buildings are labeled with things that shouldn't be together: 'Grading + User Auth + Email + Config Parsing', 'Controller + SQL + Scoring + Global State', 'Tests? What Tests?'. A developer stands in the middle looking overwhelmed, holding a single feature request card, with a speech bubble: 'Where does this go?' Red warning signs everywhere: 'Global State', 'Duplicated Logic', 'Circular Dependencies'. The whole structure feels precarious — one pull on any wire might bring everything down.
+
+BOTTOM: A quote in an aged, scholarly style: 'A Big Ball of Mud is a haphazardly structured, sprawling, sloppy, duct-tape-and-baling-wire, spaghetti-code jungle.' — Foote & Yoder, 1997
+
+Style: Clean, modern educational illustration suitable for a university lecture. NOT pixel art — use a polished flat illustration style with soft shadows and clean lines, similar to editorial or textbook illustrations. Warm color palette with teals, purples, and orange warning accents. Humorous but professional."
+    alt="Big Ball of Mud — a tangled sprawl of buildings connected by spaghetti wires, labeled with mixed concerns like 'Grading + User Auth + Email'. A developer stands in the middle asking 'Where does this go?' Warning signs everywhere: Global State, Duplicated Logic, Circular Dependencies. Quote from Foote & Yoder 1997."
+  />
+
+<aside className="notes">
+**This is the MOTIVATING QUESTION for the entire lecture.**
+- "How do we organize our code?" is a question you face at EVERY scale
+- A 500-line homework assignment? You still choose how to split it into classes and packages.
+- A 50,000-line autograder? The question is the same, but the stakes are higher.
+- A million-line enterprise system? The question can make or break the project.
+
+**Read the Foote & Yoder quote — it's vivid!**
+- "Haphazardly structured, sprawling, sloppy, duct-tape-and-baling-wire, spaghetti-code jungle"
+- "Information is shared promiscuously among distant elements"
+- This isn't a theoretical concern — it's what ACTUALLY HAPPENS when teams don't think about organization
+
+**The Big Ball of Mud is the DEFAULT outcome:**
+- Nobody designs a Big Ball of Mud on purpose
+- It emerges from thousands of small decisions made under pressure: "just put it here for now," "we'll refactor later," "it's faster to copy-paste"
+- Every pattern we study today — layered, hexagonal, pipelined, monolith, modular monolith — is a strategy to PREVENT this
+
+**The real cost isn't aesthetics — it's every quality attribute we'll discuss:**
+- Changeability: "Where does this feature go?" → "Everywhere and nowhere"
+- Testability: Can't test in isolation when everything depends on everything
+- Deployability: Can't deploy safely when any change might break anything
+- Eventually: cheaper to REWRITE than to maintain
+
+**Through-line for the lecture:**
+- As we discuss each style, we'll ask: "How does this style help us organize our code?"
+- Hexagonal: organize around ports and adapters
+- Layered: organize into horizontal strata
+- Monolith vs. microservices: organize within one process or across many
+- Modular monolith: organize with enforced boundaries inside one deployment
+- Partitioning: organize by technical role or by domain capability
+
+→ **Transition:** Let's start by understanding what you've been building all along — the monolith...
+</aside>
+
+</Slide>
+
+</RevealJS>
