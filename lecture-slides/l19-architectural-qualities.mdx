@@ -46,17 +46,20 @@ Warm teals, blues, purples (#9370DB), and orange (#FF9800) accents in retro pixe
 
 **Structure:**
 - Motivating Question: "How do we organize our code?" + Big Ball of Mud (~3 min)
+- **Monolith: Where We Start** — characteristics + quality profile (~8 min)
+- **Modular Monolith** — best of both worlds, the answer to Big Ball of Mud (~5 min)
+- **Partitioning: Technical vs Domain** — fundamental organizing principle (~5 min)
 - Quality Attributes vocabulary + scenarios (~10 min)
-- Styles vs. Patterns (~3 min)
-- Running Examples Recap: Pawtograder & Bottlenose (~5 min)
-- Hexagonal in Pawtograder — with heuristics emergence lens (~10 min)
-- Layered & Pipelined Styles — each with emergence explanation (~12 min)
-- **Styles Emerge from Heuristics + Pawtograder Worked Example (~8 min) — synthesis after all styles introduced**
-- Monolithic Architecture: Bottlenose (~10 min)
-- Modular Monolith & Microservices Teaser (~8 min)
-- Quality Attributes Applied & Tradeoffs (~8 min)
-- **Domain Understanding Guides Flexibility (L12 reference) (~3 min)**
-- Partitioning: Technical vs. Domain (~5 min)
+- Styles vs. Patterns + Running Examples Intro (~5 min)
+- **Hexagonal Recap** + Layered + Pipelined Styles (~15 min)
+- **★ THE EMERGENCE ARC (key synthesis) ★** (~12 min):
+  - Styles Emerge from Heuristics — the diagram showing heuristics → styles
+  - **"But Wait: Where Do Those Answers Come From?"** — Domain Understanding is the prerequisite
+  - How Pawtograder's Architecture Emerged — concrete worked example
+  - The Complete Picture: L12 → L18 → L19 — the discovery process
+- **Two Big Families: Monolith vs Microservices** — the deployment question (~5 min)
+- Network Changes Everything + Quality Attribute Tradeoffs (~8 min)
+- Quality Attributes Applied: Pawtograder vs Bottlenose (~5 min)
 - Key Takeaway: Architecture Is Discovered, Not Chosen (~3 min)
 
 **Key theme:** Architectural styles EMERGE from applying principled heuristics (L18), but only when grounded in domain understanding (L12). This lecture shows how the same four heuristics — Rate of Change, Actor, ISP, Testability — lead to different styles depending on the problem. Architecture is about tradeoffs — but without understanding your domain, you might invest flexibility in axes of change that will never occur.
@@ -210,84 +213,13 @@ Style: Clean, modern educational illustration suitable for a university lecture.
 - Modular monolith: organize with enforced boundaries inside one deployment
 - Partitioning: organize by technical role or by domain capability
 
-→ **Transition:** Before we discuss how to evaluate these answers, let's preview the two big architectural families...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## The Two Big Families: Monolith vs. Microservices
-
-<p style={{fontSize: '0.82em'}}>
-At the highest level, systems fall into two broad categories based on how they're deployed:
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.62em', marginTop: '1em'}}>
-
-<div style={{padding: '1em', border: '3px solid #4CAF50', borderRadius: '8px', background: 'rgba(76, 175, 80, 0.05)'}}>
-
-**Monolith** — One Deployment Unit
-
-- All code lives in a single codebase
-- Deployed as a single artifact (JAR, binary, container)
-- Components communicate via method calls
-- One database, one process, one server (typically)
-
-*This is what you've been building so far — and it's the focus of THIS lecture.*
-
-</div>
-
-<div style={{padding: '1em', border: '3px solid #2196F3', borderRadius: '8px', background: 'rgba(33, 150, 243, 0.05)'}}>
-
-**Microservices** — Many Deployment Units
-
-- Code split across separate services
-- Each service deployed independently
-- Services communicate via network (HTTP, messages)
-- Separate databases, processes, servers
-
-*This is where industry has been moving — and it's the focus of L20-L21.*
-
-</div>
-
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.78em', marginTop: '1em', fontStyle: 'italic', color: '#666'}}>
-Most architectural styles are <strong>variations within the monolith family</strong>: layered, hexagonal, modular monolith, pipelined. They differ in how they organize code <em>within</em> the single deployment unit. Microservices is the leap to <em>multiple</em> deployment units.
-</p>
-</div>
-
-<aside className="notes">
-**This slide frames the entire lecture series on architecture:**
-
-**The key distinction:**
-- Monolith = ONE thing to deploy, run, monitor
-- Microservices = MANY things to deploy, run, monitor, coordinate
-
-**Why start with monoliths:**
-- It's what students know! Every project they've built is a monolith.
-- Most companies still run monoliths (even large ones)
-- Understanding monolith variations helps you understand WHY microservices exist
-- You can't appreciate the tradeoffs of microservices until you understand what monoliths give you
-
-**The fragment makes an important point:**
-- Layered, Hexagonal, Modular Monolith — all still ONE deployment
-- They differ in internal organization, not deployment topology
-- Microservices is a fundamentally different choice with different tradeoffs
-
-**Lecture roadmap:**
-- L19 (today): Monolith variations — layered, hexagonal, modular
-- L20-L21: Microservices — when and why to make the leap, and the complexity that comes with it
-
-→ **Transition:** Let's unpack what "monolith" actually means — since that's what you've been building all along...
+→ **Transition:** Let's start by understanding what you've been building all along — the monolith...
 </aside>
 
 </Slide>
 
 {/* ============================================ */}
-{/* MONOLITH DEEP DIVE (moved from later) */}
+{/* MONOLITH DEEP DIVE */}
 {/* ============================================ */}
 
 <Slide>
@@ -295,7 +227,7 @@ Most architectural styles are <strong>variations within the monolith family</str
 ## The Monolith: Where Most Projects Start
 
 <p style={{fontSize: '0.85em'}}>
-Here's a secret: <strong>you've been building monoliths your entire programming career</strong>. Every Java project, every Python script, every web application you've written in a single codebase — all monoliths. The term only becomes meaningful in contrast to systems that <em>aren't</em> monoliths.
+Here's a secret: <strong>you've been building monoliths your entire programming career</strong>. Every Java project, every Python script, you've written in a single codebase — all monoliths. The term only becomes meaningful in contrast to systems that <em>aren't</em> monoliths.
 </p>
 
 <p style={{fontSize: '0.82em', marginTop: '0.5em'}}>
@@ -303,7 +235,7 @@ A <strong>monolith</strong> is a system deployed as a single unit. All functiona
 </p>
 
 <div className="fragment">
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '0.5em', fontSize: '0.6em', marginTop: '1em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5em', fontSize: '0.6em', marginTop: '1em'}}>
 
 <div style={{padding: '0.5em', border: '2px solid #9370DB', borderRadius: '8px', textAlign: 'center'}}>
 
@@ -321,13 +253,6 @@ Components talk via method calls, not networks.
 
 </div>
 
-<div style={{padding: '0.5em', border: '2px solid #4A90A4', borderRadius: '8px', textAlign: 'center'}}>
-
-**Single Database**
-
-All data in one schema, one set of tables.
-
-</div>
 
 <div style={{padding: '0.5em', border: '2px solid #FF9800', borderRadius: '8px', textAlign: 'center'}}>
 
@@ -535,7 +460,302 @@ In a monolith, everyone works in the <strong>same repository</strong>, with the 
 - A monolith gives you simplicity at the cost of flexibility
 - This is a VALID tradeoff for many, many systems
 
-→ **Transition:** Now that we understand what a monolith IS, let's build vocabulary for evaluating architectural choices...
+→ **Transition:** So how does a monolith score on quality attributes?
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* MONOLITH QUALITY PROFILE */}
+{/* ============================================ */}
+
+<Slide>
+
+## Monolith: Quality Attribute Profile
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em', marginTop: '0.5em'}}>
+
+<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+
+**Where Monoliths Excel**
+
+- **Simplicity** ★★★ — One thing to build, test, deploy, monitor
+- **Responsiveness** ★★★ — In-process calls are orders of magnitude faster than network calls
+- **Testability** ★★☆ — One environment to set up, but may need full infrastructure
+- **Changeability** ★★☆ — IDE refactoring across entire codebase, but changes may ripple
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+
+**Where Monoliths Struggle**
+
+- **Scalability** ★☆☆ — Must scale the entire app; heavy work competes with everything else
+- **Deployability** ★☆☆ — Every deploy is all-or-nothing; a bug anywhere blocks everything
+- **Fault Tolerance** ★☆☆ — A crash in any component takes down the entire process
+- **Modularity** ★☆☆ — Boundaries are conventions, not enforcement (without discipline → Big Ball of Mud)
+
+</div>
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.78em', marginTop: '0.75em', fontWeight: 'bold', color: '#9370DB'}}>
+Notice the modularity problem: without enforced boundaries, monoliths tend toward the <strong>Big Ball of Mud</strong> we saw earlier. Is there a way to get monolith simplicity WITH better modularity?
+</p>
+</div>
+
+<aside className="notes">
+**Walk through the ratings:**
+- Simplicity ★★★: One thing to build, deploy, monitor. The defining strength.
+- Responsiveness ★★★: Method calls in nanoseconds, database transactions, full stack traces.
+- Scalability ★☆☆: Vertical only — bigger hardware. Heavy work competes for shared resources.
+- Deployability ★☆☆: All-or-nothing. A broken test anywhere blocks everything.
+- Fault Tolerance ★☆☆: Bug in one module crashes everything — one process, one fate.
+- Modularity ★☆☆: Boundaries exist only as conventions. Without discipline → Big Ball of Mud.
+
+**The fragment sets up the modular monolith:**
+- This is the key problem we're going to solve
+- The monolith is great EXCEPT for modularity
+- Can we have both?
+
+→ **Transition:** Yes — that's exactly what a modular monolith gives us...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* MODULAR MONOLITH */}
+{/* ============================================ */}
+
+<Slide>
+
+## The Modular Monolith: Best of Both Worlds?
+
+<p style={{fontSize: '0.82em'}}>
+A <strong>modular monolith</strong> keeps the simplicity of a single deployment but adds <strong>enforced internal boundaries</strong>. All the operational simplicity of a monolith, with intentional structure to prevent the Big Ball of Mud.
+</p>
+
+<div style={{fontSize: '0.75em', marginTop: '0.5em'}}>
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px' }}}%%
+graph TD
+    subgraph MM["Modular Monolith"]
+        subgraph C["Courses Module"]
+            CD["Domain"]
+            CA["API"]
+        end
+        subgraph S["Submissions Module"]
+            SD["Domain"]
+            SA["API"]
+        end
+        subgraph G["Grading Module"]
+            GD["Domain"]
+            GA["API"]
+        end
+    end
+    SA -->|"via API"| GA
+    CA -->|"via API"| SA
+    DB[("Shared DB<br/>(separate schemas)")]
+    C --> DB
+    S --> DB
+    G --> DB
+
+    classDef modbox fill:#D4C4E8,stroke:#9370DB,stroke-width:2px
+    classDef db fill:#FFE0B2,stroke:#FF9800,stroke-width:2px
+    class C,S,G modbox
+    class DB db
+```
+
+</div>
+
+<div className="fragment">
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '0.4em', fontSize: '0.48em', marginTop: '0.5em'}}>
+
+<div style={{padding: '0.4em', border: '2px solid #4CAF50', borderRadius: '6px', textAlign: 'center'}}>
+
+**Simplicity** ★★★
+
+Still one deploy, one build
+
+</div>
+
+<div style={{padding: '0.4em', border: '2px solid #4CAF50', borderRadius: '6px', textAlign: 'center'}}>
+
+**Modularity** ★★★
+
+Enforced internal boundaries
+
+</div>
+
+<div style={{padding: '0.4em', border: '2px solid #4A90A4', borderRadius: '6px', textAlign: 'center'}}>
+
+**Changeability** ★★☆
+
+Changes isolated to modules
+
+</div>
+
+<div style={{padding: '0.4em', border: '2px solid #FF9800', borderRadius: '6px', textAlign: 'center'}}>
+
+**Scalability** ★☆☆
+
+Still one process to scale
+
+</div>
+
+</div>
+</div>
+
+<aside className="notes">
+**Key characteristics:**
+- Still one build, one deploy — operationally simple
+- Modules communicate through explicit public APIs, not by reaching into each other's internals
+- Each module owns its database tables; cross-module queries go through APIs
+- Build tools or linters prevent modules from importing private code
+
+**Quality attribute wins:**
+- Simplicity ★★★: Keeps the monolith's operational simplicity
+- Modularity ★★★: This is the big upgrade — enforced boundaries prevent the Big Ball of Mud
+- Scalability ★☆☆: Still one process — can't scale modules independently
+
+**The key insight:**
+- Many teams discover they NEVER need microservices
+- Module boundaries solve maintainability and team ownership problems
+- Without the complexity of network communication
+
+→ **Transition:** But how do we decide what goes in each module? There are two fundamental approaches...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* PARTITIONING: TECHNICAL VS DOMAIN */}
+{/* ============================================ */}
+
+<Slide>
+
+## Organizing Modules: Technical or Domain Partitioning?
+
+<p style={{fontSize: '0.82em'}}>
+Whether you're building a modular monolith or just organizing packages, there's a fundamental choice: group code by <strong>technical role</strong> or by <strong>domain capability</strong>?
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.5em', marginTop: '0.5em'}}>
+
+<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+
+**Technical Partitioning**
+
+```
+autograder/
+├── controllers/
+│   └── SubmissionController.java
+├── services/
+│   └── GradingService.java
+├── repositories/
+│   └── SubmissionRepository.java
+├── models/
+│   ├── Submission.java
+│   └── Grade.java
+└── views/
+    └── submission_result.html
+```
+
+*Organized by technical role — controllers together, models together*
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+
+**Domain Partitioning**
+
+```
+autograder/
+├── grading/
+│   ├── GradingService.java
+│   ├── Grade.java
+│   └── GradeRepository.java
+├── submissions/
+│   ├── SubmissionController.java
+│   ├── Submission.java
+│   └── SubmissionRepository.java
+└── courses/
+    ├── CourseController.java
+    ├── Course.java
+    └── CourseRepository.java
+```
+
+*Organized by business capability — everything for grading together*
+
+</div>
+
+</div>
+
+<aside className="notes">
+**Two fundamental approaches:**
+- **Technical:** Group by role (all controllers, all services, all repositories)
+- **Domain:** Group by capability (all grading code, all submission code, all course code)
+
+**Most web frameworks encourage technical partitioning:**
+- Rails: controllers/, models/, views/
+- Spring: convention of packages by layer
+- This works fine for small apps
+
+**But as systems grow, domain partitioning often wins:**
+- "How does grading work?" → everything in `grading/` package
+- "Add Rust support?" → all changes in one vertical slice
+
+→ **Transition:** Let's see how these tradeoffs play out...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Partitioning Tradeoffs
+
+<div style={{fontSize: '0.68em', marginTop: '0.5em'}}>
+
+| Question | Technical | Domain |
+|----------|-----------|--------|
+| **"How does Java grading work?"** | Jump between `controllers/`, `services/`, `models/` | Everything in `grading/java/` |
+| **Adding Rust support?** | New files in `controllers/`, `services/`, `models/` | All changes in `grading/rust/` |
+| **Team independence?** | Every feature touches multiple packages | "Rust support team" owns their vertical slice |
+
+</div>
+
+<div className="fragment">
+<div style={{padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px', marginTop: '0.75em', fontSize: '0.72em'}}>
+
+**Connection to L18 heuristics:**
+- **Actor Ownership** → Domain partitioning aligns with who owns what
+- **Rate of Change** → Technical partitioning separates things that change together
+- The "right" choice depends on your team structure and change patterns
+
+</div>
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.75em', marginTop: '0.5em', fontStyle: 'italic', color: '#666'}}>
+<strong>Conway's Law</strong> (L22 preview): Organizations design systems that mirror their communication structure. If you have a "frontend team" and "backend team," you'll get technical partitioning. If you have a "grading team" and "courses team," you'll get domain partitioning.
+</p>
+</div>
+
+<aside className="notes">
+**The key insight:**
+- Domain partitioning keeps related changes together
+- Technical partitioning scatters related changes across packages
+- The "right" choice depends on how your team is structured
+
+**Connection to L18:**
+- These are the SAME heuristics we used to find service boundaries
+- Actor ownership: who changes what?
+- Rate of change: what changes together?
+- Now we're applying them INSIDE the monolith
+
+→ **Transition:** Now that we understand how to organize modules, let's build vocabulary for evaluating any architecture...
 </aside>
 
 </Slide>
@@ -677,8 +897,6 @@ Imagine someone says: "The grading system should be scalable." What does that ac
 - All are accepted before the deadline, complete in ~30 minutes
 - **API receives 200 results simultaneously**
 
-*Very different from Scenario B or C!*
-
 </div>
 
 <div style={{padding: '0.6em', border: '2px solid #FF9800', borderRadius: '8px'}}>
@@ -693,8 +911,6 @@ Imagine someone says: "The grading system should be scalable." What does that ac
 - Load is spread over time
 - **API handles ~30 results/min continuously**
 
-*Very different from Scenario A or C!*
-
 </div>
 
 <div style={{padding: '0.6em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
@@ -708,8 +924,6 @@ Imagine someone says: "The grading system should be scalable." What does that ac
 - Never more than a handful concurrent
 - Minimal system stress
 - **API barely notices**
-
-*Very different from Scenario A or B!*
 
 </div>
 
@@ -755,7 +969,7 @@ All three scenarios involve "grading many submissions" — but they place <stron
 - "Which scenario do you think CS3100 assignment deadlines look like?" (Usually A or B)
 - "If you tested only during office hours (Scenario C), would you catch problems?"
 
-→ **Transition:** Now that we understand the two big families, let's build vocabulary to compare them...
+→ **Transition:** Now let's build the vocabulary we'll use to compare any architecture...
 </aside>
 
 </Slide>
@@ -987,80 +1201,6 @@ When someone says "this system is hard to maintain," ask: Is it hard to <em>unde
 - Then you know what to fix
 
 → **Transition:** Two more attributes to define...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Review: Changeability
-
-<p style={{fontSize: '0.82em'}}>
-How safely can we modify existing behavior?
-</p>
-
-<p style={{fontSize: '0.65em', fontStyle: 'italic', color: '#666', marginTop: '-0.5em', marginBottom: '0.5em'}}>
-You've seen this at the code level (L7-L8: OCP, low coupling). Now we scale it to architecture.
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em', marginTop: '0.75em'}}>
-
-<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
-
-**High Changeability**
-
-- Clean interfaces between components
-- Low coupling — changes don't ripple
-- Open/Closed Principle (L8) applied
-- Good test coverage gives confidence
-
-*Hex arch: Add Rust support = one new `RustCargoBuilder` adapter. Domain untouched.*
-
-</div>
-
-<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
-
-**Low Changeability**
-
-- Components tightly coupled
-- Changes ripple across many files
-- No clear interfaces to program against
-- Fear of breaking unrelated features
-
-*Big Ball of Mud: Add Rust support = touch files throughout the codebase.*
-
-</div>
-
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.78em', marginTop: '0.75em', fontWeight: 'bold', color: '#9370DB'}}>
-<strong>Changeability ≠ Deployability:</strong> A change can be <em>easy to make</em> (high changeability — one file) but <em>hard to deploy</em> (low deployability — requires full system redeploy). Or vice versa: easy to deploy (independent service) but hard to change (requires coordinating multiple services).
-</p>
-</div>
-
-<aside className="notes">
-**Changeability = how safely can we modify:**
-
-**The distinction from deployability is crucial:**
-- Changeability: How many files do I touch? Do changes ripple? Is refactoring safe?
-- Deployability: How do I get those changes to production? How risky is the deploy?
-
-**A monolith can have HIGH changeability:**
-- IDE refactoring works across the entire codebase
-- Rename a method → all callers updated automatically
-- But LOW deployability — every change requires full redeploy
-
-**A microservices system can have HIGH deployability:**
-- Each service deploys independently
-- But LOW changeability for cross-service features — coordinate multiple repos, multiple teams
-
-**The Pawtograder example:**
-- Adding Rust = one `RustCargoBuilder` class
-- The port interface is stable, the domain is untouched
-- This is HIGH changeability because of architectural boundaries
-
-→ **Transition:** Finally, scalability...
 </aside>
 
 </Slide>
@@ -1358,76 +1498,108 @@ Both must: accept submissions, run tests, compute scores, report feedback. Today
 - Same problem, different styles, different tradeoffs
 - Neither is "right" — they're better or worse fits for particular constraints
 
-→ **Transition:** Let's start with what you already know — the monolith...
+→ **Transition:** Now let's explore the architectural styles that emerge when we organize code within a monolith...
 </aside>
 
 </Slide>
 
 {/* ============================================ */}
-{/* ARC 3: MONOLITH QUALITY PROFILE */}
-{/* (Conceptual slides moved earlier) */}
+{/* HEXAGONAL ARCHITECTURE RECAP */}
 {/* ============================================ */}
 
 <Slide>
 
-## Monolith: Quality Attribute Profile
+## Recap: Hexagonal Architecture (from L16)
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em', marginTop: '0.5em'}}>
+<p style={{fontSize: '0.82em'}}>
+You already know one key style from L16: <strong>Hexagonal Architecture</strong> (Ports and Adapters). Let's quickly review its core idea before introducing more styles:
+</p>
 
-<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+<div style={{fontSize: '0.7em', marginTop: '0.5em'}}>
 
-**Where Monoliths Excel**
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px' }}}%%
+graph LR
+    subgraph External["External World"]
+        WEB["Web UI"]
+        CLI["CLI"]
+        TEST["Tests"]
+        DB["Database"]
+        API["External APIs"]
+    end
 
-- **Simplicity** ★★★ — One thing to build, test, deploy, monitor
-- **Responsiveness** ★★★ — In-process calls are orders of magnitude faster than network calls
-- **Testability** ★★☆ — One environment to set up, but may need full infrastructure
-- **Changeability** ★★☆ — IDE refactoring across entire codebase, but changes may ripple
+    subgraph Hex["Application"]
+        subgraph Ports["Ports (Interfaces)"]
+            IP["Input Ports"]
+            OP["Output Ports"]
+        end
+        subgraph Core["Domain Core"]
+            BL["Business Logic"]
+        end
+    end
 
-</div>
+    WEB --> IP
+    CLI --> IP
+    TEST --> IP
+    IP --> BL
+    BL --> OP
+    OP --> DB
+    OP --> API
 
-<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
-
-**Where Monoliths Struggle**
-
-- **Scalability** ★☆☆ — Must scale the entire app; heavy work competes with everything else
-- **Deployability** ★☆☆ — Every deploy is all-or-nothing; a bug anywhere blocks everything
-- **Fault Tolerance** ★☆☆ — A crash in any component takes down the entire process
-- **Modularity** ★☆☆ — Boundaries are conventions, not enforcement (without discipline → Big Ball of Mud)
-
-</div>
+    style Core fill:#D4C4E8,stroke:#9370DB,stroke-width:2px
+    style Ports fill:#C8E6C9,stroke:#4CAF50,stroke-width:2px
+```
 
 </div>
 
 <div className="fragment">
-<div style={{padding: '0.75em', border: '2px solid #4A90A4', borderRadius: '8px', marginTop: '0.5em', fontSize: '0.75em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5em', fontSize: '0.55em', marginTop: '0.5em'}}>
 
-**The Monolith-First Approach (Fowler):**
-Start with a monolith. You can understand the whole system. You can refactor freely. You can deploy with confidence. Only break it apart when you have specific scaling, team, or deployment problems that a monolith can't solve.
+<div style={{padding: '0.5em', border: '2px solid #9370DB', borderRadius: '6px', textAlign: 'center'}}>
+
+**Domain Core**
+
+Business logic, rules, entities — knows nothing about infrastructure
+
+</div>
+
+<div style={{padding: '0.5em', border: '2px solid #4CAF50', borderRadius: '6px', textAlign: 'center'}}>
+
+**Ports**
+
+Interfaces that define how the domain interacts with the outside world
+
+</div>
+
+<div style={{padding: '0.5em', border: '2px solid #FF9800', borderRadius: '6px', textAlign: 'center'}}>
+
+**Adapters**
+
+Implementations that connect ports to real technologies
+
+</div>
 
 </div>
 </div>
 
 <aside className="notes">
-**Walk through the ratings:**
-- Simplicity ★★★: One thing to build, deploy, monitor. The defining strength.
-- Responsiveness ★★★: Method calls in nanoseconds, database transactions, full stack traces.
-- Scalability ★☆☆: Vertical only — bigger hardware. Heavy work competes for shared resources.
-- Deployability ★☆☆: All-or-nothing. A broken test anywhere blocks everything.
-- Fault Tolerance ★☆☆: Bug in one module crashes everything — one process, one fate.
-- Modularity ★☆☆: Boundaries exist only as conventions. Without discipline → Big Ball of Mud.
+**Quick recap from L16:**
+- The domain core contains business logic — it should be testable without databases, APIs, or UIs
+- Ports are interfaces that define contracts for input (how the world talks to the domain) and output (how the domain talks to the world)
+- Adapters implement those ports with real technologies (PostgreSQL, REST APIs, React, etc.)
 
-**Fowler's advice is key:**
-- Many experienced architects recommend starting monolithic
-- The alternative (microservices) adds significant complexity
-- Only decompose when you have specific, concrete problems
+**Why this matters for L19:**
+- Hexagonal is one of SEVERAL styles for organizing code within a monolith
+- We're about to see Layered and Pipelined — different perspectives on the same problem
+- All three can coexist! They're complementary views, not competing choices.
 
-→ **Transition:** Is there a middle ground?
+→ **Transition:** Now let's see another common style — layered architecture...
 </aside>
 
 </Slide>
 
 {/* ============================================ */}
-{/* ARC 4: LAYERED & PIPELINED (12 min) */}
+{/* LAYERED ARCHITECTURE */}
 {/* ============================================ */}
 
 <Slide>
@@ -1937,369 +2109,337 @@ We've now seen three styles: Hexagonal, Layered, and Pipelined. Here's the key i
 </p>
 
 <Img
-    src="/img/lectures/web/l19-styles-emerge2.webp"
-    prompt="An educational illustration showing four heuristic lenses converging to reveal architectural styles. No title.
+    src="/img/lectures/web/l19-styles-emerge5.webp"
+    prompt="An educational diagram showing how different heuristics lead preferentially to different architectural styles. No title.
 
-TOP: Four colored lenses arranged in a row, each labeled:
-- BLUE lens: 'Rate of Change' with a clock/calendar icon
-- GREEN lens: 'Actor Ownership' with person icons
-- ORANGE lens: 'Interface Segregation' with puzzle pieces
-- PURPLE lens: 'Testability' with a checkmark icon
+LEFT SIDE — Four heuristic boxes arranged vertically:
+- BLUE box: 'Rate of Change' with clock icon
+- GREEN box: 'Actor Ownership' with person icons  
+- ORANGE box: 'Interface Segregation' with puzzle pieces
+- PURPLE box: 'Testability' with checkmark icon
 
-CENTER: Light rays from all four lenses converge onto a prism in the middle. The prism is labeled 'Apply Consistently'.
-
-BOTTOM: From the prism, a rainbow of light fans out to reveal three architectural shapes:
-- A hexagon labeled 'Hexagonal' (ports and adapters visible)
+RIGHT SIDE — Three architectural style boxes:
+- A hexagon labeled 'Hexagonal'
 - A stack of horizontal layers labeled 'Layered'
-- A series of connected stages labeled 'Pipelined'
+- A horizontal pipeline of connected stages labeled 'Pipelined'
 
-CALLOUT at bottom: 'You don't PICK a style from a menu — you DISCOVER it by applying principles consistently.'
+CONNECTING ARROWS (showing primary influences — thicker arrows for stronger connections, thinner dashed arrows for secondary influences):
+- Rate of Change → ALL THREE (thick arrows) — this heuristic applies everywhere
+- Testability → Hexagonal (THICK arrow) and → Pipelined (THICK arrow), thin dashed → Layered
+- Actor Ownership → Layered (THICK arrow) — teams map to technical layers; thin dashed → Hexagonal (adapter ownership) and → Pipelined (stage ownership)
+- Interface Segregation → Hexagonal (THICK arrow) — narrow ports for each client; thin dashed → Layered and → Pipelined
 
-Style: Clean educational illustration, warm colors with the four heuristic colors prominent (blue, green, orange, purple). The convergence/emergence effect should be visually clear."
-    alt="Four heuristic lenses (Rate of Change, Actor Ownership, Interface Segregation, Testability) converge through a prism labeled 'Apply Consistently' to reveal emergent architectural styles: Hexagonal, Layered, Pipelined. Callout: You don't pick a style — you discover it."
+ANNOTATIONS next to each style:
+- Hexagonal: 'Domain isolation needed? Multiple entry points? Test without infra?'
+- Layered: 'Teams organized by role? Volatility decreases downward?'
+- Pipelined: 'Data flows one direction? Stages change independently?'
+
+CALLOUT at bottom: 'Different problem characteristics → different heuristics dominate → different styles emerge'
+
+Style: Clean flow diagram with clear directional arrows. Use blue, green, orange, purple for the heuristic boxes. The arrow thickness should clearly show which heuristics most strongly lead to which styles. Educational and readable."
+    alt="Diagram showing how heuristics lead to different styles: Rate of Change influences all styles; Testability and ISP strongly lead to Hexagonal; Actor Ownership strongly leads to Layered; Testability and Rate of Change lead to Pipelined. Callout: Different problem characteristics lead to different styles."
   />
 
 <aside className="notes">
-**This is the synthesis insight:**
-- In L18, we asked "where do the boundaries go?" and used four heuristics to find them
-- We DIDN'T say "let's use hexagonal architecture" and then force boundaries to fit
-- Instead, we applied Rate of Change, Actor, ISP, and Testability heuristics — and structures EMERGED
-- The same heuristics, applied to different problems, lead to different styles
+**This is the synthesis insight — make it dramatic:**
+- "Notice what we did NOT do: we didn't open a catalog of architectural styles and pick one"
+- "Instead, we asked questions: What changes? Who owns it? How do we test it?"
+- "The answers formed a shape — and that shape has a name"
 
-**Critical prerequisite: Domain Understanding (L12)**
-- These heuristics only work if you understand your domain first
-- "Rate of Change" requires knowing ACTUAL rates of change from domain analysis
-- "Actor Ownership" requires understanding who actually uses the system and what they care about
-- Without L12 domain modeling, you might apply heuristics to imaginary scenarios
+**The four heuristics lead to different styles:**
+- Rate of Change applies EVERYWHERE — it's the universal heuristic
+- Testability + ISP → strongly suggest Hexagonal (domain isolation, narrow ports)
+- Actor Ownership → strongly suggests Layered (teams map to technical roles)
+- Rate of Change + Testability → strongly suggest Pipelined (independent stages)
 
-**The four heuristics from L18 (review):**
-1. **Rate of Change:** Things that change at different speeds should be separate
-2. **Actor Ownership:** Different people/teams should own different components
-3. **Interface Segregation:** Clients that need different things should get different interfaces
-4. **Testability:** Things that need independent testing should be separable
-
-**The emergence insight:**
-- Hexagonal emerges when: domain changes rarely, infrastructure changes often, you need to test domain without infrastructure
-- Layered emerges when: responsibilities stack naturally (UI → logic → data), each layer has different stability
-- Pipelined emerges when: data flows in one direction through transformations, each stage is independently testable
-
-→ **Transition:** Let's see this concretely with Pawtograder...
+→ **Transition:** But wait — where do those answers come from? How do we KNOW what actually changes?
 </aside>
 
 </Slide>
 
+{/* ============================================ */}
+{/* DOMAIN UNDERSTANDING: THE PREREQUISITE */}
+{/* ============================================ */}
+
 <Slide>
 
-## How Pawtograder's Style Emerged
+## But Wait: Where Do Those Answers Come From?
 
-<p style={{fontSize: '0.82em'}}>
-We didn't start by saying "let's use hexagonal architecture." We applied L18's heuristics — and the style emerged:
+<p style={{fontSize: '0.85em'}}>
+The heuristics ask great questions: <em>What changes at different rates? Who owns what? Where do we need test seams?</em> But <strong>you can only answer those questions if you understand your domain</strong>.
 </p>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.58em', marginTop: '0.5em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em', marginTop: '0.75em'}}>
 
-<div style={{padding: '0.75em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
+<div style={{padding: '0.75em', border: '2px solid #FF5722', borderRadius: '8px'}}>
 
-**Rate of Change** → Domain/Adapter Split
+**Without Domain Understanding**
 
-| Component | Change Frequency |
-|-----------|-----------------|
-| `pawtograder.yml` | Weekly |
-| Grading Action | Monthly |
-| Builder interface | Rarely |
-| API endpoints | Very rarely |
+"We might need to support multiple databases..."
+- Adds abstraction layers now
+- Increases cognitive overhead  
+- Makes simple queries harder to optimize
+- Pays flexibility tax EVERY DAY
 
-*Things that change at different rates ended up in different components — domain (stable) separated from adapters (volatile)*
+*Building for imaginary changes = real complexity for fantasy benefits*
 
 </div>
 
 <div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
 
-**Actor Ownership** → Port Boundaries
+**With Domain Understanding (L12)**
 
-| Actor | Owns |
-|-------|------|
-| Instructor | Config (yaml) |
-| Action maintainer | Grading logic |
-| Sysadmin | API/platform |
+Pawtograder's domain analysis revealed:
+- **Config files change weekly** → declarative YAML
+- **Grading logic changes monthly** → isolate in adapters
+- **Database vendor change unlikely** → couple tightly, it's fine
 
-*Each actor's changes stay within their component — ports emerged as the contracts between them*
-
-</div>
-
-<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
-
-**Interface Segregation** → Narrow Ports
-
-- Instructors only see `PawtograderConfig`
-- API only sees `SubmissionAPI`, `FeedbackAPI`
-- Builders only see `BuildConfig`
-
-*No fat "AutograderSystem" interface — each client gets exactly what it needs*
-
-</div>
-
-<div style={{padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px'}}>
-
-**Testability** → Adapters as Seams
-
-- Test grading locally without API
-- Test config parsing without network
-- Mock builders for fast unit tests
-
-*The places we needed test seams became the adapter boundaries*
+*Invest flexibility where change actually happens*
 
 </div>
 
 </div>
 
 <div className="fragment">
-<p style={{fontSize: '0.78em', marginTop: '0.5em', fontWeight: 'bold', color: '#9370DB'}}>
-Apply the heuristics → boundaries emerge → name the pattern afterward. We call it "hexagonal" because that's the name the community gave to this shape.
+<p style={{fontSize: '0.82em', marginTop: '0.75em', fontWeight: 'bold', color: '#9370DB'}}>
+The L18 heuristics are powerful tools — but they only give good answers when applied to <em>real</em> domain knowledge, not hypothetical scenarios.
 </p>
 </div>
 
 <aside className="notes">
-**Walk through each quadrant:**
+**This is the crucial "but wait" moment:**
+- We just showed this beautiful diagram: heuristics → styles
+- Now pull the rug out slightly: "But where do the ANSWERS come from?"
+- "Rate of Change" requires knowing ACTUAL rates of change
+- "Actor Ownership" requires knowing who ACTUALLY uses the system
+- Without L12 domain modeling, you're guessing
 
-**Rate of Change → Domain/Adapter Split:**
-- Config changes weekly (instructor iterations)
-- Grading logic changes monthly (new features)
-- The Builder interface changes rarely (stable contract)
-- API endpoints change very rarely (stability for all grading actions)
-- Result: fast-changing things (config, adapters) separated from slow-changing things (domain, interfaces)
+**The flexibility trap:**
+- Junior architects think "more flexibility = better"
+- Reality: flexibility has a cost you pay EVERY DAY
+- If you add a Repository pattern because "we might switch databases" but you never will — you've made every data access harder for no benefit
 
-**Actor Ownership → Port Boundaries:**
-- Instructor owns config — their changes shouldn't touch TypeScript
-- Action maintainer owns grading logic — their changes shouldn't touch API
-- Sysadmin owns API — their changes shouldn't touch grading
-- Result: each actor works independently — ports are the contracts between them
+**Connect L12 → L18 → L19:**
+- L12: Understand the domain — what changes, what doesn't
+- L18: Apply heuristics — but only with REAL domain knowledge
+- L19: Recognize the pattern that emerged
 
-**Interface Segregation → Narrow Ports:**
-- We showed the "bad" fat interface in L18 — `AutograderSystem` with everything
-- Instead, each client gets a narrow interface: instructors see config schema, API sees feedback format
-- Result: changes to what the API needs don't affect what instructors see
-
-**Testability → Adapters as Seams:**
-- We need to test grading without deploying to GitHub Actions
-- We need to test config parsing without hitting the API
-- The places where we need to inject test doubles became our adapter boundaries
-- Result: `GradleBuilder` can be stubbed, `SupabaseAPI` can be mocked
-
-**The meta-insight:**
-- We didn't start with "hexagonal architecture"
-- We asked: what changes together? Who owns what? What do clients need? Where do we need test seams?
-- The answers formed a shape — and that shape has a name
-
-→ **Transition:** Let's see all three styles side by side...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## The Styles Overview: Same Heuristics, Different Shapes
-
-<Img
-    src="/img/lectures/web/l19-styles-overview-v1.webp"
-    prompt="A comprehensive overview illustration showing how the four L18 heuristics lead to different architectural styles. No title.
-
-TOP: Four heuristic icons in a row with labels:
-- Clock icon: 'Rate of Change'
-- Person icon: 'Actor'  
-- Puzzle pieces: 'Interface Segregation'
-- Checkmark: 'Testability'
-
-CENTER: Three columns, each showing a different architectural style with annotations showing WHICH heuristics were most influential:
-
-COLUMN 1 — HEXAGONAL:
-- A hexagon with ports on each face and adapters connecting to external systems
-- Annotations pointing to it:
-  - 'Rate of Change: Domain stable, adapters volatile' (highlighted)
-  - 'Testability: Domain testable without infrastructure' (highlighted)
-  - 'ISP: Each port is a narrow interface' (highlighted)
-- Caption: 'Emerges when domain needs isolation from multiple volatile technologies'
-
-COLUMN 2 — LAYERED:
-- Four horizontal strata stacked vertically (Presentation → Application → Domain → Infrastructure)
-- Annotations:
-  - 'Rate of Change: Top layers change faster' (highlighted)
-  - 'Actor: Different teams own different layers'
-- Caption: 'Emerges when responsibilities stack and volatility decreases downward'
-
-COLUMN 3 — PIPELINED:
-- A horizontal flow of connected stages with data flowing left to right
-- Annotations:
-  - 'Rate of Change: Stages change independently' (highlighted)
-  - 'Testability: Each stage is a pure transformation' (highlighted)
-- Caption: 'Emerges when data flows through a series of transformations'
-
-BOTTOM: A callout box with the key insight: 'The heuristics are the cause; the styles are the effect. You discover architecture by asking the right questions, not by picking from a menu.'
-
-Style: Clean educational diagram with warm colors. The three architectural shapes should be visually distinct. Blue (#4A90A4), green (#4CAF50), orange (#FF9800), purple (#9370DB) for the heuristic colors."
-    alt="Overview showing four heuristics (Rate of Change, Actor, ISP, Testability) leading to three architectural styles: Hexagonal (domain isolation), Layered (stacked responsibilities), Pipelined (transformation flow). Callout: Heuristics are the cause; styles are the effect."
-  />
-
-<aside className="notes">
-**This is the synthesis slide — bring it all together:**
-
-**The key insight:**
-- We've now seen three styles: Hexagonal, Layered, Pipelined
-- Each emerged from applying the same four heuristics to different problem characteristics
-- You don't pick a style from a menu — you discover it by asking the L18 questions
-
-**When each style emerges:**
-
-**Hexagonal emerges when:**
-- Rate of Change: Domain is stable, but technologies around it change (databases, UIs, APIs)
-- Testability: You need to test the domain without real infrastructure
-- ISP: Different clients (web, CLI, tests) need different entry points
-- Actor: Domain experts vs. infrastructure experts have different concerns
-- RESULT: Domain at center, ports as interfaces, adapters as swappable technology connections
-
-**Layered emerges when:**
-- Rate of Change: Volatility decreases as you go from UI to data (top changes most)
-- Actor: Teams map to technical roles (frontend, backend, DBA)
-- RESULT: Horizontal strata with downward-only dependencies, protecting stable lower layers
-
-**Pipelined emerges when:**
-- Rate of Change: Each transformation stage has its own reason to change
-- Testability: Each stage is a pure function (input → output)
-- Data flows one direction through transformations
-- RESULT: Linear sequence of independent, testable stages
-
-**The meta-lesson:**
-- Architecture isn't about memorizing style names
-- It's about asking the right questions and letting structure emerge
-- The vocabulary (hexagonal, layered, pipelined) lets us COMMUNICATE what we discovered
-
-→ **Transition:** We've seen how styles emerge from heuristics. Now let's look at middle ground between a basic monolith and full distribution...
+→ **Transition:** Let's see this concretely — how did Pawtograder's architecture emerge?
 </aside>
 
 </Slide>
 
 {/* ============================================ */}
-{/* ARC 5: MODULAR MONOLITH */}
+{/* HOW PAWTOGRADER'S STYLE EMERGED */}
 {/* ============================================ */}
 
 <Slide>
 
-## The Modular Monolith: A Middle Ground
+## How Pawtograder's Architecture Emerged
 
 <p style={{fontSize: '0.82em'}}>
-Remember our opening question: <em>how do we organize our code?</em> The modular monolith is perhaps the most direct answer — maintain a <strong>single deployment unit</strong> but enforce <strong>strict module boundaries</strong> within the codebase. All the simplicity of a monolith, with intentional structure to prevent the Big Ball of Mud.
+We didn't start by saying "let's use hexagonal architecture." We started with <strong>domain understanding</strong>, applied <strong>heuristics</strong>, and the structure emerged:
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.55em', marginTop: '0.5em'}}>
+
+<div style={{padding: '0.75em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
+
+**1. Domain Understanding (L12)**
+
+| Question | Answer |
+|----------|--------|
+| What changes most? | Config files (weekly) |
+| What's stable? | API contract, core grading logic |
+| Who are the actors? | Instructors, action maintainers, sysadmins |
+| What's unlikely to change? | Database vendor, GitHub Actions platform |
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+
+**2. Heuristics Applied (L18)**
+
+| Heuristic | Result |
+|-----------|--------|
+| Rate of Change | Config ↔ Action ↔ API boundaries |
+| Actor Ownership | Instructor owns config, maintainer owns action |
+| ISP | Narrow ports: `Builder`, `FeedbackAPI` |
+| Testability | Domain testable without real API |
+
+</div>
+
+</div>
+
+<div className="fragment">
+<div style={{padding: '0.5em', border: '2px solid #9370DB', borderRadius: '8px', marginTop: '0.5em', fontSize: '0.7em'}}>
+
+**3. The Pattern That Emerged → Hexagonal + Pipelined**
+
+- Domain core (grading logic) at center — testable without infrastructure
+- Ports define contracts — `Builder`, `Parser`, `FeedbackAPI`  
+- Adapters implement ports — `GradleBuilder`, `SurefireParser`, `SupabaseAPI`
+- Data flows through a pipeline — overlay → build → test → parse → grade → submit
+
+*We call it "hexagonal" because that's what the community named this shape. We DISCOVERED it; we didn't CHOOSE it.*
+
+</div>
+</div>
+
+<aside className="notes">
+**Walk through the emergence story:**
+
+**Step 1 — Domain Understanding:**
+- Before writing ANY code, we asked: "What changes? Who cares? What's stable?"
+- Config changes weekly (instructor iterations)
+- Grading logic changes monthly (new features)
+- API contract changes rarely (stability for all actions)
+- Database vendor? Never going to change — don't abstract it
+
+**Step 2 — Heuristics:**
+- Rate of Change → separate config from action from API
+- Actor Ownership → instructors own config, maintainers own action code
+- ISP → each client gets a narrow interface (instructors don't see TypeScript)
+- Testability → need to test grading without deploying to GitHub Actions
+
+**Step 3 — Recognition:**
+- The boundaries formed a shape
+- Domain at center, adapters at edges = hexagonal
+- Data flowing through transformations = pipelined
+- We didn't pick these names first — we recognized them after
+
+**The meta-lesson:**
+- Architecture is DISCOVERED through domain understanding + heuristics
+- Style names are vocabulary for COMMUNICATION, not a menu of choices
+
+→ **Transition:** Now let's see all three styles side by side...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Complete Picture: L12 → L18 → L19
+
+<p style={{fontSize: '0.85em'}}>
+Architecture isn't about picking from a menu. It's a <strong>discovery process</strong>:
 </p>
 
 <div style={{fontSize: '0.75em', marginTop: '0.5em'}}>
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px' }}}%%
-graph TD
-    subgraph MM["Modular Monolith — Single Deployment Unit"]
-        subgraph C["Courses Module"]
-            CD["Domain"]
-            CA["API"]
-        end
-        subgraph S["Submissions Module"]
-            SD["Domain"]
-            SA["API"]
-        end
-        subgraph G["Grading Module"]
-            GD["Domain"]
-            GA["API"]
-        end
-    end
-    SA -->|"via API"| GA
-    CA -->|"via API"| SA
-    DB[("Shared DB<br/>(separate schemas)")]
-    C --> DB
-    S --> DB
-    G --> DB
+flowchart LR
+    L12["<strong>L12: Domain Understanding</strong><br/>What changes? What's stable?<br/>Who are the actors?"] --> L18["<strong>L18: Heuristics</strong><br/>Rate of Change<br/>Actor Ownership<br/>ISP · Testability"]
+    L18 --> EMERGE["<strong>Boundaries Emerge</strong><br/>Natural seams appear<br/>Structure takes shape"]
+    EMERGE --> L19["<strong>L19: Recognition</strong><br/>Hexagonal? Layered?<br/>Pipelined? Hybrid?"]
+    L19 --> COMMUNICATE["<strong>Communication</strong><br/>Share with team<br/>Document decisions"]
 
-    classDef modbox fill:#D4C4E8,stroke:#9370DB,stroke-width:2px
-    classDef db fill:#FFE0B2,stroke:#FF9800,stroke-width:2px
-    class C,S,G modbox
-    class DB db
+    classDef domain fill:#C8E6C9,stroke:#4CAF50,stroke-width:2px
+    classDef heuristic fill:#B8D4E3,stroke:#4A90A4,stroke-width:2px
+    classDef emerge fill:#D4C4E8,stroke:#9370DB,stroke-width:2px
+    classDef comm fill:#FFE0B2,stroke:#FF9800,stroke-width:2px
+
+    class L12 domain
+    class L18 heuristic
+    class EMERGE,L19 emerge
+    class COMMUNICATE comm
 ```
 
 </div>
 
 <div className="fragment">
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '0.4em', fontSize: '0.48em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0.4em', border: '2px solid #4CAF50', borderRadius: '6px', textAlign: 'center'}}>
-
-**Simplicity** ★★★
-
-Still one deploy, one build
-
-</div>
-
-<div style={{padding: '0.4em', border: '2px solid #4CAF50', borderRadius: '6px', textAlign: 'center'}}>
-
-**Modularity** ★★★
-
-Enforced internal boundaries
-
-</div>
-
-<div style={{padding: '0.4em', border: '2px solid #4A90A4', borderRadius: '6px', textAlign: 'center'}}>
-
-**Changeability** ★★☆
-
-Changes isolated to modules
-
-</div>
-
-<div style={{padding: '0.4em', border: '2px solid #FF9800', borderRadius: '6px', textAlign: 'center'}}>
-
-**Scalability** ★☆☆
-
-Still one process to scale
-
-</div>
-
-</div>
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.72em', marginTop: '0.5em', color: '#9370DB'}}>
-<strong>Optionality:</strong> If the Grading module needs independent scaling later, the boundaries are already clean. But you don't pay the distributed systems tax until you need to.
+<p style={{fontSize: '0.8em', marginTop: '0.5em', fontWeight: 'bold', color: '#9370DB'}}>
+The style names (hexagonal, layered, pipelined) are <strong>vocabulary for communication</strong> — not a catalog to shop from. You discover architecture by understanding your domain and asking the right questions.
 </p>
 </div>
 
 <aside className="notes">
-**Key characteristics:**
-- Still one build, one deploy — operationally simple
-- Modules communicate through explicit public APIs, not by reaching into each other's internals
-- Each module owns its database tables; cross-module queries go through APIs
-- Build tools or linters prevent modules from importing private code
+**This is the synthesis of L12 + L18 + L19:**
 
-**Quality attribute connection — the "best of both worlds" pitch:**
-- Simplicity ★★★: Keeps the monolith's operational simplicity — one thing to deploy and monitor
-- Modularity ★★★: This is the big upgrade over a plain monolith — enforced boundaries prevent the Big Ball of Mud
-- Changeability ★★☆: Changes stay within a module boundary. Better than a monolith, but cross-module changes still require coordination.
-- Scalability ★☆☆: Still one process — can't scale modules independently. This is the main limitation that might eventually push you toward microservices.
-- Responsiveness ★★★: Still in-process calls — no network overhead
-- Fault tolerance ★☆☆: Still one process — a crash affects everything
+**The process:**
+1. **L12 (Domain):** Understand what actually changes, who actually cares
+2. **L18 (Heuristics):** Ask the four questions — but with REAL answers from L12
+3. **Emergence:** Boundaries form naturally from those answers
+4. **L19 (Recognition):** Name the pattern — "oh, this is hexagonal"
+5. **Communication:** Use the vocabulary to explain to your team
 
-**The tradeoff:**
-- Enforcing boundaries within a monolith requires discipline
-- Nothing stops a developer from bypassing the API and querying another module's tables directly
-- Microservices enforce boundaries through network calls; modular monoliths enforce them through convention and tooling
+**Why this order matters:**
+- If you skip L12 and go straight to "let's use hexagonal" → you're guessing
+- If you apply heuristics to hypothetical scenarios → you build flexibility for imaginary changes
+- Domain understanding GROUNDS the heuristics in reality
 
-**Many teams discover they NEVER need to extract to microservices:**
-- The module boundaries solve their maintainability and team ownership problems
-- Without the complexity of network communication
+**The vocabulary insight:**
+- "Hexagonal" is useful because other architects know what it means
+- But you don't START with "hexagonal" — you END there
+- You DISCOVER the shape, then COMMUNICATE it using shared vocabulary
 
-→ **Transition:** But what about microservices?
+→ **Transition:** Now that we understand how styles emerge, let's look at the two big families of deployment...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* THE TWO BIG FAMILIES */}
+{/* ============================================ */}
+
+<Slide>
+
+## The Two Big Families: Monolith vs. Microservices
+
+<p style={{fontSize: '0.82em'}}>
+At the highest level, systems fall into two categories based on how they're deployed:
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.62em', marginTop: '1em'}}>
+
+<div style={{padding: '1em', border: '3px solid #4CAF50', borderRadius: '8px', background: 'rgba(76, 175, 80, 0.05)'}}>
+
+**Monolith** — One Deployment Unit
+
+- All code lives in a single codebase
+- Deployed as a single artifact (JAR, binary, container)
+- Components communicate via method calls
+- One database, one process, one server (typically)
+
+*Everything we've discussed so far — layered, hexagonal, modular monolith, pipelined — are variations within this family.*
+
+</div>
+
+<div style={{padding: '1em', border: '3px solid #2196F3', borderRadius: '8px', background: 'rgba(33, 150, 243, 0.05)'}}>
+
+**Microservices** — Many Deployment Units
+
+- Code split across separate services
+- Each service deployed independently
+- Services communicate via network (HTTP, messages)
+- Separate databases, processes, servers
+
+*This is where industry has been moving — and it's the focus of L20-L21.*
+
+</div>
+
+</div>
+
+<aside className="notes">
+**Now we can finally make this distinction clearly:**
+- Students now understand what a monolith IS and the styles that organize code within it
+- Microservices is a fundamentally different choice — multiple deployment units
+- The architectural styles we've covered (layered, hexagonal, pipelined) apply WITHIN each microservice too!
+
+**Key insight:**
+- You don't choose between "layered OR microservices"
+- You might have microservices where EACH service is internally layered
+- The monolith vs. microservices decision is orthogonal to internal organization
+
+→ **Transition:** Where do our running examples fall on this spectrum?
 </aside>
 
 </Slide>
 
 <Slide>
 
-## But What About Microservices?
+## Where Do Our Examples Fall?
 
 <p style={{fontSize: '0.82em'}}>
 A microservices architecture decomposes a system into small, independently deployable services. Where do our running examples fall?
@@ -2615,212 +2755,7 @@ Style: Warm, educational illustration, the balance should feel dynamic, showing 
 
 **The architect's job:** match the architecture to the constraints. Not every system needs microservices. Not every system needs hexagonal architecture.
 
-→ **Transition:** But there's a crucial question beneath these tradeoffs: how do we KNOW which axes of change matter?
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Domain Understanding Guides Flexibility (L12)
-
-<p style={{fontSize: '0.85em'}}>
-Recall from L12: <strong>domain modeling isn't just about naming classes — it reveals which changes are likely and which are fantasy</strong>.
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em', marginTop: '0.75em'}}>
-
-<div style={{padding: '0.75em', border: '2px solid #FF5722', borderRadius: '8px'}}>
-
-**Building Flexibility for Unlikely Changes**
-
-"We might need to support multiple databases someday..."
-- Adds abstraction layers now
-- Increases cognitive overhead
-- Makes simple queries harder to optimize
-- Testing complexity grows
-
-*But if that change never comes, you've traded real simplicity for imaginary flexibility.*
-
-</div>
-
-<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
-
-**Understanding What Actually Changes**
-
-Pawtograder's domain analysis revealed:
-- **Config files change weekly** → make them declarative YAML
-- **Grading logic changes monthly** → isolate it in adapters  
-- **Unlikely to want to change database vendors** → tight coupling with PostgreSQL is fine
-
-*The L18 heuristics only work if you understand your domain first.*
-
-</div>
-
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.8em', marginTop: '0.75em', fontWeight: 'bold', color: '#9370DB'}}>
-Flexibility along unlikely axes adds complexity that makes <em>everything else</em> harder. Domain understanding tells you where to invest.
-</p>
-</div>
-
-<aside className="notes">
-**Connection to L12 (Domain Modeling):**
-- L12 taught: "Small assumptions can have catastrophic consequences" — the flip side is also true
-- Making something easy to change when it will NEVER change is also a catastrophic assumption
-- Every abstraction has a cost: indirection, cognitive load, testing overhead
-- Domain modeling is how you figure out which changes are REAL and which are hypothetical
-
-**The flexibility trap:**
-- Junior architects often think "more flexibility = better architecture"
-- Reality: flexibility has a cost, and you pay that cost EVERY DAY
-- If you add a Repository pattern because "we might switch databases" but you never will — you've made every data access harder for no benefit
-- Pawtograder uses Supabase directly because the domain analysis showed database changes are rare and well-isolated
-
-**The L12 → L18 → L19 pipeline:**
-1. **L12 (Domain Modeling):** Understand the domain — what changes, what doesn't, who cares about what
-2. **L18 (Heuristics):** Apply Rate of Change, Actor, ISP, Testability — but these questions only work if you understood the domain first
-3. **L19 (Styles):** Recognize the pattern that emerged — the style is an OUTPUT of domain understanding + heuristics
-
-**Concrete Pawtograder example:**
-- We COULD have built an abstract "GradingPlatform" interface to support "any grading system"
-- But domain understanding said: this is tightly coupled to GitHub Actions and Supabase by design
-- Building for imaginary flexibility would have made the real code harder to understand and test
-- Instead, we invested flexibility where it matters: config files (high rate of change) and parsing adapters (different languages)
-
-→ **Transition:** Now let's look at how we organize code within a style...
-</aside>
-
-</Slide>
-
-{/* ============================================ */}
-{/* ARC 8: PARTITIONING (5 min) */}
-{/* ============================================ */}
-
-<Slide>
-
-## Partitioning: Technical or Domain?
-
-<p style={{fontSize: '0.82em'}}>
-We opened with "how do we organize our code?" We've seen styles that answer the big-picture question. But <em>within</em> a style, there's still a choice: group code by <strong>technical role</strong> or by <strong>domain capability</strong>?
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.5em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
-
-**Technical Partitioning**
-
-```
-autograder/
-├── api/
-│   └── SupabaseAPI.java
-├── grading/
-│   ├── OverlayGrader.java
-│   └── GradingService.java
-├── builders/
-│   ├── GradleBuilder.java
-│   └── PythonScriptBuilder.java
-├── parsers/
-│   ├── SurefireParser.java
-│   ├── PitestParser.java
-│   └── CheckstyleParser.java
-└── config/
-    └── PawtograderConfig.java
-```
-
-*Organized by technical role*
-
-</div>
-
-<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
-
-**Domain Partitioning**
-
-```
-autograder/
-├── grading/
-│   ├── OverlayGrader.java
-│   ├── GradingService.java
-│   └── PawtograderConfig.java
-├── languages/
-│   ├── java/
-│   │   ├── GradleBuilder.java
-│   │   ├── SurefireParser.java
-│   │   ├── PitestParser.java
-│   │   └── CheckstyleParser.java
-│   └── python/
-│       ├── PythonScriptBuilder.java
-│       └── PytestParser.java
-└── platform/
-    └── SupabaseAPI.java
-```
-
-*Organized by business capability*
-
-</div>
-
-</div>
-
-<aside className="notes">
-**Two ways to organize the same autograder code:**
-- Technical: all builders together, all parsers together
-- Domain: everything for Java grading together, everything for Python together
-
-**The practical questions (next slide) reveal which is better for which situation.**
-
-**Bottlenose uses technical partitioning (common web framework convention):**
-- controllers/, models/graders/, views/graders/, jobs/
-- Adding a RustGrader requires changes in models, views, and potentially controllers
-- This convention prioritizes consistency across the app over isolation of features
-
-→ **Transition:** Let's compare on practical questions...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Partitioning Tradeoffs
-
-<div style={{fontSize: '0.68em', marginTop: '0.5em'}}>
-
-| Question | Technical | Domain |
-|----------|-----------|--------|
-| **"How does Java grading work?"** | Jump between `builders/`, `parsers/`, and `grading/` | Everything in `languages/java/` |
-| **Adding Rust support?** | New files in `builders/`, `parsers/`, changes to `grading/` | All changes in `languages/rust/` |
-| **Team independence?** | Every language needs coordination between "builder team," "parser team" | "Rust support team" owns their vertical slice |
-
-</div>
-
-<div className="fragment">
-<div style={{padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px', marginTop: '0.75em', fontSize: '0.72em'}}>
-
-**Conway's Law** (L22 preview):
-> "Organizations which design systems are constrained to produce designs which are copies of the communication structures of these organizations."
-
-Pawtograder has clear ownership: **Instructor** owns config (changes weekly), **Action maintainers** own the grading code (changes monthly), **Sysadmin team** owns the API (changes rarely). Architecture mirrors team structure.
-
-</div>
-</div>
-
-<aside className="notes">
-**The key insight:**
-- Domain partitioning keeps related changes together
-- Technical partitioning scatters related changes across packages
-- Pawtograder's architecture reflects its team structure:
-  - Instructors change solution repos weekly — they never touch the Action code
-  - Action maintainers add new language support monthly — they never touch the API
-  - Sysadmin team manages the API — stable, changes rarely
-  - Each team works independently because the interfaces are narrow and stable
-
-**Conway's Law is REAL:**
-- If you have a "frontend" team and "backend" team → you'll get a layered architecture
-- If you have a "Java grading" team and "Python grading" team → you'll get domain boundaries
-- Architecture and team structure MUST be aligned
-
-→ **Transition:** Let's wrap up and look ahead...
+→ **Transition:** Let's wrap up what we've learned...
 </aside>
 
 </Slide>

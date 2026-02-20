@@ -7,6 +7,22 @@ title: "Architectural Styles: From Hexagons to Monoliths"
 Suggested background reading for a deeper dive:
 - [Fundamentals of Software Architecture, 2nd Edition by Mark Richards and Neal Ford](https://learning.oreilly.com/library/view/fundamentals-of-software/9781098175504/ch09.html#id72) - especially Chapter 9
 
+## Learning Objectives
+
+After this lecture, you will be able to:
+
+1. Define **quality attributes** that architectural styles affect: maintainability, scalability, deployability, fault tolerance, and more
+2. Distinguish between **architectural styles** and **architectural patterns**
+3. **Recognize and compare** architectural styles like **Hexagonal**, **Layered**, **Pipelined**, and **Monolithic**
+4. Explain the tradeoffs of **monoliths**, **modular monoliths**, and **microservices**
+5. Analyze how architectural choices **affect quality attributes differently** for specific scenarios
+
+:::note Important Framing
+You are **not** expected to become a master architect by the end of this lecture. The goal is to *understand systems that use these styles* and reason about how architectural decisions impact quality attributes. When you encounter a hexagonal or layered architecture in the wild, you'll be able to read it—not necessarily design it from scratch.
+
+Junior engineers read existing architectures far more than they design new ones. Understanding *why* a system is structured a certain way is 90% of the skill. Design skills come later with experience—comprehension comes first.
+:::
+
 In [L16 (Design for Testability)](./l16-testing2.md), we introduced **Hexagonal Architecture** (Ports and Adapters) as a way to separate domain logic from infrastructure, making code testable. That was architecture in service of a specific quality attribute: testability. In [L18](./l18-architecture-design.md), we identified component boundaries for Pawtograder's autograder—the Solution Repo, Grading Action, and Pawtograder API—by applying heuristics about rate of change, actors, interface segregation, and testability.
 
 Now we zoom out to look at architectural styles more broadly—recurring structures that help organize entire applications. We'll continue with our **Pawtograder** and **Bottlenose** running examples to see how these styles apply in practice.
@@ -243,9 +259,240 @@ You now have vocabulary for all nine quality attributes and can describe them us
 ## Architectural Styles vs. Patterns
 
 Before diving into specific styles, let's clarify vocabulary that architects use (and sometimes confuse).
+## How Do We Organize Our Code?
+
+This is the question at the heart of every architectural decision—from your first class project to production systems serving millions of users. Every pattern and style we study today is an answer to this question.
+
+Not every system has a discernible architecture. Some systems grow organically without any guiding structure, accumulating features and fixes until no one understands how the pieces fit together. Architects call this a **Big Ball of Mud**. Brian Foote and Joseph Yoder named this antipattern in their famous 1997 paper:
+
+> "A Big Ball of Mud is a haphazardly structured, sprawling, sloppy, duct-tape-and-baling-wire, spaghetti-code jungle. These systems show unmistakable signs of unregulated growth, and repeated, expedient repair. Information is shared promiscuously among distant elements of the system, often to the point where nearly all the important information becomes global or duplicated."
+
+Nobody designs a Big Ball of Mud on purpose. It emerges from thousands of small decisions made under pressure: "just put it here for now," "we'll refactor later," "it's faster to copy-paste." The real cost isn't aesthetics—it's every quality attribute we'll discuss:
+
+- **Changeability**: "Where does this feature go?" → "Everywhere and nowhere"
+- **Testability**: Can't test in isolation when everything depends on everything
+- **Deployability**: Can't deploy safely when any change might break anything
+- Eventually: cheaper to rewrite than to maintain
+
+Every architectural style we study—layered, hexagonal, pipelined, monolith, modular monolith—is a strategy to prevent this. As we discuss each style, we'll ask: "How does this style help us organize our code?"
+
+## The Monolith: Where Most Projects Start
+
+Here's a foundational insight: **you've been building monoliths your entire programming career**. Every Java project, every Python script—all monoliths. The term only becomes meaningful in contrast to systems that *aren't* monoliths.
+
+A **monolith** is a system deployed as a single unit. All functionality—user interface, business logic, data access—lives in one codebase, compiles into one artifact, and runs in one process (or a cluster of identical processes). This is where most projects start—and for many successful systems, where they stay.
+
+**Characteristics of monoliths:**
+- **Single deployment unit**: One build, one deploy, one running process. Fix a typo in the grading UI? Redeploy the whole app.
+- **Shared memory**: Components communicate via method calls, not network requests. Method calls take nanoseconds. Transactions can span the entire system.
+- **Single database**: All data lives in one schema, managed by one application
+- **Unified codebase**: All code in one repository, one build system, one language ecosystem. Rename a method and your IDE finds every caller.
+
+**Bottlenose is a classic monolith.** It's a Rails application where:
+- Controllers, models, views, and jobs all deploy together
+- Grader subclasses share a database with submissions, courses, and users
+- Adding a feature means changing the monolith and redeploying the whole application
+- The entire team works in one codebase
+
+**Benefits of monoliths:**
+- **Simplicity**: One thing to build, test, deploy, and monitor
+- **Performance**: In-process calls are orders of magnitude faster than network calls
+- **Consistency**: Transactions span the entire system; no distributed coordination needed
+- **Debugging**: One log file, one stack trace, one debugger session
+
+**Drawbacks of monoliths:**
+- **Scaling constraints**: Must scale the entire application, even if only one feature is bottlenecked
+- **Deployment risk**: Every deploy is all-or-nothing; a bug in one feature can take down everything
+- **Team coupling**: Large teams stepping on each other's changes in a single codebase
+- **Technology lock-in**: The whole system uses one language, one framework, one set of dependencies
+- **Modularity by convention only**: Nothing prevents developers from bypassing intended structure—without discipline, a monolith tends toward the Big Ball of Mud
+
+:::tip The Monolith-First Approach
+Martin Fowler and many experienced architects recommend starting with a monolith. Why? Because monoliths are *simple*. You can understand the whole system. You can refactor freely. You can deploy with confidence.
+
+The alternative—microservices—adds significant complexity that's only justified when you have specific scaling, team, or deployment problems that a monolith can't solve. We'll see exactly what that complexity looks like in the next lecture.
+:::
+
+### The Modular Monolith: A Middle Ground
+
+Between "monolith" and "microservices" lies an increasingly popular middle ground: the **modular monolith**. This architecture maintains the single deployment unit of a monolith but enforces strict module boundaries *within* the codebase—the answer to the modularity problem above.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Modular Monolith                             │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐              │
+│  │   Courses   │  │ Submissions │  │   Grading   │              │
+│  │   Module    │  │   Module    │  │   Module    │              │
+│  │ ┌─────────┐ │  │ ┌─────────┐ │  │ ┌─────────┐ │              │
+│  │ │ Domain  │ │  │ │ Domain  │ │  │ │ Domain  │ │              │
+│  │ └─────────┘ │  │ └─────────┘ │  │ └─────────┘ │              │
+│  │ ┌─────────┐ │  │ ┌─────────┐ │  │ ┌─────────┐ │              │
+│  │ │   API   │ │  │ │   API   │ │  │ │   API   │ │              │
+│  │ └─────────┘ │  │ └─────────┘ │  │ └─────────┘ │              │
+│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘              │
+│         │                │                │                     │
+│         └────────────────┼────────────────┘                     │
+│                          │                                      │
+│              ┌───────────┴───────────┐                          │
+│              │    Shared Database    │                          │
+│              │  (but separate schemas)│                         │
+│              └───────────────────────┘                          │
+└─────────────────────────────────────────────────────────────────┘
+                   Single Deployment Unit
+```
+
+**Key characteristics:**
+- **Single deployment**: Still one build, one deploy—operationally simple
+- **Strong module boundaries**: Modules communicate through explicit public APIs, not by reaching into each other's internals
+- **Separate schemas (often)**: Each module owns its database tables; cross-module queries go through APIs
+- **Enforced encapsulation**: Build tools or linters prevent modules from importing each other's private code
+
+**Why is this valuable?**
+
+The modular monolith gives you **optionality**. If the Grading module eventually needs independent scaling, you can extract it to a separate service—the boundaries are already clean. But you don't pay the distributed systems tax until you need to. Many teams discover they *never* need to extract: the module boundaries solve their maintainability and team ownership problems without the complexity of network communication.
+
+**The tradeoff**: enforcing boundaries within a monolith requires discipline. There's nothing stopping a developer from bypassing the API and querying another module's tables directly—except code review, linting rules, and team norms. Microservices enforce boundaries through network calls; modular monoliths enforce them through convention and tooling.
+
+:::note LO4 checkpoint
+You now have the vocabulary to explain the tradeoffs of monoliths and modular monoliths. We'll return to microservices after covering the other architectural styles.
+:::
+
+## Technical vs. Domain Partitioning
+
+Beyond choosing an architectural style, we face another fundamental question: how do we organize our code into modules or packages? There are two dominant approaches, and the choice has implications for how teams work.
+
+**Technical partitioning** organizes code by its technical role. All controllers go in one package, all services in another, all parsers in a third:
+
+```
+autograder/
+├── api/
+│   └── SupabaseAPI.java
+├── grading/
+│   ├── OverlayGrader.java
+│   └── GradingService.java
+├── builders/
+│   ├── GradleBuilder.java
+│   └── PythonScriptBuilder.java
+├── parsers/
+│   ├── SurefireParser.java
+│   ├── PitestParser.java
+│   └── CheckstyleParser.java
+└── config/
+    └── PawtograderConfig.java
+```
+
+**Domain partitioning** organizes code by business capability. Everything related to Java grading goes in a `java/` module—the builder, parsers, and language-specific logic:
+
+```
+autograder/
+├── grading/
+│   ├── OverlayGrader.java
+│   ├── GradingService.java
+│   └── PawtograderConfig.java
+├── languages/
+│   ├── java/
+│   │   ├── GradleBuilder.java
+│   │   ├── SurefireParser.java
+│   │   ├── PitestParser.java
+│   │   └── CheckstyleParser.java
+│   └── python/
+│       ├── PythonScriptBuilder.java
+│       └── PytestParser.java
+└── platform/
+    └── SupabaseAPI.java
+```
+
+The tradeoffs become clear when you ask practical questions:
+
+**Where do you look to understand "how Java grading works"?**
+- Technical: Jump between `builders/`, `parsers/`, and `grading/`
+- Domain: Everything is in `languages/java/`
+
+**Which approach minimizes cross-package changes?**
+- Technical: Adding Rust support requires new files in `builders/`, `parsers/`, and changes to `grading/`
+- Domain: All Rust changes stay within `languages/rust/`
+
+**Which supports team independence?**
+- Technical: Every language requires coordination between "builder team," "parser team," and "grading team"
+- Domain: A "Rust support team" can own their vertical slice independently
+
+**Bottlenose uses technical partitioning** (the Rails convention):
+```
+bottlenose/
+├── controllers/
+├── models/
+│   └── graders/
+├── views/
+│   └── graders/
+└── jobs/
+```
+
+This means adding a new `RustGrader` requires changes in `models/graders/`, `views/graders/`, and potentially `controllers/`. The Rails convention prioritizes consistency across the entire application over isolation of individual features.
+
+:::tip Conway's Law (preview)
+Organizations design systems that mirror their communication structure. If you have a "frontend team" and "backend team," you'll tend toward technical partitioning. If you have a "grading team" and "courses team," you'll tend toward domain partitioning. We'll explore this in [L22 (Teams and Collaboration)](./l22-teams.md).
+:::
+
+## Quality Attributes: The "-ilities"
+
+How do we decide if an architecture is "good"? Not by how it looks—by how it behaves. **Quality attributes** are the measurable properties of a system that stakeholders care about. You've already met some of these. Now we'll build a complete vocabulary and use it throughout to evaluate every architectural style we encounter.
+
+| Group | Attributes |
+|-------|-----------|
+| Structure | **Simplicity**, **Modularity**, **Testability** |
+| Change | **Maintainability**, **Changeability**, **Deployability** |
+| Runtime | **Scalability**, **Responsiveness**, **Fault Tolerance** |
+
+**Simplicity** — How easy is the system to understand and reason about? Fewer moving parts, fewer deployment units, fewer technologies. (Review: L7's low coupling and high cohesion principles scale up to architecture.)
+
+**Modularity** — How well is the system divided into independent, interchangeable components? High cohesion within modules, low coupling between them.
+
+**Testability** — How easy is it to verify that the system behaves correctly? Introduced in L16 via Hexagonal Architecture, which made the grading engine testable in isolation by separating domain logic from infrastructure.
+
+**Maintainability** — How easily can the system be changed over time? This includes fixing bugs, adding features, updating dependencies, and adapting to new requirements. Different from changeability: maintainability is about the ongoing cost of ownership.
+
+**Changeability** — How easily can specific types of changes be made? Where Maintainability is broad, Changeability asks: "Given *this* change, how many places do I have to touch?" (Review: L7-L8, coupling, cohesion, SOLID.)
+
+**Deployability** — How easily and safely can the system be deployed? How quickly can a bug fix reach production? A monolith deploys everything at once; microservices let you deploy one service at a time but add coordination complexity.
+
+**Scalability** — How does the system handle growth in load, data, or users? Systems scale *vertically* (bigger hardware) or *horizontally* (more instances). The key nuance: "scalable" means different things depending on the scenario.
+
+**Responsiveness** — How quickly does the system respond to requests? In a monolith, in-process method calls take nanoseconds and database transactions are cheap. In a distributed system, every network hop adds latency and uncertainty.
+
+**Fault Tolerance** — How well does the system continue operating when components fail? In a monolith, a crash anywhere crashes everything. In a distributed system, failures can be isolated—but can also cascade unpredictably.
+
+### Specifying Quality Attributes: Scenarios
+
+"The system should be scalable" is as useless a requirement as "the system should be fair." To make quality attributes actionable, we use **quality attribute scenarios**—a structured way to make every attribute testable and unambiguous:
+
+| Part | Question | Example |
+|------|----------|---------|
+| **Source** | Who causes it? | 200 students |
+| **Stimulus** | What event arrives? | Submit near deadline |
+| **Environment** | Under what conditions? | Normal operation |
+| **Artifact** | What part of the system? | Grading pipeline |
+| **Response** | What should happen? | All submissions graded |
+| **Measure** | How do we know it's good enough? | < 30 minutes total |
+
+Consider what "scalable" actually means for a grading system:
+
+- **Scenario A (Spike)**: 200 students submit *all at once* at 11:59pm. 200 parallel GitHub Actions runners spin up simultaneously. The API receives 200 results at once.
+- **Scenario B (Sustained)**: 1800 students submit over 1 hour during an exam. ~30 new runners start every minute—sustained load, not a spike.
+- **Scenario C (Trickle)**: 1800 students submit over 24 hours for a homework. 1–2 runners active at any time.
+
+A system designed only for Scenario C might completely fail at Scenario A. This is why we need precise vocabulary—and why architectural decisions must be tied to specific scenarios, not vague promises.
+
+:::note LO1 checkpoint
+You now have vocabulary for all nine quality attributes and can describe them using the six-part scenario format.
+:::
+
+## Architectural Styles vs. Patterns
+
+Before diving into specific styles, let's clarify vocabulary that architects use (and sometimes confuse).
 
 An **architectural style** describes a bundle of characteristics about a system. When we name a style, we're capturing several dimensions at once: how components and their dependencies are organized (the *component topology*), whether the system runs as a single deployment unit or as multiple networked services (the *physical architecture*), how frequently and in what pieces the system gets deployed, how components communicate with each other (method calls? REST? message queues?), and whether data is centralized or spread across multiple stores.
 
+Naming a style gives us shorthand for this complex bundle. When you say "microservices," other architects immediately understand implications about deployment, communication, team structure, and more. When you say "layered architecture," they picture horizontal strata with rules about which layers can call which. The name is a handle for a whole worldview.
 Naming a style gives us shorthand for this complex bundle. When you say "microservices," other architects immediately understand implications about deployment, communication, team structure, and more. When you say "layered architecture," they picture horizontal strata with rules about which layers can call which. The name is a handle for a whole worldview.
 
 An **architectural pattern**, by contrast, is a contextualized solution to a recurring problem. Patterns are more specific and tactical. "Circuit Breaker" is a pattern for handling failures in distributed systems. "Repository" is a pattern for abstracting data access. You might use many patterns within a single architectural style.
@@ -260,6 +507,11 @@ There's no official committee that decides what architectural styles exist. Styl
 This is the software engineering version of [piecemeal growth](./l18-architecture-design.md)—Christopher Alexander's observation that good architecture emerges through gradual adaptation rather than top-down master plans. Architectural styles aren't invented in ivory towers; they evolve from the ecosystem.
 :::
 
+:::note LO2 checkpoint
+You can now distinguish between an architectural style (the overall shape and constraints of a system) and an architectural pattern (a reusable solution applied within a system).
+:::
+
+## Continuing Our Running Examples: Pawtograder and Bottlenose
 :::note LO2 checkpoint
 You can now distinguish between an architectural style (the overall shape and constraints of a system) and an architectural pattern (a reusable solution applied within a system).
 :::
@@ -288,6 +540,7 @@ These differences create architectural challenges that manifest differently in e
 
 Let's see how Hexagonal Architecture—which we first met in L16—manifests in these real systems.
 
+## Hexagonal Architecture in Pawtograder
 ## Hexagonal Architecture in Pawtograder
 
 In L16, we saw Hexagonal Architecture (Ports and Adapters) applied to a smart home energy optimizer. The pattern separated domain logic from infrastructure, making the code testable. Now let's see how this same pattern manifests in Pawtograder's Grading Action.
@@ -466,9 +719,12 @@ This is the payoff of Hexagonal Architecture: the grading logic is protected fro
 **This is why the Grading Action can run locally** via `java -jar grader.jar -s /path/to/solution -u /path/to/submission`. The grading engine has no dependency on GitHub Actions or the Pawtograder API—those are adapters that can be swapped out for local testing.
 
 ## Other Common Architectural Styles
+## Other Common Architectural Styles
 
 Now that we've seen Hexagonal Architecture in depth, let's survey two other foundational styles. As you read architectural diagrams and documentation, you'll encounter these constantly.
+Now that we've seen Hexagonal Architecture in depth, let's survey two other foundational styles. As you read architectural diagrams and documentation, you'll encounter these constantly.
 
+### Layered Architecture
 ### Layered Architecture
 
 The **layered architecture** organizes code into horizontal strata, each with a distinct responsibility. The classic formulation has four layers: Presentation (user interface), Application/Service (orchestration and use cases), Domain (business logic and rules), and Infrastructure (databases, external services, file I/O).
@@ -492,6 +748,7 @@ In Bottlenose, the layers look different because it's a Rails monolith:
 The benefits are clear: separation of concerns, improved testability, and the ability to replace components. But layered architectures have pitfalls too. Changes that span multiple layers (adding a new grading field that flows from config to API) require touching every layer. Hence, while the layered architecture is an important style to study, it should not be blindly and strictly applied—the hexagonal architecture is often a better way to think about the problem.
 
 ### Pipelined Architecture
+### Pipelined Architecture
 
 The **pipelined architecture** (sometimes called "pipes and filters") organizes processing as a series of stages. Data flows through the pipeline, with each stage transforming its input into output for the next stage. Stages are independent and composable—you can add, remove, or reorder them without rewriting the whole system.
 
@@ -514,9 +771,17 @@ You can now recognize and compare four architectural styles: Hexagonal (domain a
 :::
 
 ## Two Big Families: Monolith vs. Microservices
+:::note LO3 checkpoint
+You can now recognize and compare four architectural styles: Hexagonal (domain at center, ports/adapters at edges), Layered (horizontal strata, downward dependencies), Pipelined (sequential stages, composable), and Monolithic (single deployment unit). All three of the first styles describe organization *within* a single deployment unit—they are styles you apply inside a monolith.
+:::
+
+## Two Big Families: Monolith vs. Microservices
 
 So far, all the architectural styles we've examined—Hexagonal, Layered, Pipelined—describe how to organize code *within a single deployment unit*. They all assume that components communicate via method calls in shared memory, that transactions can span the entire system, and that debugging means following one stack trace.
 
+This is the world of the **monolith**. But there's a contrasting family of architectures that splits the system across multiple deployment units.
+
+### Where Do Our Running Examples Fall?
 This is the world of the **monolith**. But there's a contrasting family of architectures that splits the system across multiple deployment units.
 
 ### Where Do Our Running Examples Fall?
@@ -569,11 +834,13 @@ This is why architects say "microservices" really means "distributed systems"—
 **In the next lecture**, we'll explore what makes distributed systems so challenging: the **Fallacies of Distributed Computing** (eight assumptions developers make about networks that are all false), **client-server architecture** and its variants, and the security implications of components communicating across trust boundaries. We'll see how both Pawtograder and Bottlenose handle these challenges—and why even Bottlenose, our "monolith," couldn't stay entirely monolithic.
 
 ## Architecture and Quality Attributes
+## Architecture and Quality Attributes
 
 :::note Recall
 In [Lecture 8 (Changeability III)](/lecture-notes/l8-design-for-change-2), we introduced the SOLID principles for individual classes and noted they scale to entire systems. Now we see that scaling in action: Single Responsibility becomes service boundaries (Solution Repo, Grading Action, and API each have one reason to change), Open/Closed becomes plugin architectures (new `Builder` implementations without modifying existing code), and Dependency Inversion becomes the foundation of Hexagonal Architecture (domain depends on abstractions, not concrete adapters).
 :::
 
+Now that we've seen several architectural styles, let's examine how they affect quality attributes in practice. These aren't abstract concerns—they have real consequences for teams, users, and the environment.
 Now that we've seen several architectural styles, let's examine how they affect quality attributes in practice. These aren't abstract concerns—they have real consequences for teams, users, and the environment.
 
 ### Maintainability
@@ -635,6 +902,9 @@ There's no free lunch. The architect's job is to understand the priorities for a
 :::note LO5 checkpoint
 You can now analyze how architectural choices affect quality attributes differently for specific scenarios. The same "add language support" change has very different impact depending on whether the system uses domain partitioning (Pawtograder) or technical partitioning in a monolith (Bottlenose).
 :::
+:::note LO5 checkpoint
+You can now analyze how architectural choices affect quality attributes differently for specific scenarios. The same "add language support" change has very different impact depending on whether the system uses domain partitioning (Pawtograder) or technical partitioning in a monolith (Bottlenose).
+:::
 
 ### Architecture and Team Topologies
 
@@ -653,6 +923,10 @@ Each team can work relatively independently because the interfaces between them 
 
 We opened with the Big Ball of Mud as the motivating problem. Having now studied several architectural styles and quality attributes, we can be specific about how to prevent it:
 
+### Preventing the Big Ball of Mud
+
+We opened with the Big Ball of Mud as the motivating problem. Having now studied several architectural styles and quality attributes, we can be specific about how to prevent it:
+
 - **Discipline and code review** catch architectural violations early
 - **Continuous refactoring** pays down technical debt incrementally
 - **The coupling and cohesion metrics** from L7-L8 serve as early warning systems
@@ -660,4 +934,5 @@ We opened with the Big Ball of Mud as the motivating problem. Having now studied
 - **Tests that enforce boundaries** fail when code bypasses the intended architecture
 - **Narrow, stable interfaces** (like Pawtograder's two-endpoint API) make violations obvious
 
+The architectural styles we've studied—Hexagonal, Layered, Pipelined, and especially the Modular Monolith—are all answers to the question we started with: *how do we organize our code* so it stays organized over time?
 The architectural styles we've studied—Hexagonal, Layered, Pipelined, and especially the Modular Monolith—are all answers to the question we started with: *how do we organize our code* so it stays organized over time?
