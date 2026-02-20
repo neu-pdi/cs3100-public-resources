@@ -5,13 +5,17 @@ image: /img/labs/web/lab8.png
 
 # Lab 8: Hexagonal Architecture
 
-![Lo-fi pixel art showing two developers at a large table covered with a messy sprawl of tangled class diagrams, spaghetti arrows, and sticky notes labeled with feature names: 'Devices', 'Rules', 'Notifications', 'Analytics', 'Users'. The mess represents SceneItAll's current monolith. One developer holds a pair of large scissors, about to cut along dotted lines that carve the mess into clean, color-coded regions. The other developer holds a magnifying glass with four colored lenses labeled 'Rate of Change', 'Actor', 'ISP', 'Testability' — the boundary-finding heuristics. On a corkboard behind them: a clean C4 component diagram showing the proposed modular structure with hexagonal modules and labeled interfaces between them, alongside a pinned index card titled 'ADR-001' with checkmarks and warning symbols. A whiteboard in the corner shows a simple System Context diagram with stick figures and boxes. On the table, a coffee mug reads 'It Depends' — the architect's motto. Title: 'Lab 8: Architecture'. Warm evening lighting, cozy collaborative workspace atmosphere.](/img/labs/web/lab8.png)
+![Lo-fi pixel art showing two students (one male, one female) at a large table. In the center of the table sits a glowing orb labeled 'DatabaseConnection.getInstance()' with tangled red threads spreading outward to sticky notes labeled 'DeviceManager' and 'AutomationRuleEngine'. One student sketches interface designs on paper (labeled 'DeviceRepository' and 'RuleRepository'), while the other has a laptop open showing a Copilot chat window with the prompt 'Generate a mermaid sequence diagram starting from this method'. Between them: a before/after comparison — on the left, a spaghetti diagram with arrows all pointing to the central singleton; on the right, a clean hexagonal diagram with interfaces as boundaries and adapters on the outside (no code legible). A whiteboard behind them shows a simple composition root with constructor calls. On the table, a coffee mug reads 'Inject, Don't Reach' — the DI motto. Title: 'Lab 8: Hexagonal Architecture'. Warm evening lighting, cozy collaborative workspace atmosphere.](/img/labs/web/lab8.png)
 
 In this lab, you'll refactor a tangled monolith into a clean hexagonal architecture — and practice explaining your design decisions clearly. The core skills here are architectural analysis, port and adapter design, and the ability to articulate *why* you made the choices you did.
 
-**GitHub Copilot is available as an optional tool during Parts 2 and 3.** Using Copilot is not required — manual refactoring is equally valid. If you use Copilot, part of the work is evaluating whether its output actually follows hexagonal principles (which requires real design judgment). If you work manually, you'll document your reasoning instead. Either way, you'll explain your decisions to your partner using a structured format introduced after Part 1.
+**This lab uses two different approaches to AI assistance:**
+- **Part 2** (DatabaseConnection): You'll design repository interfaces **manually first** with your partner, then use Copilot to verify and refine your design. This ensures everyone practices reasoning through the design before seeing AI output.
+- **Part 3** (AutomationRuleEngine): You'll use **Copilot as your primary tool** and practice evaluating whether its output actually follows hexagonal principles (which requires real design judgment).
 
-SceneItAll has five feature areas that are stepping on each other: infrastructure tangled with business logic, a `DatabaseConnection` singleton that everything reaches for, and code that requires a running IoT network just to run a test. Your job is to apply hexagonal architecture to untangle this — using whatever tools work best for you.
+Either way, you'll explain your decisions to your partner using a structured format introduced after Part 1.
+
+SceneItAll has multiple feature areas that are stepping on each other: infrastructure tangled with business logic, a `DatabaseConnection` singleton that everything reaches for, and code that requires a running IoT network just to run a test. In this lab, you'll focus on **two feature areas** — **Device Management** and **Automation Rules** — and apply hexagonal architecture to untangle them.
 
 :::info Grading: What You Need to Submit
 
@@ -42,14 +46,15 @@ If lab leaders observe that you are **not working on the lab** during the sectio
 
 ## Lab Facilitator Notes
 
-:::tip For TAs: Lab Start (8 minutes)
+:::tip For TAs: Lab Start (5 minutes)
 
 **Attendance:** Take attendance using the roster in Pawtograder.
 
 **Brief Intro (2 minutes):**
 - "Today you'll analyze SceneItAll's messy codebase and apply hexagonal architecture — separating domain logic from infrastructure and replacing singletons with dependency injection."
 - "You'll work individually for the first 15 minutes to form your own analysis of the code. Then you'll pair up."
-- "GitHub Copilot is available as an optional design aid in Parts 2 and 3. It's not required — working manually is equally valid. What matters is that you understand your design and can explain it."
+- "We're focusing on just **two feature areas** today: Device Management and Automation Rules."
+- "In Part 2, you'll design repository interfaces **manually first**, then use Copilot to verify. In Part 3, you'll use Copilot as your primary tool. This contrast is intentional — we want you to experience both approaches."
 
 **Soft Skill Focus — Communicating Technical Decisions (3 minutes):**
 
@@ -62,11 +67,16 @@ Read this to students:
 >
 > This isn't just for presentations — it's how you'll explain your port interface choices to your partner, how you'll justify removing the singleton, how you'll communicate in a real code review. We'll use this format explicitly in Part 2 onward."
 
-**Pair Formation (3 minutes):**
+:::
+
+:::tip For TAs: After Part 1 — Pair Formation (3 minutes)
+
+After Sync Point 1, facilitate pair formation:
+
 - Have students pair up with someone they haven't worked with recently
 - If odd number, form one group of three
 - **Step 1:** Introduce yourself to your partner. Each person shares one key observation from Part 1 in one sentence, using the format: *"I noticed X in the code, which made me think Y."*
-- Note your partner's name in `REFLECTION.md`
+- Remind students to note their partner's name in `REFLECTION.md`
 
 :::
 
@@ -94,19 +104,20 @@ The repository includes:
 - `REFLECTION.md` — where all your written analysis goes
 - `diagrams/` — folder for your port/adapter diagrams
 
-:::tip GitHub Copilot (Optional)
+:::tip GitHub Copilot
 
-GitHub Copilot is available as an optional tool during Parts 2 and 3. You can use both **inline completions** (Tab to accept) and **Copilot Chat** (`Ctrl+I` / `Cmd+I` or the chat panel). [GitHub Copilot Chat](https://github.com/copilot) is also available in a browser.
+GitHub Copilot is used in Parts 2 and 3. You can use both **inline completions** (Tab to accept) and **Copilot Chat** (`Ctrl+I` / `Cmd+I` or the chat panel). [GitHub Copilot Chat](https://github.com/copilot) is also available in a browser.
 
-**You are not required to use Copilot.** If you prefer to work through the design manually, that is equally valid — you'll document your reasoning instead of recording prompts.
+- **Part 2:** Design manually first, then use Copilot to verify your work
+- **Part 3:** Use Copilot as your primary design tool
 
 :::
 
 ---
 
-## Prompting Copilot for Design Tasks (Optional Reference)
+## Prompting Copilot for Design Tasks (Reference for Parts 2-3)
 
-If you choose to use Copilot, here's the key difference between a weak prompt and a strong one for architectural work:
+Here's the key difference between a weak prompt and a strong one for architectural work:
 
 | Weak Prompt | Why It Fails | Stronger Prompt |
 |-------------|-------------|-----------------|
@@ -120,39 +131,42 @@ If you choose to use Copilot, here's the key difference between a weak prompt an
 
 ## The Scenario: SceneItAll's Growing Monolith
 
-SceneItAll has been a single Java application — one `build.gradle`, one `src/` tree, one deployment. It started small, but now it has five feature areas that are starting to tangle:
+SceneItAll has been a single Java application — one `build.gradle`, one `src/` tree, one deployment. It started small, but now it has multiple feature areas that are starting to tangle. For this lab, we'll focus on **two** of them:
 
 1. **Device Management** — Adding, removing, and configuring IoT devices (cameras, thermostats, lights, sensors). Checking device health. Processing firmware update requests.
 2. **Automation Rules** — Users create rules like "if motion detected after 10pm, turn on porch light and send alert." Rules reference devices, user preferences, and time.
-3. **Notification System** — Sends alerts via push, email, SMS. Supports quiet hours, batching, and user channel preferences. (You analyzed three implementations of this in Lab 4!)
-4. **Analytics & Reporting** — Historical device data, energy usage reports, trend analysis. Read-heavy — it queries data but rarely writes.
-5. **User & Home Management** — User accounts, home configurations, device groups, sharing permissions between household members.
 
-Right now, these features are all jumbled together — classes from different features import each other freely, there's a `DatabaseConnection` singleton that everything uses, and the `AutomationRuleEngine` reaches directly into a hardware SDK to check device states. Adding a new notification channel required touching files in four different packages.
+*(The full system also has Notification, Analytics, and User Management features, but we'll keep our scope narrow today.)*
+
+Right now, these features are jumbled together — classes from different features import each other freely, there's a `DatabaseConnection` singleton that everything uses, and the `AutomationRuleEngine` reaches directly into a hardware SDK to check device states.
 
 Here's an example of what a piece of the current code looks like (also in `src/AutomationRuleEngine.java` in your repo):
 
 ```java
 public class AutomationRuleEngine {
     public void evaluate(String homeId) {
-        // Infrastructure: data access via singleton
         List<AutomationRule> rules = DatabaseConnection.getInstance()
-            .loadRules(homeId);
+                .loadRules(homeId);
 
-        // Infrastructure: IoT hardware SDK call
         ZigbeeGateway gateway = ZigbeeGateway.getGlobalInstance();
 
         for (AutomationRule rule : rules) {
-            // Domain: business logic (buried in the middle!)
             DeviceState state = gateway.readState(rule.getTriggerDeviceId());
             if (rule.conditionMet(state)) {
-                // Infrastructure: direct HTTP call to notification service
-                HttpClient client = HttpClient.newHttpClient();
-                HttpRequest req = HttpRequest.newBuilder()
-                    .uri(URI.create("http://notif-service/send"))
-                    .POST(BodyPublishers.ofString(rule.getAlertMessage()))
-                    .build();
-                client.send(req, BodyHandlers.discarding());
+                List<User> users = DatabaseConnection.getInstance()
+                        .loadUsersForHome(rule.getHomeId());
+                for (User user : users) {
+                    List<NotificationPreference> prefs = DatabaseConnection.getInstance()
+                            .loadNotificationPreferences(user.getId());
+                    for (NotificationPreference pref : prefs) {
+                        if (pref.isEnabled()) {
+                            // More code to send the alert
+                        }
+                    }
+                    if (prefs.isEmpty()) {
+                        notificationService.sendAlert(user.getId(), rule.getAlertMessage(), NotificationChannel.PUSH);
+                    }
+                }
             }
         }
     }
@@ -186,21 +200,17 @@ Record your annotations in `REFLECTION.md` (Question 1). **Do this before pairin
 
 The goal of hexagonal architecture is to make each feature's core logic testable *in isolation* — without spinning up real hardware, real network services, or a real data store.
 
-For each of the five feature areas, complete this sentence:
+For each of our two focus areas (**Device Management** and **Automation Rules**), complete this sentence:
 
 > **"To test [feature]'s core business logic in isolation, I would need to stub out _____ ."**
 
-For example: *"To test Automation Rules in isolation, I would need to stub out device state reads and outgoing notifications."*
-
-Write your answer for each feature area in `REFLECTION.md` (Question 2) — just a sentence each. Then answer one more:
-
-> **Which feature area would be hardest to test in isolation, and why?**
+Write your answer for each feature area in `REFLECTION.md` (Question 2).
 
 ### 🔄 Sync Point 1
 
 **Lab leaders will facilitate a brief discussion (5 minutes):**
 - "What domain logic did you find in AutomationRuleEngine? What made it hard to see?"
-- "Which feature area did most people identify as hardest to untangle? Why?"
+- "What would you need to stub to test each feature area?"
 - Key insight: "When domain logic is buried between infrastructure calls, you can't test the business rule without also setting up the database and the hardware. Hexagonal architecture extracts the domain so it can be tested in isolation."
 
 *After the sync point: form pairs and read the soft skill introduction below before starting Part 2.*
@@ -225,97 +235,13 @@ Record your partner's name in `REFLECTION.md`.
 
 ---
 
-## Part 2: Design Ports (20 minutes)
+## Part 2: Fix the DatabaseConnection Singleton (25 minutes)
 
-Now define the **ports** — the interfaces that express what the domain needs from the outside world.
+The `DatabaseConnection` singleton is SceneItAll's biggest design problem — and also the most concrete place to start learning hexagonal architecture. Every feature area reaches for it directly, which means nothing can be tested in isolation.
 
-**Copilot is optional here.** You may:
-- Use Copilot Chat to generate port interfaces and then evaluate the output against hexagonal architecture principles (see the prompting reference above)
-- Design the interfaces manually using what you know from [L16](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l16-testing2)
-- Use both — start manually, then check your design with Copilot (or vice versa)
+In this part, you'll **design the replacement manually first** (with your partner), then use **Copilot to verify and refine** your design.
 
-Either way, record what you tried and what decisions you made.
-
-### What Makes a Good Port (Review from [L16](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l16-testing2))
-
-```java
-// Good port: uses domain types, defined by what the DOMAIN needs
-public interface DeviceStatePort {
-    DeviceState getCurrentState(String deviceId);
-}
-
-// Bad port: leaks infrastructure types into the interface
-public interface ZigbeeInterface {
-    ZigbeeFrame sendFrame(byte[] payload);  // What the heck is a "ZigbeeFrame"???? It must be infrastructure!
-}
-```
-
-A good port: uses **domain types** not infrastructure types; is **narrow** (only what's needed); can be **trivially stubbed** for tests.
-
-### Exercise 2.1: Design Ports for AutomationRuleEngine
-
-Design port interfaces for the three external dependencies in `AutomationRuleEngine`: data access, device state reads, and notification sending.
-
-**If using Copilot**, start with a prompt like:
-> *"I'm applying hexagonal architecture to this class. Identify the external dependencies and generate Java interface definitions for each one as ports. Each interface should use only domain types — no SDK types like ZigbeeFrame, no infrastructure types like HttpResponse."*
-
-Then evaluate the output: Does each interface use domain types or infrastructure types? Is it narrow enough to be stubbed with a lambda in a test? If Copilot gets it wrong, write a follow-up prompt — for example:
-> *"The `readState` method returns a `ZigbeeFrame`. That's an infrastructure type. Rewrite the interface so it returns `DeviceState` instead, where `DeviceState` is a domain object."*
-
-**If working manually**, look at each external call in `evaluate()` and ask: "What does the domain *need* here, expressed purely in domain terms?" For example, the domain doesn't need to know about Zigbee protocols — it just needs to know about device states.
-
-**Either way**, for each interface you decide to keep, record this in `REFLECTION.md` (Question 3):
-> *"I defined [InterfaceName] as [brief description] because [reason]. I considered [alternative], but [my choice] is better here because [specific reason]."*
-
-If you used Copilot, also note: your initial prompt, any problems in the first response, and follow-up prompts if needed.
-
-### Exercise 2.2: Design Ports for One More Feature Area
-
-Pick **one other feature area** (your choice) and repeat the process — Copilot-assisted, manual, or a mix.
-
-In `REFLECTION.md` (Question 4), record your approach and the final port interfaces you chose, with at least one decision explained using the structured format.
-
-### Exercise 2.3: Diagram Your Ports
-
-For **one** feature area, create a diagram showing the hexagonal architecture — the domain, port interfaces, at least one production adapter, and one test double.
-
-You can produce this in any way that works for you:
-- Ask Copilot to generate a Mermaid diagram (see hint below)
-- Draw it on paper and take a photo
-- Sketch it in any diagramming tool
-
-Save the result in `diagrams/automation-rules.md` (or a photo if paper). Check that your diagram correctly shows:
-- Adapters depending on ports (arrows point inward)
-- Test doubles implementing the same ports as production adapters
-- The domain depending only on port interfaces, not on adapters
-
-> 💡 **Mermaid hint** if you want to generate a diagram with Copilot:
-> ```
-> graph LR
->     subgraph Domain["Automation Rules Domain"]
->         RE[AutomationRuleEngine]
->         RP[RuleRepositoryPort <<interface>>]
->         DS[DeviceStatePort <<interface>>]
->     end
->     ...
-> ```
-
-Record what you produced and whether it correctly shows the hexagonal pattern in `REFLECTION.md` (Question 5).
-
-### 🔄 Sync Point 2
-
-**Before the group discussion:** Share one port design decision with your partner using the structured format — "I defined X as Y because..."
-
-**Lab leaders will facilitate a discussion (5 minutes):**
-- "What was the trickiest port to design — Copilot-generated or manual? Why?"
-- "Did anyone get a port that leaked infrastructure types? What was the fix?"
-- Key insight: "Whether you used Copilot or not, the same question applies: does this interface describe *what the domain needs*, or *how infrastructure works*? That's the test. Copilot often generates ports that reflect patterns from training data — including legacy code that violates exactly the principles you're learning. Manual design forces you to reason from first principles, which is a different (and complementary) skill."
-
----
-
-## Part 3: Fix the DatabaseConnection Singleton (15 minutes)
-
-The `DatabaseConnection` singleton is SceneItAll's biggest design problem. Every feature area reaches for it directly, which means nothing can be tested in isolation.
+### The Problem: One Giant Singleton
 
 ```java
 // Current code — in src/DatabaseConnection.java
@@ -334,63 +260,211 @@ public class DatabaseConnection {
     public void saveRule(AutomationRule rule) { /* ... */ }
     public List<IoTDevice> loadDevices(String homeId) { /* ... */ }
     public void saveDevice(IoTDevice device) { /* ... */ }
-    public List<NotificationPreference> loadNotificationPreferences(String userId) { /* ... */ }
-    public UsageReport loadUsageReport(String homeId, DateRange range) { /* ... */ }
+    public DeviceHealth checkDeviceHealth(String deviceId) { /* ... */ }
     // ... and many more
 }
 ```
 
-### Exercise 3.1: Diagnose the Problem (No Copilot)
+### Exercise 2.1: Discover the Coupling (5 minutes)
 
-With your partner, answer in `REFLECTION.md` (Question 6) **before designing any replacement**:
+Before designing a fix, let's see how severe the problem is. The `DatabaseConnection` singleton is used throughout the codebase. Here are two examples:
+
+**In `DeviceManager.java`:**
+```java
+public class DeviceManager {
+    public void addDevice(String homeId, IoTDevice device) {
+        // Singleton call — can't test without a real database!
+        DatabaseConnection.getInstance().saveDevice(device);
+        // ...
+    }
+}
+```
+
+**In `AutomationRuleEngine.java`:**
+```java
+public void evaluate(String homeId) {
+    // Singleton call — can't test without a real database!
+    List<AutomationRule> rules = DatabaseConnection.getInstance().loadRules(homeId);
+    // ...
+}
+```
+
+**Now use VS Code to find all references:**
+
+1. Open `src/DatabaseConnection.java` in VS Code
+2. Right-click on `getInstance` and select **"Find All References"** (or press `Shift+F12`)
+3. Count how many files call this method
+
+Take note of how many files reference this method — you'll use this observation in your discussion.
+
+### Exercise 2.2: Diagnose the Problem (5 minutes)
+
+With your partner discuss these three questions **before designing any replacement**:
 
 1. From [L17](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l17-creation-patterns): what are the **three problems** with singletons? Give a concrete example of each in the context of `DatabaseConnection`.
 2. From [L16](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l16-testing2): does this singleton hurt **observability**, **controllability**, or both? Explain specifically.
 3. If two tests run concurrently and both call `DatabaseConnection.getInstance()`, what could go wrong?
 
-### Exercise 3.2: Design Repository Interfaces
+### Exercise 2.3: Design Repository Interfaces — Manual First (10 minutes)
 
-For **two** of the five feature areas, design repository interfaces (ports for data access) that replace the singleton.
+Now for the fix. You'll create a **parallel design** — new repository interfaces that will replace `DatabaseConnection` for our two focus areas: **Device Management** and **Automation Rules**. The old singleton can remain for other feature areas; this lets you compare the old and new approaches side by side.
 
-**If using Copilot**, try this prompt as a starting point:
-> *"The `DatabaseConnection` singleton needs to be replaced with dependency injection. For the Automation Rules feature area, generate a `RuleRepository` interface that expresses what the domain needs for data access. The interface should use only domain types — the caller shouldn't know or care how data is stored. Also generate an `InMemoryRuleRepository` class that implements it using a `HashMap` for use in tests."*
+**Step 1: Manual Design (with your partner, no Copilot yet)**
 
-**If working manually**, look at the `DatabaseConnection` methods for each feature area and design a focused interface that contains only what that feature needs. Use only domain types. Then sketch an in-memory implementation using a `HashMap`.
+For each of the two feature areas, design a repository interface. Ask yourselves:
+- What operations does this feature area need from data storage?
+- What domain types should the interface use? (Not infrastructure types!)
+- How narrow can we make this interface while still being useful?
+- How, if at all, should the domain types be adjusted?
 
-For each of the two feature areas, evaluate your result:
-- Does the interface expose any storage-specific implementation details to callers? (It shouldn't.)
-- Does the in-memory implementation actually implement the interface cleanly?
-- Does the in-memory implementation have any calls to `DatabaseConnection`? (It shouldn't — that's the whole point.)
+Sketch your interfaces on paper or in a scratch file. For example, you might design:
 
-Record your approach (and Copilot prompts if applicable) and evaluations in `REFLECTION.md` (Question 7).
+```java
+// For Device Management
+public interface DeviceRepository {
+    // What operations does DeviceManager actually need?
+}
 
-### Exercise 3.3: Design the Composition Root
+// For Automation Rules
+public interface RuleRepository {
+    // What operations does AutomationRuleEngine actually need?
+}
+```
+
+**Step 2: Verify with Copilot**
+
+Once you have a draft, use Copilot to check your design:
+> *"I'm replacing this DatabaseConnection singleton with dependency injection. Here's my draft interface for [DeviceRepository/RuleRepository]. Does this interface correctly express what the domain needs for data access? Does it leak any storage-specific implementation details? Suggest improvements."*
+
+Compare Copilot's feedback to your manual design. Did it catch anything you missed? Did it suggest anything that actually *violates* hexagonal principles (like adding infrastructure types)?
+
+**Record in `REFLECTION.md` (Question 3):**
+- Your manual draft for each interface
+- What Copilot suggested (if different)
+- Your final interface design and why you chose it: *"I defined [interface] as [description] because [reason]."*
+
+### Exercise 2.4: Create In-Memory Implementations (5 minutes)
+
+For **one** of your repository interfaces, create an `InMemory*` implementation that uses a `HashMap` for storage. This is what you'd use in tests instead of the real database.
+
+You can use Copilot for this:
+> *"Generate an `InMemoryDeviceRepository` class that implements `DeviceRepository` using a `HashMap`. It should have no dependencies on `DatabaseConnection` or any external systems."*
+
+Evaluate the result:
+- Does it implement your interface correctly?
+- Does it have any calls to `DatabaseConnection`? (It shouldn't — that's the whole point!)
+- Could you use this in a unit test that runs in milliseconds?
+
+Record your implementation and evaluation in `REFLECTION.md` (Question 4).
+
+### 🔄 Sync Point 2
+
+**Before the group discussion:** Share one interface design decision with your partner using the structured format — "I defined X as Y because..."
+
+**Lab leaders will facilitate a discussion (5 minutes):**
+- "What did your manual design look like before you checked it with Copilot?"
+- "Did Copilot's suggestions improve your design, or did it suggest things that violated hexagonal principles?"
+- Key insight: "Manual design forces you to reason from first principles. Copilot can help verify and refine, but it often suggests patterns from training data — including legacy code that violates exactly the principles you're learning. The combination of both approaches is powerful."
+
+---
+
+## Part 3: Design Ports for AutomationRuleEngine — Copilot Focus (15 minutes)
+
+Now that you've tackled the `DatabaseConnection` singleton (which affects data access across the system), let's apply hexagonal architecture to the `AutomationRuleEngine` itself. This class has **multiple infrastructure dependencies** beyond just the database — it also reaches directly into hardware SDKs and HTTP clients.
+
+In this part, you'll use **Copilot as your primary design tool** and practice evaluating AI-generated output against hexagonal principles.
+
+### What Makes a Good Port (Review from [L16](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l16-testing2))
+
+```java
+// Good port: uses domain types, defined by what the DOMAIN needs
+public interface DeviceStatePort {
+    DeviceState getCurrentState(String deviceId);
+}
+
+// Bad port: leaks infrastructure types into the interface
+public interface ZigbeeInterface {
+    ZigbeeFrame sendFrame(byte[] payload);  // What the heck is a "ZigbeeFrame"???? It must be infrastructure!
+}
+```
+
+A good port: uses **domain types** not infrastructure types; is **narrow** (only what's needed); can be **trivially stubbed** for tests.
+
+### Exercise 3.1: Use Copilot to Design Ports (6 minutes)
+
+Look back at the `AutomationRuleEngine.evaluate()` code from Part 1. It has three infrastructure dependencies:
+1. **Data access** (you already designed a repository interface for this in Part 2!)
+2. **Device state reads** — the `ZigbeeGateway.getGlobalInstance()` call
+3. **Notification sending** — the direct `HttpClient` call
+
+Use Copilot to generate port interfaces for the device state and notification dependencies:
+
+> *"I'm applying hexagonal architecture to this class. Identify the external dependencies and generate Java interface definitions for each one as ports. Each interface should use only domain types — no SDK types like ZigbeeFrame, no infrastructure types like HttpResponse."*
+
+**Evaluate Copilot's output:**
+- Does each interface use domain types or infrastructure types?
+- Is it narrow enough to be stubbed with a lambda in a test?
+- Did Copilot miss any dependencies?
+
+If Copilot gets it wrong, write a follow-up prompt — for example:
+> *"The `readState` method returns a `ZigbeeFrame`. That's an infrastructure type. Rewrite the interface so it returns `DeviceState` instead, where `DeviceState` is a domain object."*
+
+Record in `REFLECTION.md` (Question 5):
+- Your initial prompt
+- Problems in the first response (if any)
+- Follow-up prompts you used
+- Your final port interfaces
+
+### Exercise 3.2: Diagram Your Ports (4 minutes)
+
+Create a **Mermaid diagram** showing the hexagonal architecture for **Automation Rules** — the domain, port interfaces, at least one production adapter, and one test double.
+
+Ask Copilot to generate a Mermaid diagram:
+> *"Generate a Mermaid diagram showing the hexagonal architecture for AutomationRuleEngine with the port interfaces we designed. Show the domain in the center, ports as interfaces, production adapters on one side, and test doubles on the other."*
+
+Save the result in `diagrams/automation-rules.md`. Check that your diagram correctly shows:
+- Adapters depending on ports (arrows point inward)
+- Test doubles implementing the same ports as production adapters
+- The domain depending only on port interfaces, not on adapters
+
+> 💡 **Mermaid hint** if Copilot needs guidance:
+> ```
+> graph LR
+>     subgraph Domain["Automation Rules Domain"]
+>         RE[AutomationRuleEngine]
+>         RP[RuleRepositoryPort <<interface>>]
+>         DS[DeviceStatePort <<interface>>]
+>     end
+>     ...
+> ```
+
+Record what you produced and whether it correctly shows the hexagonal pattern in `REFLECTION.md` (Question 6).
+
+### Exercise 3.3: Design the Composition Root (5 minutes)
 
 If we inject all these dependencies, *someone* has to wire them up. In [L17](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l17-creation-patterns) we called this the **composition root**.
 
-**If using Copilot**, try this prompt:
-> *"Show me what `SceneItAllApplication.main()` should look like after applying dependency injection throughout. It should create all the production adapter implementations, then wire them into the domain objects via constructor injection. There should be no calls to any `getInstance()` methods anywhere."*
+Use Copilot:
+> *"Show me what `SceneItAllApplication.main()` should look like after applying dependency injection throughout. It should create all the production adapter implementations for DeviceManager and AutomationRuleEngine, then wire them in via constructor injection. There should be no calls to any `getInstance()` methods anywhere."*
 
-**If working manually**, think through the full dependency graph: which domain objects need which ports, and which concrete adapters implement each port? Sketch the construction sequence in `main()`.
-
-Either way, evaluate the result:
+Evaluate the result:
 - Does it still contain any `getInstance()` calls? (Flag them if so.)
 - Is it clear that this is the **only** place in the codebase that knows about concrete implementations?
 - Does it look like the [L17](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l17-creation-patterns) composition root pattern?
 
-Record the composition root design and your evaluation in `REFLECTION.md` (Question 8).
+Record the composition root design and your evaluation in `REFLECTION.md` (Question 7).
 
-### 🔄 Sync Point 3
+### 🔄 Sync Point 3 (5 minutes)
 
 **Lab leaders will check in:**
+- "Did Copilot generate ports with infrastructure types? How did you fix it?"
 - "Did anyone's composition root have surprising complexity? What caused it?"
-- "For those who used Copilot on 3.3 — did it remove all singleton calls, or miss some?"
-- "For those who designed manually — what was the trickiest dependency chain to untangle?"
-- Key insight: "The composition root reveals the full dependency graph of your system at a glance. If it's hard to read, your system might have too much coupling. If it's clean and linear, your hexagonal architecture is working."
+- "Did Copilot remove all singleton calls, or miss some?"
+- Key insight: "Copilot often generates ports that reflect patterns from training data — including legacy code that violates hexagonal principles. Your job is to evaluate the output critically. The composition root reveals the full dependency graph of your system at a glance."
 
 ---
 
-## Part 4: Design Review and Debrief (10 minutes)
+## Part 4: Design Review and Reflection (10 minutes)
 
 ### Exercise 4.1: Explain a Decision to Another Pair
 
@@ -408,9 +482,22 @@ With the other pair, review each other's port interfaces:
 2. **Singleton check:** Does the composition root have any `getInstance()` calls remaining?
 3. **Testability check:** For each port, ask: "Could this be stubbed with a lambda or a simple in-memory class?" If not, what makes it hard to stub?
 
-Record one observation from the review (for either pair's work) in `REFLECTION.md` (Question 9).
+Record one observation from the review (for either pair's work) in `REFLECTION.md` (Question 8).
 
-### 🔄 Sync Point 4 (Final Debrief)
+### Exercise 4.3: Thinking About a New Feature Area
+
+Throughout this lab, we focused on two feature areas: **Device Management** and **Automation Rules**. But SceneItAll also has other features we didn't touch: Notifications, Analytics, and User Management.
+
+**Think about adding a new feature area** — for example, **Analytics & Reporting** (which queries historical device data, generates usage reports, and calculates trends).
+
+In `REFLECTION.md` (Question 9), answer:
+- What ports (interfaces) would the Analytics domain need?
+- Would Analytics share any ports with Device Management or Automation Rules, or would it need entirely new ones?
+- How would you add Analytics to the composition root you designed in Part 3?
+
+**You don't need to write any code** — just think through how the hexagonal architecture pattern would extend to this new area.
+
+### 🔄 Sync Point 4 (Final Debrief — 10 minutes)
 
 *Soft skill debrief:*
 - "What made your partner's explanation of a design decision convincing — or not?"
@@ -418,8 +505,9 @@ Record one observation from the review (for either pair's work) in `REFLECTION.m
 
 *Technical debrief:*
 - "What was the trickiest port to design today, regardless of how you approached it?"
-- "Did Copilot and manual approaches produce noticeably different results? What were the differences?"
-- Key insight: "The ability to explain *why* you made a design decision is as important as making the right one. Code reviewers, teammates, and future-you all need the reasoning — not just the code."
+- "How did the manual-first approach (Part 2) compare to the Copilot-first approach (Part 3)?"
+- "When you thought about adding Analytics, what ports did you identify?"
+- Key insight: "The ability to explain *why* you made a design decision is as important as making the right one. And hexagonal architecture should make it straightforward to add new feature areas — if it's hard to see where a new feature fits, the architecture might need work."
 
 ---
 
@@ -435,27 +523,27 @@ You should have been writing in `REFLECTION.md` throughout the lab. Before submi
 
 1. **AutomationRuleEngine dissection:** Which lines are domain logic? Which are infrastructure? What hurts controllability? What hurts observability?
 
-2. **Feature area stubs:** Your completed sentences about what would need to be stubbed for each feature area. Which area is hardest to untangle, and why?
+2. **Feature area stubs:** Your completed sentences about what would need to be stubbed for Device Management and Automation Rules.
 
-### Part 2: Port Design
+### Part 2: Fixing the DatabaseConnection Singleton
 
-3. **AutomationRuleEngine port decisions:** For each port interface you designed, describe how you approached the design (Copilot-assisted, manual, or both) and explain your decision: *"I chose [interface design] because [reason]. I considered [alternative], but my choice is better here because [reason]."* If you used Copilot, include your initial prompt and any follow-up prompts.
+3. **Repository interface decisions:** Your manual draft for each interface (DeviceRepository, RuleRepository), what Copilot suggested, and your final design with reasoning: *"I defined [interface] as [description] because [reason]."*
 
-4. **Second feature area port decisions:** Same analysis for your chosen second feature area.
+4. **In-memory implementation:** Your `InMemory*` implementation and evaluation — does it implement the interface correctly? Does it have any `DatabaseConnection` calls?
 
-5. **Diagram:** What you produced for the hexagonal architecture diagram, and whether it correctly shows the pattern (or what was off).
+### Part 3: Designing Ports for AutomationRuleEngine (Copilot)
 
-### Part 3: Fixing the Singleton
+5. **Port design with Copilot:** Your initial prompt, problems in the first response (if any), follow-up prompts, and final port interfaces for device state and notification dependencies.
 
-6. **Singleton diagnosis:** The three singleton problems (from [L17](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l17-creation-patterns)) applied to `DatabaseConnection`. Whether it hurts observability, controllability, or both.
+6. **Diagram:** Your Mermaid diagram for the hexagonal architecture (saved in `diagrams/automation-rules.md`), and whether it correctly shows the pattern (or what was off).
 
-7. **Repository interface decisions:** Your approach to designing the interfaces (Copilot, manual, or both), and whether each result correctly avoids exposing storage details to callers.
+7. **Composition root:** Your `main()` design and evaluation — any remaining `getInstance()` calls? Does it match the [L17](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l17-creation-patterns) pattern?
 
-8. **Composition root:** Your `main()` design and evaluation — any remaining `getInstance()` calls? Does it match the [L17](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l17-creation-patterns) pattern?
+### Part 4: Design Review and Reflection
 
-### Part 4: Design Review
+8. **Review observation:** One thing you noticed during the peer review — an infrastructure leak, a leftover singleton call, or a particularly clean port design. What would you change (or keep), and why?
 
-9. **Review observation:** One thing you noticed during the peer review — an infrastructure leak, a leftover singleton call, or a particularly clean port design. What would you change (or keep), and why?
+9. **New feature area:** What ports would Analytics & Reporting need? Would it share ports with the existing feature areas? How would you add it to the composition root?
 
 ### Meta
 
@@ -463,7 +551,7 @@ You should have been writing in `REFLECTION.md` throughout the lab. Before submi
 
 11. **Communication reflection:** Think about the structured decision format you practiced today — *"I chose X because Y. I considered Z, but X is better because..."* Was there a moment where articulating the reasoning out loud changed or clarified your thinking? What's one design decision from today that you could explain convincingly to a teammate who wasn't here?
 
-12. **AI tool reflection:** If you used Copilot during this lab: what worked? What didn't? Would you use it differently for this type of design task in the future? If you worked manually: how did working without AI assistance affect your process compared to how you expected it to feel?
+12. **AI tool reflection:** How did the manual-first approach (Part 2) compare to the Copilot-first approach (Part 3)? Which felt more effective for learning? Which would you use in a real project?
 
 ---
 
@@ -471,25 +559,32 @@ You should have been writing in `REFLECTION.md` throughout the lab. Before submi
 
 ### Stretch Goal 1: Write a Meaningful Unit Test
 
-Using the port interfaces you designed in Part 2, write a JUnit 5 test for the `AutomationRuleEngine` that:
+Using the port interfaces you designed, write a JUnit 5 test for the `AutomationRuleEngine` that:
 - Stubs all port interfaces using either lambdas or simple `InMemory*` implementations
 - Tests a specific business scenario (e.g., "rule fires when motion is detected after 10pm")
 - Runs in under 100ms with no real hardware, database, or network
 
 Was writing the test easier or harder with the new port-based design than it would have been with the original singleton-based code?
 
-### Stretch Goal 2: Compare Copilot vs. Manual Design
+### Stretch Goal 2: Extend to Notification System
 
-Design the same port interface for the Notification System feature **twice** — once using Copilot and once without looking at Copilot's output first (or without using Copilot at all if you used it earlier). Compare the results:
-- Which approach produced a cleaner interface?
-- What did Copilot get right? What did it miss?
-- What does the comparison tell you about when AI tools are helpful for design work versus when they're likely to mislead?
+Apply what you learned to the **Notification System** feature area. In [Lab 4](https://neu-pdi.github.io/cs3100-public-resources/labs/lab4-changeability), you analyzed three implementations of SceneItAll's notification logic:
+- A "big ball of mud" with all logic in one class (`NotificationManager` with conditional statements)
+- A class-based Strategy pattern (`NotificationStrategy` interface with `ImmediateNotificationStrategy`, etc.)
+- A functional/lambda-based approach using `Predicate` and `BiConsumer`
 
-Document both interfaces and your analysis in `REFLECTION.md`.
+You evaluated each for changeability when adding new channels, new filtering logic, and cross-cutting concerns.
+
+Now apply hexagonal architecture to the notification system. Design:
+- A `NotificationPort` interface that expresses what the domain needs
+- An `InMemoryNotificationPort` for testing
+- How it would integrate with the composition root
+
+Compare your design to the evaluation criteria you used in Lab 4. Does the hexagonal architecture approach produce a design that's easier to swap implementations? How does a port-based design compare to the Strategy pattern designs you analyzed?
 
 ### Stretch Goal 3: Notification Port Design Challenge
 
-Ask Copilot to generate a `NotificationPort` interface (or design one manually), then evaluate the result against these two competing designs:
+Evaluate two competing designs for `NotificationPort`:
 
 **Option A:**
 ```java
@@ -506,7 +601,7 @@ public interface NotificationPort {
 // where AlertRequest contains userId, message, channel, priority, quietHoursOverride, ...
 ```
 
-Which design does Copilot naturally gravitate toward? Which better follows Interface Segregation ([L8](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l8-design-for-change-2))? Which creates data coupling vs. stamp coupling ([L7](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l7-design-for-change))?
+Which better follows Interface Segregation ([L8](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l8-design-for-change-2))? Which creates data coupling vs. stamp coupling ([L7](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l7-design-for-change))? If you ask Copilot to generate a `NotificationPort`, which style does it gravitate toward?
 
 ---
 
@@ -516,10 +611,10 @@ Which design does Copilot naturally gravitate toward? Which better follows Inter
 
 Before your final submission, ensure:
 
-- [ ] Part 1: You've classified infrastructure vs. domain for each feature area (individual work)
-- [ ] Part 2: You've designed port interfaces (Copilot-assisted, manual, or both) with your design decisions recorded in `REFLECTION.md`
-- [ ] Part 3: You've diagnosed the `DatabaseConnection` singleton and designed repository interfaces + composition root
-- [ ] Part 4: You've explained at least one design decision to another pair using the structured format
+- [ ] Part 1: You've classified infrastructure vs. domain in AutomationRuleEngine (individual work)
+- [ ] Part 2: You've diagnosed the `DatabaseConnection` singleton and designed repository interfaces manually, then verified with Copilot
+- [ ] Part 3: You've used Copilot to design ports for AutomationRuleEngine + composition root
+- [ ] Part 4: You've explained at least one design decision to another pair and reflected on adding a new feature area
 - [ ] `REFLECTION.md` is complete with all 12 questions answered
-- [ ] Your diagram is in `diagrams/` (Mermaid, photo of paper, or any other format)
+- [ ] Your Mermaid diagram is saved in `diagrams/automation-rules.md`
 - [ ] All changes are committed and pushed to GitHub
