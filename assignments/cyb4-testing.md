@@ -7,6 +7,7 @@ image: /img/assignments/web/a4.png
 ## Overview
 
 **Changelog:**
+- 2/19/2026: Note error in handout: the documentation on the `RecipeService` interface is incomplete compared to the handout, in particular, this page explains exactly the effects of `importFromJson` and `importFromText`, please rely on this over the documentation on the handout.
 - 2/19/2026: Clarified that findByIngredient searches only RecipeRepository, not recipes embedded in collections via RecipeCollectionRepository. See findByIngredient clarification in the [Shopping List Requirements](#shopping-list-requirements).
 
 In this assignment, you'll build **`RecipeService`** — the application layer that sits between user interfaces (CLI, GUI) and your domain model. This facade coordinates everything: parsing recipe text, transforming quantities, persisting to repositories, and aggregating shopping lists. It's the "brain" that the CLI (A5) might call to get things done.
@@ -203,6 +204,12 @@ The key is testing that your service **correctly coordinates** the parsing, look
 ### The `RecipeService` Interface
 
 This is the facade the CLI will call. **We test your implementation through this interface** — it's what the autograder uses. How you structure the implementation behind it is your design decision.
+
+:::warning Handout documentation is incomplete
+
+The documentation on the `RecipeService` interface is incomplete compared to the handout, in particular, this page explains exactly the effects of `importFromJson` and `importFromText`, please rely on this page over the documentation on the handout.
+
+:::
 
 ```java
 public interface RecipeService {
