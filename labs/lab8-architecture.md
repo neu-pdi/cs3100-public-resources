@@ -204,7 +204,7 @@ For each of our two focus areas (**Device Management** and **Automation Rules**)
 
 > **"To test [feature]'s core business logic in isolation, I would need to stub out _____ ."**
 
-Write your answer for each feature area in `REFLECTION.md` (Question 2).
+Use these observations in your answer to Question 1.
 
 ### 🔄 Sync Point 1
 
@@ -265,7 +265,7 @@ public class DatabaseConnection {
 }
 ```
 
-### Exercise 2.1: Discover the Coupling (5 minutes)
+### Exercise 2.1: Discover the Coupling (3 minutes)
 
 Before designing a fix, let's see how severe the problem is. The `DatabaseConnection` singleton is used throughout the codebase. Here are two examples:
 
@@ -305,9 +305,9 @@ With your partner discuss these three questions **before designing any replaceme
 2. From [L16](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l16-testing2): does this singleton hurt **observability**, **controllability**, or both? Explain specifically.
 3. If two tests run concurrently and both call `DatabaseConnection.getInstance()`, what could go wrong?
 
-### Exercise 2.3: Design Repository Interfaces — Manual First (10 minutes)
+### Exercise 2.3: Design Repository Interfaces — Manual First (8 minutes)
 
-Now for the fix. You'll create a **parallel design** — new repository interfaces that will replace `DatabaseConnection` for our two focus areas: **Device Management** and **Automation Rules**. The old singleton can remain for other feature areas; this lets you compare the old and new approaches side by side.
+Now for the fix. You'll design new repository interfaces that will replace `DatabaseConnection` for our two focus areas: **Device Management** and **Automation Rules**. Then you'll refactor `DeviceManager` to actually use your interface — so you can see the difference between the singleton approach and dependency injection.
 
 **Step 1: Manual Design (with your partner, no Copilot yet)**
 
@@ -338,14 +338,11 @@ Once you have a draft, use Copilot to check your design:
 
 Compare Copilot's feedback to your manual design. Did it catch anything you missed? Did it suggest anything that actually *violates* hexagonal principles (like adding infrastructure types)?
 
-**Record in `REFLECTION.md` (Question 3):**
-- Your manual draft for each interface
-- What Copilot suggested (if different)
-- Your final interface design and why you chose it: *"I defined [interface] as [description] because [reason]."*
+**Record in `REFLECTION.md` (Question 2):** Your final interface designs with reasoning.
 
-### Exercise 2.4: Create In-Memory Implementations (5 minutes)
+### Exercise 2.4: Create In-Memory Implementation (4 minutes)
 
-For **one** of your repository interfaces, create an `InMemory*` implementation that uses a `HashMap` for storage. This is what you'd use in tests instead of the real database.
+For your `DeviceRepository` interface, create an `InMemoryDeviceRepository` implementation that uses a `HashMap` for storage. This is what you'd use in tests instead of the real database.
 
 You can use Copilot for this:
 > *"Generate an `InMemoryDeviceRepository` class that implements `DeviceRepository` using a `HashMap`. It should have no dependencies on `DatabaseConnection` or any external systems."*
@@ -355,16 +352,37 @@ Evaluate the result:
 - Does it have any calls to `DatabaseConnection`? (It shouldn't — that's the whole point!)
 - Could you use this in a unit test that runs in milliseconds?
 
-Record your implementation and evaluation in `REFLECTION.md` (Question 4).
+You'll use this implementation in the next exercise.
+
+### Exercise 2.5: Refactor DeviceManager to Use Your Interface (5 minutes)
+
+Now apply your design. Modify `DeviceManager` to use constructor injection instead of the singleton:
+
+1. Add a constructor parameter for `DeviceRepository`
+2. Store it as a private field
+3. Replace all `DatabaseConnection.getInstance()` calls with your repository field
+4. Remove the import for `DatabaseConnection`
+
+You can use Copilot:
+> *"Refactor this class to accept DeviceRepository via constructor injection. Replace all DatabaseConnection.getInstance() calls. The class should have no static dependencies."*
+
+Evaluate the result:
+- Does `DeviceManager` still have any `getInstance()` calls? (It shouldn't!)
+- Could you now instantiate `DeviceManager` in a test with your `InMemoryDeviceRepository`?
+
+**The key insight:** After this refactoring, you can test `DeviceManager` without any database — just pass in your in-memory implementation. That's the power of dependency injection.
+
+Record your refactored `DeviceManager` in `REFLECTION.md` (Question 3).
 
 ### 🔄 Sync Point 2
 
-**Before the group discussion:** Share one interface design decision with your partner using the structured format — "I defined X as Y because..."
+**Before the group discussion:** Share one design decision with your partner using the structured format — "I defined X as Y because..." or "I refactored DeviceManager to use X because..."
 
 **Lab leaders will facilitate a discussion (5 minutes):**
-- "What did your manual design look like before you checked it with Copilot?"
+- "What did your manual interface design look like before you checked it with Copilot?"
+- "After refactoring DeviceManager, what changed about how you'd test it?"
 - "Did Copilot's suggestions improve your design, or did it suggest things that violated hexagonal principles?"
-- Key insight: "Manual design forces you to reason from first principles. Copilot can help verify and refine, but it often suggests patterns from training data — including legacy code that violates exactly the principles you're learning. The combination of both approaches is powerful."
+- Key insight: "Manual design forces you to reason from first principles. The refactoring step is where you see the payoff — your DeviceManager can now be tested with an in-memory implementation, no database required."
 
 ---
 
@@ -409,11 +427,7 @@ Use Copilot to generate port interfaces for the device state and notification de
 If Copilot gets it wrong, write a follow-up prompt — for example:
 > *"The `readState` method returns a `ZigbeeFrame`. That's an infrastructure type. Rewrite the interface so it returns `DeviceState` instead, where `DeviceState` is a domain object."*
 
-Record in `REFLECTION.md` (Question 5):
-- Your initial prompt
-- Problems in the first response (if any)
-- Follow-up prompts you used
-- Your final port interfaces
+Record your final port interfaces in `REFLECTION.md` (Question 4). Note any problems with Copilot's first attempt.
 
 ### Exercise 3.2: Diagram Your Ports (4 minutes)
 
@@ -438,7 +452,7 @@ Save the result in `diagrams/automation-rules.md`. Check that your diagram corre
 >     ...
 > ```
 
-Record what you produced and whether it correctly shows the hexagonal pattern in `REFLECTION.md` (Question 6).
+Save your diagram in `diagrams/automation-rules.md`.
 
 ### Exercise 3.3: Design the Composition Root (5 minutes)
 
@@ -452,7 +466,7 @@ Evaluate the result:
 - Is it clear that this is the **only** place in the codebase that knows about concrete implementations?
 - Does it look like the [L17](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l17-creation-patterns) composition root pattern?
 
-Record the composition root design and your evaluation in `REFLECTION.md` (Question 7).
+Verify the composition root has no `getInstance()` calls and matches the [L17](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l17-creation-patterns) pattern.
 
 ### 🔄 Sync Point 3 (5 minutes)
 
@@ -482,7 +496,7 @@ With the other pair, review each other's port interfaces:
 2. **Singleton check:** Does the composition root have any `getInstance()` calls remaining?
 3. **Testability check:** For each port, ask: "Could this be stubbed with a lambda or a simple in-memory class?" If not, what makes it hard to stub?
 
-Record one observation from the review (for either pair's work) in `REFLECTION.md` (Question 8).
+Record one observation in `REFLECTION.md` (Question 5).
 
 ### Exercise 4.3: Thinking About a New Feature Area
 
@@ -490,7 +504,7 @@ Throughout this lab, we focused on two feature areas: **Device Management** and 
 
 **Think about adding a new feature area** — for example, **Analytics & Reporting** (which queries historical device data, generates usage reports, and calculates trends).
 
-In `REFLECTION.md` (Question 9), answer:
+In `REFLECTION.md` (Question 6), answer:
 - What ports (interfaces) would the Analytics domain need?
 - Would Analytics share any ports with Device Management or Automation Rules, or would it need entirely new ones?
 - How would you add Analytics to the composition root you designed in Part 3?
@@ -513,45 +527,26 @@ In `REFLECTION.md` (Question 9), answer:
 
 ## Reflection
 
-You should have been writing in `REFLECTION.md` throughout the lab. Before submitting, make sure you've answered all of these questions:
+Complete these questions in `REFLECTION.md` as you work through the lab.
 
-### Partner Introduction
+**Partner's Name:** _______________
 
-**Partner's Name:** Record your partner's name here.
+1. **Domain vs Infrastructure:** In `AutomationRuleEngine.evaluate()`, which lines are domain logic and which are infrastructure? What specifically hurts testability (controllability or observability)?
 
-### Part 1: Understanding the Code
+2. **Repository Interface Design:** Your final `DeviceRepository` and `RuleRepository` interfaces, with reasoning: *"I defined [interface] as [description] because [reason]."*
 
-1. **AutomationRuleEngine dissection:** Which lines are domain logic? Which are infrastructure? What hurts controllability? What hurts observability?
+3. **Refactored DeviceManager:** Your refactored class using constructor injection. Confirm: no `getInstance()` calls remain, and you can now instantiate it with `InMemoryDeviceRepository` for testing.
 
-2. **Feature area stubs:** Your completed sentences about what would need to be stubbed for Device Management and Automation Rules.
+4. **Port Interfaces:** Your final port interfaces for device state and notification. Did Copilot's first attempt use infrastructure types? What did you fix?
 
-### Part 2: Fixing the DatabaseConnection Singleton
+5. **Peer Review Finding:** One thing you noticed reviewing another pair's work — an infrastructure leak, a clean port design, or a remaining singleton. What would you change or keep?
 
-3. **Repository interface decisions:** Your manual draft for each interface (DeviceRepository, RuleRepository), what Copilot suggested, and your final design with reasoning: *"I defined [interface] as [description] because [reason]."*
+6. **Extending the Architecture:** What ports would Analytics & Reporting need? Would it share any with Device Management or Automation Rules?
 
-4. **In-memory implementation:** Your `InMemory*` implementation and evaluation — does it implement the interface correctly? Does it have any `DatabaseConnection` calls?
-
-### Part 3: Designing Ports for AutomationRuleEngine (Copilot)
-
-5. **Port design with Copilot:** Your initial prompt, problems in the first response (if any), follow-up prompts, and final port interfaces for device state and notification dependencies.
-
-6. **Diagram:** Your Mermaid diagram for the hexagonal architecture (saved in `diagrams/automation-rules.md`), and whether it correctly shows the pattern (or what was off).
-
-7. **Composition root:** Your `main()` design and evaluation — any remaining `getInstance()` calls? Does it match the [L17](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l17-creation-patterns) pattern?
-
-### Part 4: Design Review and Reflection
-
-8. **Review observation:** One thing you noticed during the peer review — an infrastructure leak, a leftover singleton call, or a particularly clean port design. What would you change (or keep), and why?
-
-9. **New feature area:** What ports would Analytics & Reporting need? Would it share ports with the existing feature areas? How would you add it to the composition root?
-
-### Meta
-
-10. **Connections:** Pick one of your port design decisions and explain how it connects to a specific concept from an earlier lecture — a coupling type from [L7](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l7-design-for-change), DIP from [L8](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l8-design-for-change-2), observability/controllability from [L16](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l16-testing2), or DI vs. singleton from [L17](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l17-creation-patterns). Be specific: name the concept and explain the connection.
-
-11. **Communication reflection:** Think about the structured decision format you practiced today — *"I chose X because Y. I considered Z, but X is better because..."* Was there a moment where articulating the reasoning out loud changed or clarified your thinking? What's one design decision from today that you could explain convincingly to a teammate who wasn't here?
-
-12. **AI tool reflection:** How did the manual-first approach (Part 2) compare to the Copilot-first approach (Part 3)? Which felt more effective for learning? Which would you use in a real project?
+7. **Meta (pick one):**
+   - *Connections:* How does one of your design decisions connect to a concept from L7-L17?
+   - *Communication:* Did explaining a decision out loud clarify your thinking?
+   - *AI tools:* How did manual-first (Part 2) compare to Copilot-first (Part 3)?
 
 ---
 
@@ -612,9 +607,9 @@ Which better follows Interface Segregation ([L8](https://neu-pdi.github.io/cs310
 Before your final submission, ensure:
 
 - [ ] Part 1: You've classified infrastructure vs. domain in AutomationRuleEngine (individual work)
-- [ ] Part 2: You've diagnosed the `DatabaseConnection` singleton and designed repository interfaces manually, then verified with Copilot
+- [ ] Part 2: You've diagnosed the `DatabaseConnection` singleton, designed repository interfaces, and refactored `DeviceManager` to use constructor injection
 - [ ] Part 3: You've used Copilot to design ports for AutomationRuleEngine + composition root
 - [ ] Part 4: You've explained at least one design decision to another pair and reflected on adding a new feature area
-- [ ] `REFLECTION.md` is complete with all 12 questions answered
+- [ ] `REFLECTION.md` is complete with all 7 questions answered
 - [ ] Your Mermaid diagram is saved in `diagrams/automation-rules.md`
 - [ ] All changes are committed and pushed to GitHub
