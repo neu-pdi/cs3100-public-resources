@@ -1,14 +1,46 @@
 ---
-sidebar_position: 21
-lecture_number: 21
+sidebar_position: 20
+lecture_number: 20
 title: "Distributed Architecture: Networks, Microservices, and Security"
 ---
 
-In [L19](./l19-monoliths.md), we explored architectural styles for organizing code within a single deployment unit—Hexagonal Architecture, Layered Architecture, Pipelined Architecture—all living inside a monolith. We ended with a troubling observation: once components communicate over a network, everything changes.
+Suggested background reading for a deeper dive:
+- [Fundamentals of Software Architecture, 2nd Edition by Mark Richards and Neal Ford](https://learning.oreilly.com/library/view/fundamentals-of-software/9781098175504/ch17.html) - Chapter 17 on Microservices Architecture
 
-This lecture explores that change. We'll examine **client-server architecture**, the **fallacies of distributed computing**, and the **microservices architecture** that embraces distribution fully. We'll see how Pawtograder handles (or struggle with) the challenges of distributed systems—and why security becomes an architectural concern the moment data crosses a network boundary.
+## Learning Objectives
 
-## Client-Server Architecture (10 minutes)
+After this lecture, you will be able to:
+
+1. Explain why **network communication** fundamentally changes architectural tradeoffs compared to in-process method calls
+2. Identify and explain the **Fallacies of Distributed Computing** and how they affect system design
+3. Describe the **client-server architecture** and REST API conventions used for service communication
+4. Analyze the **benefits and costs of microservices** compared to monolithic architectures
+5. Apply **security principles** (authentication, authorization, trust boundaries, CIA triad) to distributed system design
+
+:::note Important Framing
+In [L19](./l19-monoliths.md), we covered architectural styles for organizing code *within* a single deployment unit—Hexagonal, Layered, Pipelined—all living inside a monolith. We ended with a troubling observation: *once components communicate over a network, everything changes*.
+
+This lecture explores that change. You're not expected to design production distributed systems by the end of this lecture. The goal is to *understand* why distributed architectures are fundamentally different from monoliths, and to recognize the tradeoffs when you encounter them. Junior engineers read API documentation and debug network issues far more often than they design new distributed architectures—comprehension comes first.
+:::
+
+## Recap: Why Leave the Monolith?
+
+In L19, we saw that monoliths have significant benefits: simplicity, performance (nanosecond method calls), transactional consistency, and straightforward debugging. We also introduced **microservices** briefly—systems decomposed into small, independently deployable services.
+
+The question isn't whether microservices are "better" than monoliths. The question is: *when do the benefits of distribution outweigh its costs?*
+
+Let's revisit what drove our running examples toward distribution:
+
+| System | Why Distributed? | What Crosses the Network? |
+|--------|-----------------|---------------------------|
+| **Bottlenose** | Grading needs isolation—you can't run student code in your main web process | Grading requests → Orca; results ← Orca |
+| **Pawtograder** | Leverages GitHub's infrastructure; team autonomy between action maintainers and API maintainers | Submission registration, feedback submission, grader download |
+
+Both systems could theoretically be monoliths. Bottlenose *mostly* is—except for Orca. Pawtograder *chose* distribution for different reasons: leveraging GitHub Actions eliminates infrastructure management, and clean API boundaries let different teams own different components.
+
+But distribution comes with a price. Let's see what that price is.
+
+## Client-Server Architecture
 
 The **client-server architecture** separates systems into two roles: clients make requests, servers respond to them. The server centralizes data and logic; multiple clients can connect simultaneously. This is perhaps the most ubiquitous architectural style—every web application, every mobile app talking to a backend, every database connection follows this pattern.
 
@@ -42,7 +74,7 @@ Pawtograder has a clear client-server boundary between the Grading Action (clien
 - Network latency affects every operation
 - Requires handling network errors, timeouts, and retries
 
-## How Services Communicate: REST APIs (5 minutes)
+## How Services Communicate: REST APIs
 
 When clients and servers communicate over networks, they need a common protocol. **HTTP** (Hypertext Transfer Protocol) is the foundation of web communication—it's how your browser talks to websites, how mobile apps talk to backends, and how services talk to each other.
 
@@ -78,7 +110,11 @@ REST has become ubiquitous because it maps naturally onto HTTP (which every plat
 
 The key architectural insight: REST enforces a uniform interface across your entire API. Once you understand how to interact with one resource, you understand them all. This consistency reduces cognitive load for API consumers and makes services more composable.
 
-## The Fallacies of Distributed Computing (15 minutes)
+:::note LO1 & LO3 checkpoint
+You can now explain the client-server architecture and describe how REST APIs provide a standard way for services to communicate. But we've glossed over something important: what happens when that network communication *fails*?
+:::
+
+## The Fallacies of Distributed Computing
 
 When components communicate over a network, everything gets harder. Peter Deutsch and others at Sun Microsystems identified eight assumptions that developers make about networks—assumptions that are false and lead to bugs, outages, and frustrated users.
 
@@ -172,11 +208,23 @@ if (response == null) {
 
 **Idempotent operations**: Design requests so that retrying them is safe. If the Grading Action POSTs feedback and the network fails mid-request, can it safely POST again without creating duplicate grades? Pawtograder uses submission IDs to ensure idempotency—submitting feedback for the same submission ID twice just overwrites the previous result.
 
-## Microservices Architecture (15 minutes)
+:::note LO2 checkpoint
+You can now identify the eight fallacies of distributed computing and explain how they affect system design. These aren't theoretical concerns—every distributed system must handle network unreliability, latency, and the other fallacies explicitly.
+:::
 
-In L19, we introduced microservices briefly. Now that we understand the challenges of distributed systems, we can appreciate both the benefits and the costs of this architectural style.
+## Microservices Architecture
+
+In L19, we introduced the microservices concept when discussing the two big families of architecture (monolith vs. distributed). Now that we understand the challenges of distributed systems, we can appreciate both the benefits and the costs of this style more fully.
 
 A **microservices architecture** decomposes a system into small, independently deployable services, each responsible for a specific business capability. Services communicate over the network (typically HTTP/REST or message queues) and each manages its own data.
+
+Recall from L19 the key characteristics:
+- **Independent deployment**: Each service has its own build pipeline and deploy cycle
+- **Network communication**: Services call each other via APIs, not method calls
+- **Decentralized data**: Each service owns its data; no shared database
+- **Polyglot friendly**: Different services can use different languages, frameworks, or databases
+
+Now let's examine *why* teams choose this complexity—and what they pay for it.
 
 ### Why Microservices?
 
@@ -221,7 +269,11 @@ Signs you have a distributed monolith:
 If you find yourself here, consider either properly decoupling the services (with clear boundaries and contracts) or collapsing them back into a monolith.
 :::
 
-## Network-Related Requirements and Patterns (10 minutes)
+:::note LO4 checkpoint
+You can now analyze the benefits and costs of microservices compared to monolithic architectures. The key insight is that microservices trade operational simplicity for scaling flexibility, team autonomy, and fault isolation—but every benefit comes with the tax of distributed systems complexity.
+:::
+
+## Network-Related Requirements and Patterns
 
 When designing distributed systems, several quality attributes become critical. This course does *not* go into significant depth of how to *achieve* these qualities, but we'll provide a taste of common requirements and patterns. For more details, see:
 - CS4530: Fundamentals of Software Engineering
@@ -267,7 +319,7 @@ Strategies:
 
 **Energy tradeoff**: Horizontal scaling offers elasticity—spin up instances during deadline rushes, spin them down at 3 AM. This *can* be more energy-efficient than a vertically-scaled server that's oversized for average load but necessary for peaks. However, horizontal scaling also means more network communication (coordination, load balancing, distributed state). The most energy-efficient architecture depends on your traffic patterns: steady load often favors vertical; bursty load often favors horizontal with aggressive scale-to-zero.
 
-## Security as an Architectural Concern (15 minutes)
+## Security as an Architectural Concern
 
 Security isn't a feature you bolt on at the end—it's an architectural concern that shapes design decisions throughout. The moment components communicate over a network, you must think about who can send requests, whether data can be intercepted, and what happens if an attacker compromises one component.
 
@@ -346,6 +398,31 @@ Security requirements are often expressed in terms of three properties:
 4. **Minimal data transmission**: Don't send more data than necessary. The Grading Action sends only final results, not raw test output.
 5. **Principle of least privilege**: Each component should have only the permissions it needs. The Grading Action can submit grades but can't modify course settings.
 6. **Error messages**: Don't leak sensitive information. "Invalid token" is safer than "Token for user jdoe expired at 2024-03-15."
+
+:::note LO5 checkpoint
+You can now apply security principles to distributed system design: authentication vs. authorization, trust boundaries, and the CIA triad. Security isn't a feature you bolt on at the end—it shapes architecture from the start.
+:::
+
+## Bringing It Together: From Monolith to Microservices
+
+Let's recap the journey from L19 to this lecture:
+
+| Concept | Monolith (L19) | Distributed (L20) |
+|---------|---------------|-------------------|
+| **Communication** | Method calls (nanoseconds) | Network calls (milliseconds+) |
+| **Failure modes** | Process crashes → everything fails | Partial failures, network partitions |
+| **Consistency** | Database transactions span all operations | Eventual consistency, no cross-service transactions |
+| **Debugging** | Single stack trace, single log file | Distributed tracing, multiple log streams |
+| **Deployment** | All-or-nothing | Independent service deploys |
+| **Scaling** | Scale everything together | Scale services independently |
+
+The monolith-first approach from L19 still holds: don't distribute until you need to. But when you *do* need to—for isolation, scaling, team autonomy, or platform leverage—you now understand what you're getting into.
+
+:::tip Conway's Law Revisited
+In L19, we mentioned that organizations design systems that mirror their communication structure. This is even more true for distributed systems: if your teams are siloed, your services will be siloed. If teams must coordinate constantly, your services will be tightly coupled. Architecture and organization are inseparable.
+
+We'll explore this further in [L22 (Teams and Collaboration)](./l22-teams.md).
+:::
 
 ---
 
