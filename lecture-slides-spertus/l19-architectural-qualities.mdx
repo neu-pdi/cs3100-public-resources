@@ -265,10 +265,6 @@ How many paths lead to line 10?
 
 </svg>
 
-<aside className="notes">
-
-</aside>
-
 </Slide>
 
 <Slide>
@@ -672,12 +668,7 @@ Notice the modularity problem: without enforced boundaries, monoliths tend towar
 - Fault Tolerance ★☆☆: Bug in one module crashes everything — one process, one fate.
 - Modularity ★☆☆: Boundaries exist only as conventions. Without discipline → Big Ball of Mud.
 
-**The fragment sets up the modular monolith:**
-- This is the key problem we're going to solve
-- The monolith is great EXCEPT for modularity
-- Can we have both?
-
-→ **Transition:** Yes — that's exactly what a modular monolith gives us...
+→ **Transition:** A modular monolith gives us the best of both worlds...
 </aside>
 
 </Slide>
@@ -844,18 +835,6 @@ autograder/
 </div>
 
 <aside className="notes">
-Whether you're building a modular monolith or just organizing packages, there's a fundamental choice: group code by <strong>technical role</strong> or by <strong>domain capability</strong>?
-
-
-**Most web frameworks encourage technical partitioning:**
-- Rails: controllers/, models/, views/
-- Spring: convention of packages by layer
-- This works fine for small apps
-
-**But as systems grow, domain partitioning often wins:**
-- "How does grading work?" → everything in `grading/` package
-- "Add Rust support?" → all changes in one vertical slice
-
 → **Transition:** Let's see how these tradeoffs play out...
 </aside>
 
