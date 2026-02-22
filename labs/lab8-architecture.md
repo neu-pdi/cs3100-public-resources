@@ -442,7 +442,7 @@ Save the result in `diagrams/automation-rules.md`. Check that your diagram corre
 - The domain depending only on port interfaces, not on adapters
 
 > 💡 **Mermaid hint** if Copilot needs guidance:
-> ```
+> ```mermaid
 > graph LR
 >     subgraph Domain["Automation Rules Domain"]
 >         RE[AutomationRuleEngine]
