@@ -348,7 +348,7 @@ Text on computer: goto main_sub3;
 **Patterns and Principles**
 - design patterns
 - SOLID principles
-- TODO: add more or rethink
+- architecture styles and patterns
 
 </div>
 
@@ -2566,11 +2566,11 @@ flowchart LR
     classDef whiteBox fill:#fff,stroke:#aaa
     class UI,Next,Supabase,StudentRepo,AssignmentAction,Pitest whiteBox
 ```
-Communication between components is through HTTPS.
 
 <aside className="notes">
 - The Grading Action runs on GitHub's infrastructure
 - It calls the Pawtograder API over HTTP
+- Most of the communication between components is over http
 - There's a network in between — and that changes EVERYTHING
 
 → **Transition:** Let's talk about that network...
