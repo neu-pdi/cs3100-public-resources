@@ -97,6 +97,28 @@ Warm teals, blues, purples (#9370DB), and orange (#FF9800) accents in retro pixe
 </Slide>
 
 {/* ============================================ */}
+{/* ANNOUNCEMENTS */}
+{/* ============================================ */}
+
+<Slide>
+
+## Announcements
+
+<div style={{fontSize: '0.85em', textAlign: 'left'}}>
+
+**Team Formation Survey Released!**
+- Starting Week 10: teams of 4 for CookYourBooks GUI project
+- Tell us your preferences + availability
+- **Due Friday 2/26 @ 11:59 PM**
+- [Complete the Survey →](https://docs.google.com/forms/d/e/1FAIpQLScP-pp6S2tP4Do1J5buWmFLDDHwO5r8dxAmjZCB5wH20UDDiQ/viewform)
+
+**HW4 Due Thursday Night**
+
+</div>
+
+</Slide>
+
+{/* ============================================ */}
 {/* LEARNING OBJECTIVES */}
 {/* ============================================ */}
 
@@ -2432,65 +2454,10 @@ At the highest level, systems fall into two categories based on how they're depl
 - You might have microservices where EACH service is internally layered
 - The monolith vs. microservices decision is orthogonal to internal organization
 
-→ **Transition:** Where do our running examples fall on this spectrum?
 </aside>
 
 </Slide>
 
-<Slide>
-
-## Where Do Our Examples Fall?
-
-<p style={{fontSize: '0.82em'}}>
-A microservices architecture decomposes a system into small, independently deployable services. Where do our running examples fall?
-</p>
-
-<div style={{fontSize: '0.65em', marginTop: '0.5em'}}>
-
-| Aspect | Bottlenose | Pawtograder |
-|--------|------------|-------------|
-| **Core application** | Monolith (web framework) | Multiple independent services |
-| **Grading execution** | Separate service (Orca) | Leverages GitHub Actions |
-| **Data ownership** | Shared PostgreSQL database | API owns data; action is stateless |
-| **Deployment** | Single deploy (mostly) | Each service deploys independently |
-| **Communication** | Method calls + one HTTP boundary | HTTP APIs between all components |
-
-</div>
-
-<div className="fragment">
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.7em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0.5em', border: '2px solid #FF9800', borderRadius: '8px'}}>
-
-**Bottlenose** is a monolith with a microservice bolted on. Orca exists because student code can't run in the main process.
-
-</div>
-
-<div style={{padding: '0.5em', border: '2px solid #9370DB', borderRadius: '8px'}}>
-
-**Pawtograder** is a distributed system. The Grading Action calls the API over HTTP. There's a network in between.
-
-</div>
-
-</div>
-</div>
-
-<aside className="notes">
-**The key observation:**
-- Neither system is purely one style
-- Bottlenose is MOSTLY a monolith — but even it couldn't stay entirely monolithic
-- Orca exists because you can't run untrusted student code in your main web process
-- This is a common pattern: monolith + one extracted service for a specific concern
-
-**Pawtograder is more distributed:**
-- The Grading Action runs on GitHub's infrastructure
-- It calls the Pawtograder API over HTTP
-- There's a network in between — and that changes EVERYTHING
-
-→ **Transition:** Let's talk about that network...
-</aside>
-
-</Slide>
 
 <Slide>
 
