@@ -26,7 +26,7 @@ cards:
 
       Example: Passing an entire `Student` object when you only need the student's email.
 
-      Problem: Changes to the shared type affect all modules that use it, even if they don't use the changed fields.
+      Problem: Changes to the shared type affect all modules that use it, even if they don't use the changed fields. This is mainly problematic when you take that cross-boundary data type and use it *throughout* a module.
 
   - title: "Control Coupling"
     prompt: |
