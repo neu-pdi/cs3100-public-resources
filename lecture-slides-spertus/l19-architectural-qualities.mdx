@@ -96,6 +96,63 @@ A simple interface to a complex implementation.
 
 </Slide>
 
+<Slide>
+## Facade and Hexagonal Architecture in Assignment 4
+
+```mermaid
+flowchart TB
+    subgraph "Driving Adapters (A5+)"
+        CLI[CLI Controller]
+        GUI[GUI Controller]
+    end
+
+    subgraph "Application Services (A4)"
+        RS["RecipeService (facade — prescribed interface)"]
+        RSI["RecipeServiceImpl (YOUR design)"]
+    end
+
+    subgraph "Domain (A2+)"
+        R[Recipe]
+    end
+
+    subgraph "Ports (A2/A3)"
+        RR[RecipeRepository]
+        RCR[RecipeCollectionRepository]
+        CR[ConversionRegistry]
+    end
+
+    subgraph "Adapters (A3)"
+        JRR[JsonRecipeRepository]
+        JRCR[JsonRecipeCollectionRepository]
+    end
+
+    subgraph "Test Infrastructure"
+        MRR["Mock&lt;RecipeRepository&gt;"]
+        MRCR["Mock&lt;RecipeCollectionRepository&gt;"]
+    end
+
+    CLI --> RS
+    GUI --> RS
+    RS -.-> RSI
+
+    RSI --> RR
+    RSI --> RCR
+    RSI --> CR
+    RSI --> R
+
+    RR -.-> JRR
+    RR -.-> MRR
+    RCR -.-> JRCR
+    RCR -.-> MRCR
+
+    style RS fill:#fff3cd,stroke:#856404
+    style RSI fill:#d4edda,stroke:#28a745
+    style R fill:#d4edda,stroke:#28a745
+    style MRR fill:#cce5ff,stroke:#004085
+    style MRCR fill:#cce5ff,stroke:#004085
+```
+
+</Slide>
 
 {/* ============================================ */}
 {/* TITLE SLIDE */}
@@ -154,12 +211,13 @@ After this lecture, you will be able to:
 
 ## How Do We Organize Our Code?
 
-<p style={{fontSize: '0.85em'}}>
+<p style={{fontSize: '0.8em'}}>
 This is the question at the heart of every architectural decision — from your first class project to production systems serving millions of users. Every pattern and style we study today is an answer to this question.
 </p>
 
 <Img
     src="/img/lectures/web/l19-big-ball-of-mud.webp"
+    width={1200}
     prompt="A dramatic, slightly humorous educational illustration showing the 'Big Ball of Mud' anti-pattern. No title.
 
 A tangled, sprawling mess of buildings connected by spaghetti-like wires, pipes, and passages going in every direction. Buildings are labeled with things that shouldn't be together: 'Grading + User Auth + Email + Config Parsing', 'Controller + SQL + Scoring + Global State', 'Tests? What Tests?'. A developer stands in the middle looking overwhelmed, holding a single feature request card, with a speech bubble: 'Where does this go?' Red warning signs everywhere: 'Global State', 'Duplicated Logic', 'Circular Dependencies'. The whole structure feels precarious — one pull on any wire might bring everything down.
@@ -167,7 +225,8 @@ A tangled, sprawling mess of buildings connected by spaghetti-like wires, pipes,
 BOTTOM: A quote in an aged, scholarly style: 'A Big Ball of Mud is a haphazardly structured, sprawling, sloppy, duct-tape-and-baling-wire, spaghetti-code jungle.' — Foote & Yoder, 1997
 
 Style: Clean, modern educational illustration suitable for a university lecture. NOT pixel art — use a polished flat illustration style with soft shadows and clean lines, similar to editorial or textbook illustrations. Warm color palette with teals, purples, and orange warning accents. Humorous but professional."
-    alt="Big Ball of Mud — a tangled sprawl of buildings connected by spaghetti wires, labeled with mixed concerns like 'Grading + User Auth + Email'. A developer stands in the middle asking 'Where does this go?' Warning signs everywhere: Global State, Duplicated Logic, Circular Dependencies. Quote from Foote & Yoder 1997."
+    alt="Big Ball of Mud — a tangled sprawl of buildings connected by spaghetti wires, labeled with mixed concerns like 'Grading + User Auth + Email'. A developer stands in the middle asking 'Where does this go?' Warning signs everywhere: Global State, Duplicated Logic, Circular Dependencies. Quote from Foote & Yoder 1997:
+'A Big Ball of Mud is a haphazardly structured, sprawling, sloppy, duct-tape-and-baling-wire, spaghetti-code jungle.'"
   />
 
 <aside className="notes">
