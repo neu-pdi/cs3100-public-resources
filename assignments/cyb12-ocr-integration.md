@@ -25,7 +25,7 @@ By completing this assignment, you will demonstrate proficiency in:
 
 - **Iterative design** through documented design evolution ([L27: User-Centered Design](/lecture-notes/l27-ucd))
 - **Professional documentation** of design decisions and implementation choices
-- **Quality code review** that improves code and spreads knowledge ([L17: Teams and Collaboration](/lecture-notes/l17-teams))
+- **Quality code review** that improves code and spreads knowledge ([L22: Teams and Collaboration](/lecture-notes/l22-teams))
 - **Process reflection** that identifies lessons learned and areas for improvement
 
 ## AI Policy for This Assignment

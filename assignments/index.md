@@ -58,24 +58,21 @@ Assignments are structured to provide a steady, manageable pace throughout the s
 - [**Lab 4: Changeability**](/labs/lab4-changeability)
   - Analyze coupling/cohesion in provided code samples
 
-### **Weeks 5-6: Domain Extensions, Hexagonal Persistence & AI Workflow**
-- [**Assignment 3: Domain Extensions and Hexagonal Persistence**](/assignments/cyb3-json-serialization) (Due 2026-02-12)
+### **Weeks 5-6: Domain Extensions, JSON Persistence & AI Workflow**
+- [**Assignment 3: Domain Extensions and JSON Persistence**](/assignments/cyb3-json-serialization) (Due 2026-02-12)
   - Build on A2 solution (provided)
   - **Domain Modeling:**
-    - Implement `Cookbook`, `UserLibrary`, `TableOfContents`
-    - Design relationships between recipes, cookbooks, and the user library
-  - **Hexagonal Architecture - Driven Ports (Persistence):**
-    - Define `RecipeRepository` and `CookbookRepository` ports (interfaces)
-    - Implement `JsonRecipeRepository` and `JsonCookbookRepository` adapters
-    - Implement custom Jackson serializers/deserializers for domain hierarchy
-    - Handle polymorphic serialization (Quantity types, Ingredient types)
-  - **Factory Methods and Parsing:**
-    - Create factory methods for parsing ingredient strings from text
-    - Implement builders for complex ingredient construction
+    - Implement `CookbookImpl`, `PersonalCollectionImpl`, `WebCollectionImpl` following provided reference implementation
+    - Complete `UserLibraryImpl` search methods
+    - Design relationships between recipes, collections, and the user library
+  - **JSON Persistence (interfaces provided, you implement):**
+    - Complete `JsonRecipeRepository` and `JsonRecipeCollectionRepository` adapters
+    - Handle polymorphic serialization using pre-configured Jackson annotations
+    - Ensure round-trip correctness for all domain types
   - **Export Adapter:**
-    - Implement `MarkdownExporter` adapter for recipe export
+    - Implement `MarkdownExporter` for recipe and collection export
   - **First assignment where AI assistants are allowed/encouraged**
-    - Practice using AI for boilerplate generation and serialization code
+    - Practice using AI for boilerplate generation and pattern replication
     - Reflect on AI strengths/weaknesses for different task types
 - [**Lab 5: Requirements Engineering**](/labs/lab5-requirements)
   - Experience how ambiguous requirements lead to divergent interpretations
@@ -86,26 +83,23 @@ Assignments are structured to provide a steady, manageable pace throughout the s
 ## **Module 2: Design in the Large**
 
 ### **Week 7-8: Application Services and Testing with Mocks**
-- [**Assignment 4: Application Services and Testing**](/assignments/cyb4-testing) (Due 2026-02-26)
+- [**Assignment 4: RecipeService and Testing**](/assignments/cyb4-testing) (Due 2026-02-26)
   - Build on A3 solution (provided)
-  - **Application Services (Hexagonal Use Cases):**
-    - Implement `ImportService`, `ExportService`, `LibraryService`
-    - Services orchestrate domain operations using injected ports
-    - Wire services using dependency injection (constructor injection)
-    - Services depend only on port interfaces, never on concrete adapters
-  - **OCR Port (Interface Only):**
-    - Define `OcrPort` interface for text extraction from images
-    - No real OCR implementation required—tests use mocks
-    - Prepares architecture for real OCR integration in later assignments
-  - **Ingredient Parsing:**
-    - Implement `IngredientParser` to parse ingredient strings into domain objects
-    - Handle common formats: "2 cups flour", "1/2 tsp salt", "3-4 cloves garlic"
-    - Comprehensive edge case handling and error reporting
+  - **Comprehensive `RecipeService`:**
+    - Single service with import, transformation, aggregation, and search capabilities
+    - Import recipes from JSON files and plain text (parsing challenge)
+    - Scale recipes to different serving sizes
+    - Convert recipes between unit systems (metric ↔ imperial)
+    - Generate shopping lists by aggregating ingredients across recipes
+    - Search recipes by ingredient
+  - **Internal Design Decisions:**
+    - Students decide how to structure the service internally
+    - Extract helper classes (IngredientParser, RecipeScaler, etc.) or keep inline?
+    - Significant evaluation of design quality in manual grading
   - **Testing with Mocks:**
-    - Use Mockito to test services with mock ports
-    - Demonstrate how hexagonal architecture enables isolated unit testing
-    - Write parameterized tests for `IngredientParser`
-    - Experience the testability benefits of ports and adapters firsthand
+    - Use Mockito to test service with mock `RecipeRepository`, `RecipeCollectionRepository`, and `ConversionRegistry`
+    - Mock `ConversionRegistry` to test edge cases (missing conversion paths)
+    - Write parameterized tests for ingredient parsing
   - AI assistants encouraged
 - [**Lab 7: Debugging**](/labs/lab7-debugging)
   - Practice systematic debugging strategies
