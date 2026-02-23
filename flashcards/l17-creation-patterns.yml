@@ -1,0 +1,195 @@
+cards:
+  - title: "Creation Patterns as Information Hiding"
+    prompt: |
+      How do creation patterns relate to the information hiding principle from L6?
+    answer: |
+      Creation patterns hide **how objects are created** — the constructors, validation, and dependency wiring — behind factory methods and builders.
+
+      This is the same information hiding principle from L6, applied to a different phase:
+      - **L6:** Hide implementation details behind interfaces (usage)
+      - **L17:** Hide construction complexity behind factories and builders (creation)
+
+      The client says "give me a Recipe" without knowing the 15 steps required to construct one correctly.
+
+  - title: "Patterns Are Language-Specific"
+    prompt: |
+      Why are many creation patterns specific to Java? What problems do they work around?
+    answer: |
+      Java's language design creates specific problems that patterns work around:
+
+      | Java Limitation | Pattern Workaround |
+      |---|---|
+      | Constructors can't have meaningful names | Static factory methods |
+      | No named parameters or default values | Builder pattern |
+      | No module-level singletons | Singleton pattern |
+      | Mutable by default | Builder → immutable objects |
+
+      Other languages solve these natively: TypeScript/Kotlin have named/default parameters (no Builder needed), Kotlin has `object` keyword (safe singletons), ES modules are natural singletons.
+
+      **Meta-lesson:** Understand the *problem* the pattern solves, not just the pattern.
+
+  - title: "Static Factory Methods"
+    prompt: |
+      What advantages do static factory methods have over constructors?
+    answer: |
+      1. **Meaningful names:** `ConversionRule.bidirectional("cups", "mL", 236.588)` is self-documenting vs. `new ConversionRule("cups", "mL", 236.588, true)` — what's `true`?
+      2. **Instance caching:** Can return the same object for identical values (safe for immutable objects). Example: `Integer.valueOf(42)` caches small integers.
+      3. **Subtype flexibility:** Can return specialized subtypes without changing the caller.
+      4. **No forced allocation:** Unlike `new`, which always creates a new heap object.
+
+      Common naming conventions: `of()`, `from()`, `valueOf()`, `getInstance()`, `newInstance()`.
+
+      This is **Effective Java Item 1**: "Consider static factory methods instead of constructors."
+
+  - title: "The Telescoping Constructor Problem"
+    prompt: |
+      What is the telescoping constructor problem, and how does Builder solve it?
+    answer: |
+      When a class has many optional parameters, constructors become unwieldy:
+
+      ```java
+      // 6 optional params = up to 64 constructor combinations!
+      new Recipe("Pasta", null, null, notes, null, false); // What are those nulls?
+      ```
+
+      **Builder pattern** converts an exponential problem (2^n constructors) into a linear one (n methods):
+
+      ```java
+      new RecipeBuilder("Pasta Carbonara")
+          .addIngredient(new Ingredient("spaghetti", 400, "g"))
+          .addNote("No cream!")
+          .source("Kenji")
+          .build();
+      ```
+
+      Each method is self-documenting. Set only what you need. Adding a new optional field = add one method, no existing code changes.
+
+      This is **Effective Java Item 2**.
+
+  - title: "Builder Pattern Implementation"
+    prompt: |
+      What are the key implementation details of the Builder pattern?
+    answer: |
+      1. **Required parameters** go in the Builder's constructor
+      2. **Optional/accumulated parameters** are set via methods
+      3. **Each method returns `this`** — enables fluent method chaining
+      4. **`build()` validates** and creates an immutable object with defensive copies
+
+      ```java
+      public RecipeBuilder addIngredient(Ingredient ing) {
+          this.ingredients.add(ing);
+          return this;  // Enables chaining
+      }
+
+      public Recipe build() {
+          if (ingredients.isEmpty())
+              throw new IllegalStateException("Recipe needs ingredients");
+          return new Recipe(name, List.copyOf(ingredients), ...);
+      }
+      ```
+
+      The Recipe constructor can be package-private — only the Builder calls it.
+
+  - title: "Singleton Is an Anti-Pattern"
+    prompt: |
+      Why is Singleton considered an anti-pattern? What three problems does it create?
+    answer: |
+      Singleton ensures one instance with global access via `getInstance()`. It seems convenient but creates three serious problems:
+
+      1. **Hidden dependencies** (L7: common coupling): Not visible in the constructor — you must read every line to discover them.
+      2. **Untestable** (L16): Can't substitute a test double — stuck with the real implementation.
+      3. **Global mutable state**: Every caller shares the same instance — changes ripple unpredictably.
+
+      ```java
+      // Hidden dependency — what does RecipeParser depend on?
+      ConversionRegistry.getInstance().validate(recipe);
+      ```
+
+      **The fix:** Don't make the object responsible for its own uniqueness — use Dependency Injection instead.
+
+  - title: "DI as a Creation Pattern"
+    prompt: |
+      How is Dependency Injection both a testability enabler AND a creation pattern?
+    answer: |
+      **Same technique, two perspectives:**
+
+      - **L16 (testability):** "Inject dependencies so you can substitute test doubles"
+      - **L17 (creation):** "Inject dependencies because it's a better way to create object graphs"
+
+      The fundamental difference from Singleton is **who controls dependencies**:
+      - **Singleton:** Object reaches out — `ConversionRegistry.getInstance()` (object fetches its own dependency)
+      - **DI:** Caller provides — `new RecipeConverter(registry)` (caller decides which implementation)
+
+      This is **Inversion of Control** — the object no longer controls its own dependencies.
+
+      DI solves all three Singleton problems: dependencies visible in constructor, test doubles injectable, no global state.
+
+  - title: "Constructor Injection vs. Field Injection"
+    prompt: |
+      Why does the industry now prefer constructor injection over field injection?
+    answer: |
+      Field injection (`@Autowired`) optimizes for **writing** code. But code is written once and read/maintained many times:
+
+      | Activity | Field Injection | Constructor Injection |
+      |---|---|---|
+      | **Writing** (once) | Less boilerplate | More code |
+      | **Reading** (many times) | Dependencies hidden | Dependencies visible |
+      | **Testing** (many times) | Requires framework magic | Just call `new` with mocks |
+      | **Refactoring** (many times) | Can't trace dependencies | Compiler catches missing deps |
+
+      Field injection creates an **invalid state window**: the object exists with `null` fields until the framework injects them. Constructor injection guarantees the object is **always valid** after construction.
+
+      Spring's official docs now advocate constructor injection. This reflects L1's principle: optimize for the **lifetime** of the code, not the moment of creation.
+
+  - title: "Service Locator vs. Dependency Injection"
+    prompt: |
+      When would you use Service Locator instead of Dependency Injection?
+    answer: |
+      **DI (preferred for 99% of app code):** Caller passes dependencies explicitly via constructor.
+      - **Data coupling** — visible, testable, refactorable
+      - Constructor IS the dependency documentation
+
+      **Service Locator (for plugin systems):** A registry maps interfaces to implementations discovered at runtime.
+      - **Common coupling** — shared global registry, hidden but powerful
+      - Enables true module independence (neither module knows the other exists)
+
+      **Use Service Locator when:**
+      - Implementations are unknown at compile time (plugins loaded from JARs)
+      - Modules must be completely independent (IDE plugins, JDBC drivers)
+
+      **Use DI for everything else** — explicit dependencies, easy testing, IDE-refactorable.
+
+  - title: "Composition Root"
+    prompt: |
+      What is a composition root, and why is it important?
+    answer: |
+      The **composition root** is the single place in the codebase that knows about concrete implementations and wires them together — typically `main()`:
+
+      ```java
+      public static void main(String[] args) {
+          ConversionRegistry conversions = new StandardConversionRegistry();
+          LibraryService library = new InMemoryLibraryService();
+          ImportService importer = new ImportService(library, conversions);
+          CLIController controller = new CLIController(importer, library);
+          controller.run(args);
+      }
+      ```
+
+      **Key insight:** This is the *only* place that creates concrete implementations. Everything else depends on abstractions (interfaces). You can swap `InMemoryLibraryService` for `DatabaseLibraryService` by changing **one line** in `main()`.
+
+      This is Builder pattern at system scale — constructing the whole application step by step.
+
+  - title: "Same Principles, Bigger Scale"
+    prompt: |
+      How do code-level creation patterns manifest at the system/service level?
+    answer: |
+      The patterns don't disappear at larger scales — they're the building blocks:
+
+      | Object Level (A1-A4) | Service Level (A5+) |
+      |---|---|
+      | `RecipeBuilder` creates a `Recipe` | Composition root wires up services |
+      | `ConversionRegistry` abstracts rules | `LibraryService` abstracts storage |
+      | Pass registry to `Recipe.convert()` | Pass services to controllers |
+      | Test with stub registries | Test with mock services |
+
+      The question shifts from "how do I create this object?" to "how do I wire up this whole system?" — but the answer is the same: **depend on abstractions, inject implementations, keep coupling loose**.

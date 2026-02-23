@@ -1,0 +1,123 @@
+cards:
+  - title: "Why Changeability Matters"
+    prompt: |
+      Why is changeability a critical goal in software design?
+    answer: |
+      **Most software cost is maintenance**, not initial development. Code must be adaptable to evolving requirements, bug fixes, and new features. Designing for changeability from the start reduces long-term costs and risks.
+
+  - title: "What is Modularity?"
+    prompt: |
+      What is modularity in software design?
+    answer: |
+      Designing systems as **relatively independent modules**. Each module has a well-defined interface and hidden implementation, allowing changes within one module without affecting others.
+
+      This is fractal — applies at every scale: methods, classes, packages, and libraries.
+
+  - title: "What is Information Hiding?"
+    prompt: |
+      What is information hiding, and why is it important?
+    answer: |
+      The principle that modules should expose **what** they do, not **how** they do it. Implementation details are hidden behind well-defined interfaces.
+
+      Benefits:
+      - Changes to implementation don't ripple to other modules
+      - Reduces cognitive load (developers only need to understand the interface)
+      - Java provides **compiler-enforced** mechanisms for information hiding
+
+  - title: "Java Access Modifiers"
+    prompt: |
+      What are Java's four access modifiers, from most to least restrictive?
+    answer: |
+      1. **`private`**: Only accessible within the declaring class
+      2. **`default` (package-private)**: Accessible within the same package (no keyword)
+      3. **`protected`**: Accessible within the same package AND by subclasses
+      4. **`public`**: Accessible from anywhere
+
+      **Best practice**: Minimize accessibility — start with `private` and only increase when necessary.
+
+  - title: "Why Minimize Accessibility?"
+    prompt: |
+      Why should you minimize the accessibility of classes and members?
+    answer: |
+      - **Reduces coupling**: Other code can't depend on what it can't see
+      - **Enables change**: Private implementation details can be freely modified
+      - **Prevents misuse**: Users of the API can only interact through the intended interface
+      - **Simplifies reasoning**: Less public API = fewer things to understand
+
+      Start with the most restrictive access level and only open up when there's a clear need.
+
+  - title: "Recipe for Immutability"
+    prompt: |
+      What is the recipe for making a Java class immutable?
+    answer: |
+      1. Make all fields `private` and `final`
+      2. Don't provide setter methods
+      3. Prevent subclassing (use `final` class or private constructor)
+      4. Make **defensive copies** of mutable reference types in constructors and getters
+      5. Don't leak mutable internal state
+
+  - title: "Why Prefer Immutability?"
+    prompt: |
+      Why should you prefer immutable objects in Java?
+    answer: |
+      - **Thread-safe** without synchronization
+      - **No defensive copying** needed when sharing
+      - **Simple state** — can't change after creation, easier to reason about
+      - **Safe as hash keys** — hashCode never changes
+      - Eliminates bugs from **unintended mutation**
+
+  - title: "Defensive Copies for Reference Types"
+    prompt: |
+      Why are defensive copies needed for mutable reference types in immutable classes?
+    answer: |
+      Assigning a reference type field only copies the **reference**, not the object. The caller still holds a reference to the original and can mutate it.
+
+      ```java
+      // In constructor: copy incoming data
+      this.items = new ArrayList<>(items);
+
+      // In getter: copy outgoing data
+      return new ArrayList<>(items);
+      ```
+
+      Without defensive copies, "immutable" objects can be mutated through shared references.
+
+  - title: "What Are Sealed Classes?"
+    prompt: |
+      What are sealed classes in Java, and why are they useful?
+    answer: |
+      Sealed classes **restrict which classes can extend** them using the `permits` clause:
+
+      ```java
+      public sealed interface Shape permits Circle, Rectangle, Triangle {}
+      ```
+
+      Benefits:
+      - **Controlled inheritance**: Only explicitly permitted subtypes exist
+      - **Exhaustiveness**: Compiler can check that switch expressions cover all subtypes
+      - **Information hiding**: Prevents unexpected extensions that could break invariants
+
+  - title: "Java Module System"
+    prompt: |
+      What is the Java Module System (JPMS), and what problem does it solve?
+    answer: |
+      Introduced in Java 9, JPMS provides **library-level encapsulation**. Before modules, any `public` class was accessible from anywhere on the classpath.
+
+      A `module-info.java` file declares:
+      - **`exports`**: Which packages are accessible to other modules
+      - **`requires`**: Which modules this module depends on
+
+      This creates **module-private** code: public within the module but invisible outside — solving the "all-or-nothing" problem of `public` access.
+
+  - title: "Information Hiding at Different Scales"
+    prompt: |
+      How does information hiding apply at different scales in Java?
+    answer: |
+      | Scale | Mechanism | Hides |
+      |---|---|---|
+      | **Field/Method** | Access modifiers (`private`, etc.) | Implementation details of a class |
+      | **Class** | `final`, sealed classes | Inheritance relationships |
+      | **Package** | Package-private (default) access | Internal package classes |
+      | **Module** | `module-info.java`, `exports` | Internal packages of a library |
+
+      Each level enables change at that scale without affecting code at higher levels.

@@ -1,0 +1,158 @@
+cards:
+  - title: "Coupling and Cohesion Measure How Easy Code is to Change"
+    prompt: |
+      What are coupling and cohesion in software design?
+    answer: |
+      - **Coupling**: How much a module is affected by changes in *other* modules. Goal: **Low coupling.**
+      - **Cohesion**: How closely related the elements *internal* to a module are. Goal: **High cohesion.**
+
+      These metrics apply at all scales (methods, classes, systems) and directly impact changeability.
+
+  - title: "Data Coupling: Pass Only What You Need"
+    prompt: |
+      What is data coupling, and why is it the safest type?
+    answer: |
+      Modules share only **primitive types or standard library types** (e.g., `String`, `int`, `ArrayList`). These types are stable and unlikely to change, minimizing hidden dependencies.
+
+      Example: `sendNotification(String toEmail, String studentName, String assignmentName)`
+
+      This is the **least dangerous** form of coupling.
+
+  - title: "Stamp Coupling"
+    prompt: |
+      What is stamp coupling, and when does it become problematic?
+    answer: |
+      Modules share **composite data structures** (custom objects), but the receiving module may only use part of the data.
+
+      Example: Passing an entire `Student` object when you only need the student's email.
+
+      Problem: Changes to the shared type affect all modules that use it, even if they don't use the changed fields. This is mainly problematic when you take that cross-boundary data type and use it *throughout* a module.
+
+  - title: "Control Coupling"
+    prompt: |
+      What is control coupling, and why is it dangerous?
+    answer: |
+      One module passes a **flag or control parameter** that tells the other module **how to behave**.
+
+      Example: `formatOutput(data, boolean useJSON)` — the caller controls the internal logic of the called module.
+
+      Better: Use the **Strategy pattern** — pass a `Formatter` interface instead of a boolean flag.
+
+  - title: "Common Coupling"
+    prompt: |
+      What is common coupling, and what are the risks?
+    answer: |
+      Modules share **global data** (static variables, shared databases, global configuration).
+
+      Risks:
+      - Any module can modify the shared state, causing unpredictable side effects
+      - Changes to the shared data format affect all modules
+      - Hard to reason about who changes what and when
+
+  - title: "Content Coupling"
+    prompt: |
+      What is content coupling, and why is it the most dangerous type?
+    answer: |
+      One module **directly accesses or modifies the internal data** of another module, bypassing its interface entirely.
+
+      Examples:
+      - Using reflection to access private fields
+      - Reaching into another object's internal state
+
+      This is the **most dangerous** coupling because it completely violates information hiding.
+
+  - title: "Coupling Spectrum: Least to Most Dangerous"
+    prompt: |
+      What is the coupling spectrum from least to most dangerous?
+    answer: |
+      1. **Data coupling** — Share only primitives/standard types (safest)
+      2. **Stamp coupling** — Share composite data structures
+      3. **Control coupling** — Pass flags that control behavior
+      4. **Common coupling** — Share global data
+      5. **Content coupling** — Directly access another module's internals (most dangerous)
+
+  - title: "Coincidental Cohesion"
+    prompt: |
+      What is coincidental cohesion?
+    answer: |
+      Elements are grouped **arbitrarily** with no meaningful relationship. Often seen in "utility" classes that contain unrelated helper methods.
+
+      Example: A `Utils` class with `formatDate()`, `calculateTax()`, and `sendEmail()`.
+
+      This is the **weakest** (least desirable) form of cohesion.
+
+  - title: "Logical Cohesion"
+    prompt: |
+      What is logical cohesion?
+    answer: |
+      Elements are grouped because they are **logically categorized** the same way but perform **different functions**.
+
+      Example: An `InputHandler` class that handles keyboard, mouse, AND network input — logically "input" but totally different operations.
+
+  - title: "Temporal Cohesion"
+    prompt: |
+      What is temporal cohesion?
+    answer: |
+      Elements are grouped because they are **executed at the same time** (e.g., during initialization or shutdown), not because they are logically related.
+
+      Example: A `startup()` method that initializes the database, loads config, starts the web server, and sends a notification — all at startup but otherwise unrelated.
+
+  - title: "Procedural Cohesion"
+    prompt: |
+      What is procedural cohesion?
+    answer: |
+      Elements are grouped because they follow a **specific sequence of execution** but operate on different data.
+
+      Example: A method that first validates user input, then queries the database, then formats the output — sequential steps that work on different data.
+
+  - title: "Communicational Cohesion"
+    prompt: |
+      What is communicational cohesion?
+    answer: |
+      Elements are grouped because they operate on the **same data** or contribute to the same output.
+
+      Example: A `ReportGenerator` class where all methods read from the same dataset and produce different aspects of the same report.
+
+  - title: "Sequential Cohesion"
+    prompt: |
+      What is sequential cohesion?
+    answer: |
+      Elements are grouped because the **output of one serves as input to the next**, forming a pipeline.
+
+      Example: `readData()` → `parseData()` → `validateData()` → `transformData()` — each step feeds into the next.
+
+  - title: "Functional Cohesion"
+    prompt: |
+      What is functional cohesion?
+    answer: |
+      Every element contributes to a **single, well-defined task**. All parts are essential to performing that one function.
+
+      Example: A `PasswordValidator` class where every method contributes to validating passwords.
+
+      This is the **strongest** (most desirable) form of cohesion.
+
+  - title: "Cohesion Spectrum: Weakest to Strongest"
+    prompt: |
+      What is the cohesion spectrum from weakest to strongest?
+    answer: |
+      1. **Coincidental** — Arbitrary grouping (weakest)
+      2. **Logical** — Same category, different functions
+      3. **Temporal** — Same time of execution
+      4. **Procedural** — Sequential execution, different data
+      5. **Communicational** — Same data
+      6. **Sequential** — Output of one feeds input of next
+      7. **Functional** — Single, well-defined task (strongest)
+
+  - title: "Strategy Pattern and Coupling"
+    prompt: |
+      How does the Strategy pattern reduce coupling?
+    answer: |
+      Instead of passing **control flags** (control coupling), pass a **Strategy object** that encapsulates the varying behavior:
+
+      **Before (control coupling):**
+      `formatOutput(data, boolean useJSON)`
+
+      **After (data coupling):**
+      `formatOutput(data, Formatter formatter)`
+
+      The caller provides the behavior through an interface rather than a flag, reducing the need for the called module to know about different formatting modes internally.
