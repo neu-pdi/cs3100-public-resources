@@ -997,7 +997,7 @@
     },
     {
       "id": "lab7-mon",
-      "title": "Lab 7: Debugging",
+      "title": "Lab 7: Java",
       "dates": [
         "2026-02-16"
       ],
@@ -1013,11 +1013,11 @@
         "L13",
         "L14"
       ],
-      "url": "/labs/lab7-debugging"
+      "url": "/labs/lab7-java"
     },
     {
       "id": "lab7-tue",
-      "title": "Lab 7: Debugging",
+      "title": "Lab 7: Java",
       "dates": [
         "2026-02-17"
       ],
@@ -1026,7 +1026,7 @@
         "L02",
         "L04"
       ],
-      "url": "/labs/lab7-debugging"
+      "url": "/labs/lab7-java"
     },
     {
       "id": "lab8-mon",

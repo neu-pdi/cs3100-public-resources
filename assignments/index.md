@@ -7,7 +7,7 @@ image: /img/assignments/web/overview.png
 # Cook Your Books: Project Overview
 
 
-Throughout this semester, you will build CookYourBooks, a comprehensive desktop application for managing digital cookbooks and recipes. This real-world application addresses a common problem: how to efficiently digitize, organize, and use recipes from physical cookbooks and websites. The final product will feature OCR-powered recipe extraction from images, a rich domain model for representing complex recipe structures, intelligent scaling and unit conversion, and both command-line and graphical user interfaces. By the end of the course, you'll have created a fully-functional application that could genuinely be used by home cooks and professional chefs alike—something substantial enough for your portfolio that demonstrates your ability to design and implement complex software systems. For inspiration on what a real-world application might look like, refer to existing products [EatYourBooks](https://eatyourbooks.com/), [ChefSteps' Recipe Interface](https://www.chefsteps.com/activities/skillet-apple-pie), and [CookShelf](https://www.cookshelf.app/). 
+Throughout this semester, you will build CookYourBooks, a comprehensive desktop application for managing digital cookbooks and recipes. This real-world application addresses a common problem: how to efficiently digitize, organize, and use recipes from physical cookbooks and websites. The final product will feature OCR-powered recipe extraction from images, a rich domain model for representing complex recipe structures, intelligent scaling and unit conversion, and both command-line and graphical user interfaces. By the end of the course, you'll have created a fully-functional application that could genuinely be used by home cooks and professional chefs alike—something substantial enough for your portfolio that demonstrates your ability to design and implement complex software systems. For inspiration on what a real-world application might look like, refer to existing products [EatYourBooks](https://eatyourbooks.com/), [ChefSteps' Recipe Interface](https://www.chefsteps.com/activities/skillet-apple-pie), and [CookShelf](https://www.cookshelf.app/).
 
 ![Cook Your Books: Project Overview](/img/assignments/web/overview.png)
 
@@ -15,7 +15,7 @@ The project follows a carefully scaffolded approach where each weekly assignment
 
 The final phase of the project (Module 3: Design for Users) emphasizes user-centered design, team collaboration, and building complete systems. You'll implement both CLI and GUI interfaces, focusing on usability, accessibility, and user experience while managing the complexity of asynchronous operations like OCR processing. Working in teams of four during this module, each team member takes ownership of one core GUI feature while collaborating on shared infrastructure, integration, and optional "menu" features. Teams establish working agreements through a **team charter**, create a shared **lexicon** for consistent naming, and practice the HRT (Humility, Respect, Trust) principles from professional software development. The group assignments are structured to enable individual accountability—each core feature has a defined ViewModel interface that all implementations must satisfy—while still requiring meaningful collaboration on design, code review, and integration. Throughout this journey, you'll not only master Java and JavaFX, but also develop crucial software engineering skills: interpreting requirements, designing for change, writing maintainable code, and collaborating effectively in a team.
 
-Assignments are structured to provide a steady, manageable pace throughout the semester. Each assignment is due on a Thursday at 11:59 PM, with a minimum of 3-4 days between assignment due dates to ensure adequate time for implementation, testing, and reflection. Some weeks' tasks have been intentionally merged to combine related concepts and create more substantial programming tasks that better reflect real-world development work. 
+Assignments are structured to provide a steady, manageable pace throughout the semester. Each assignment is due on a Thursday at 11:59 PM, with a minimum of 3-4 days between assignment due dates to ensure adequate time for implementation, testing, and reflection. Some weeks' tasks have been intentionally merged to combine related concepts and create more substantial programming tasks that better reflect real-world development work.
 
 **Notes:**
 - Each assignment builds on the provided solution from the previous week. Students are trusted to not share these solutions, or to seek them out.
@@ -101,8 +101,8 @@ Assignments are structured to provide a steady, manageable pace throughout the s
     - Mock `ConversionRegistry` to test edge cases (missing conversion paths)
     - Write parameterized tests for ingredient parsing
   - AI assistants encouraged
-- [**Lab 7: Debugging**](/labs/lab7-debugging)
-  - Practice systematic debugging strategies
+- [**Lab 7: Java**](/labs/lab7-java)
+  - Review of Java points of confusion
 - [**Lab 8: Architecture**](/labs/lab8-architecture)
   - Design architecture diagrams for recipe system
 - [**Team Formation**](/assignments/team-forming) (Due 2026-02-26)
@@ -166,7 +166,7 @@ Group assignments are structured around **individual accountability with team co
 
 ### **Week 12-15: Group Project**
 - [**Group Project: CookYourBooks GUI**](/assignments/cyb11-gui-advanced) (Released 2026-03-23)
-  
+
   This is a **single project** with two accountability checkpoints. The full specification is available from day one—plan your work accordingly. **Checkpoints require working, tested features**; later checkpoints build on earlier ones, so it is impossible to leave everything until the final week. You will receive automated test feedback at each checkpoint, but comprehensive instructor feedback comes only at the final submission.
 
   #### **Checkpoint 1: Core Features** (Due 2026-04-09)
