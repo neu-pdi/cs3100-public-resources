@@ -6,6 +6,10 @@ image: /img/assignments/web/a4.png
 
 ## Overview
 
+**Changelog:**
+- 2/19/2026: Note error in handout: the documentation on the `RecipeService` interface is incomplete compared to the handout, in particular, this page explains exactly the effects of `importFromJson` and `importFromText`, please rely on this over the documentation on the handout.
+- 2/19/2026: Clarified that findByIngredient searches only RecipeRepository, not recipes embedded in collections via RecipeCollectionRepository. See findByIngredient clarification in the [Shopping List Requirements](#shopping-list-requirements).
+
 In this assignment, you'll build **`RecipeService`** — the application layer that sits between user interfaces (CLI, GUI) and your domain model. This facade coordinates everything: parsing recipe text, transforming quantities, persisting to repositories, and aggregating shopping lists. It's the "brain" that the CLI (A5) might call to get things done.
 
 ![8-bit lo-fi pixel art illustration for a programming assignment cover. Kitchen/bakery setting with warm wooden cabinets and countertops in browns and tans. Scene composition (left to right): Chaotic inputs arriving at the kitchen: (1) messy handwritten recipe cards with scribbled text like "2 cups flour", "salt to taste", (2) plain text documents floating in, (3) JSON file icons. These represent unstructured recipe data. The pixel art chef stands at a large "Service Station" counter (like a prep station in a commercial kitchen). The station has a conveyor belt labeled "RecipeService" with organized compartments showing the workflow: PARSE → TRANSFORM → SAVE. Above the station, a clipboard shows an interface spec titled "RecipeService.java" with visible method signatures: "importFromText()", "scaleRecipe()", "generateShoppingList()". Crossed out in red are cleaner alternatives written below like "parseRecipe()" and "saveRecipe()" as separate methods — representing how the inherited interface bundles too much into single calls. The robot AI assistant helps the chef at the station, organizing ingredients and pointing to different methods. Clean outputs emerge: (1) structured Recipe cards neatly filed in a repository cabinet, (2) a shopping list notepad showing combined ingredients like "5 cups flour", (3) scaled recipes with "Serves: 8" visible. POST-IT NOTES: Yellow sticky reading "Build the service. Test with fakes." and another saying "Not ideal design — make it work anyway!" TOP BANNER: Metallic blue banner with white pixel text "A4: RecipeService Facade". BOTTOM TEXT: "CS 3100: Program Design & Implementation 2". SUBTLE DETAILS: Small parsing bubbles showing "2 cups flour" being broken down into quantity/unit/name components, a magnifying glass over the spec clipboard representing "understand the interface first". Color palette: Warm browns/tans for kitchen, cyan/teal for data flow and service station glow, cream for recipe cards, yellow for sticky notes. Same visual style as A3 persistence cover.](/img/assignments/web/a4.png)
@@ -200,6 +204,12 @@ The key is testing that your service **correctly coordinates** the parsing, look
 ### The `RecipeService` Interface
 
 This is the facade the CLI will call. **We test your implementation through this interface** — it's what the autograder uses. How you structure the implementation behind it is your design decision.
+
+:::warning Handout documentation is incomplete
+
+The documentation on the `RecipeService` interface is incomplete compared to the handout, in particular, this page explains exactly the effects of `importFromJson` and `importFromText`, please rely on this page over the documentation on the handout.
+
+:::
 
 ```java
 public interface RecipeService {
@@ -751,6 +761,8 @@ ShoppingList list = service.generateShoppingList(List.of("rec-cookies", "rec-cak
 - **Uncountable ordering (`getUncountableItems`):** Names appear in the order their unique name (case-insensitive) is first encountered, same iteration order as above
 - If `recipeIds` is empty, return an empty `ShoppingList` (no items, no uncountable items)
 - Throw `RecipeNotFoundException` if any recipe ID is not found
+- `findByIngredient` searches the recipe repository only. This method searches recipes stored in `RecipeRepository` (via `findAll()`). It does not search recipes embedded within collections in RecipeCollectionRepository. In the CookYourBooks architecture, recipes are added to RecipeRepository when they are imported (via importFromJson or importFromText), so any recipe that has been imported through the service will be findable. However, recipes that exist only inside a collection (and were never individually saved to the recipe repository) will not appear in search results. Your tests should mock only recipeRepository.findAll() for this method — stubbing collectionRepository is not necessary. (Added 2/19/26)
+
 
 **Ingredient matching:** Two `MeasuredIngredient`s are considered "the same" if they have the same name (case-insensitive exact match) **and** the same unit. For example, "Flour" and "flour" with unit CUP are the same, but "flour" in CUP and "flour" in GRAM are different items. When combining ingredients, use the **name from the first occurrence** (i.e., whichever ingredient was encountered first while iterating through the recipes in order).
 
