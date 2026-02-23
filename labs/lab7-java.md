@@ -6,8 +6,9 @@ image: /img/labs/web/lab7.png
 
 # Lab 7: Java (Oakland only)
 
-[Note to Boston students: Since your lab day was a holiday, you received credit for this lab.
-If you'd also like to learn the material, see the resources below.]
+:::note Note for Boston Students
+Since your lab day was a holiday, you received credit for this lab. If you'd also like to learn the material, see the resources below.
+:::
 
 We know that students entered this class with a range of Java experience and that there are aspects of Java that many people find confusing, even with prior experience. The purpose of this lab is to help you level up your Java ability.
 
