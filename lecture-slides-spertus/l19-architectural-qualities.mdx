@@ -74,12 +74,113 @@ Warm teals, blues, purples (#9370DB), and orange (#FF9800) accents in retro pixe
 * What's one question you have?
 
 New policy: I'm leaving the poll open for students who arrive late (but they
-must still be in the room to complete it).
+must still be in the room (or attending remotely by invitation) to complete it).
 
 <PollSlide username='espertus'
 />
 </Slide>
 
+{/* ============================================ */}
+{/* ANNOUNCEMENTS */}
+{/* ============================================ */}
+
+<Slide>
+
+## Announcements
+
+<div style={{fontSize: '0.85em', textAlign: 'left'}}>
+
+**Team Formation Survey Released!**
+- Starting Week 10: teams of 4 for CookYourBooks GUI project
+- Tell us your preferences + availability
+- **Due Friday 2/26 @ 11:59 PM**
+- [Complete the Survey →](https://docs.google.com/forms/d/e/1FAIpQLScP-pp6S2tP4Do1J5buWmFLDDHwO5r8dxAmjZCB5wH20UDDiQ/viewform)
+
+**HW4 Due Thursday Night**
+- Deadline is GitHub Action time, not submission time
+
+**Booking TA Video Calls**
+- [Lucia](https://calendly.com/sun-liang-northeastern/30min) (evenings and weekends)
+- **New**: [Many TAs](https://outlook.office.com/book/Spring2026CS3100TATutoring@northeastern.onmicrosoft.com/?ismsaljsauthenabled)
+- Links are on [Oakland Canvas](https://northeastern.instructure.com/courses/239378)
+
+</div>
+
+</Slide>
+
+<Slide>
+
+## Facade Design Pattern
+
+A simple interface to a complex implementation.
+
+<Img src="/img/lectures/web/l19-facade-illustration.jpg"
+  prompt="A side-by-side cutaway illustration. Left: a college classroom where a middle-aged female professor with curly brown hair and glasses presses a wall button. A projector screen displays 'FACADE' to seated students. Wires run from the button through a brick dividing wall. Right: a cramped utility room containing a complex Rube Goldberg machine powering the screen, featuring pulleys, a mechanical kicking boot, a hamster wheel, and a toy steam train on tracks. Warm, colorful cartoon style."
+  alt="A side-by-side cutaway illustration. On the left, a professor in a college classroom presses a simple wall button. The projector screen lowers, displaying the word 'FACADE' to her students. Wires connect the button through a brick wall to a hidden utility room on the right. This room contains a chaotic Rube Goldberg machine powering the screen, featuring a hamster running on a wheel, a toy train on tracks, pulleys, and a mechanical kicking boot, illustrating a complex backend hidden behind a simple user interface."
+  />
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+## Facade and Hexagonal Architecture in Assignment 4
+
+```mermaid
+flowchart TB
+    subgraph "Driving Adapters (A5+)"
+        CLI[CLI Controller]
+        GUI[GUI Controller]
+    end
+
+    subgraph "Application Services (A4)"
+        RS["RecipeService (facade — prescribed interface)"]
+        RSI["RecipeServiceImpl (YOUR design)"]
+    end
+
+    subgraph "Domain (A2+)"
+        R[Recipe]
+    end
+
+    subgraph "Ports (A2/A3)"
+        RR[RecipeRepository]
+        RCR[RecipeCollectionRepository]
+        CR[ConversionRegistry]
+    end
+
+    subgraph "Adapters (A3)"
+        JRR[JsonRecipeRepository]
+        JRCR[JsonRecipeCollectionRepository]
+    end
+
+    subgraph "Test Infrastructure"
+        MRR["Mock&lt;RecipeRepository&gt;"]
+        MRCR["Mock&lt;RecipeCollectionRepository&gt;"]
+    end
+
+    CLI --> RS
+    GUI --> RS
+    RS -.-> RSI
+
+    RSI --> RR
+    RSI --> RCR
+    RSI --> CR
+    RSI --> R
+
+    RR -.-> JRR
+    RR -.-> MRR
+    RCR -.-> JRCR
+    RCR -.-> MRCR
+
+    style RS fill:#fff3cd,stroke:#856404
+    style RSI fill:#d4edda,stroke:#28a745
+    style R fill:#d4edda,stroke:#28a745
+    style MRR fill:#cce5ff,stroke:#004085
+    style MRCR fill:#cce5ff,stroke:#004085
+```
+
+</Slide>
 
 {/* ============================================ */}
 {/* TITLE SLIDE */}
@@ -138,12 +239,13 @@ After this lecture, you will be able to:
 
 ## How Do We Organize Our Code?
 
-<p style={{fontSize: '0.85em'}}>
+<p style={{fontSize: '0.8em'}}>
 This is the question at the heart of every architectural decision — from your first class project to production systems serving millions of users. Every pattern and style we study today is an answer to this question.
 </p>
 
 <Img
     src="/img/lectures/web/l19-big-ball-of-mud.webp"
+    width={1200}
     prompt="A dramatic, slightly humorous educational illustration showing the 'Big Ball of Mud' anti-pattern. No title.
 
 A tangled, sprawling mess of buildings connected by spaghetti-like wires, pipes, and passages going in every direction. Buildings are labeled with things that shouldn't be together: 'Grading + User Auth + Email + Config Parsing', 'Controller + SQL + Scoring + Global State', 'Tests? What Tests?'. A developer stands in the middle looking overwhelmed, holding a single feature request card, with a speech bubble: 'Where does this go?' Red warning signs everywhere: 'Global State', 'Duplicated Logic', 'Circular Dependencies'. The whole structure feels precarious — one pull on any wire might bring everything down.
@@ -151,7 +253,8 @@ A tangled, sprawling mess of buildings connected by spaghetti-like wires, pipes,
 BOTTOM: A quote in an aged, scholarly style: 'A Big Ball of Mud is a haphazardly structured, sprawling, sloppy, duct-tape-and-baling-wire, spaghetti-code jungle.' — Foote & Yoder, 1997
 
 Style: Clean, modern educational illustration suitable for a university lecture. NOT pixel art — use a polished flat illustration style with soft shadows and clean lines, similar to editorial or textbook illustrations. Warm color palette with teals, purples, and orange warning accents. Humorous but professional."
-    alt="Big Ball of Mud — a tangled sprawl of buildings connected by spaghetti wires, labeled with mixed concerns like 'Grading + User Auth + Email'. A developer stands in the middle asking 'Where does this go?' Warning signs everywhere: Global State, Duplicated Logic, Circular Dependencies. Quote from Foote & Yoder 1997."
+    alt="Big Ball of Mud — a tangled sprawl of buildings connected by spaghetti wires, labeled with mixed concerns like 'Grading + User Auth + Email'. A developer stands in the middle asking 'Where does this go?' Warning signs everywhere: Global State, Duplicated Logic, Circular Dependencies. Quote from Foote & Yoder 1997:
+'A Big Ball of Mud is a haphazardly structured, sprawling, sloppy, duct-tape-and-baling-wire, spaghetti-code jungle.'"
   />
 
 <aside className="notes">
@@ -324,7 +427,7 @@ Text on computer: goto main_sub3;
 
 <Slide>
 
-## Software Size Large
+## Very Large Codebases
 
 <Img src="/img/lectures/web/l19-millions-loc.png"
   alt="Infographic showing codebases in the range of 50-100 million lines of code: Facebook, US Arm Future Combat System, Debian 5.0 codebase, Mac OS X Tiger, car software"
