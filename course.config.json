@@ -1293,13 +1293,23 @@
     },
     {
       "id": "team-form",
-      "title": "Team Forming",
+      "title": "Team Forming Survey",
       "type": "homework",
       "assignedDate": "2026-02-23",
       "dueDate": "2026-02-26",
       "dueTime": "23:59",
       "points": 0,
       "url": "/assignments/team-forming"
+    },
+    {
+      "id": "team-charter",
+      "title": "Team Charter",
+      "type": "homework",
+      "assignedDate": "2026-03-09",
+      "dueDate": "2026-03-13",
+      "dueTime": "23:59",
+      "points": 20,
+      "url": "/assignments/team-charter"
     },
     {
       "id": "cyb4",
@@ -1325,10 +1335,10 @@
       "id": "cyb10",
       "title": "Group Assignment 0: Design Sprint",
       "type": "homework",
-      "assignedDate": "2026-03-23",
+      "assignedDate": "2026-03-19",
       "dueDate": "2026-03-26",
       "dueTime": "23:59",
-      "points": 60,
+      "points": 30,
       "url": "/assignments/cyb10-design-sprint"
     },
     {
@@ -1338,7 +1348,7 @@
       "assignedDate": "2026-03-23",
       "dueDate": "2026-04-09",
       "dueTime": "23:59",
-      "points": 70,
+      "points": 50,
       "url": "/assignments/cyb11-gui-advanced"
     },
     {
@@ -1348,7 +1358,7 @@
       "assignedDate": "2026-03-23",
       "dueDate": "2026-04-16",
       "dueTime": "23:59",
-      "points": 70,
+      "points": 50,
       "url": "/assignments/cyb11-gui-advanced"
     },
     {
@@ -1358,7 +1368,7 @@
       "assignedDate": "2026-03-23",
       "dueDate": "2026-04-20",
       "dueTime": "23:59",
-      "points": 70,
+      "points": 50,
       "url": "/assignments/cyb11-gui-advanced"
     }
   ],
