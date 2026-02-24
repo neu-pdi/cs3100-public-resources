@@ -4,6 +4,9 @@ lecture_number: 18
 title: Thinking Architecturally
 ---
 
+Suggested background reading for a deeper dive:
+- [Fundamentals of Software Architecture, 2nd Edition by Mark Richards and Neal Ford](https://learning.oreilly.com/library/view/fundamentals-of-software/9781098175504/ch02.html) - especially Chapter 2
+
 In [L17](./l17-creation-patterns.md), we saw how patterns like Builder, Factory Methods, and Dependency Injection help us create and wire up individual objects. We ended with a glimpse of how these same principles apply at larger scales—services that collaborate to form a complete application.
 
 But where do those service boundaries come from? How do we decide that "grading logic" and "submission management" should be separate concerns? This lecture is about **thinking architecturally**—stepping back from individual classes to see the shape of the whole system.

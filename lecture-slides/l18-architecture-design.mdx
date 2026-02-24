@@ -802,11 +802,47 @@ npx tsimp src/grading/main.ts -s /path/to/solution -u /path/to/submission
 - No GitHub Actions, no Pawtograder API, no network
 - Just: "here's a solution repo and a student repo — grade it"
 
-→ **Transition:** Putting the four heuristics together...
+→ **Transition:** Before we see how these come together, let's pause for a quick poll...
 </aside>
 
 </Slide>
 
+{/* ============================================ */}
+{/* POLL BREAK */}
+{/* ============================================ */}
+
+<Slide>
+
+## Quick Poll: Applying the Heuristics
+
+<p style={{fontSize: '1.1em', textAlign: 'center', marginTop: '2em'}}>
+📊 <strong>pollev.com/jbell</strong>
+</p>
+
+<p style={{fontSize: '0.9em', textAlign: 'center', marginTop: '1em', color: '#666'}}>
+Take a moment to reflect on what you've learned and predict what comes next.
+</p>
+
+<aside className="notes">
+**Open Poll Everywhere and run the survey (~3-4 min)**
+
+**Questions:**
+1. **Word Cloud:** "In one word: What makes code HARD to change?"
+2. **Reflection:** "Think about your most frustrating debugging experience. Which boundary problem was likely involved?"
+   - Couldn't test the broken part in isolation
+   - Couldn't tell which component was responsible
+   - A change in one place broke something far away
+   - Had to understand the whole system to fix one thing
+3. **Opinion:** "What's your instinct when requirements are unclear: build flexibility or keep it simple?"
+4. **Prediction:** "Based on the four heuristics, how many distinct components should Pawtograder have?"
+   - 2 / 3 / 4 / 5+
+
+**After the prediction question:** "Let's see if your intuition matches what the heuristics reveal..."
+
+→ **Transition:** Now let's see how these heuristics converge on a structure...
+</aside>
+
+</Slide>
 
 {/* ============================================ */}
 {/* ARC 3 CONTINUED: EMERGING ARCHITECTURE */}
