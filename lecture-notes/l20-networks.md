@@ -194,8 +194,8 @@ while (response == null && attempts < 3) {
     try {
         response = client.send(request, Duration.ofSeconds(10));
     } catch (TimeoutException e) {
+        Thread.sleep((long) Math.pow(2, attempts) * 1000);  // Exponential backoff: 1s, 2s, 4s
         attempts++;
-        Thread.sleep(1000 * attempts);  // Exponential backoff
     }
 }
 if (response == null) {
