@@ -65,7 +65,7 @@ TAGLINE: 'When Code Leaves the Building, Everything Changes'"
 - Arc 1: Motivating Example: Orkut Shortest-Path Service
 - Arc 2: Client-Server Architecture, including REST
 - Arc 3: The Eight Fallacies of Distributed Computing
-- **Microservices: Benefits and Costs** (~10 min)
+- Arc 4: Microservices: Benefits and Costs**
 - **Network-Related Quality Requirements** — perf, reliability, scalability (~8 min)
 - **Security as an Architectural Concern** (~12 min)
 - Bringing It Together (~5 min)
@@ -682,6 +682,7 @@ https://jokeapi.dev/
 
 <Img
   src="/img/lectures/web/l20-fallacies.webp"
+    style={{marginBottom: '0'}}
   prompt="An educational illustration in a clean, modern flat-art style (NOT pixel art). No title text.
 
 Eight warning signs arranged in a grid (2 rows × 4 columns), each containing a crossed-out assumption. Each sign has an icon and bold text:
@@ -697,25 +698,16 @@ Eight warning signs arranged in a grid (2 rows × 4 columns), each containing a 
 
 The overall aesthetic: clean educational poster, suitable for a university lecture. Teals, blues, purples (#9370DB), and red (#f44336) warning accents. The message: these are WRONG assumptions that lead to bugs."
   alt="Eight warning signs arranged in a grid, each crossing out a wrong assumption about distributed systems: The network is reliable, Latency is zero, Bandwidth is infinite, The network is secure, Topology doesn't change, There is one administrator, Transport cost is zero, The network is homogeneous. Clean flat illustration style with warning colors."
+  width={1200}
 />
 
-<p style={{fontSize: '0.78em', marginTop: '0.75em'}}>
+<p style={{fontSize: '0.7em', marginTop: '0.75em'}}>
 Peter Deutsch and colleagues at Sun Microsystems identified eight assumptions developers make about networks — all of which are <strong>false</strong>. These are the <em>Fallacies of Distributed Computing</em>.
 </p>
 
 <aside className="notes">
-**Why this is the heart of the lecture:**
-- These aren't theoretical — every distributed system bug can be traced to one of these fallacies
-- Students who have only worked in monoliths LIVE in a world where all eight are true
-- Moving to distributed systems means unlearning all of them
-
-**Framing:**
 - "In a monolith, method calls don't fail. They don't take 2 seconds. They're free. You can assume whoever wrote the other module is on your team."
 - "The moment you cross the network, EVERY one of these assumptions breaks."
-
-**Approach:**
-- Go through each fallacy with a Pawtograder example
-- Keep it concrete — "Here's how this fallacy burned Pawtograder"
 
 → **Transition:** Let's go through them one by one...
 </aside>
@@ -754,17 +746,16 @@ Response response = null;
 int attempts = 0;
 while (response == null && attempts < 3) {
   try {
-    response = client.send(request,
-        Duration.ofSeconds(10));
+    response = client.send(request, Duration.ofSeconds(10));
   } catch (TimeoutException e) {
-    // Exponential backoff: 1s, 2s, 4s
+    // This performs xponential backoff: 1s, 2s, 4s
     Thread.sleep((long) Math.pow(2, attempts) * 1000);
     attempts++;
   }
 }
 if (response == null) {
   logError("Failed after 3 attempts");
-  // Show "grading in progress" not a crash
+    // Display "grading in progress"
 }
 ```
 
@@ -804,7 +795,7 @@ if (response == null) {
 ## Pattern: Timeout + Retry with Exponential Backoff
 
 <p style={{fontSize: '0.72em'}}>
-<em>Addresses Fallacy 1 (unreliable). Never wait forever — set a deadline, then try again, backing off between attempts.</em>
+<em>Thia pattern addresses Fallacy 1 (unreliable). Never wait forever — set a deadline, then try again, backing off between attempts.</em>
 </p>
 
 <div style={{fontSize: '0.5em', marginTop: '0.4em'}}>
@@ -837,39 +828,13 @@ public Response call(HttpRequest request) throws Exception {
 ```
 
 </div>
-
-<div className="fragment">
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.55em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0em', border: '2px solid #f44336', borderRadius: '8px'}}>
-
-**Fixed 1s retry — the thundering herd**
-
-100 clients all fail at t=0 (API restart). All retry at t=1s. Server gets slammed again. All fail. All retry at t=2s…
-The server never gets a chance to recover.
-
-</div>
-
-<div style={{padding: '0em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
-
-**Exponential backoff + jitter — spreading the load**
-Load arrives in waves the server can absorb.
-
-</div>
-
-</div>
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.62em', marginTop: '0.4em', color: '#FF9800'}}>
-<strong>Only retry 5xx and timeouts.</strong> A 400 Bad Request won't fix itself. A 401 Unauthorized won't either. Retrying a 409 Conflict might make things worse.
-</p>
+<div style={{ fontSize: '.8em' }}>
+Exponential backoff + jitter (randomness) ensures retries don't happen at same time
 </div>
 
 <aside className="notes">
 **The timeout is the most important part:**
 - Without a timeout, `client.send()` can block indefinitely
-- One blocked thread is fine; a service that accumulates 100 blocked threads per second will exhaust its thread pool and die
 - Always set a timeout — even if generous (30s)
 
 **Exponential backoff rationale:**
@@ -877,14 +842,48 @@ Load arrives in waves the server can absorb.
 - Fixed 1s retry: all 100 retry at t+1s — waves of 100 requests on top of normal load
 - Exponential backoff: naturally spread out — 2s, 4s, 8s
 - Add jitter: `backoffMs += random.nextLong(0, 500)` — "thundering herd" prevention
-
-**The 4xx vs 5xx distinction:**
-- 429 Too Many Requests: IS worth retrying — check the Retry-After header
-- 401 Unauthorized: don't retry, your token is wrong
-- 503 Service Unavailable: retry with backoff
-- Key question: "Is the problem on my side (4xx) or the server's side (5xx)?"
-
 → **Transition:** But now we have a problem: if we retry, could we run the operation twice?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Idempotency
+
+<div style={{ fontSize: '.7em' }}>
+An action is <em>idempotent</em> if performing it multiple times has the same result as performing it once.
+
+<div className='fragment' style={{display: 'flex', gap: '2em'}}>
+
+<div style={{flex: 1, border: '2px solid #4ac', borderRadius: '8px', padding: '0.5em'}}>
+
+**Idempotent**
+- `x = 5;`
+- `myList.clear();`
+- Pressing an elevator button
+- HTTP GET, PUT, and DELETE
+
+</div>
+
+<div style={{flex: 1, border: '2px solid #f44336', borderRadius: '8px', padding: '0.5em'}}>
+
+**Non-Idempotent**
+- `x += 5;`
+- `myList.add(1);`
+- Watering a plant
+- HTTP POST
+</div>
+</div>
+
+<div className='fragment'>
+If you ask your roommate multiple times on the same day to water the plant, will they do it more than once?
+</div>
+</div>
+
+
+<aside className="notes">
+
 </aside>
 
 </Slide>
@@ -909,7 +908,9 @@ public void submitFeedback(String submissionId, Feedback feedback) {
         .build();
     sendWithRetry(request);   // Now safe to call multiple times!
 }
+```
 
+```java
 // SERVER: check the key before doing any work
 public Response submitFeedback(Request req) {
     String key = req.header("Idempotency-Key");
@@ -925,30 +926,20 @@ public Response submitFeedback(Request req) {
     return result;
 }
 ```
-
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.65em', marginTop: '0.4em', color: '#9370DB'}}>
-<strong>HTTP verb idempotency:</strong> GET always idempotent (read-only). DELETE idempotent (deleting twice = 404, no harm). PUT idempotent (replace whole resource). POST NOT idempotent by default — that's why you need the Idempotency-Key header.
-</p>
 </div>
 
 <aside className="notes">
-**The core ambiguity:**
-- Client POSTs. Network drops the RESPONSE (not the request — the request got through).
-- Client times out and retries.
-- Without idempotency: two grade records for the same submission.
-- With idempotency: server recognizes the key, returns same result — one grade.
-
-**"At-least-once" vs "exactly-once":**
-- Retry without idempotency → at-least-once (might run multiple times)
-- No retry → at-most-once (might not run at all)
-- Retry + idempotency → exactly-once semantics
-
 → **Transition:** Even when the network works, it still slows you down...
 </aside>
 
+</Slide>
+
+<Slide>
+## Latency
+
+<Img src='/img/lectures/web/l20-latency-cartoon.png'
+  alt='TODO'
+/>
 </Slide>
 
 <Slide>
@@ -967,7 +958,7 @@ Every network call takes time. Local method calls: nanoseconds. Network calls: m
 
 </div>
 
-<div style={{padding: '0.6em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
+<div className='fragment' style={{padding: '0.6em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
 
 **Fallacy 3: Bandwidth is infinite**
 
@@ -977,7 +968,7 @@ Networks have limited capacity. Large payloads over constrained connections caus
 
 </div>
 
-<div style={{padding: '0.6em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+<div className='fragment'  style={{padding: '0.6em', border: '2px solid #FF9800', borderRadius: '8px'}}>
 
 **Fallacy 5: Topology doesn't change**
 
@@ -987,7 +978,7 @@ IP addresses change. Servers move. DNS updates. Cached network locations can bre
 
 </div>
 
-<div style={{padding: '0.6em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+<div className='fragment' style={{padding: '0.6em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
 
 **Fallacy 8: The network is homogeneous**
 
@@ -1028,66 +1019,59 @@ Different network paths have different characteristics. Same code behaves differ
 
 <Slide>
 
-## Fallacy 4: "The Network Is Secure" (and Fallacies 6–7)
+## Fallacy 4: "The Network Is Secure"
+```mermaid
+flowchart LR
+    Client -->|"sends data"| Attacker
+    Attacker -.->|"intercept / modify"| Server
+```
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75em', fontSize: '0.6em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0.6em', border: '2px solid #f44336', borderRadius: '8px'}}>
-
-**Fallacy 4: The network is secure**
+<div style={{ fontSize: '.8em' }}>
 
 Data crossing networks can be intercepted, modified, or spoofed. Every network boundary is a potential attack surface.
 
 *Pawtograder:* Without the OIDC token, anyone could POST fake grades. Without HTTPS, a network observer could read or modify grades in transit.
 
 *(We'll dive deep on security later in this lecture.)*
-
 </div>
 
-<div style={{padding: '0.6em', border: '2px solid #9370DB', borderRadius: '8px'}}>
+<aside className="notes">
+- OIDC (OpenID Connect) is an authentication protocol
+</aside>
 
-**Fallacy 6: There is one administrator**
+</Slide>
+
+<Slide>
+
+## Fallacy 6: "There Is One Administrator"
+<div style={{ fontSize: '.8em' }}>
 
 Different parts of distributed systems are controlled by different organizations. You can't control what they do.
 
 *Real NEU example:* Northeastern contracts with Palo Alto Networks to filter all campus traffic. When Palo Alto arbitrarily decides Pawtograder's dev environment is malware — learning is disrupted. NEU claimed no responsibility. **This happens all the time.**
 
+<aside className="notes">
+- Corporate firewalls, university proxies, ISP throttling, regional outages — all outside your control
+- Design for this: health checks, fallback modes, clear error messages to users
+</aside>
 </div>
+</Slide>
 
-<div style={{padding: '0.6em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+<Slide>
 
-**Fallacy 7: Transport cost is zero**
-
+## Fallacy 7: "Transport Cost Is Zero"
+```mermaid
+flowchart LR
+    A["100 test results"] -->|"100 API calls ❌"| B["submitFeedback()"]
+    A -->|"1 batched call ✅"| B
+```
+<div style={{ fontSize: '.8em' }}>
 Network calls have real costs: computational (serialization, encryption), monetary (API pricing, bandwidth fees), and energy (radio transmission, data center processing).
 
 *Pawtograder:* Batching 100 test results into one `submitFeedback()` call instead of 100 calls doesn't just save latency — it saves energy. 6,000 grading runs/semester × 100 extra API calls = measurable environmental impact.
-
 </div>
-
-</div>
-
 <aside className="notes">
-**Fallacy 6 is worth a moment:**
-- This is a real thing that happened at NEU
-- The lesson: in distributed systems, you don't control the whole network path
-- Corporate firewalls, university proxies, ISP throttling, regional outages — all outside your control
-- Design for this: health checks, fallback modes, clear error messages to users
-
-**Fallacy 7 — the sustainability angle:**
-- Every API call: serialize to JSON → transmit → deserialize → process → serialize response → transmit → deserialize
-- In a monolith: that's a method call (nanoseconds)
-- Multiply by thousands of calls/minute, thousands of services — real energy cost
-- Sustainability is becoming a quality attribute: the "Green Software" movement
-
-**Energy calculation for Pawtograder:**
-- 6,000 grading runs/semester
-- 100 tests per assignment
-- Batching saves ~99 API calls per run
-- 594,000 fewer API calls per semester
-- That's not nothing
-
-**The architectural takeaway:**
-- "Monolith-first" isn't just about simplicity — it's about not paying distributed-system costs until you have distributed-system benefits
+- Where have we seen combining requests in the Java library? BufferedInputStream
 
 → **Transition:** The fallacies also drive system-level resilience patterns — let's see two more...
 </aside>
@@ -1102,43 +1086,71 @@ Network calls have real costs: computational (serialization, encryption), moneta
 <em>If a service is struggling, hammering it with retries makes it worse. The circuit breaker detects sustained failure and stops trying — giving the service time to recover.</em>
 </p>
 
-<div style={{fontSize: '0.47em', marginTop: '0.3em'}}>
+<div style={{display: 'flex', gap: '1em', marginTop: '0.3em'}}>
 
+<div style={{fontSize: '0.47em', flex: '1'}}>
 ```java
 // Three states: CLOSED (normal) → OPEN (failing fast) → HALF_OPEN (testing recovery)
 public class CircuitBreaker {
-    enum State { CLOSED, OPEN, HALF_OPEN }
+  enum State { CLOSED, OPEN, HALF_OPEN }
 
-    private State state = State.CLOSED;
-    private int failureCount = 0;
-    private Instant openedAt;
+  private State state = State.CLOSED;
+  private int failureCount = 0;
+  private Instant openedAt;
 
-    public Response call(Supplier<Response> request) {
-        if (state == State.OPEN) {
-            if (Duration.between(openedAt, Instant.now()).toSeconds() < 30) {
-                // Fail immediately — fast failure > slow failure
-                throw new CircuitOpenException("Service unavailable, try later");
-            }
-            state = State.HALF_OPEN;   // After 30s, allow one probe request through
-        }
-
-        try {
-            Response response = request.get();
-            reset();           // Success: back to CLOSED
-            return response;
-        } catch (Exception e) {
-            failureCount++;
-            if (failureCount >= 5) {
-                state = State.OPEN;    // 5 consecutive failures → trip the circuit
-                openedAt = Instant.now();
-            }
-            throw e;
-        }
+  public Response call(Supplier<Response> request) {
+    if (state == State.OPEN) {
+      if (Duration.between(openedAt, Instant.now()).toSeconds() < 30) {
+        // Fail immediately — fast failure > slow failure
+        throw new CircuitOpenException("Service unavailable, try later");
+      }
+      state = State.HALF_OPEN;   // After 30s, allow one probe request through
     }
 
-    private void reset() { state = State.CLOSED; failureCount = 0; }
+    try {
+      Response response = request.get();
+      reset();           // Success: back to CLOSED
+      return response;
+    } catch (Exception e) {
+      failureCount++;
+      if (failureCount >= 5) {
+        state = State.OPEN;    // 5 consecutive failures → trip the circuit
+        openedAt = Instant.now();
+      }
+      throw e;
+    }
+  }
+
+  private void reset() { state = State.CLOSED; failureCount = 0; }
 }
 ```
+
+</div>
+
+<div style={{flex: '1', display: 'flex', flexDirection: 'column', gap: '1em', fontSize: '0.6em'}}>
+```mermaid
+flowchart LR
+    Caller -->|"request"| CB["Circuit Breaker"]
+    CB -->|"response"| Caller
+    CB -->|"request"| Service
+    Service -->|"response"| CB
+```
+```mermaid
+stateDiagram-v2
+    [*] --> CLOSED
+    CLOSED --> OPEN : 5 consecutive failures
+    OPEN --> HALF_OPEN : after 30s timeout
+    HALF_OPEN --> CLOSED : probe succeeds
+    HALF_OPEN --> OPEN : probe fails
+```
+
+```mermaid
+flowchart LR
+    Caller -->|"request"| CB["Circuit Breaker"]
+    CB["Circuit Breaker"] -->|503| Caller
+```
+
+</div>
 
 </div>
 
@@ -1232,7 +1244,7 @@ public SubmissionResponse handleSubmission(String submissionId) {
 </Slide>
 
 {/* ============================================ */}
-{/* MICROSERVICES */}
+{/* ARC 4: MICROSERVICES */}
 {/* ============================================ */}
 
 <Slide>
