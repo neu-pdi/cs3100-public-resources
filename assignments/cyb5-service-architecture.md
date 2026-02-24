@@ -28,7 +28,7 @@ This is a **design-heavy assignment.** We provide the commands your CLI must sup
 
 ### At a Glance
 
-**What you'll build:** A CLI-oriented service layer (your design) and a rich interactive CLI with command parsing, navigation, and two interactive modes (cook mode and scaling mode).
+**What you'll build:** A CLI-oriented service layer (your design) and a rich interactive CLI with command parsing, navigation, collection/recipe management (create, rename, delete, edit), and two interactive modes (cook mode and scaling mode).
 
 **The main challenge:** Designing services that actually serve your CLI's needs (unlike the A4 facade), then building a polished user experience — tab completion, contextual help, clear error messages, and an interactive cooking walkthrough.
 
@@ -170,10 +170,15 @@ You must design and implement **your own application service(s)** for the CLI. Y
 | CLI Need | Service Capability Required |
 |----------|-----------------------------|
 | Browse collections and recipes | Look up collections, list recipes in a collection |
+| Create a collection | Create a new collection with a title, save to repository |
+| Rename a collection | Load collection, create copy with new title (same ID), save |
+| Delete a collection | Delete a collection by ID; remove from repository |
 | Display a recipe | Retrieve a recipe by title or ID |
 | Search by ingredient | Find recipes containing an ingredient (case-insensitive substring) |
 | Import from JSON | Parse a JSON file into a Recipe, save it, add to a collection |
 | Import from text | Parse text into a Recipe, *optionally* save it and add to a collection |
+| Edit a recipe | Parse text into a Recipe, replace existing recipe (preserve ID), update any collections that contain it |
+| Delete a recipe | Delete recipe from repository; remove from all collections that contain it |
 | Scale a recipe | Scale ingredient quantities by a factor — return the scaled recipe *without* automatically saving |
 | Convert units | Convert ingredient units — return the result *without* automatically saving |
 | Save a recipe | Persist a recipe to the repository (as a separate, explicit operation) |
@@ -198,6 +203,11 @@ public class CookYourBooksService {
     Recipe parseFromJson(Path file);             // Parse without saving
     void saveRecipe(Recipe recipe);              // Explicit save
     void addToCollection(Recipe r, String colId); // Explicit collection update
+    void createCollection(String title);        // Create new collection
+    void renameCollection(String oldTitle, String newTitle);
+    void deleteCollection(String title);
+    void editRecipe(String title, Recipe updated); // Replace preserving ID
+    void deleteRecipe(String title);            // Remove from repo + all collections
     Recipe scale(Recipe recipe, int servings);   // Scale without saving
     Recipe convert(Recipe recipe, Unit unit);     // Convert without saving
     ShoppingList aggregateShoppingList(List<Recipe> recipes);
@@ -336,6 +346,49 @@ Collections:
   3. Budget Bytes             [Web]         5 recipes
 ```
 
+#### `collection create <name>` — Create a Collection
+
+```
+cyb> collection create "Holiday Favorites"
+```
+
+Creates a new personal collection with the given title and saves it to the repository.
+
+**On success:** `Created collection 'Holiday Favorites'.`
+
+**Error handling:**
+- Blank or empty name: Display a helpful message
+
+#### `collection rename <old> <new>` — Rename a Collection
+
+```
+cyb> collection rename "Holiday Favorites" "Holiday Recipes"
+```
+
+Renames the specified collection. Collection is identified by title (case-insensitive).
+
+**On success:** `Renamed 'Holiday Favorites' to 'Holiday Recipes'.`
+
+**Error handling:**
+- Collection not found: `Collection not found: 'Unknown Collection'. Use 'collections' to see available collections.`
+- Multiple matches: Display all matches and ask the user to be more specific
+
+#### `collection delete <name>` — Delete a Collection
+
+```
+cyb> collection delete "Holiday Favorites"
+```
+
+Deletes the specified collection from the repository. The recipes in the collection remain in the recipe repository; only the collection grouping is removed.
+
+**In interactive mode:** Confirm before deleting: `Delete collection 'Holiday Favorites'? (y/n): `
+
+**On success:** `Deleted collection 'Holiday Favorites'.`
+
+**Error handling:**
+- Collection not found: `Collection not found: 'Unknown Collection'. Use 'collections' to see available collections.`
+- In non-interactive mode: Auto-confirm (act as if user typed `y`)
+
 #### `recipes <collection>` — List Recipes in a Collection
 
 ```
@@ -462,6 +515,53 @@ Imported 'Simple Salad' into 'Holiday Favorites'.
 **Error handling:**
 - Collection not found: Display message *before* prompting for text input
 - Parse errors: Display the error message from `ParseException`
+
+#### `edit <recipe>` — Edit a Recipe
+
+```
+cyb> edit "Chocolate Chip Cookies"
+```
+
+Enters a **multi-line input mode** where the user types or pastes the updated recipe in plain text. The input ends when the user enters a blank line followed by `END` on its own line (or uses Ctrl+D). The text is parsed and replaces the existing recipe, preserving its ID so that collections that contain it remain valid.
+
+**Example interaction:**
+```
+cyb> edit "Chocolate Chip Cookies"
+Enter updated recipe text (end with a blank line then END):
+> Chocolate Chip Cookies
+>
+> Serves 24 cookies
+>
+> Ingredients:
+> 2 cups flour
+> 1 cup brown sugar
+> ...
+>
+> END
+Updated 'Chocolate Chip Cookies'.
+```
+
+**Error handling:**
+- Recipe not found: `Recipe not found: 'Unknown Recipe'. Use 'search' to find recipes by ingredient.` — display *before* prompting for text input
+- Multiple matches: Display all matches and ask the user to be more specific before prompting
+- Parse errors: Display the error message from `ParseException`
+
+#### `delete <recipe>` — Delete a Recipe
+
+```
+cyb> delete "Chocolate Chip Cookies"
+```
+
+Deletes the specified recipe from the repository and removes it from all collections that contain it.
+
+**In interactive mode:** Confirm before deleting: `Delete recipe 'Chocolate Chip Cookies'? (y/n): `
+
+**On success:** `Deleted recipe 'Chocolate Chip Cookies'.`
+
+**Error handling:**
+- Recipe not found: `Recipe not found: 'Unknown Recipe'. Use 'search' to find recipes by ingredient.`
+- Multiple matches: Display all matches and ask the user to be more specific
+- In non-interactive mode: Auto-confirm (act as if user typed `y`)
 
 #### `scale <recipe>` — Interactive Scaling Mode
 
@@ -674,10 +774,11 @@ Exits the application gracefully.
 
 Your CLI must provide tab completion for:
 
-1. **Command names** — typing `sc` + Tab should suggest `scale`, `search`
-2. **Collection names** — after `recipes`, Tab should suggest available collection titles
-3. **Recipe titles** — after `show`, `cook`, `scale`, `convert`, Tab should suggest recipe titles
-4. **Unit names** — after `convert <recipe>`, Tab should suggest valid unit names
+1. **Command names** — typing `sc` + Tab should suggest `scale`, `search`; `col` should suggest `collection`, `collections`
+2. **Collection subcommands** — after `collection`, Tab should suggest `create`, `rename`, `delete`
+3. **Collection names** — after `recipes`, `collection rename`, `collection delete`, Tab should suggest available collection titles
+4. **Recipe titles** — after `show`, `cook`, `scale`, `convert`, `edit`, `delete`, Tab should suggest recipe titles
+5. **Unit names** — after `convert <recipe>`, Tab should suggest valid unit names
 
 Use JLine's `Completer` interface to implement this. You may use `AggregateCompleter`, `ArgumentCompleter`, and `StringsCompleter` — see the JLine documentation.
 
@@ -876,6 +977,8 @@ void scaleWorkflow_showsComparisonAndSaves() {
 | Individual commands | Unit test with mocked services: correct output for given state |
 | Output formatting | Unit test: recipe/collection/shopping-list formatting matches expected structure |
 | Error handling | Unit test: correct error messages for each failure case |
+| Collection CRUD | Unit test with mocked repos: create, rename, delete |
+| Recipe edit/delete | Unit test: edit replaces preserving ID; delete removes from repo and collections |
 | Cook mode navigation | Integration test with scripted input: next/prev/scale/quit flow |
 | Scale mode interaction | Integration test with scripted input: enter servings, save/cancel |
 | Tab completion | Unit test: correct suggestions for each command context |
@@ -903,10 +1006,15 @@ cyb> help
 
 CookYourBooks Commands:
   Library:
-    collections              List all recipe collections
-    recipes <collection>     List recipes in a collection
-    show <recipe>            Display a recipe
-    search <ingredient>      Find recipes by ingredient
+    collections                    List all recipe collections
+    collection create <name>       Create a new collection
+    collection rename <old> <new>  Rename a collection
+    collection delete <name>       Delete a collection
+    recipes <collection>           List recipes in a collection
+    show <recipe>                  Display a recipe
+    search <ingredient>            Find recipes by ingredient
+    edit <recipe>                  Edit a recipe (multi-line input)
+    delete <recipe>                Delete a recipe
 
   Import/Export:
     import json <file> <collection>   Import recipe from JSON file
@@ -1056,16 +1164,19 @@ Your CLI is tested by sending scripted commands and verifying output:
 | Component | Points |
 |-----------|--------|
 | `help` (list and per-command) | 3 |
-| `collections` (correct listing) | 4 |
-| `recipes <collection>` (correct listing + error handling) | 5 |
-| `show <recipe>` (correct display + error handling) | 5 |
+| `collections` (correct listing) | 3 |
+| `collection create/rename/delete` (correct behavior + error handling) | 4 |
+| `recipes <collection>` (correct listing + error handling) | 4 |
+| `show <recipe>` (correct display + error handling) | 4 |
 | `search <ingredient>` (correct results + no results) | 4 |
-| `import json` (success + error cases) | 4 |
-| `import text` (success + error cases) | 4 |
-| `scale` interactive mode (comparison display, save, cancel) | 6 |
+| `import json` (success + error cases) | 3 |
+| `import text` (success + error cases) | 3 |
+| `edit <recipe>` (multi-line input, replace, preserve ID) | 2 |
+| `delete <recipe>` (remove from repo + all collections) | 1 |
+| `scale` interactive mode (comparison display, save, cancel) | 5 |
 | `convert` (display + save + error cases) | 4 |
 | `shopping-list` (correct aggregation display) | 4 |
-| `cook` mode (navigation, scale, ingredients, done/quit) | 7 |
+| `cook` mode (navigation, scale, ingredients, done/quit) | 6 |
 
 #### Service Layer Correctness (20 points)
 
@@ -1073,12 +1184,13 @@ Your service layer is tested via unit tests (with mocked repositories):
 
 | Component | Points |
 |-----------|--------|
-| Scale returns result without persisting | 4 |
-| Convert returns result without persisting | 4 |
-| Explicit save persists to repository | 3 |
+| Scale returns result without persisting | 3 |
+| Convert returns result without persisting | 3 |
+| Explicit save persists to repository | 2 |
 | Search by ingredient (case-insensitive substring) | 3 |
 | Shopping list aggregation | 3 |
 | Import workflows (parse + save + collection update) | 3 |
+| Collection CRUD + recipe edit/delete (create, rename, delete collections; edit, delete recipes) | 3 |
 
 ### Manual Grading (50 points)
 
