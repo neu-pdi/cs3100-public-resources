@@ -1,0 +1,279 @@
+cards:
+  - title: "The Big Ball of Mud"
+    prompt: |
+      What is the Big Ball of Mud, and why is it the default outcome without architectural discipline?
+    answer: |
+      A **haphazardly structured, sprawling, sloppy, spaghetti-code jungle** (Foote & Yoder, 1997) where information is shared promiscuously among distant elements.
+
+      Nobody designs a Big Ball of Mud on purpose. It emerges from thousands of small decisions made under pressure: "just put it here for now," "we'll refactor later," "it's faster to copy-paste."
+
+      **The real cost isn't aesthetics — it's every quality attribute:**
+      - Changeability: "Where does this feature go?" → "Everywhere and nowhere"
+      - Testability: Can't test in isolation when everything depends on everything
+      - Deployability: Can't deploy safely when any change might break anything
+
+      Every architectural style we study — layered, hexagonal, modular monolith — is a strategy to **prevent** this.
+
+  - title: "What Is a Monolith?"
+    prompt: |
+      What defines a monolith, and what are its three key characteristics?
+    answer: |
+      A **monolith** is a system deployed as a single unit. All functionality lives in one codebase, compiles into one artifact, and runs in one process.
+
+      Three defining characteristics:
+
+      1. **Single Deployment:** One build, one deploy. Fix a typo? Redeploy the whole app. A broken test anywhere blocks everything.
+
+      2. **Shared Memory:** Components communicate via method calls (nanoseconds), not networks (milliseconds). You get transactions, object references, and single-debugger sessions **for free** — guarantees that are invisible until you lose them.
+
+      3. **Unified Codebase:** One repo, one language, one build system. Refactoring is easy (IDE finds every caller), but merge conflicts increase with team size.
+
+      **"Monolith" isn't an insult** — it's a deployment topology. Many successful systems (GitHub, Shopify) are monoliths.
+
+  - title: "Monolith Quality Attribute Profile"
+    prompt: |
+      Where do monoliths excel and where do they struggle in terms of quality attributes?
+    answer: |
+      **Where Monoliths Excel:**
+      - **Simplicity** ★★★ — One thing to build, test, deploy, monitor
+      - **Responsiveness** ★★★ — In-process calls are orders of magnitude faster than network calls
+
+      **Where Monoliths Struggle:**
+      - **Scalability** ★☆☆ — Must scale the entire app; heavy work competes with everything
+      - **Deployability** ★☆☆ — Every deploy is all-or-nothing; a bug anywhere blocks everything
+      - **Fault Tolerance** ★☆☆ — A crash in any component takes down the entire process
+      - **Modularity** ★☆☆ — Boundaries are conventions, not enforcement (without discipline → Big Ball of Mud)
+
+      The modularity problem is the key weakness: without enforced boundaries, monoliths tend toward the Big Ball of Mud.
+
+  - title: "The Modular Monolith"
+    prompt: |
+      What is a modular monolith, and what problem does it solve?
+    answer: |
+      A **modular monolith** keeps the simplicity of a single deployment but adds **enforced internal boundaries** — preventing the Big Ball of Mud.
+
+      Key characteristics:
+      - Still one build, one deploy — operationally simple
+      - Modules communicate through **explicit public APIs**, not by reaching into each other's internals
+      - Each module owns its database tables; cross-module queries go through APIs
+      - Build tools or linters **prevent** modules from importing private code
+
+      **Quality attribute upgrade:**
+      - Simplicity ★★★ (kept)
+      - Modularity ★★★ (big upgrade!)
+      - Scalability ★☆☆ (still one process)
+
+      Many teams discover they **never need microservices** — module boundaries solve maintainability and team ownership problems without network complexity.
+
+  - title: "Technical vs. Domain Partitioning"
+    prompt: |
+      What's the difference between technical and domain partitioning, and when does each work best?
+    answer: |
+      **Technical Partitioning** — group by role:
+      ```
+      controllers/ → services/ → repositories/ → models/
+      ```
+      "How does grading work?" requires jumping between 4 packages.
+
+      **Domain Partitioning** — group by capability:
+      ```
+      grading/ → submissions/ → courses/
+      ```
+      "How does grading work?" → everything is in `grading/`.
+
+      | Question | Technical | Domain |
+      |---|---|---|
+      | Adding Rust support? | New files across multiple packages | All changes in `grading/rust/` |
+      | Team independence? | Every feature touches many packages | Team owns their vertical slice |
+
+      **Connection to L18 heuristics:**
+      - **Actor Ownership** → Domain partitioning aligns with who owns what
+      - **Rate of Change** → Technical partitioning separates things that change together
+
+      **Conway's Law** (L22 preview): If you have a "frontend team" and "backend team," you'll get technical partitioning. If you have a "grading team" and "courses team," you'll get domain partitioning.
+
+  - title: "Quality Attributes Vocabulary"
+    prompt: |
+      What are the nine quality attributes used to evaluate architectural styles?
+    answer: |
+      **Already known from prior lectures:**
+      - **Simplicity:** How easy is the system to understand? (L7: low coupling, high cohesion)
+      - **Modularity:** How well divided into independent components? (L7: coupling/cohesion at system scale)
+      - **Testability:** Can components be tested in isolation? (L16: hex arch, ports/adapters)
+      - **Changeability:** How safely can we modify the system? (L6-L8: information hiding, SOLID)
+
+      **New vocabulary:**
+      - **Deployability:** How easily can we release changes? (Independent deploys vs. all-or-nothing)
+      - **Responsiveness:** How quickly does the system respond? (Method calls = ns; network calls = ms)
+      - **Fault Tolerance:** How does it behave when something fails? (Isolated failure vs. total crash)
+      - **Scalability:** How does it handle growth? (Vertical: bigger server; horizontal: more instances)
+      - **Maintainability:** Umbrella term decomposing into simplicity, modularity, testability, and changeability
+
+  - title: "Quality Attribute Scenarios"
+    prompt: |
+      How do you make a quality attribute specific and testable?
+    answer: |
+      Use a **six-part quality attribute scenario** (same idea as L9's precise requirements):
+
+      1. **Source** — Who causes it? (200 students)
+      2. **Stimulus** — What event? (Submit near deadline)
+      3. **Environment** — Under what conditions? (Normal operation)
+      4. **Artifact** — What part of the system? (Grading pipeline)
+      5. **Response** — What should happen? (All graded)
+      6. **Measure** — How do we know? (< 30 minutes)
+
+      **Why this matters:** "The system should be scalable" is useless. Consider:
+      - **Spike:** 200 students submit at 11:59pm (burst)
+      - **Sustained:** 1800 students over 1 hour during exam (continuous)
+      - **Trickle:** 1800 students over 24 hours (easy)
+
+      A system handling the trickle scenario might **completely fail** at the spike scenario. Scenarios give precision.
+
+  - title: "Quality Attributes Trade Off"
+    prompt: |
+      Why can't you maximize every quality attribute? Give examples of tradeoffs.
+    answer: |
+      Every architectural decision has costs — you can't maximize everything:
+
+      - **Simplicity vs. Modularity:** Adding interfaces/abstractions → more modular → less simple
+      - **Simplicity vs. Scalability:** Horizontal scaling needs workers, queues → more complexity
+      - **Deployability vs. Responsiveness:** Independent services → independent deploys → network calls → more latency
+      - **Fault Tolerance vs. Simplicity:** Isolation requires boundaries → boundaries add complexity
+
+      **The pattern:** Monoliths win on simplicity and responsiveness; microservices win on modularity and scalability. Almost every row is a **direct tradeoff**.
+
+      Architecture is choosing which attributes matter most for *your* system. "Which tradeoffs can you live with?"
+
+  - title: "Architectural Styles vs. Patterns"
+    prompt: |
+      What's the difference between an architectural style and an architectural pattern?
+    answer: |
+      **Architectural Style — The Shape:**
+      A bundle of characteristics about a system: how components are organized, how they communicate, how the system is deployed.
+      - Examples: "Microservices," "Monolith," "Hexagonal," "Layered"
+      - A style is a whole worldview
+
+      **Architectural Pattern — The Solution:**
+      A contextualized solution to a recurring problem, used *within* a style.
+      - Examples: Service Locator, Repository, Strategy, Circuit Breaker
+      - Patterns are used WITHIN a style
+
+      **Styles describe the overall shape; patterns are reusable solutions you apply within that shape.** You might use many patterns within a single style.
+
+  - title: "Layered Architecture"
+    prompt: |
+      What are the four layers in a layered architecture, and what's the key rule?
+    answer: |
+      Four horizontal strata, each with a distinct responsibility:
+
+      1. **Presentation:** User interface, API endpoints, CLI — translates user actions into calls
+      2. **Application/Service:** Orchestrates use cases and workflows — no business rules, just coordination
+      3. **Domain:** Business logic, rules, entities — ZERO knowledge of databases, HTTP, or file systems
+      4. **Infrastructure:** Technology-specific implementations — PostgreSQL, external APIs, file parsers
+
+      **The key rule:** Dependencies flow **downward only**. Presentation → Application → Domain → Infrastructure, never the reverse.
+
+      **The pitfall ("layer tax"):** Adding a new field that flows from UI through services into the database requires touching **every layer** — the cost of separation.
+
+      Layered and hexagonal are **complementary perspectives**, not competing choices. Many systems exhibit both.
+
+  - title: "Pipelined Architecture"
+    prompt: |
+      What is pipelined (pipes and filters) architecture, and when does it emerge?
+    answer: |
+      Data flows through **stages**, each transforming input into output for the next. Pawtograder's grading pipeline:
+
+      Submission → Overlay Files → Build → Run Tests → Parse Reports → Grade Units → Apply Dependencies → Final Feedback
+
+      **Benefits:**
+      - Each stage testable independently (feed known input, check output)
+      - Adding mutation testing = insert a stage — existing stages unchanged
+      - Classic examples: compilers, Unix pipes, ETL jobs
+
+      **Constraints:**
+      - Works best when data flows one direction
+      - Awkward for interactive/bidirectional workflows
+      - Stage failure stops the pipeline
+
+      **When does a pipeline emerge?** Apply heuristics and ask: Does data flow one direction? Is each transformation independently testable? Do stages change for different reasons? If yes → pipeline.
+
+  - title: "Styles Emerge from Heuristics"
+    prompt: |
+      How do architectural styles emerge from the L18 boundary heuristics?
+    answer: |
+      Styles aren't picked from a menu — they **emerge** when you apply heuristics consistently:
+
+      - **Hexagonal emerges** when the domain needs multiple entry points (web, CLI, tests) and multiple exit points (DB, API, files) — ISP and testability dominate
+      - **Layered emerges** when responsibilities stack vertically and teams map to technical roles — actor ownership dominates
+      - **Pipelined emerges** when data flows one direction through independent transformations — rate of change and testability dominate
+
+      **They're not mutually exclusive:** Pawtograder exhibits hexagonal (domain core with ports/adapters) AND pipelined (overlay → build → test → grade) AND layered (main → pipeline → grader → parsers).
+
+      **The complete discovery process:** Domain understanding (L12) → Apply heuristics (L18) → Boundaries emerge → Recognize the style (L19) → Communicate it.
+
+  - title: "Domain Understanding Is the Prerequisite"
+    prompt: |
+      Why is domain understanding (L12) essential before applying architectural heuristics?
+    answer: |
+      The heuristics ask great questions — but you can only answer them if you **understand your domain**:
+
+      **Without domain understanding:**
+      "We might need to support multiple databases..." → Adds abstraction layers that increase cognitive overhead, makes simple queries harder to optimize, pays flexibility tax EVERY DAY.
+
+      **With domain understanding:**
+      - Config files change weekly → declarative YAML (invest flexibility here)
+      - Database vendor change unlikely → couple tightly, it's fine (don't invest here)
+
+      **The flexibility trap:** Junior architects think "more flexibility = better." Reality: every abstraction has a cost you pay every day. Domain modeling tells you which abstractions will **pay off** and which are waste.
+
+      *Invest flexibility where change actually happens, not where it theoretically might.*
+
+  - title: "Monolith vs. Microservices Tradeoffs"
+    prompt: |
+      What are the key tradeoffs between monoliths and microservices?
+    answer: |
+      | Quality Attribute | Monolith | Microservices |
+      |---|---|---|
+      | **Simplicity** | ★★★ One process, one deploy | ★☆☆ Many services, network complexity |
+      | **Modularity** | ★☆☆ Boundaries are conventions | ★★★ Network enforces boundaries |
+      | **Deployability** | ★☆☆ All-or-nothing | ★★★ Independent per service |
+      | **Responsiveness** | ★★★ Method calls (ns) | ★☆☆ Network calls (ms) |
+      | **Scalability** | ★☆☆ Vertical only | ★★★ Horizontal per service |
+      | **Fault Tolerance** | ★☆☆ One crash = all down | ★★☆ Isolated (but new failure modes) |
+
+      Almost every row is a **direct tradeoff**. "Which is better?" is the wrong question — it depends on which quality attributes your system prioritizes.
+
+      The **modular monolith** tries to get modularity ★★★ while keeping simplicity ★★★, but can't help with scalability or fault tolerance.
+
+  - title: "The Network Changes Everything"
+    prompt: |
+      What guarantees do you lose when components communicate over a network instead of in shared memory?
+    answer: |
+      In a monolith, method calls are **instant, reliable, and traceable**. Over a network, ALL of these disappear:
+
+      | Guarantee | Monolith | Distributed |
+      |---|---|---|
+      | **Speed** | Nanoseconds | Milliseconds... or seconds... or ∞ |
+      | **Reliability** | Method always runs | Server might be down |
+      | **Completeness** | Success or exception | Request succeeds, response lost |
+      | **Idempotency** | Call once | Retry = accidentally do it twice? |
+      | **Transactions** | Atomic rollback | No cross-system transactions |
+      | **Debugging** | Full stack trace | Distributed tracing across services |
+
+      These guarantees are **invisible until you lose them**. Pawtograder's `SupabaseAPI` implements retry logic with exponential backoff — complexity that simply doesn't exist in a monolith.
+
+  - title: "Architecture Is Discovered, Not Chosen"
+    prompt: |
+      What is the key takeaway about how good architecture emerges?
+    answer: |
+      Architecture isn't about picking from a menu — it's a **discovery process**:
+
+      1. **L12 — Domain Understanding:** What actually changes? Who actually cares? What's stable?
+      2. **L18 — Heuristics:** Apply Rate of Change, Actor, ISP, Testability — with REAL answers from domain knowledge
+      3. **Boundaries emerge** naturally from those answers
+      4. **L19 — Recognition:** Name the pattern — "oh, this is hexagonal + pipelined"
+      5. **Communication:** Use the vocabulary to explain to your team
+
+      **Why this order matters:** If you skip domain understanding and go straight to "let's use hexagonal," you're guessing. You might invest flexibility in axes of change that will never occur.
+
+      Style names (hexagonal, layered, pipelined) are **vocabulary for communication**, not a catalog to shop from. You discover architecture by understanding what actually matters.

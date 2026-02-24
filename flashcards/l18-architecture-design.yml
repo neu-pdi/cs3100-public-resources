@@ -1,0 +1,180 @@
+cards:
+  - title: "Architecture vs. Design"
+    prompt: |
+      How do architecture and design differ, and what heuristic distinguishes them?
+    answer: |
+      Architecture and design exist on a **continuum**, asking different questions at different scales:
+
+      | Architecture — Big Picture | Design — Details |
+      |---|---|
+      | What are the major components? | How is this class organized? |
+      | How do they communicate? | What data structures to use? |
+      | What are the quality requirements? | Which pattern fits this problem? |
+      | Which decisions are hard to change? | How do these methods collaborate? |
+
+      **Useful heuristic:** Architectural decisions are the ones that are **expensive to change**.
+
+      - **Architectural:** Run grading on GitHub Actions vs. own server (months to reverse)
+      - **Design:** HashMap vs. TreeMap for test results (an afternoon to change)
+
+  - title: "Architectural Drivers"
+    prompt: |
+      What are the three types of architectural drivers that shape decisions?
+    answer: |
+      1. **Functional Requirements:** What must the system DO? (Accept submissions, run tests, report results)
+      2. **Quality Attributes:** How WELL must it perform? (The "-ilities": testability, changeability, scalability, security...)
+      3. **Constraints:** What limits our choices? Non-negotiable boundaries. (Must run on GitHub Actions, student code is untrusted, must support Java and Python)
+
+      **Key insight:** Functional requirements tell you WHAT capabilities exist, but they don't dictate HOW to structure them. A single monolithic script COULD do everything — **quality attributes and constraints shape the structure**.
+
+  - title: "Quality Attributes Often Conflict"
+    prompt: |
+      Why can't we maximize every quality attribute? Give an example of a conflict.
+    answer: |
+      Quality attributes are in **tension** with each other. Every architectural decision involves tradeoffs:
+
+      - **Security vs. Reliability:** Downloading the grader at runtime (security: students can't see tests) creates a network dependency (reliability: grading fails if API is down)
+      - **Testability vs. Simplicity:** Adding ports/adapters for testability means more code and abstractions
+      - **Scalability vs. Simplicity:** Horizontal scaling requires workers, queues, and coordination
+
+      Architecture = making these tradeoffs **consciously**. If someone tells you their architecture maximizes everything, they're selling something.
+
+  - title: "Boundary Heuristic 1: Rate of Change"
+    prompt: |
+      How does "rate of change" help identify service boundaries?
+    answer: |
+      **Things that change at different rates should live in different components.**
+
+      Pawtograder example:
+
+      | Component | How Often It Changes |
+      |---|---|
+      | Config file (`pawtograder.yml`) | Every assignment (weekly) |
+      | Grading Action code | Every few months |
+      | Pawtograder API | Rarely — endpoints are stable |
+      | `PawtograderConfig` interface | Very rarely — breaking change |
+
+      If they were all one thing, changing a test case configuration would mean re-deploying the entire platform. Rate of change tells us: **keep them apart**.
+
+  - title: "Boundary Heuristic 2: Actor Ownership"
+    prompt: |
+      How does "actor ownership" help identify service boundaries?
+    answer: |
+      **Each actor should get their own slice.** Changes from one actor shouldn't ripple to another's code.
+
+      Pawtograder actors:
+      - **Student:** Pushes code, sees grades — never touches config or action
+      - **Instructor:** Writes `pawtograder.yml` — never modifies TypeScript
+      - **Sysadmin:** Maintains API infrastructure — doesn't write grading configs
+      - **Intrepid Instructor:** Can modify the grading action without touching the API
+
+      This is **Single Responsibility Principle at architectural scale** — each component has one reason to change, corresponding to one actor.
+
+  - title: "Boundary Heuristic 3: Interface Segregation"
+    prompt: |
+      How does Interface Segregation (from SOLID) apply at the architectural level?
+    answer: |
+      Don't force clients to depend on interfaces they don't use.
+
+      **Bad:** One monolithic `AutograderSystem` interface with instructor concerns, action engine concerns, AND API concerns all mixed together.
+
+      An instructor configuring a YAML file shouldn't need to know about OIDC tokens. The API shouldn't need to know how tests are run.
+
+      **Good:** Separate, narrow interfaces — each client gets only what it needs. The config schema is the instructor's interface. The two API endpoints are the action's interface.
+
+  - title: "Boundary Heuristic 4: Testability"
+    prompt: |
+      How does testability help identify service boundaries?
+    answer: |
+      **Can you test a component without deploying the whole system?**
+
+      | Component | Testable in Isolation? | How? |
+      |---|---|---|
+      | Grading logic | Yes | Run locally: `npx tsimp src/grading/main.ts -s /solution -u /submission` |
+      | Config parsing | Yes | Parse a YAML file — no network, no GitHub |
+      | API endpoints | Yes | Test with mock OIDC tokens |
+      | Full pipeline | Integration only | Requires GitHub Actions + API |
+
+      The grading action can run locally without Pawtograder. That's not an accident — it's an architectural choice that enables fast development iteration. This is L16's separation of domain from infrastructure applied at system scale.
+
+  - title: "C4 Model: Four Levels of Zoom"
+    prompt: |
+      What are the four levels of the C4 model, and when do you use each?
+    answer: |
+      | Level | Shows | Audience |
+      |---|---|---|
+      | **1. System Context** | System + users + external systems | Students, TAs, stakeholders |
+      | **2. Container** | Deployable units (services, databases) | Instructors, architects |
+      | **3. Component** | Internals of one container | Developers, maintainers |
+      | **4. Code** | Classes and interfaces | Contributors to specific extension points |
+
+      **Match the diagram to the audience.** Don't show Level 4 code diagrams to non-technical stakeholders. You'd rarely draw Level 4 for the whole system — it's useful for specific extension points or critical interfaces.
+
+  - title: "Architecture Decision Records (ADRs)"
+    prompt: |
+      What is an ADR, and why is it important?
+    answer: |
+      An ADR documents **Context**, **Decision**, and **Consequences** for an architectural choice.
+
+      Diagrams show *what*; ADRs capture *why*.
+
+      Example — ADR-001: Thick Grading Action with Narrow API:
+      - **Context:** Action needs to communicate results to platform
+      - **Decision:** Communicate exclusively through two API endpoints; never access database directly
+      - **Consequences:**
+        - ✅ Action runs locally without database (testability)
+        - ✅ Database schema can evolve freely (changeability)
+        - ⚠️ Action must normalize all results into standard format (complexity)
+
+      ADRs create **institutional memory** — they prevent re-litigating settled decisions. Without them, someone will ask "why doesn't the action just write to the database?"
+
+  - title: "Just Enough Architecture"
+    prompt: |
+      How do you decide what to architect upfront vs. what to defer?
+    answer: |
+      **Decide what's hard to reverse; defer what's easy to change; design the system so deferred decisions stay cheap.**
+
+      | Decide Early | Why |
+      |---|---|
+      | Narrow API boundary | Decouples action from platform — each evolves independently |
+      | Thick action / thin API | Changing who interprets results means rearchitecting both sides |
+      | Config-driven grading (`pawtograder.yml`) | Every instructor's workflow would break otherwise |
+      | Strategy pattern for builders | Adding a language would require forking the entire pipeline |
+
+      | Safe to Defer | Why |
+      |---|---|
+      | Which linter rules to enforce | Contained in a config file |
+      | How artifacts are stored | Behind `SupabaseAPI` client — can switch to S3 later |
+      | Specific report parsing formats | Each parser is self-contained |
+
+      The "defer" items are contained within a single component — they can change without rippling across boundaries. "Plan the infrastructure. Let the neighborhoods emerge."
+
+  - title: "Data Coupling at the Architecture Level"
+    prompt: |
+      How does data coupling between components affect testability and changeability?
+    answer: |
+      **Narrow API** (Pawtograder): Action communicates through two endpoints (`createSubmission`, `submitFeedback`). Never touches the database directly.
+      - Test the entire grading pipeline locally — no network, no DB
+      - Database schema can evolve without touching the action
+
+      **Shared Database** (Bottlenose): Application, job queue, and execution service all share PostgreSQL.
+      - Testing a grader requires stubbing database, mocking job dispatch
+      - Database organization changes ripple everywhere
+
+      The narrow API boundary is **information hiding at the data layer**. The action doesn't know (or care) how grades are stored — it just sends structured `AutograderFeedback`.
+
+  - title: "Thick Action vs. Thin Action"
+    prompt: |
+      Why is "where does language logic live?" an architectural decision, and which option did Pawtograder choose?
+    answer: |
+      **Option A — Logic in the Action (Pawtograder's choice):** The action knows how to build Java/Python, parses tool output, and normalizes everything into a standard `AutograderFeedback` format before sending to the API.
+      - ✅ API stays language-agnostic and simple
+      - ✅ Adding Rust = one new `Builder` class, API unchanged
+      - ⚠️ Action grows with each new language
+
+      **Option B — Logic in the API:** Action sends raw logs/XML; API parses and normalizes.
+      - ✅ Action is very thin
+      - ⚠️ API becomes coupled to every language toolchain
+      - ⚠️ Hard to test locally; scaling issues if parsing is heavy
+
+      **Why this is architectural (expensive to change):** Once coupling spreads (API knows JUnit XML, pytest format, database stores language-specific fields, UI displays language-specific results), extracting it later may require starting from scratch. Every new language touches EVERY layer.

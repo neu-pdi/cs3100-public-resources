@@ -72,8 +72,8 @@
   overflow: hidden !important;
   width: fit-content !important;
   max-width: 100% !important;
-  /* Use a smaller base size that scales with slide width */
-  font-size: clamp(1.0em, 4.5cqi, 1.8em) !important;
+  /* Use a smaller base size that scales with slide width; --slide-content-scale for overflow fit */
+  font-size: clamp(1.0em, calc(4.5cqi * var(--slide-content-scale, 1)), 1.8em) !important;
 }
 
 /* Main title (h1) on title slides - also prevent wrapping */
@@ -82,7 +82,7 @@
   overflow: hidden !important;
   width: fit-content !important;
   max-width: 100% !important;
-  font-size: clamp(1.5em, 6cqi, 2.5em) !important;
+  font-size: clamp(1.5em, calc(6cqi * var(--slide-content-scale, 1)), 2.5em) !important;
 }
 
 /* Enable container query context on slides */
@@ -104,8 +104,8 @@
 :global(.reveal .slides section pre) {
   max-height: none !important;
   overflow: hidden !important;
-  /* Responsive font size based on slide width */
-  font-size: clamp(0.4em, 2cqi, 0.9em) !important;
+  /* Responsive font size based on slide width; --slide-content-scale for overflow fit */
+  font-size: clamp(0.4em, calc(2cqi * var(--slide-content-scale, 1)), 0.9em) !important;
   width: 100% !important;
   margin: 0.5em 0 !important;
 }

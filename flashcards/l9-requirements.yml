@@ -1,0 +1,159 @@
+cards:
+  - title: "Purpose of Requirements Analysis"
+    prompt: |
+      What is requirements analysis, and why is it important?
+    answer: |
+      Requirements analysis is the process of **discovering, documenting, and validating** what a system needs to do and how well it needs to do it.
+
+      It's critical because:
+      - Fixing a requirements error costs **100x more** in production than during requirements
+      - Most software failures trace back to requirements misunderstandings
+      - Users often **don't know** what they want until they see what they don't want
+
+  - title: "Extractive vs. Participatory Approach"
+    prompt: |
+      What is the difference between an extractive and a participatory approach to requirements?
+    answer: |
+      - **Extractive**: Treat requirements as facts to be "extracted" from the user's mind. Assumes the user knows exactly what they want.
+      - **Participatory**: Treat requirements as something to be **discovered collaboratively**. Analyst and stakeholders work together to understand the problem and envision a solution.
+
+      The participatory approach is generally more effective because users often can't articulate their needs precisely.
+
+  - title: "Domain Model"
+    prompt: |
+      What is a domain model in requirements analysis?
+    answer: |
+      A **shared representation** of the problem space that both analysts and stakeholders can understand. It includes:
+
+      - Key entities and concepts in the domain
+      - Relationships between those concepts
+      - Vocabulary and terminology used by stakeholders
+
+      The domain model bridges the gap between how users think about their problem and how developers will implement the solution.
+
+  - title: "Three Dimensions of Requirements Risk"
+    prompt: |
+      What are the three dimensions of requirements risk?
+    answer: |
+      1. **Understanding**: How well do we understand what is needed?
+         - Ambiguity, complexity, conflicting interpretations
+      2. **Scope**: How big and interconnected is the requirement?
+         - Size, interdependencies, hidden complexity
+      3. **Volatility**: How likely is the requirement to change?
+         - External factors, evolving stakeholder needs, market shifts
+
+  - title: "Understanding Risk"
+    prompt: |
+      What contributes to understanding risk in requirements?
+    answer: |
+      - **Ambiguity**: Vague language open to multiple interpretations (e.g., "fast" or "user-friendly")
+      - **Complexity**: Requirements involving intricate logic or many interacting parts
+      - **Conflicting interpretations**: Different stakeholders understand the same requirement differently
+      - **Implicit knowledge**: Stakeholders assume certain things are "obvious" and don't mention them
+
+  - title: "Scope Risk"
+    prompt: |
+      What contributes to scope risk in requirements?
+    answer: |
+      - **Size**: Larger scope means more opportunities for misunderstanding
+      - **Interdependencies**: Requirements that affect or depend on each other
+      - **Hidden complexity**: Requirements that seem simple but have significant edge cases
+      - **Feature creep**: Scope expanding beyond what was originally agreed
+
+  - title: "Volatility Risk"
+    prompt: |
+      What contributes to volatility risk in requirements?
+    answer: |
+      - **External factors**: Regulatory changes, market shifts, competitor actions
+      - **Evolving needs**: Stakeholders' understanding of what they need changes over time
+      - **Technology changes**: New technologies enable or require different approaches
+      - **Organizational changes**: Reorganizations, mergers, leadership changes
+
+  - title: "Stakeholder Types"
+    prompt: |
+      What are the three types of stakeholders in requirements analysis?
+    answer: |
+      1. **Primary**: Directly interact with the system (end users, operators)
+      2. **Secondary**: Don't use the system directly but are affected by it (managers, IT administrators)
+      3. **Hidden**: Not obvious but have legitimate interests (regulators, future maintainers, security auditors)
+
+      Identifying **all** stakeholders, especially hidden ones, is critical to avoiding missed requirements.
+
+  - title: "Conflicting Stakeholder Values"
+    prompt: |
+      Why is it important to understand conflicting stakeholder values?
+    answer: |
+      Different stakeholders often have **contradictory** needs:
+
+      - **Users** want ease of use; **security teams** want strict authentication
+      - **Management** wants fast delivery; **developers** want maintainable code
+      - **Marketing** wants many features; **QA** wants thorough testing
+
+      The analyst must identify, surface, and help **resolve** these conflicts — not ignore them.
+
+  - title: "Elicitation Method: Interviews"
+    prompt: |
+      What are the strengths and weaknesses of interviews for requirements elicitation?
+    answer: |
+      **Strengths:**
+      - Build rapport and trust with stakeholders
+      - Can probe deeply into specific areas
+      - Uncover implicit knowledge through follow-up questions
+
+      **Weaknesses:**
+      - Time-consuming (one person at a time)
+      - Interviewer bias may steer responses
+      - Stakeholders may tell you what they think you want to hear
+
+  - title: "Elicitation Method: Observation"
+    prompt: |
+      What are the strengths and weaknesses of observation for requirements elicitation?
+    answer: |
+      **Strengths:**
+      - Reveals actual behavior (vs. reported behavior)
+      - Uncovers workarounds and unarticulated needs
+      - Identifies environmental constraints
+
+      **Weaknesses:**
+      - People may change behavior when observed (Hawthorne effect)
+      - Time-consuming
+      - Observer may misinterpret what they see
+
+  - title: "Elicitation Method: Workshops"
+    prompt: |
+      What are the strengths and weaknesses of workshops for requirements elicitation?
+    answer: |
+      **Strengths:**
+      - Gather multiple perspectives simultaneously
+      - Surface and resolve conflicts in real-time
+      - Build shared understanding and consensus
+
+      **Weaknesses:**
+      - Dominant personalities may overshadow others
+      - Groupthink can suppress dissenting views
+      - Require skilled facilitation
+
+  - title: "Elicitation Method: Prototyping"
+    prompt: |
+      What are the strengths and weaknesses of prototyping for requirements elicitation?
+    answer: |
+      **Strengths:**
+      - Makes abstract requirements concrete and tangible
+      - Users can react to something real rather than imagining
+      - Reveals usability issues and missing requirements early
+
+      **Weaknesses:**
+      - Users may mistake the prototype for the final product
+      - Can create unrealistic expectations about timeline
+      - May anchor thinking to one particular solution
+
+  - title: "Red Flags in Requirements"
+    prompt: |
+      What are some red flags to watch for during requirements elicitation?
+    answer: |
+      - **"The system should be fast"** — Vague, unmeasurable quality attributes
+      - **"Just like the old system, but better"** — Undefined scope
+      - **"Everyone knows what that means"** — Unstated assumptions
+      - **"We'll figure that out later"** — Deferred critical decisions
+      - **"That will never change"** — Underestimating volatility
+      - **Absent stakeholders** — Hidden requirements sources not consulted
