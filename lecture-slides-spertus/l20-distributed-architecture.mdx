@@ -64,8 +64,7 @@ TAGLINE: 'When Code Leaves the Building, Everything Changes'"
 **Structure:**
 - Arc 1: Motivating Example: Orkut Shortest-Path Service
 - Arc 2: Client-Server Architecture, including REST
-- **REST APIs — How Services Communicate** (~8 min)
-- **★ The Eight Fallacies of Distributed Computing ★** (~15 min) — the heart of the lecture
+- Arc 3: The Eight Fallacies of Distributed Computing
 - **Microservices: Benefits and Costs** (~10 min)
 - **Network-Related Quality Requirements** — perf, reliability, scalability (~8 min)
 - **Security as an Architectural Concern** (~12 min)
@@ -340,226 +339,22 @@ Source: https://colin-scott.github.io/personal_website/research/interactive_late
 </Slide>
 
 {/* ============================================ */}
-{/* RECAP: WHY LEAVE THE MONOLITH? */}
+{/* ARC 2: CLIENT-SERVER ARCHITECTURE, INCLUDING REST */}
 {/* ============================================ */}
 
 <Slide>
+## Client-Server Architecture
 
-## Recap: Why Would We Ever Leave the Monolith?
-
-<p style={{fontSize: '0.82em'}}>
-In L19, we saw that monoliths are <strong>simple, fast, and transactionally consistent</strong>. So why distribute at all?
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.62em', marginTop: '0.75em'}}>
-
-<div style={{padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px'}}>
-
-**Bottlenose → Orca**
-
-Grading needs **isolation** — you can't run arbitrary student code inside your main web process.
-
-*What crosses the network:* Grading requests → Orca; results ← Orca
-
-</div>
-
-<div style={{padding: '0.75em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
-
-**Pawtograder (true microservices)**
-
-- Leverages **GitHub's infrastructure** (Actions) to eliminate infrastructure management
-- **Team autonomy** — action maintainers and API maintainers can evolve independently
-- **Platform leverage** — different components have different runtime needs
-
-*What crosses the network:* Submission registration, feedback submission, grader download
-
-</div>
-
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.78em', marginTop: '0.75em', color: '#FF9800', fontWeight: 'bold'}}>
-Both systems <em>could</em> be monoliths. The question is never "monolith vs. distributed" in the abstract — it's whether the specific benefits of distribution outweigh the costs for your situation.
-</p>
-</div>
-
-<aside className="notes">
-**Connect to L19:**
-- Students ended L19 with the "two big families" slide — monolith vs. distributed
-- This recap ground-truths that distinction with concrete examples they know
-
-**The key framing:**
-- Bottlenose distributes for ISOLATION (security: don't trust student code in your web process)
-- Pawtograder distributes for PLATFORM LEVERAGE and TEAM AUTONOMY
-- Neither does it because "microservices are the cool thing" — there's a real reason
-
-**Foreshadow:**
-- "But distribution comes with a price. Let's see what that price is — starting with the most basic thing: how do services actually talk to each other?"
-
-→ **Transition:** But before we get into how services communicate, let's understand the physical reality they operate in...
-</aside>
-
+<Img src='/img/lectures/web/l20-client-server-architecture.webp'
+  alt="Twitter post by @KevinNaughtonJr with text 'How are you gonna tell people software engineering is ''hard'' when this is all it is'
+  above block-diagram showing a client on the left and a server on the right"
+  width={800}
+/>
 </Slide>
 
-{/* ============================================ */}
-{/* WHY NETWORKS ARE HARD: PHYSICAL REALITY */}
-{/* ============================================ */}
-
-<Slide>
-
-## The Price of Distribution: Hard Physical Limits
-
-<p style={{fontSize: '0.82em'}}>
-Some network constraints aren't design choices or wrong assumptions — they're <strong>physics</strong>. No software engineering can fix them. This is what you're signing up for when you leave the monolith.
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.6em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0.6em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
-
-**The Speed of Light: ~1 foot per nanosecond**
-
-Light (and electrical signals in fiber) travels roughly **1 ns/ft** — slower in copper wire.
-
-| Distance | Min. round-trip |
-|----------|-----------------|
-| Across a server rack (~10 ft) | ~20 ns |
-| Across a data center (~1,000 ft) | ~1,000 ns |
-| Boston → New York (~200 mi) | ~2,000,000 ns |
-| Boston → London (~3,300 mi) | ~33,000,000 ns |
-| Boston → Tokyo (~6,700 mi) | ~67,000,000 ns |
-
-*(Actual latency is always higher — routing, switching, queuing add more.)*
-
-</div>
-
-<div style={{padding: '0.6em', border: '2px solid #9370DB', borderRadius: '8px'}}>
-
-**Compare: Memory access in a monolith**
-
-| Operation | Latency |
-|-----------|---------|
-| L1 CPU cache hit | ~0.5 ns |
-| L2 CPU cache hit | ~3 ns |
-| L3 CPU cache hit | ~10 ns |
-| RAM access | ~100 ns |
-
-An NYC-London call takes **~66,000,000×** longer than an L1 cache hit.
-
-A method call in a monolith? Essentially free by comparison.
-
-</div>
-
-</div>
-
 <aside className="notes">
-**The "1 foot per nanosecond" rule:**
-- Grace Hopper famously handed out 11.8-inch pieces of wire at talks to illustrate this: "That's a nanosecond"
-- In fiber optic cable it's closer to 2 ns/ft due to the refractive index of glass
-- The point: the speed of light is a hard ceiling no engineering can break through
-
-**Working through the table:**
-- Boston → New York: ~330 km, speed of light gives ~2 ms round-trip. Real latency: ~7-10 ms
-- Boston → London: ~5,300 km, ~35 ms minimum one-way. Real: ~70-80 ms
-- Boston → Tokyo: ~10,800 km, ~72 ms minimum. Real: ~140-160 ms
-- The minimums are never achieved — routing takes non-straight paths, every switch adds queuing delay
-
-**The memory comparison is the key insight:**
-- Students who've only worked in monoliths have never had to think about this
-- A method call touches L1/L2 cache: nanoseconds
-- Even a localhost network call: microseconds (1000× slower)
-- Cross-datacenter: milliseconds (1,000,000× slower)
-- This is pure physics — no clever code fixes it
-
-**Connect to Pawtograder:**
-- Grading Action (GitHub servers) → Pawtograder API (Supabase servers): likely in same US region, but still 1-5ms round trips
-- 100 individual API calls × 5ms = 500ms overhead from physics alone, before any application work
-- This is why batching all results into one `submitFeedback()` call isn't just nice-to-have — it's necessary
-
-→ **Transition:** Physics is one constraint. The other is even more surprising: components can be disconnected by things you never anticipated...
+- Let's see what C-S architecture is and why it's hard
 </aside>
-
-</Slide>
-
-<Slide>
-
-## Shared Fate vs. Independent Failure
-
-<p style={{fontSize: '0.82em'}}>
-In a monolith, all components share the same process — they <strong>cannot be partially disconnected by accident</strong>. Distributed systems introduce a new failure mode that simply doesn't exist in a monolith.
-</p>
-
-<div style={{display: 'flex', flexDirection: 'column', gap: '0.75em', fontSize: '0.6em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0.6em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
-
-**Monolith: Shared fate**
-
-If the process is running, all components can talk to each other. Always.
-
-No one can trip over a cable and disconnect the grading logic from the database — they're in the same memory space.
-
-A server crash takes everything down together, but there's no such thing as a *partial* disconnection between components.
-
-</div>
-
-<div style={{padding: '0.6em', border: '2px solid #f44336', borderRadius: '8px'}}>
-
-**Distributed system: Independent failure**
-
-Things that can disconnect two services that would never affect a monolith:
-
-- A cloud provider's switch fails in one availability zone
-- A university contracts with a network filter that **decides your service is malware**
-- A student's ISP throttles GitHub traffic during grading
-- A **ship anchor** cuts a submarine fiber cable in the Pacific
-
-</div>
-
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.75em', marginTop: '0.5em', color: '#FF9800', fontWeight: 'bold'}}>
-A "network partition" — two parts of a system that can't reach each other — is <strong>impossible</strong> in a monolith and <strong>inevitable</strong> in a distributed system. You must design for it.
-</p>
-</div>
-
-<aside className="notes">
-**The "ship anchor" example is real:**
-- Submarine fiber cables get cut by ship anchors, fishing trawlers, and earthquakes regularly
-- The SEA-ME-WE 4 cable cut in 2008 severely disrupted internet traffic across South Asia
-- No retry logic helps when the cable is on the ocean floor
-
-**BGP incidents:**
-- BGP (Border Gateway Protocol) is how internet routers tell each other how to reach destinations
-- 2010: China Telecom accidentally advertised routes for ~15% of the internet, redirecting traffic through China for ~18 minutes
-- 2021: A Facebook BGP misconfiguration took down Facebook, Instagram, and WhatsApp globally for ~6 hours — Facebook employees couldn't even badge into their buildings because the badge readers needed the network
-- These aren't bugs in your code. They're failures in infrastructure you don't control.
-
-**The Palo Alto / NEU example:**
-- This will come up again in Fallacy 6
-- It perfectly illustrates the "someone else makes decisions that affect your network path" problem
-
-**The design implication:**
-- Every distributed system must answer: "What do we do when we can't reach the other service?"
-- This isn't an edge case to handle later — it's the central design question
-- Pawtograder: retry with backoff → show "grading in progress" → don't crash
-- The answer shapes your entire error-handling architecture
-
-**CAP theorem (optional mention if time):**
-- This physical reality is exactly what the CAP theorem addresses
-- When a partition happens, you must choose: stay Consistent (refuse requests) or stay Available (accept requests that might diverge)
-- We won't go deep on CAP, but it flows directly from the fact that partitions are inevitable
-
-→ **Transition:** So: physics limits how fast data can move, and the network can be severed by things outside your control. Given all that — how do distributed services actually communicate? That's client-server architecture...
-</aside>
-
-</Slide>
-
-{/* ============================================ */}
-{/* CLIENT-SERVER ARCHITECTURE */}
-{/* ============================================ */}
-
 <Slide>
 
 ## Client-Server Architecture
@@ -727,9 +522,7 @@ Data you're sending
 REST didn't come from a committee. Roy Fielding co-authored the <strong>HTTP/1.0 spec</strong>, then asked: <em>why does this work so well?</em> His 2000 PhD thesis reverse-engineered HTTP into a set of architectural constraints. REST is the name he gave that style.
 </p>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.58em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0.6em', border: '2px solid #9370DB', borderRadius: '8px'}}>
+<div style={{padding: '0.6em',fontSize: '0.8em', border: '2px solid #9370DB', borderRadius: '8px'}}>
 
 **REST's Six Architectural Constraints** *(Fielding, 2000)*
 
@@ -738,25 +531,6 @@ REST didn't come from a committee. Roy Fielding co-authored the <strong>HTTP/1.0
 - **Cacheable** — responses must declare whether they can be cached
 - **Uniform Interface** — standard verbs + resource URLs + self-describing messages
 - **Layered System** — clients don't know if they're talking to the real server or a proxy
-
-</div>
-
-<div style={{padding: '0.6em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
-
-**Connection to L18: Drivers → Style**
-
-Each constraint maps to a **quality attribute driver**:
-
-| Constraint | Quality Attribute |
-|-----------|-----------------|
-| Stateless | **Scalability** — any server handles any request |
-| Cacheable | **Performance** — skip redundant fetches |
-| Uniform Interface | **Changeability** — swap server implementations |
-| Layered System | **Security + Deployability** — add proxies/CDNs transparently |
-
-The same process we used for Pawtograder — identify quality attributes, apply heuristics, let the style *emerge* — is how REST was discovered.
-
-</div>
 
 </div>
 
@@ -846,33 +620,60 @@ One of REST's great gifts: <strong>standardized error codes</strong>. When you r
 
 <div className="fragment">
 <p style={{fontSize: '0.75em', marginTop: '0.75em', fontStyle: 'italic', color: '#666'}}>
-<strong>Practical skill:</strong> When debugging a distributed system, the status code tells you <em>where</em> to look. 4xx → your code sent the wrong request. 5xx → the server has a problem. 401 vs 403 → authentication vs authorization bug.
+Trivia: Anyone know what the code for "unavailable for legal reasons"?
 </p>
 </div>
 
 <aside className="notes">
-**Why this matters:**
-- Status codes are the FIRST thing you check when debugging a distributed system
-- 401 vs 403 is a critical distinction: 401 means "I don't know who you are," 403 means "I know who you are, you just can't do this"
-- In Pawtograder: submitFeedback returns 401 if the OIDC token is missing/invalid, 403 if the token is valid but the repo isn't authorized for that assignment
-
-**4xx vs 5xx:**
+- View status code if a request failed
 - 4xx = the client made a mistake — fix your code
+  - 429 = too many requests
 - 5xx = the server is broken — retry later (but not immediately — exponential backoff)
 - This distinction drives retry logic: you SHOULD retry on 5xx, you should NOT retry on 4xx (it'll fail again)
-
-**The "429 Too Many Requests" case:**
-- Rate limiting is common in APIs
-- The server is basically saying "slow down, you're sending too many requests"
-- The response usually includes a `Retry-After` header
 
 → **Transition:** Now that we can read API responses, let's look at the REAL challenge of distributed systems...
 </aside>
 
 </Slide>
 
+<Slide>
+
+## REST is Built on a Layered Architecture
+
+<div style={{fontSize: '.8em', textAlign: 'center'}}>
+
+| Layer |
+|-------|
+| REST |
+| HTTP / HTTPS |
+| TLS/SSL (Transport Layer Security / Secure Sockets Layer) |
+| TCP (Transmission Control Protocol) |
+| IP (Internet Protocol) |
+| Link Layer (Ethernet, Wi-Fi) |
+| Physical Layer (copper, fiber, radio) |
+
+
+</div>
+<aside className="notes">
+- All REST needs to do is use HTTP
+- The layering protects it from lower-down details
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Live Demo
+
+<Img src='/img/lectures/web/l20-jokeapi.png'
+  alt='Screenshot of web page https://jokeapi.dev/ allowing making JokeAPI requests'
+/>
+
+https://jokeapi.dev/
+</Slide>
+
 {/* ============================================ */}
-{/* THE FALLACIES */}
+{/* ARC 3: THE FALLACIES */}
 {/* ============================================ */}
 
 <Slide>
