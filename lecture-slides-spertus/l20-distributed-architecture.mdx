@@ -6,6 +6,7 @@ image: /img/lectures/web/l20.png
 
 import Img from '@site/src/components/Img';
 import RevealJS, { Slide } from '@site/src/components/RevealJS';
+import PollSlide from "@site/src/components/PollSlide";
 
 <RevealJS transition="slide">
 
@@ -61,8 +62,8 @@ TAGLINE: 'When Code Leaves the Building, Everything Changes'"
 - **Connects to:** L21 (serverless — pushing these concerns to the platform), L22 (teams and Conway's Law)
 
 **Structure:**
-- Recap: Why Leave the Monolith? (~3 min)
-- **Client-Server Architecture** (~7 min)
+- Arc 1: Motivating Example: Orkut Shortest-Path Service
+- Arc 2: Client-Server Architecture, including REST
 - **REST APIs — How Services Communicate** (~8 min)
 - **★ The Eight Fallacies of Distributed Computing ★** (~15 min) — the heart of the lecture
 - **Microservices: Benefits and Costs** (~10 min)
@@ -88,7 +89,7 @@ TAGLINE: 'When Code Leaves the Building, Everything Changes'"
 ## Lecture 20: Distributed Architecture — Networks, Microservices, and Security
 
 <p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
-  ©2026 Jonathan Bell, CC-BY-SA
+  ©2026 Jonathan Bell & Ellen Spertus, CC-BY-SA
 </p>
 
 <aside className="notes">
@@ -144,6 +145,196 @@ After this lecture, you will be able to:
 - The answer: nearly everything
 
 → **Transition:** Let's start with why we'd ever leave the monolith in the first place...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 1: MOTIVATING EXAMPLE: ORKUT SHORTEST PATH SERVER */}
+{/* ============================================ */}
+
+<Slide>
+## Motivating Example: The Orkut Team (2004-2008)
+<Img src='/img/lectures/web/l20-orkut-team.jpg'
+  alt='A group of 8 smiling people sitting around a Google cafeteria table'
+  width={1000}
+/>
+</Slide>
+
+<Slide>
+
+## Finding the Shortest Paths to Another User
+
+<Img src='/img/lectures/web/l20-orkut-paths.jpg'
+  alt='A social network profile page showing 3 friend paths from Ellen S to Lydia S'
+/>
+
+<div style={{ fontSize: '.8em' }}>
+Why do you think no social networks provide this feature?
+</div>
+
+<aside className="notes">
+- I wanted users to be able to see how they were connected to other users
+- No other social network had (or has) this feature.
+- Why not?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Shortest-Path Server
+
+<Img src='/img/lectures/web/l20-path-server.jpg'
+  prompt='A clean, modern technical diagram illustration, aspect ratio 1.5 wide to 1 high. At the bottom center, a sleek rack-mounted server unit represented as a flat rectangular box with ventilation slots and small indicator lights, no keyboard or monitor. Above the server, a single large unified network graph visualization fills most of the upper portion of the image. The graph has dozens of small unlabeled circular nodes distributed fairly evenly across the space, connected by a clearly visible web of medium-weight edges in a muted gray color, forming one interconnected structure. The background edges should be bright enough to clearly see the overall graph structure. Two endpoint nodes on the left and right sides of the graph are highlighted. Three distinct paths are highlighted threading through the interior of the graph between the two endpoints, each in a different bright color: blue, orange, and green. Each path passes through 2 to 3 intermediate nodes that are enlarged slightly to show they are on the path. The paths travel different routes through the graph and do not share intermediate nodes. The background is white. Clean vector-style illustration. Absolutely no text, numbers, or labels anywhere in the image.'
+  alt='A clean vector technical diagram features a rack-mounted server unit at the bottom and a large network graph above it. The graph shows multiple gray nodes and edges. Two endpoint nodes are highlighted, with three distinct colored paths (blue, orange, green) showing different routes between them, passing through several intermediate nodes. The background is white.'
+  width={800}
+/>
+<div style={{ fontSize: '.7em' }}>
+Incoming request: 2 node ids<br/>
+Response: HTML<br/>
+Latency (response time): fraction of a second<br/>
+Throughput (queries/s): not great
+</div>
+<aside className="notes">
+- Transition: How to improve throughput
+</aside>
+
+</Slide>
+
+<Slide>
+## Increasing Throughput with Load Balanced Servers
+
+<Img src='/img/lectures/web/l20-load-balancing.jpg'
+  width={1000}
+  prompt='Create a 3:1 width:height image that shows three of these servers next to each other, each with its own graph. Beneath the 3 should be a load balancer, connected by cables to the 3 servers.'
+  alt='Three separate network graphs, each depicted as a cloud-shaped cluster of gray nodes and edges, float above three rack-mounted servers. Colored cables — blue, orange, and green — run from each of the three servers down to a single larger central server at the bottom, illustrating how multiple network paths converge into one system. White background.'
+/>
+
+<div style={{ fontSize: '.7em' }}>
+Adding servers doesn't decrease latency but does increase throughput.<br/>
+Everything worked great...for a while.
+</div>
+
+</Slide>
+
+<Slide>
+
+## Orkut Architecture
+<div style={{ fontSize: '.8em' }}>
+<div className='fragment'>
+* Viewed in isolation, a shortest-path server, was a monolith.
+</div>
+<div className='fragment'>
+* The shortest path servers (behind a load balancer) were distributed monoliths.
+</div>
+<div className='fragment'>
+* Orkut used microservices, one of which was the shortest path service.
+</div>
+</div>
+<aside className="notes">
+Transition: Let's look at some costs...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Poll: Rank these actions from fastest to slowest
+
+<PollSlide username='espertus'
+  choices={[
+    "reading from memory",
+    "reading from a SSD",
+    "reading for a hard drive",
+    "round-trip communication within a data center",
+    "round-trip communication between CA and Netherlands"
+    ]}
+/>
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Poll: How much more expensive is reading from disk rather than memory?
+
+<PollSlide username='espertus'
+  choices={[
+    "1-10x",
+    "10-100x",
+    "100-1000x",
+    ">1000x"
+  ]}
+/>
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+## Latency Numbers Every Programmer Should Know
+
+<Img src='/img/lectures/web/l20-latency-numbers.png'
+  alt=''
+/>
+
+<div style={{ fontSize: '.7em' }}>
+Source: https://colin-scott.github.io/personal_website/research/interactive_latency.html
+</div>
+
+<aside className="notes">
+- Most memory accesses are to the L1 cache (1 ns)
+- Reading from disk takes milliseconds
+- The ratio is 1,000,000
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Why Do No Social Networks Offer Paths?
+
+<Img src='/img/lectures/web/l20-path-server.jpg'
+  prompt='A clean, modern technical diagram illustration, aspect ratio 1.5 wide to 1 high. At the bottom center, a sleek rack-mounted server unit represented as a flat rectangular box with ventilation slots and small indicator lights, no keyboard or monitor. Above the server, a single large unified network graph visualization fills most of the upper portion of the image. The graph has dozens of small unlabeled circular nodes distributed fairly evenly across the space, connected by a clearly visible web of medium-weight edges in a muted gray color, forming one interconnected structure. The background edges should be bright enough to clearly see the overall graph structure. Two endpoint nodes on the left and right sides of the graph are highlighted. Three distinct paths are highlighted threading through the interior of the graph between the two endpoints, each in a different bright color: blue, orange, and green. Each path passes through 2 to 3 intermediate nodes that are enlarged slightly to show they are on the path. The paths travel different routes through the graph and do not share intermediate nodes. The background is white. Clean vector-style illustration. Absolutely no text, numbers, or labels anywhere in the image.'
+  alt='A clean vector technical diagram features a rack-mounted server unit at the bottom and a large network graph above it. The graph shows multiple gray nodes and edges. Two endpoint nodes are highlighted, with three distinct colored paths (blue, orange, green) showing different routes between them, passing through several intermediate nodes. The background is white.'
+  width={800}
+/>
+
+<aside className="notes">
+- Eventually, the graph got too big to fit in memory
+- If we had to bring it in from disk or other servers, it would have been too slow
+- It also was lower priority than other tasks
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Vertical vs. Horizontal Scaling
+<div style={{ fontSize: '.7em' }}>
+<div className='fragment'>
+* We hit the limit of vertical scaling. We couldn't add more memory to a single server.
+</div>
+<div className='fragment'>
+* We would have needed to create a new architecture that used horizontal scaling.
+</div>
+
+<div className='fragment'>
+<Img src='/img/lectures/web/l20-horizontal-scaling.jpg'
+  alt=''
+/>
+</div>
+
+</div>
+
+<aside className="notes">
+
 </aside>
 
 </Slide>
@@ -1188,7 +1379,7 @@ public class CircuitBreaker {
 public SubmissionResponse handleSubmission(String submissionId) {
     // Step 1: Record that we received the code (this succeeds even if grading is down)
     db.markSubmissionReceived(submissionId);
-    
+
     try {
         return gradingApi.triggerGrading(submissionId);
     } catch (CircuitOpenException | ServiceUnavailableException e) {
@@ -1862,7 +2053,7 @@ Example: The library system checks — is Jon Bell allowed to access this databa
 
 **Authentication without authorization:**
 
-"I know who you are" — but anyone can do anything. 
+"I know who you are" — but anyone can do anything.
 
 HTTP 401 "Unauthorized" = actually authentication failure (bad name!)
 
