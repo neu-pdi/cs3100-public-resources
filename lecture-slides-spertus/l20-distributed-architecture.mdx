@@ -6,6 +6,7 @@ image: /img/lectures/web/l20.png
 
 import Img from '@site/src/components/Img';
 import RevealJS, { Slide } from '@site/src/components/RevealJS';
+import PollSlide from "@site/src/components/PollSlide";
 
 <RevealJS transition="slide">
 
@@ -61,12 +62,11 @@ TAGLINE: 'When Code Leaves the Building, Everything Changes'"
 - **Connects to:** L21 (serverless — pushing these concerns to the platform), L22 (teams and Conway's Law)
 
 **Structure:**
-- Recap: Why Leave the Monolith? (~3 min)
-- **Client-Server Architecture** (~7 min)
-- **REST APIs — How Services Communicate** (~8 min)
-- **★ The Eight Fallacies of Distributed Computing ★** (~15 min) — the heart of the lecture
-- **Microservices: Benefits and Costs** (~10 min)
-- **Network-Related Quality Requirements** — perf, reliability, scalability (~8 min)
+- Arc 1: Motivating Example: Orkut Shortest-Path Service
+- Arc 2: Client-Server Architecture, including REST
+- Arc 3: The Eight Fallacies of Distributed Computing
+- Arc 4: Microservices: Benefits and Costs
+- Arc 5: Network-Related Quality Requirements
 - **Security as an Architectural Concern** (~12 min)
 - Bringing It Together (~5 min)
 
@@ -88,7 +88,7 @@ TAGLINE: 'When Code Leaves the Building, Everything Changes'"
 ## Lecture 20: Distributed Architecture — Networks, Microservices, and Security
 
 <p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
-  ©2026 Jonathan Bell, CC-BY-SA
+  ©2026 Jonathan Bell & Ellen Spertus, CC-BY-SA
 </p>
 
 <aside className="notes">
@@ -104,30 +104,6 @@ TAGLINE: 'When Code Leaves the Building, Everything Changes'"
 
 → **Transition:** Here's what you'll be able to do after today...
 </aside>
-
-</Slide>
-
-
-<Slide>
-
-## Announcements
-
-<div style={{fontSize: '0.85em', textAlign: 'left'}}>
-
-**Midterm Survey via Qualtrics, +1 participation credit if you complete it**
-- Due Friday 2/27 @ 11:59 PM
-- Anonymous link in your email
-- 150 students have completed it so far
-
-**Team Formation Survey Released!**
-- Starting Week 10: teams of 4 for CookYourBooks GUI project
-- Tell us your preferences + availability
-- **Due Friday 2/27 @ 11:59 PM**
-- [Complete the Survey →](https://docs.google.com/forms/d/e/1FAIpQLScP-pp6S2tP4Do1J5buWmFLDDHwO5r8dxAmjZCB5wH20UDDiQ/viewform)
-
-**HW4 Due Thursday Night**
-
-</div>
 
 </Slide>
 
@@ -172,237 +148,243 @@ After this lecture, you will be able to:
 
 </Slide>
 
-{/* ============================================ */}
-{/* RECAP: THE NETWORK CHANGES EVERYTHING */}
-{/* ============================================ */}
 
 <Slide>
 
-## Recap: The Network Changes Everything
+## Announcements
 
-<p style={{fontSize: '0.82em'}}>
-In L19, we ended with a teaser: method calls in a monolith are <strong>instant, reliable, and traceable</strong>. Over a network? Everything changes.
-</p>
+<div style={{fontSize: '0.85em', textAlign: 'left'}}>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.52em', marginTop: '0.5em'}}>
+**Midterm Survey via Qualtrics, +1 participation credit if you complete it**
+- Due Friday 2/27 @ 11:59 PM
+- Anonymous link in your email
+- Over 150 students have completed it so far
 
-<div style={{padding: '0.6em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+**Koury Mid-Semester Evaluations also due Friday**
 
-**Monolith (Bottlenose)**
+**Consider answering questions from admitted students on [r/NEU](https://www.reddit.com/r/neu/).**
 
-```java
-submission.computeGrade();
-// ✅ Executes in nanoseconds
-// ✅ Always succeeds or throws
-// ✅ Full stack trace on error
-// ✅ Wrapped in a DB transaction
-```
+**Team Formation Survey Released!**
+- Starting Week 10: teams of 4 for CookYourBooks GUI project
+- Tell us your preferences (either Oakland section) + availability
+- **Due Friday 2/27 @ 11:59 PM**
+- [Complete the Survey →](https://docs.google.com/forms/d/e/1FAIpQLScP-pp6S2tP4Do1J5buWmFLDDHwO5r8dxAmjZCB5wH20UDDiQ/viewform)
 
-</div>
-
-<div style={{padding: '0.6em', border: '2px solid #FF9800', borderRadius: '8px'}}>
-
-**Distributed (Pawtograder)**
-
-```java
-feedbackApi.submit(submissionId, feedback);
-// ⚠️ Might take ms... or seconds... or ∞
-// ⚠️ Server might be down or overloaded
-// ⚠️ Request succeeds, response lost
-// ⚠️ Retry = accidentally grade twice?
-// ⚠️ No cross-system transactions
-```
+**HW4 Due Thursday Night**
 
 </div>
-
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.72em', marginTop: '0.5em', color: '#9370DB', fontWeight: 'bold'}}>
-Today we'll explore <em>why</em> networks are hard, <em>what</em> patterns handle these challenges, and <em>how</em> security changes when code leaves the building.
-</p>
-</div>
-
-<aside className="notes">
-**Make this visceral:**
-- "When Bottlenose calls `computeGrade()`, it KNOWS it will execute. If it fails, you get an exception with a full stack trace."
-- "When Pawtograder calls `feedbackApi.submit()`: What if the API times out? What if the request succeeds but the RESPONSE never arrives? Did the grade save or not?"
-
-**Today's lecture will address each ⚠️:**
-- "Might take forever" → Timeouts and the Fallacies of Distributed Computing
-- "Server might be down" → Retry with exponential backoff, circuit breakers
-- "Response lost" → Idempotency patterns
-- "Retry = grade twice" → Idempotency keys
-- "No transactions" → Eventual consistency (preview for L33)
-
-**The key insight:**
-- These aren't edge cases — they're the NORMAL operating conditions of distributed systems
-- Every distributed system must handle ALL of these
-- The fallacies will explain WHY these happen
-
-→ **Transition:** Let's start with the hard physical limits that make networks fundamentally different...
-</aside>
 
 </Slide>
 
 {/* ============================================ */}
-{/* WHY NETWORKS ARE HARD: PHYSICAL REALITY */}
+{/* ARC 1: MOTIVATING EXAMPLE: ORKUT SHORTEST PATH SERVER */}
 {/* ============================================ */}
 
 <Slide>
+## Motivating Example: The Orkut Team (2004-2008)
+<Img src='/img/lectures/web/l20-orkut-team.jpg'
+  alt='A group of 8 smiling people (one of whom is Ellen Spertus) sitting around a Google cafeteria table'
+  width={1000}
+/>
+</Slide>
 
-## The Price of Distribution: Hard Physical Limits
+<Slide>
 
-<p style={{fontSize: '0.82em'}}>
-Some network constraints aren't design choices or wrong assumptions — they're <strong>physics</strong>. No software engineering can fix them. This is what you're signing up for when you leave the monolith.
-</p>
+## Finding the Shortest Paths to Another User
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.6em', marginTop: '0.5em'}}>
+<Img src='/img/lectures/web/l20-orkut-paths.jpg'
+  alt='A social network profile page showing 3 friend paths from Ellen S to Lydia S'
+/>
 
-<div style={{padding: '0.6em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
-
-**The Speed of Light: ~1 foot per nanosecond**
-
-Light (and electrical signals in fiber) travels roughly **1 ns/ft** — slower in copper wire.
-
-| Distance | Min. round-trip |
-|----------|-----------------|
-| Across a server rack (~10 ft) | ~20 ns |
-| Across a data center (~1,000 ft) | ~2,000 ns |
-| Boston → New York (~200 mi) | ~2,100,000 ns (~2.1 ms) |
-| Boston → London (~3,300 mi) | ~35,000,000 ns (~35 ms) |
-| Boston → Tokyo (~6,700 mi) | ~71,000,000 ns (~71 ms) |
-
-*(Actual latency is always higher — routing, switching, queuing add more.)*
-
-</div>
-
-<div style={{padding: '0.6em', border: '2px solid #9370DB', borderRadius: '8px'}}>
-
-**Compare: Memory access in a monolith**
-
-| Operation | Latency |
-|-----------|---------|
-| L1 CPU cache hit | ~0.5 ns |
-| L2 CPU cache hit | ~3 ns |
-| L3 CPU cache hit | ~10 ns |
-| RAM access | ~100 ns |
-
-A Boston-London round-trip takes **~70,000,000×** longer than an L1 cache hit.
-
-A method call in a monolith? Essentially free by comparison.
-
-</div>
-
+<div style={{ fontSize: '.8em' }}>
+Why do you think no social networks provide this feature?
 </div>
 
 <aside className="notes">
-**The "1 foot per nanosecond" rule:**
-- Grace Hopper famously handed out 11.8-inch pieces of wire at talks to illustrate this: "That's a nanosecond"
-- In fiber optic cable it's closer to 2 ns/ft due to the refractive index of glass
-- The point: the speed of light is a hard ceiling no engineering can break through
-
-**Working through the table:**
-- Boston → New York: ~330 km, speed of light gives ~2.1 ms round-trip. Real latency: ~7-10 ms
-- Boston → London: ~5,300 km, ~35 ms minimum round-trip. Real: ~70-80 ms
-- Boston → Tokyo: ~10,800 km, ~71 ms minimum round-trip. Real: ~140-160 ms
-- The minimums are never achieved — routing takes non-straight paths, every switch adds queuing delay
-
-**The memory comparison is the key insight:**
-- Students who've only worked in monoliths have never had to think about this
-- A method call touches L1/L2 cache: nanoseconds
-- Even a localhost network call: microseconds (1000× slower)
-- Cross-datacenter: milliseconds (1,000,000× slower)
-- This is pure physics — no clever code fixes it
-
-**Connect to Pawtograder:**
-- Grading Action (GitHub servers) → Pawtograder API (Supabase servers): likely in same US region, but still 1-5ms round trips
-- 100 individual API calls × 5ms = 500ms overhead from physics alone, before any application work
-- This is why batching all results into one `submitFeedback()` call isn't just nice-to-have — it's necessary
-
-→ **Transition:** Physics is one constraint. The other is even more surprising: components can be disconnected by things you never anticipated...
+- I wanted users to be able to see how they were connected to other users
+- No other social network had (or has) this feature.
+- Why not?
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Shared Fate vs. Independent Failure
+## Shortest-Path Server
 
-<p style={{fontSize: '0.82em'}}>
-In a monolith, all components share the same process — they <strong>cannot be partially disconnected by accident</strong>. Distributed systems introduce a new failure mode that simply doesn't exist in a monolith.
-</p>
+<Img src='/img/lectures/web/l20-path-server.jpg'
+  prompt='A clean, modern technical diagram illustration, aspect ratio 1.5 wide to 1 high. At the bottom center, a sleek rack-mounted server unit represented as a flat rectangular box with ventilation slots and small indicator lights, no keyboard or monitor. Above the server, a single large unified network graph visualization fills most of the upper portion of the image. The graph has dozens of small unlabeled circular nodes distributed fairly evenly across the space, connected by a clearly visible web of medium-weight edges in a muted gray color, forming one interconnected structure. The background edges should be bright enough to clearly see the overall graph structure. Two endpoint nodes on the left and right sides of the graph are highlighted. Three distinct paths are highlighted threading through the interior of the graph between the two endpoints, each in a different bright color: blue, orange, and green. Each path passes through 2 to 3 intermediate nodes that are enlarged slightly to show they are on the path. The paths travel different routes through the graph and do not share intermediate nodes. The background is white. Clean vector-style illustration. Absolutely no text, numbers, or labels anywhere in the image.'
+  alt='A clean vector technical diagram features a rack-mounted server unit at the bottom and a large network graph above it. The graph shows multiple gray nodes and edges. Two endpoint nodes are highlighted, with three distinct colored paths (blue, orange, green) showing different routes between them, passing through several intermediate nodes. The background is white.'
+  width={800}
+/>
+<div style={{ fontSize: '.7em' }}>
+Incoming request: 2 node ids<br/>
+Response: HTML<br/>
+Latency (response time): fraction of a second<br/>
+Throughput (queries/s): not great
+</div>
+<aside className="notes">
+- Transition: How to improve throughput
+</aside>
 
-<div style={{display: 'flex', flexDirection: 'column', gap: '0.75em', fontSize: '0.6em', marginTop: '0.5em'}}>
+</Slide>
 
-<div style={{padding: '0.6em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+<Slide>
+## Increasing Throughput with Load Balanced Servers
 
-**Monolith: Shared fate**
+<Img src='/img/lectures/web/l20-load-balancing.jpg'
+  width={1000}
+  prompt='Create a 3:1 width:height image that shows three of these servers next to each other, each with its own graph. Beneath the 3 should be a load balancer, connected by cables to the 3 servers.'
+  alt='Three separate network graphs, each depicted as a cloud-shaped cluster of gray nodes and edges, float above three rack-mounted servers. Colored cables — blue, orange, and green — run from each of the three servers down to a single larger central server at the bottom, illustrating how multiple network paths converge into one system. White background.'
+/>
 
-If the process is running, all components can talk to each other. Always.
-
-No one can trip over a cable and disconnect the grading logic from the database — they're in the same memory space.
-
-A server crash takes everything down together, but there's no such thing as a *partial* disconnection between components.
-
+<div style={{ fontSize: '.7em' }}>
+Adding servers doesn't decrease latency but does increase throughput.<br/>
+Everything worked great...for a while.
 </div>
 
-<div style={{padding: '0.6em', border: '2px solid #f44336', borderRadius: '8px'}}>
+</Slide>
 
-**Distributed system: Independent failure**
+<Slide>
 
-Things that can disconnect two services that would never affect a monolith:
-
-- A cloud provider's switch fails in one availability zone
-- A university contracts with a network filter that **decides your service is malware**
-- A student's ISP throttles GitHub traffic during grading
-- A **ship anchor** cuts a submarine fiber cable in the Pacific
-
+## Orkut Architecture
+<div style={{ fontSize: '.8em' }}>
+<div className='fragment'>
+* Viewed in isolation, a shortest-path server, was a monolith.
 </div>
-
+<div className='fragment'>
+* The shortest path servers (behind a load balancer) were distributed monoliths.
 </div>
+<div className='fragment'>
+* Orkut used microservices, one of which was the shortest path service.
+</div>
+</div>
+<aside className="notes">
+Transition: Let's look at some costs...
+</aside>
 
-<div className="fragment">
-<p style={{fontSize: '0.75em', marginTop: '0.5em', color: '#FF9800', fontWeight: 'bold'}}>
-A "network partition" — two parts of a system that can't reach each other — is <strong>impossible</strong> in a monolith and <strong>inevitable</strong> in a distributed system. You must design for it.
-</p>
+</Slide>
+
+<Slide>
+
+## Poll: Rank these actions from fastest to slowest
+
+<PollSlide username='espertus'
+  choices={[
+    "reading from memory",
+    "reading from a solid-state drive",
+    "reading from a hard drive",
+    "round-trip communication within a data center",
+    "round-trip communication between CA and Netherlands"
+    ]}
+/>
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Poll: How much slower is reading from disk rather than memory?
+
+<PollSlide username='espertus'
+  choices={[
+    "1-10x",
+    "10-100x",
+    "100-1000x",
+    ">1000x"
+  ]}
+/>
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+## Latency Numbers Every Programmer Should Know
+
+<Img src='/img/lectures/web/l20-latency-numbers.png'
+  alt='Screenshot of Latency Numbers Every Programmer Should Know (year 2020),
+  viewable at https://colin-scott.github.io/personal_website/research/interactive_latency.html'
+/>
+
+<div style={{ fontSize: '.7em' }}>
+Source: https://colin-scott.github.io/personal_website/research/interactive_latency.html
 </div>
 
 <aside className="notes">
-**The "ship anchor" example is real:**
-- Submarine fiber cables get cut by ship anchors, fishing trawlers, and earthquakes regularly
-- The SEA-ME-WE 4 cable cut in 2008 severely disrupted internet traffic across South Asia
-- No retry logic helps when the cable is on the ocean floor
+- Most memory accesses are to the L1 cache (1 ns)
+- Reading from disk takes milliseconds
+- The ratio is 1,000,000
+</aside>
 
-**BGP incidents:**
-- BGP (Border Gateway Protocol) is how internet routers tell each other how to reach destinations
-- 2010: China Telecom accidentally advertised routes for ~15% of the internet, redirecting traffic through China for ~18 minutes
-- 2021: A Facebook BGP misconfiguration took down Facebook, Instagram, and WhatsApp globally for ~6 hours — Facebook employees couldn't even badge into their buildings because the badge readers needed the network
-- These aren't bugs in your code. They're failures in infrastructure you don't control.
+</Slide>
 
-**The Palo Alto / NEU example:**
-- This will come up again in Fallacy 6
-- It perfectly illustrates the "someone else makes decisions that affect your network path" problem
+<Slide>
 
-**The design implication:**
-- Every distributed system must answer: "What do we do when we can't reach the other service?"
-- This isn't an edge case to handle later — it's the central design question
-- Pawtograder: retry with backoff → show "grading in progress" → don't crash
-- The answer shapes your entire error-handling architecture
+## Why Do No Social Networks Offer Paths?
 
-**CAP theorem (optional mention if time):**
-- This physical reality is exactly what the CAP theorem addresses
-- When a partition happens, you must choose: stay Consistent (refuse requests) or stay Available (accept requests that might diverge)
-- We won't go deep on CAP, but it flows directly from the fact that partitions are inevitable
+<Img src='/img/lectures/web/l20-path-server.jpg'
+  prompt='A clean, modern technical diagram illustration, aspect ratio 1.5 wide to 1 high. At the bottom center, a sleek rack-mounted server unit represented as a flat rectangular box with ventilation slots and small indicator lights, no keyboard or monitor. Above the server, a single large unified network graph visualization fills most of the upper portion of the image. The graph has dozens of small unlabeled circular nodes distributed fairly evenly across the space, connected by a clearly visible web of medium-weight edges in a muted gray color, forming one interconnected structure. The background edges should be bright enough to clearly see the overall graph structure. Two endpoint nodes on the left and right sides of the graph are highlighted. Three distinct paths are highlighted threading through the interior of the graph between the two endpoints, each in a different bright color: blue, orange, and green. Each path passes through 2 to 3 intermediate nodes that are enlarged slightly to show they are on the path. The paths travel different routes through the graph and do not share intermediate nodes. The background is white. Clean vector-style illustration. Absolutely no text, numbers, or labels anywhere in the image.'
+  alt='A clean vector technical diagram features a rack-mounted server unit at the bottom and a large network graph above it. The graph shows multiple gray nodes and edges. Two endpoint nodes are highlighted, with three distinct colored paths (blue, orange, green) showing different routes between them, passing through several intermediate nodes. The background is white.'
+  width={800}
+/>
 
-→ **Transition:** So: physics limits how fast data can move, and the network can be severed by things outside your control. Given all that — how do distributed services actually talk to each other?
+<aside className="notes">
+- Eventually, the graph got too big to fit in memory
+- If we had to bring it in from disk or other servers, it would have been too slow
+- It also was lower priority than other tasks
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Vertical vs. Horizontal Scaling
+<div style={{ fontSize: '.7em' }}>
+<div className='fragment'>
+* We hit the limit of vertical scaling. We couldn't add more memory to a single server.
+</div>
+<div className='fragment'>
+* We would have needed to create a new architecture that used horizontal scaling.
+</div>
+
+<div className='fragment'>
+<Img src='/img/lectures/web/l20-horizontal-scaling.jpg'
+  alt='Graphic showing a network switch connected to 3 rack-mountable servers,
+  with a graph representing a social network in the background'
+/>
+</div>
+
+</div>
+
+<aside className="notes">
+
 </aside>
 
 </Slide>
 
 {/* ============================================ */}
-{/* CLIENT-SERVER ARCHITECTURE */}
+{/* ARC 2: CLIENT-SERVER ARCHITECTURE, INCLUDING REST */}
 {/* ============================================ */}
+
+<Slide>
+## Introducing Client-Server Architecture
+
+<Img src='/img/lectures/web/l20-client-server-architecture.webp'
+  alt="Twitter post by @KevinNaughtonJr with text 'How are you gonna tell people software engineering is ''hard'' when this is all it is'
+  above block-diagram showing a client on the left and a server on the right"
+  width={800}
+/>
+
+<aside className="notes">
+- Let's see what C-S architecture is and why it's hard
+</aside>
+</Slide>
 
 <Slide>
 
@@ -485,10 +467,6 @@ HttpResponse<String> response = client.send(
 
 </Slide>
 
-{/* ============================================ */}
-{/* LAYERED NETWORK ARCHITECTURE */}
-{/* ============================================ */}
-
 <Slide>
 
 ## The Network Itself Is a Layered Architecture
@@ -568,9 +546,11 @@ Style: Clean flat educational illustration, like a networking textbook diagram. 
 
 </Slide>
 
+
 {/* ============================================ */}
 {/* REST APIs */}
 {/* ============================================ */}
+
 
 <Slide>
 
@@ -634,86 +614,6 @@ HttpRequest delete = HttpRequest.newBuilder()
 - Many APIs offer GraphQL alongside REST — you should know it exists
 
 → **Transition:** REST also standardizes how servers communicate success and failure...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Sidebar: REST Was Itself an Architectural Discovery
-
-<p style={{fontSize: '0.8em'}}>
-REST didn't come from a committee. Roy Fielding co-authored the <strong>HTTP/1.0 spec</strong>, then asked: <em>why does this work so well?</em> His 2000 PhD thesis reverse-engineered HTTP into a set of architectural constraints. REST is the name he gave that style.
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.58em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0.6em', border: '2px solid #9370DB', borderRadius: '8px'}}>
-
-**REST's Six Architectural Constraints** *(Fielding, 2000)*
-
-- **Client-Server** — separate UI concerns from data storage
-- **Stateless** — each request contains all info needed; no session state on the server
-- **Cacheable** — responses must declare whether they can be cached
-- **Uniform Interface** — standard verbs + resource URLs + self-describing messages
-- **Layered System** — clients don't know if they're talking to the real server or a proxy
-
-</div>
-
-<div style={{padding: '0.6em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
-
-**Connection to L18: Drivers → Style**
-
-Each constraint maps to a **quality attribute driver**:
-
-| Constraint | Quality Attribute |
-|-----------|-----------------|
-| Stateless | **Scalability** — any server handles any request |
-| Cacheable | **Performance** — skip redundant fetches |
-| Uniform Interface | **Changeability** — swap server implementations |
-| Layered System | **Security + Deployability** — add proxies/CDNs transparently |
-
-The same process we used for Pawtograder — identify quality attributes, apply heuristics, let the style *emerge* — is how REST was discovered.
-
-</div>
-
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.73em', marginTop: '0.5em', fontStyle: 'italic', color: '#666'}}>
-REST is not a standard, a spec, or a protocol. It's an <strong>architectural style</strong> — a set of constraints that, when applied, produce a system with desirable properties. Fielding studied what made HTTP work, then named the pattern.
-</p>
-</div>
-
-<aside className="notes">
-**The origin story:**
-- Fielding was one of the principal authors of HTTP/1.0 and HTTP/1.1
-- After building it, he wanted to formally capture WHY the web's architecture was so successful
-- His 2000 PhD dissertation at UC Irvine is "Architectural Styles and the Design of Network-based Software Architectures"
-- Chapter 5 is REST — one of the most influential chapters in CS history
-- The dissertation is free online; it's surprisingly readable
-
-**The stateless constraint — most important for this lecture:**
-- "No session state on server" → any server instance can handle any request
-- This is exactly why GitHub Actions can spin up thousands of parallel grading runners — no runner needs to remember any state from previous runs
-- Contrast: PHP session files or sticky sessions on a load balancer — now every request must go to the SAME server → you lose horizontal scalability
-
-**Uniform Interface — the key insight:**
-- Once you know GET/POST/PUT/DELETE and URL conventions, you can interact with ANY REST API
-- The Grading Action's developer could read the Pawtograder API docs and know exactly how to call it without special libraries or training
-- Contrast with SOAP: you need a WSDL file, a code generator, and a specific library for each API
-
-**The L18 connection — drive this home:**
-- L18 showed: quality attribute (testability) → heuristic (separate what from how) → hexagonal architecture emerges
-- Fielding: quality attribute (scalability) → constraint (stateless) → REST emerges
-- "Architecture is discovered, not invented" applies to REST too — Fielding studied the web and discovered the pattern already present in HTTP
-
-**Interesting footnote:**
-- Most "REST" APIs today violate some of Fielding's constraints (especially HATEOAS/hypermedia)
-- Fielding himself has complained about this on his blog
-- But the core stateless + uniform interface constraints are what matter in practice
-
-→ **Transition:** One artifact of that uniform interface: standardized status codes...
 </aside>
 
 </Slide>
@@ -798,8 +698,19 @@ switch (response.statusCode() / 100) {
 
 </Slide>
 
+<Slide>
+
+## Live Demo
+
+<Img src='/img/lectures/web/l20-jokeapi.png'
+  alt='Screenshot of web page https://jokeapi.dev/ allowing making JokeAPI requests'
+/>
+
+https://jokeapi.dev/
+</Slide>
+
 {/* ============================================ */}
-{/* THE FALLACIES */}
+{/* ARC 3: THE FALLACIES */}
 {/* ============================================ */}
 
 <Slide>
@@ -808,6 +719,7 @@ switch (response.statusCode() / 100) {
 
 <Img
   src="/img/lectures/web/l20-fallacies.webp"
+    style={{marginBottom: '0'}}
   prompt="An educational illustration in a clean, modern flat-art style (NOT pixel art). No title text.
 
 Eight warning signs arranged in a grid (2 rows × 4 columns), each containing a crossed-out assumption. Each sign has an icon and bold text:
@@ -823,25 +735,16 @@ Eight warning signs arranged in a grid (2 rows × 4 columns), each containing a 
 
 The overall aesthetic: clean educational poster, suitable for a university lecture. Teals, blues, purples (#9370DB), and red (#f44336) warning accents. The message: these are WRONG assumptions that lead to bugs."
   alt="Eight warning signs arranged in a grid, each crossing out a wrong assumption about distributed systems: The network is reliable, Latency is zero, Bandwidth is infinite, The network is secure, Topology doesn't change, There is one administrator, Transport cost is zero, The network is homogeneous. Clean flat illustration style with warning colors."
+  width={1200}
 />
 
-<p style={{fontSize: '0.78em', marginTop: '0.75em'}}>
+<p style={{fontSize: '0.7em', marginTop: '0.75em'}}>
 Peter Deutsch and colleagues at Sun Microsystems identified eight assumptions developers make about networks — all of which are <strong>false</strong>. These are the <em>Fallacies of Distributed Computing</em>.
 </p>
 
 <aside className="notes">
-**Why this is the heart of the lecture:**
-- These aren't theoretical — every distributed system bug can be traced to one of these fallacies
-- Students who have only worked in monoliths LIVE in a world where all eight are true
-- Moving to distributed systems means unlearning all of them
-
-**Framing:**
 - "In a monolith, method calls don't fail. They don't take 2 seconds. They're free. You can assume whoever wrote the other module is on your team."
 - "The moment you cross the network, EVERY one of these assumptions breaks."
-
-**Approach:**
-- Go through each fallacy with a Pawtograder example
-- Keep it concrete — "Here's how this fallacy burned Pawtograder"
 
 → **Transition:** Let's go through them one by one...
 </aside>
@@ -880,17 +783,16 @@ Response response = null;
 int attempts = 0;
 while (response == null && attempts < 3) {
   try {
-    response = client.send(request,
-        Duration.ofSeconds(10));
+    response = client.send(request, Duration.ofSeconds(10));
   } catch (TimeoutException e) {
-    // Exponential backoff: 1s, 2s, 4s
+    // This performs exponential backoff: 1s, 2s, 4s
     Thread.sleep((long) Math.pow(2, attempts) * 1000);
     attempts++;
   }
 }
 if (response == null) {
   logError("Failed after 3 attempts");
-  // Show "grading in progress" not a crash
+    // Display "grading in progress"
 }
 ```
 
@@ -930,66 +832,46 @@ if (response == null) {
 ## Pattern: Timeout + Retry with Exponential Backoff
 
 <p style={{fontSize: '0.72em'}}>
-<em>Addresses Fallacy 1 (unreliable). Never wait forever — set a deadline, then try again, backing off between attempts.</em>
+<em>This pattern addresses Fallacy 1 (unreliable). Never wait forever — set a deadline, then try again, backing off between attempts.</em>
 </p>
 
 <div style={{fontSize: '0.5em', marginTop: '0.4em'}}>
 
 ```java
-private static final Random random = new Random();
-
 public Response sendWithRetry(HttpRequest request) throws Exception {
     int maxAttempts = 3;
     for (int attempt = 1; attempt <= maxAttempts; attempt++) {
         try {
-            // ALWAYS set a timeout — without one, a hung server blocks forever
-            return client.send(request, BodyHandlers.ofString(), Duration.ofSeconds(10));
+            // ALWAYS set a timeout — without one, a hung server blocks this thread forever
+            return client.send(request,
+                HttpResponse.BodyHandlers.ofString(),
+                Duration.ofSeconds(10));
         } catch (HttpTimeoutException | IOException e) {
             if (attempt == maxAttempts) throw e;
-            // Exponential backoff: 2s, 4s, 8s + jitter to prevent thundering herd
-            long backoffMs = (long) Math.pow(2, attempt) * 1000;
-            long jitter = random.nextLong(500);  // Random 0-500ms
-            Thread.sleep(backoffMs + jitter);
+            // Exponential backoff: 1s, 2s, 4s — don't hammer a struggling service
+            Thread.sleep((long) Math.pow(2, attempt) * 1000);
         }
     }
     throw new RuntimeException("unreachable");
 }
+
+public Response call(HttpRequest request) throws Exception {
+    Response response = sendWithRetry(request);
+    if (response.statusCode() >= 500) {
+        return sendWithRetry(request);  // Server error: worth retrying
+    }
+    return response;  // 4xx client error: retrying won't help — fix the request
+}
 ```
 
 </div>
-
-<div className="fragment">
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.55em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0em', border: '2px solid #f44336', borderRadius: '8px'}}>
-
-**Fixed 1s retry — the thundering herd**
-
-100 clients all fail at t=0 (API restart). All retry at t=1s. Server gets slammed again. All fail. All retry at t=2s…
-The server never gets a chance to recover.
-
-</div>
-
-<div style={{padding: '0em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
-
-**Exponential backoff + jitter — spreading the load**
-Load arrives in waves the server can absorb.
-
-</div>
-
-</div>
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.62em', marginTop: '0.4em', color: '#FF9800'}}>
-<strong>Only retry 5xx and timeouts.</strong> A 400 Bad Request won't fix itself. A 401 Unauthorized won't either. Retrying a 409 Conflict might make things worse.
-</p>
+<div style={{ fontSize: '.8em' }}>
+Exponential backoff + jitter (randomness) ensures retries don't happen at same time
 </div>
 
 <aside className="notes">
 **The timeout is the most important part:**
 - Without a timeout, `client.send()` can block indefinitely
-- One blocked thread is fine; a service that accumulates 100 blocked threads per second will exhaust its thread pool and die
 - Always set a timeout — even if generous (30s)
 
 **Exponential backoff rationale:**
@@ -997,14 +879,48 @@ Load arrives in waves the server can absorb.
 - Fixed 1s retry: all 100 retry at t+1s — waves of 100 requests on top of normal load
 - Exponential backoff: naturally spread out — 2s, 4s, 8s
 - Add jitter: `backoffMs += random.nextLong(0, 500)` — "thundering herd" prevention
-
-**The 4xx vs 5xx distinction:**
-- 429 Too Many Requests: IS worth retrying — check the Retry-After header
-- 401 Unauthorized: don't retry, your token is wrong
-- 503 Service Unavailable: retry with backoff
-- Key question: "Is the problem on my side (4xx) or the server's side (5xx)?"
-
 → **Transition:** But now we have a problem: if we retry, could we run the operation twice?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Idempotency
+
+<div style={{ fontSize: '.7em' }}>
+An action is <em>idempotent</em> if performing it multiple times has the same result as performing it once.
+
+<div className='fragment' style={{display: 'flex', gap: '2em'}}>
+
+<div style={{flex: 1, border: '2px solid #4ac', borderRadius: '8px', padding: '0.5em'}}>
+
+**Idempotent**
+- `x = 5;`
+- `myList.clear();`
+- Pressing an elevator button
+- HTTP GET, PUT, and DELETE
+
+</div>
+
+<div style={{flex: 1, border: '2px solid #f44336', borderRadius: '8px', padding: '0.5em'}}>
+
+**Non-Idempotent**
+- `x += 5;`
+- `myList.add(1);`
+- Watering a plant
+- HTTP POST
+</div>
+</div>
+
+<div className='fragment'>
+If you ask your roommate multiple times on the same day to water the plant, will they do it more than once?
+</div>
+</div>
+
+
+<aside className="notes">
+
 </aside>
 
 </Slide>
@@ -1029,7 +945,9 @@ public void submitFeedback(String submissionId, Feedback feedback) {
         .build();
     sendWithRetry(request);   // Now safe to call multiple times!
 }
+```
 
+```java
 // SERVER: check the key before doing any work
 public Response submitFeedback(Request req) {
     String key = req.header("Idempotency-Key");
@@ -1045,30 +963,25 @@ public Response submitFeedback(Request req) {
     return result;
 }
 ```
-
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.65em', marginTop: '0.4em', color: '#9370DB'}}>
-<strong>HTTP verb idempotency:</strong> GET always idempotent (read-only). DELETE idempotent (deleting twice = 404, no harm). PUT idempotent (replace whole resource). POST NOT idempotent by default — that's why you need the Idempotency-Key header.
-</p>
 </div>
 
 <aside className="notes">
-**The core ambiguity:**
-- Client POSTs. Network drops the RESPONSE (not the request — the request got through).
-- Client times out and retries.
-- Without idempotency: two grade records for the same submission.
-- With idempotency: server recognizes the key, returns same result — one grade.
-
-**"At-least-once" vs "exactly-once":**
-- Retry without idempotency → at-least-once (might run multiple times)
-- No retry → at-most-once (might not run at all)
-- Retry + idempotency → exactly-once semantics
-
 → **Transition:** Even when the network works, it still slows you down...
 </aside>
 
+</Slide>
+
+<Slide>
+## Latency
+
+<Img src='/img/lectures/web/l20-latency-cartoon.png'
+  alt="4-pane cartoon Simply Explained cartoon by Geek and Poke, titled 'Latency'
+  Frame 1: Lone man wearing headset asks: 'Do you love me?'
+  Frame 2: He waits silently.
+  Frame 3: He asks 'Why don't you answer me? Is there another man?' He receives reply 'Yes'.
+  Frame 4: Man has left frame. Reply arrives: 'What do you mean? Of course not!!'"
+
+/>
 </Slide>
 
 <Slide>
@@ -1123,7 +1036,7 @@ api.submitFeedback(batch);
 
 <div style={{padding: '0.4em', border: '2px solid #FF9800', borderRadius: '6px'}}>
 
-**Fallacy 5: Topology changes** — Never hardcode URLs; use config. Servers move, DNS updates.
+**Fallacy 5: Topology doesn't change** — Never hardcode URLs; use config. Servers move, DNS updates.
 
 </div>
 
@@ -1136,27 +1049,8 @@ api.submitFeedback(batch);
 </div>
 
 <aside className="notes">
-**Walk through the code:**
-- The chatty version makes 100 API calls — each with its own TCP handshake, TLS negotiation, HTTP headers
-- The chunky version makes 1 API call — same total data, 1/100th the overhead
-- This is why Pawtograder batches all test results into ONE submitFeedback() call
-
-**The 100x difference is real:**
-- 100 tests × 100ms round-trip = 10 seconds of pure network overhead
-- Batched: 100ms round-trip = 100ms overhead
-- The test data itself takes negligible time to serialize
-
-**On bandwidth (Fallacy 3):**
-- SHA-based caching: if the hash matches, skip the download entirely
-- Docker image layers use this, git uses this — content-addressable caching
-
-**On topology (Fallacy 5):**
-- Config over code: API_URL is a per-assignment config, not hardcoded
-- Production: Kubernetes DNS, AWS service mesh handle this automatically
-
-**On homogeneity (Fallacy 8):**
-- Same code, different network = different timing = potential race conditions
-- Your local test might pass, production might fail
+- Does anyone remember where we've seen chunking before in the Java API?
+- BufferedInputStream
 
 → **Transition:** The remaining fallacies touch on security and cost...
 </aside>
@@ -1165,66 +1059,59 @@ api.submitFeedback(batch);
 
 <Slide>
 
-## Fallacy 4: "The Network Is Secure" (and Fallacies 6–7)
+## Fallacy 4: "The Network Is Secure"
+```mermaid
+flowchart LR
+    Client -->|"sends data"| Attacker
+    Attacker -.->|"intercept / modify"| Server
+```
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75em', fontSize: '0.6em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0.6em', border: '2px solid #f44336', borderRadius: '8px'}}>
-
-**Fallacy 4: The network is secure**
+<div style={{ fontSize: '.8em' }}>
 
 Data crossing networks can be intercepted, modified, or spoofed. Every network boundary is a potential attack surface.
 
-*Pawtograder:* Without an authentication token, anyone could POST fake grades. Without HTTPS, a network observer could read or modify grades in transit.
+*Pawtograder:* Without the OIDC token, anyone could POST fake grades. Without HTTPS, a network observer could read or modify grades in transit.
 
 *(We'll dive deep on security later in this lecture.)*
-
 </div>
 
-<div style={{padding: '0.6em', border: '2px solid #9370DB', borderRadius: '8px'}}>
+<aside className="notes">
+- OIDC (OpenID Connect) is an authentication protocol
+</aside>
 
-**Fallacy 6: There is one administrator**
+</Slide>
+
+<Slide>
+
+## Fallacy 6: "There Is One Administrator"
+<div style={{ fontSize: '.8em' }}>
 
 Different parts of distributed systems are controlled by different organizations. You can't control what they do.
 
 *Real NEU example:* Northeastern contracts with Palo Alto Networks to filter all campus traffic. When Palo Alto arbitrarily decides Pawtograder's dev environment is malware — learning is disrupted. NEU claimed no responsibility. **This happens all the time.**
 
+<aside className="notes">
+- Corporate firewalls, university proxies, ISP throttling, regional outages — all outside your control
+- Design for this: health checks, fallback modes, clear error messages to users
+</aside>
 </div>
+</Slide>
 
-<div style={{padding: '0.6em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+<Slide>
 
-**Fallacy 7: Transport cost is zero**
-
+## Fallacy 7: "Transport Cost Is Zero"
+```mermaid
+flowchart LR
+    A["100 test results"] -->|"100 API calls ❌"| B["submitFeedback()"]
+    A -->|"1 batched call ✅"| B
+```
+<div style={{ fontSize: '.8em' }}>
 Network calls have real costs: computational (serialization, encryption), monetary (API pricing, bandwidth fees), and energy (radio transmission, data center processing).
 
 *Pawtograder:* Batching 100 test results into one `submitFeedback()` call instead of 100 calls doesn't just save latency — it saves energy. 6,000 grading runs/semester × 100 extra API calls = measurable environmental impact.
-
 </div>
-
-</div>
-
 <aside className="notes">
-**Fallacy 6 is worth a moment:**
-- This is a real thing that happened at NEU
-- The lesson: in distributed systems, you don't control the whole network path
-- Corporate firewalls, university proxies, ISP throttling, regional outages — all outside your control
-- Design for this: health checks, fallback modes, clear error messages to users
-
-**Fallacy 7 — the sustainability angle:**
-- Every API call: serialize to JSON → transmit → deserialize → process → serialize response → transmit → deserialize
-- In a monolith: that's a method call (nanoseconds)
-- Multiply by thousands of calls/minute, thousands of services — real energy cost
-- Sustainability is becoming a quality attribute: the "Green Software" movement
-
-**Energy calculation for Pawtograder:**
-- 6,000 grading runs/semester
-- 100 tests per assignment
-- Batching saves ~99 API calls per run
-- 594,000 fewer API calls per semester
-- That's not nothing
-
-**The architectural takeaway:**
-- "Monolith-first" isn't just about simplicity — it's about not paying distributed-system costs until you have distributed-system benefits
+- Where have we seen combining requests in the Java library? BufferedInputStream
 
 → **Transition:** The fallacies also drive system-level resilience patterns — let's see two more...
 </aside>
@@ -1239,43 +1126,71 @@ Network calls have real costs: computational (serialization, encryption), moneta
 <em>If a service is struggling, hammering it with retries makes it worse. The circuit breaker detects sustained failure and stops trying — giving the service time to recover.</em>
 </p>
 
-<div style={{fontSize: '0.47em', marginTop: '0.3em'}}>
+<div style={{display: 'flex', gap: '1em', marginTop: '0.3em'}}>
 
+<div style={{fontSize: '0.47em', flex: '1'}}>
 ```java
 // Three states: CLOSED (normal) → OPEN (failing fast) → HALF_OPEN (testing recovery)
 public class CircuitBreaker {
-    enum State { CLOSED, OPEN, HALF_OPEN }
+  enum State { CLOSED, OPEN, HALF_OPEN }
 
-    private State state = State.CLOSED;
-    private int failureCount = 0;
-    private Instant openedAt;
+  private State state = State.CLOSED;
+  private int failureCount = 0;
+  private Instant openedAt;
 
-    public Response call(Supplier<Response> request) {
-        if (state == State.OPEN) {
-            if (Duration.between(openedAt, Instant.now()).toSeconds() < 30) {
-                // Fail immediately — fast failure > slow failure
-                throw new CircuitOpenException("Service unavailable, try later");
-            }
-            state = State.HALF_OPEN;   // After 30s, allow one probe request through
-        }
-
-        try {
-            Response response = request.get();
-            reset();           // Success: back to CLOSED
-            return response;
-        } catch (Exception e) {
-            failureCount++;
-            if (failureCount >= 5) {
-                state = State.OPEN;    // 5 consecutive failures → trip the circuit
-                openedAt = Instant.now();
-            }
-            throw e;
-        }
+  public Response call(Supplier<Response> request) {
+    if (state == State.OPEN) {
+      if (Duration.between(openedAt, Instant.now()).toSeconds() < 30) {
+        // Fail immediately — fast failure > slow failure
+        throw new CircuitOpenException("Service unavailable, try later");
+      }
+      state = State.HALF_OPEN;   // After 30s, allow one probe request through
     }
 
-    private void reset() { state = State.CLOSED; failureCount = 0; }
+    try {
+      Response response = request.get();
+      reset();           // Success: back to CLOSED
+      return response;
+    } catch (Exception e) {
+      failureCount++;
+      if (failureCount >= 5) {
+        state = State.OPEN;    // 5 consecutive failures → trip the circuit
+        openedAt = Instant.now();
+      }
+      throw e;
+    }
+  }
+
+  private void reset() { state = State.CLOSED; failureCount = 0; }
 }
 ```
+
+</div>
+
+<div style={{flex: '1', display: 'flex', flexDirection: 'column', gap: '1em', fontSize: '0.6em'}}>
+```mermaid
+flowchart LR
+    Caller -->|"request"| CB["Circuit Breaker"]
+    CB -->|"response"| Caller
+    CB -->|"request"| Service
+    Service -->|"response"| CB
+```
+```mermaid
+stateDiagram-v2
+    [*] --> CLOSED
+    CLOSED --> OPEN : 5 consecutive failures
+    OPEN --> HALF_OPEN : after 30s timeout
+    HALF_OPEN --> CLOSED : probe succeeds
+    HALF_OPEN --> OPEN : probe fails
+```
+
+```mermaid
+flowchart LR
+    Caller -->|"request"| CB["Circuit Breaker"]
+    CB["Circuit Breaker"] -->|503| Caller
+```
+
+</div>
 
 </div>
 
@@ -1317,7 +1232,7 @@ public class CircuitBreaker {
 public SubmissionResponse handleSubmission(String submissionId) {
     // Step 1: Record that we received the code (this succeeds even if grading is down)
     db.markSubmissionReceived(submissionId);
-    
+
     try {
         return gradingApi.triggerGrading(submissionId);
     } catch (CircuitOpenException | ServiceUnavailableException e) {
@@ -1369,8 +1284,29 @@ public SubmissionResponse handleSubmission(String submissionId) {
 </Slide>
 
 {/* ============================================ */}
-{/* MICROSERVICES */}
+{/* ARC 4: MICROSERVICES */}
 {/* ============================================ */}
+
+{/* Transition slide */}
+
+<Slide>
+
+## Transition to Microservices
+
+<Img src='/img/lectures/web/l20-Microservice-henge.png'
+  alt="Two people in animal skins next to stonehenge. One person says to the other: 'Sometimes I worry...Are we just building another distributed monolith?'"
+  width={1000}
+/>
+
+<div style={{ fontSize: '.6em' }}>
+Forrest Brazeal, [Good Tech Things](https://www.goodtechthings.com/) [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode?ref=goodtechthings.com)
+</div>
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
 
 <Slide>
 
@@ -1448,6 +1384,7 @@ A <strong>microservices architecture</strong> decomposes a system into small, in
 
 <Img
   src="/img/lectures/web/l20-distributed-monolith.webp"
+  width={1100}
   prompt="An educational illustration in a clean, modern flat-art style (NOT pixel art). No title text.
 
 LEFT SIDE — GOOD: Three distinct service boxes labeled 'Service A', 'Service B', 'Service C' connected by clean, direct HTTP arrows. Each box has its own database cylinder below it. The boxes are visually distinct and independent-looking. Label: 'TRUE MICROSERVICES: Independently deployable. Each owns its data.'
@@ -1492,7 +1429,7 @@ The <strong>distributed monolith</strong> anti-pattern: services that are deploy
 </Slide>
 
 {/* ============================================ */}
-{/* NETWORK QUALITY REQUIREMENTS */}
+{/* ARC 5: NETWORK QUALITY REQUIREMENTS */}
 {/* ============================================ */}
 
 <Slide>
@@ -1620,11 +1557,6 @@ Each additional nine is **exponentially** harder and more expensive. High availa
 
 </div>
 
-<div className="fragment">
-<p style={{fontSize: '0.65em', marginTop: '0.5em', color: '#FF9800', fontWeight: 'bold'}}>
-<strong>Strategies we've already covered:</strong> Caching and batching (Fallacies 2-3), retry + circuit breaker (Fallacy 1), redundancy + failover (reliability). These aren't separate topics — they're all responses to distribution's challenges.
-</p>
-</div>
 
 <aside className="notes">
 **This is a vocabulary slide, not deep dive:**
@@ -1656,7 +1588,7 @@ Each additional nine is **exponentially** harder and more expensive. High availa
 Horizontal scaling only works if <strong>any server can handle any request</strong>. This requires stateless services — each request contains all information needed to process it.
 </p>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.58em', marginTop: '0.5em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.58em', marginTop: '-0.75em'}}>
 
 <div style={{padding: '0.6em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
 
@@ -1701,7 +1633,7 @@ If the server dies, the session state is lost. If load spikes, you can't add ser
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px' }}}%%
-flowchart TB
+flowchart LR
     LB[Load Balancer]
     LB --> API1["API #1<br/>(stateless)"]
     LB --> API2["API #2<br/>(stateless)"]
@@ -1880,6 +1812,7 @@ Walk through each with Pawtograder examples:
 
 <Img
   src="/img/lectures/web/l20-trust-boundary4.webp"
+  width={1200}
   prompt="A clean, modern educational illustration about trust boundaries in distributed systems. No title text.
 
 SCENE: An airport/border security checkpoint metaphor for trust boundaries.
@@ -1960,57 +1893,72 @@ The API must not trust the action to report: its own repository name, accurate t
 
 ## Knowing WHO You Are Is Different from What You're ALLOWED to Do
 
-<p style={{fontSize: '0.72em'}}>
-<strong>Authentication</strong> proves identity. <strong>Authorization</strong> checks permissions. Both required — in that order.
-</p>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.62em', marginTop: '0.5em'}}>
 
-<div style={{fontSize: '0.5em', marginTop: '0.3em'}}>
+<div style={{padding: '0.6em', border: '2px solid #9370DB', borderRadius: '8px'}}>
 
-```java
-public Response submitFeedback(Request req) {
-    // STEP 1: AUTHENTICATION — "Who are you?"
-    // Verify the token cryptographically (we'll see HOW shortly)
-    Identity caller = authService.verifyToken(req.header("Authorization"));
-    // Now we KNOW who this is — not just who they CLAIM to be
-    
-    // STEP 2: AUTHORIZATION — "What are you allowed to do?"
-    if (!enrollmentService.isRepoEnrolled(caller.repository())) {
-        throw new ForbiddenException("Repository not enrolled");  // 403
-    }
-    if (assignment.getDeadline().isBefore(Instant.now())) {
-        throw new ForbiddenException("Deadline has passed");      // 403
-    }
-    
-    // Both checks passed — process the request
-    return gradingService.storeFeedback(req.body());
-}
-```
+**Authentication** — "Who are you?"
+
+Proving identity. *The Grading Action authenticates using a GitHub OIDC token — a cryptographically signed assertion from GitHub proving the workflow is running in a specific repository.*
+
+Example: I show my Northeastern ID card — I've proven I'm Jon Bell.
 
 </div>
 
-<div className="fragment">
-<p style={{fontSize: '0.62em', marginTop: '0.35em', color: '#FF9800', fontWeight: 'bold'}}>
-HTTP 401 "Unauthorized" = authentication failure (poorly named — should be "Unauthenticated"). HTTP 403 "Forbidden" = authorization failure (I know you, but you can't do this).
-</p>
+<div style={{padding: '0.6em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
+
+**Authorization** — "What are you allowed to do?"
+
+Checking permissions after identity is proven. *The API authorizes: Is this repository allowed to submit to this assignment? Is the deadline open? Is this student enrolled?*
+
+Example: The library system checks — is Jon Bell allowed to access this database?
+
+</div>
+
+</div>
+
+<div className="fragment" style={{marginTop: '0.5em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.58em'}}>
+
+<div style={{padding: '0.5em', border: '2px solid #f44336', borderRadius: '8px', backgroundColor: '#FFEBEE'}}>
+
+**Authentication without authorization:**
+
+"I know who you are" — but anyone can do anything.
+
+HTTP 401 "Unauthorized" = actually authentication failure (bad name!)
+
+</div>
+
+<div style={{padding: '0.5em', border: '2px solid #f44336', borderRadius: '8px', backgroundColor: '#FFEBEE'}}>
+
+**Authorization without authentication:**
+
+"You're allowed" — but we don't know you're who you claim to be.
+
+HTTP 403 "Forbidden" = authorization failure (you're known, but not allowed)
+
+</div>
+
+</div>
 </div>
 
 <aside className="notes">
-**Walk through the code:**
-- Line 4: Authentication — verify the token. HOW this works is coming up next!
-- Line 5: Key insight — we now KNOW who this is, not just who they claim to be
-- Line 8-12: Authorization — check if this identity is ALLOWED to do this action
-- The order matters: you must authenticate BEFORE you can authorize
+**Authentication vs Authorization — crucial distinction:**
+- You can succeed at authentication but fail authorization (valid OIDC token, but repo not enrolled in the course)
+- You can be authorized for something IF your identity is verified, but fail at authentication
 
-**The 401 vs 403 distinction:**
-- 401: "I don't know who you are" → token missing, expired, or invalid
-- 403: "I know who you are, but you can't do this" → token valid, but repo not enrolled or deadline passed
+**HTTP status codes:**
+- HTTP 401 Unauthorized = authentication failure (misleadingly named — should be "Unauthenticated")
+- HTTP 403 Forbidden = authorization failure (you're known, but not allowed)
 
-**Key insight:**
-- Authentication: cryptographic verification (can this token be trusted?)
-- Authorization: business logic (does this identity have permission?)
-- Both are necessary — neither is sufficient alone
+**The key question:**
+- HOW do you authenticate across a network?
+- In a monolith: method calls within the same process — implicit trust
+- Across a network: anyone can send bytes claiming to be anyone
+- This is where cryptography comes in...
 
-→ **Transition:** But how does that cryptographic verification actually work? How can we verify identity over an untrusted network?
+→ **Transition:** How do you prove identity over a network?
 </aside>
 
 </Slide>
@@ -2082,313 +2030,6 @@ We need a way to prove identity that: (1) Can't be forged by attackers, (2) Does
 - No secrets transmitted over the network
 
 → **Transition:** Let's see how this works...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Asymmetric Crypto: Prove Identity Without Sharing Secrets
-
-<Img
-  src="/img/lectures/web/l20-crypto-combined.webp"
-  prompt="A clean, modern educational illustration explaining asymmetric cryptography for authentication. No title text. Three horizontal sections.
-
-SECTION 1 — THE KEY PAIR (top):
-A box labeled 'GitHub' containing two keys:
-- A golden key labeled '🔐 PRIVATE KEY' in a vault with text '(kept secret, never leaves GitHub)'
-- A teal key labeled '🔓 PUBLIC KEY' with text '(published openly at well-known URL)'
-An arrow shows they are mathematically linked. Emphasis: 'Private key CREATES signatures. Public key VERIFIES them.'
-
-SECTION 2 — THE FLOW (middle):
-Left to right flow:
-1. GitHub creates claims: 'repo: cs3100/hw1, time: 2024-03-15'
-2. GitHub uses PRIVATE KEY to SIGN → stamp/seal icon → produces signature 'sig: a8f3...'
-3. Token (claims + signature) travels over the network (show tubes/wires)
-4. Pawtograder API receives token
-5. API fetches PUBLIC KEY from github.com/.well-known/jwks
-6. API uses PUBLIC KEY to VERIFY signature → green checkmark
-7. Result: 'Verified! Only GitHub could have signed this.'
-
-Note in the middle: 'Anyone can READ the token (claims aren't secret). But only GitHub could have CREATED a valid signature.'
-
-SECTION 3 — WHY THIS WORKS (bottom):
-Three boxes side by side:
-Box 1: '✓ Can't be forged — attacker doesn't have GitHub's private key'
-Box 2: '✓ No shared secrets — only the public key is transmitted'
-Box 3: '✓ Self-verifying — API checks signature locally, no callback to GitHub'
-
-Clean flat illustration style. Teals (#4A90A4), purples (#9370DB), greens (#4CAF50). Golden for private key (protected), teal for public key (shared)."
-  alt="Asymmetric cryptography flow: GitHub has private key (secret) and public key (published). GitHub signs claims with private key, creating a token. Pawtograder API fetches public key and verifies signature locally. Three benefits: can't be forged, no shared secrets, self-verifying."
-/>
-
-<aside className="notes">
-**The key insight:**
-- Private key = can CREATE valid signatures (only GitHub has this)
-- Public key = can VERIFY signatures (anyone can have this)
-- The claims (payload) are NOT encrypted — anyone can read them
-- The SIGNATURE proves only GitHub could have created the token
-
-**Why OIDC uses signing, not encrypting:**
-- The claims aren't secret: "This is repo cs3100-sp26/hw1-student123"
-- Anyone can read the token — that's fine!
-- What matters is AUTHENTICITY: only GitHub could have made this assertion
-
-**Trade-off:**
-- Asymmetric crypto is slower than symmetric (10-100x)
-- That's why HTTPS uses asymmetric to exchange a symmetric key, then symmetric for bulk data
-- OIDC tokens are small enough that the overhead is fine
-
-**The remaining question:**
-- How does the API know the public key at github.com is really GitHub's?
-- Answer: HTTPS and Certificate Authorities — trust flows from CAs
-
-→ **Transition:** Let's trace that chain of trust...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## HTTPS Solves Eavesdropping but Creates a New Trust Question
-
-<Img
-  src="/img/lectures/web/l20-https-trust2.webp"
-  prompt="A clean, modern educational illustration about HTTPS, certificates, and the chain of trust. No title text.
-
-MAIN SECTION — THE CERTIFICATE CHAIN:
-Show a flow from left to right:
-
-1. CERTIFICATE AUTHORITY (DigiCert) box on the left:
-   - Has a golden key labeled '🔐 CA Private Key' (in a vault)
-   - Has a teal key labeled '🔓 CA Public Key' (pre-installed in your OS/browser)
-   - Text: 'Signs certificates for verified domains'
-
-2. Arrow showing: CA uses private key to SIGN github.com's certificate
-
-3. github.com in the middle:
-   - Shows a CERTIFICATE document containing:
-     - 'Domain: github.com'
-     - 'Public Key: [github's public key]'
-     - 'Signed by: DigiCert'
-   - github.com has its own private key (golden, in vault)
-
-4. Arrow to YOUR LAPTOP on the right:
-   - Laptop has built-in 'Trusted CA List' showing: 'DigiCert ✓, Let's Encrypt ✓, ...'
-   - Uses CA's PUBLIC KEY to verify the certificate signature
-   - Green checkmark: 'Certificate valid! This is really github.com'
-
-5. Encrypted tunnel established — attacker blocked outside
-
-BOTTOM: Text: 'Trust flows: Your OS trusts CAs → CAs vouch for domains → You trust github.com → github.com publishes OIDC keys → API trusts those keys'
-
-Clean flat illustration style. Golden keys for private (protected), teal keys for public (shared). Greens for security."
-  alt="HTTPS certificate chain: Certificate Authority signs github.com's certificate. Your browser verifies using CA's public key from its trusted list. Trust flows from OS → CAs → domains → OIDC keys."
-/>
-
-<div className="fragment">
-<p style={{fontSize: '0.55em', marginTop: '0.15em', color: '#FF9800'}}>
-⚠️ <strong>The catch:</strong> Employers can add their own CA to devices they control. NEU-owned laptops have Northeastern's root CA installed (cannot remove) — they can intercept ALL your HTTPS traffic. If that CA is compromised, attackers can forge certificates for any domain. <strong>Use personal devices for anything sensitive.</strong>
-</p>
-</div>
-
-<aside className="notes">
-**How the chain of trust works:**
-1. Your OS/browser ships with ~100 trusted CA root certificates
-2. CAs vouch for domain ownership before issuing certificates
-3. When you connect to github.com, browser verifies certificate chain
-4. If valid → encrypted connection, and you trust github.com's public keys
-
-**Risk 1 — Employer interception:**
-- NEU-owned laptops have Northeastern's root CA installed — you cannot remove it
-- iOS devices with MDM profiles add employer CAs
-- With their CA trusted, they can proxy and decrypt all HTTPS traffic
-- The lock icon still appears green — but your employer sees everything
-- This is legal: "It's our device, it's in the acceptable use policy"
-
-**Risk 2 — CA compromise:**
-- If ANY CA in your trust store is compromised, attackers can issue fake certificates
-- DigiCert has dedicated security teams, HSMs, audits
-- A university IT department running a CA? Probably less secure
-- If NEU's CA private key is stolen, attacker could issue "github.com" certificate
-- This has happened: DigiNotar (2011), Comodo (2011), WoSign (2016)
-
-**Practical advice:**
-- Personal banking, medical info, private communications → PERSONAL device
-- Assume anything on a work/university device can be monitored
-
-→ **Transition:** Now let's see this all come together in OIDC...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Self-Verifying Tokens: The Full Verification Flow
-
-<p style={{fontSize: '0.72em'}}>
-The API verifies the Grading Action's identity <strong>without contacting GitHub</strong>. The signature is self-verifying — GitHub's public key is all that's needed.
-</p>
-
-<div style={{fontSize: '0.46em', marginTop: '0.3em'}}>
-
-```java
-// This class caches GitHub's public keys — fetched once, reused for all requests
-public class OidcVerifier {
-    private final JwkProvider jwkProvider = new UrlJwkProvider(
-        "https://token.actions.githubusercontent.com/.well-known/jwks");  // Cached
-    
-    public VerifiedIdentity verify(String oidcToken) throws JWTVerificationException {
-        // Step 1: Decode WITHOUT verifying (to get the key ID)
-        DecodedJWT unverified = JWT.decode(oidcToken);
-        
-        // Step 2: Fetch the public key (from cache after first request)
-        Jwk jwk = jwkProvider.get(unverified.getKeyId());
-        RSAPublicKey publicKey = (RSAPublicKey) jwk.getPublicKey();
-        
-        // Step 3: Verify signature — LOCAL MATH, no network call
-        DecodedJWT verified = JWT.require(Algorithm.RSA256(publicKey, null))
-            .withIssuer("https://token.actions.githubusercontent.com")
-            .build()
-            .verify(oidcToken);  // Throws if signature invalid
-        
-        // Step 4: Extract claims — guaranteed by GitHub's signature
-        return new VerifiedIdentity(
-            verified.getClaim("repository").asString(),      // "cs3100-sp26/hw1-alice"
-            verified.getClaim("workflow_ref").asString(),    // Detects modified workflows
-            verified.getClaim("run_id").asString());
-    }
-}
-```
-
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.6em', marginTop: '0.3em', color: '#4CAF50', fontWeight: 'bold'}}>
-Verification is local math (microseconds), not a network call (milliseconds). This is why OIDC scales — and why the API can handle thousands of grading requests without bottlenecking on GitHub.
-</p>
-</div>
-
-<aside className="notes">
-**Walk through the code:**
-- Line 3-4: JwkProvider fetches GitHub's public keys ONCE, caches them
-- Line 8: Decode the token to get the key ID (tokens say WHICH key signed them)
-- Line 11-12: Fetch the public key — hits cache after first request
-- Line 15-18: The actual verification — pure math, no network
-- Line 21-24: Extract claims from the VERIFIED token — these are trustworthy
-
-**Why this design is brilliant:**
-- If every verification required a network call to GitHub: latency disaster
-- If GitHub goes down, all grading would fail
-- Self-verifying tokens eliminate both problems
-
-**What the API learns from the token:**
-- repository: which repo triggered the workflow (can't be spoofed)
-- workflow_ref: which workflow file ran (detects if student modified it)
-- run_id: unique ID for this workflow run (for audit logs)
-
-**What the API does NOT trust:**
-- Anything in the request BODY — the action could lie about test results
-- Pawtograder mitigates: workflow validation, log preservation, instructor review
-
-→ **Transition:** But what if we DIDN'T have self-verifying tokens? What would the alternative look like?
-</aside>
-
-</Slide>
-
-<Slide>
-
-## The Alternative: Network-Verified Tokens (Why Not?)
-
-<p style={{fontSize: '0.72em'}}>
-What if tokens <em>weren't</em> self-verifying? Every verification would require a network call back to the identity provider.
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.48em', marginTop: '0.3em'}}>
-
-<div style={{padding: '0.5em', border: '2px solid #f44336', borderRadius: '8px', backgroundColor: '#FFEBEE'}}>
-
-**Network-verified (the alternative)**
-
-```java
-public Identity verify(String token) {
-    // EVERY verification = network call to GitHub
-    HttpResponse<String> resp = client.send(
-        HttpRequest.newBuilder()
-            .uri(URI.create("https://api.github.com/verify"))
-            .header("Authorization", "Bearer " + token)
-            .build(),
-        BodyHandlers.ofString());
-    
-    // GitHub checks its database: "Is this token valid?"
-    // Returns the identity if valid, 401 if not
-    return parseIdentity(resp.body());
-}
-```
-
-⚠️ Every grading request → network call to GitHub
-⚠️ GitHub down = all grading stops
-⚠️ GitHub rate limits = grading throttled
-⚠️ Latency: +50-200ms per verification
-
-</div>
-
-<div style={{padding: '0.5em', border: '2px solid #4CAF50', borderRadius: '8px', backgroundColor: '#E8F5E9'}}>
-
-**Self-verifying (OIDC/JWT)**
-
-```java
-public Identity verify(String token) {
-    // Public key fetched ONCE, cached forever
-    // Verification is LOCAL MATH (can cache issuer keys)
-    DecodedJWT verified = JWT.require(
-            Algorithm.RSA256(cachedPublicKey, null))
-        .withIssuer("https://token.actions.githubusercontent.com")
-        .build()
-        .verify(token);
-    
-    return new Identity(
-        verified.getClaim("repository").asString());
-}
-```
-
-✅ No network call per request
-✅ GitHub down? Verification still works
-✅ No rate limit concerns
-✅ Latency: ~0.1ms (pure CPU)
-
-</div>
-
-</div>
-
-<aside className="notes">
-**The scale problem:**
-- Pawtograder: ~6,000 grading runs per semester, each with multiple API calls
-- Network-verified: 6,000+ calls to GitHub's verification endpoint
-- At deadline time: 500 students submit in 1 hour = 500 verification calls
-- GitHub might rate-limit you, or just be slow under load
-
-**The availability problem:**
-- Network-verified: GitHub goes down → all grading stops
-- Self-verifying: GitHub goes down → still works! (public key is cached)
-- The only dependency is HTTPS to fetch the public key once
-
-**The latency problem:**
-- Network-verified: 50-200ms per verification (network round-trip to GitHub)
-- Self-verifying: ~0.1ms (RSA signature verification is fast)
-- 2000x faster, and it adds up
-
-**This is exactly Fallacy 2 (Latency is zero) in action:**
-- The network-verified approach treats verification like a method call
-- It ignores that every network call has real latency cost
-- Self-verifying tokens are a DESIGN response to the fallacies
-
-**Real-world parallel:**
-- OAuth 2.0 "introspection" endpoint: network-verified (for short-lived access tokens)
-- OIDC/JWT: self-verifying (for identity assertions)
-- The industry moved toward self-verifying because scale matters
-
-→ **Transition:** Let's step back and see the full chain of trust...
 </aside>
 
 </Slide>
@@ -2622,5 +2263,16 @@ Serverless is the natural continuation of today's lesson: it's distributed compu
 </aside>
 
 </Slide>
+
+
+<Slide>
+## Bonus Slide
+
+<Img src='/img/lectures/web/l20-state-is-the-enemy.jpg'
+  alt="Epic Handshake Three Way meme uniting 'Distributed Systems',
+  'Anarchists', and 'Functional Programmers' on 'State is the Enemy'"
+/>
+</Slide>
+
 
 </RevealJS>
