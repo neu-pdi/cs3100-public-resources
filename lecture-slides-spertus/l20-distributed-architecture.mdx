@@ -148,6 +148,32 @@ After this lecture, you will be able to:
 
 </Slide>
 
+
+<Slide>
+
+## Announcements
+
+<div style={{fontSize: '0.85em', textAlign: 'left'}}>
+
+**Midterm Survey via Qualtrics, +1 participation credit if you complete it**
+- Due Friday 2/27 @ 11:59 PM
+- Anonymous link in your email
+- Over 150 students have completed it so far
+
+**Koury Mid-Semester Evaluations also due Friday
+
+**Team Formation Survey Released!**
+- Starting Week 10: teams of 4 for CookYourBooks GUI project
+- Tell us your preferences (either Oakland section) + availability
+- **Due Friday 2/26 @ 11:59 PM**
+- [Complete the Survey →](https://docs.google.com/forms/d/e/1FAIpQLScP-pp6S2tP4Do1J5buWmFLDDHwO5r8dxAmjZCB5wH20UDDiQ/viewform)
+
+**HW4 Due Thursday Night**
+
+</div>
+
+</Slide>
+
 {/* ============================================ */}
 {/* ARC 1: MOTIVATING EXAMPLE: ORKUT SHORTEST PATH SERVER */}
 {/* ============================================ */}
@@ -155,7 +181,7 @@ After this lecture, you will be able to:
 <Slide>
 ## Motivating Example: The Orkut Team (2004-2008)
 <Img src='/img/lectures/web/l20-orkut-team.jpg'
-  alt='A group of 8 smiling people sitting around a Google cafeteria table'
+  alt='A group of 8 smiling people (one of whom is Ellen Spertus) sitting around a Google cafeteria table'
   width={1000}
 />
 </Slide>
@@ -343,18 +369,19 @@ Source: https://colin-scott.github.io/personal_website/research/interactive_late
 {/* ============================================ */}
 
 <Slide>
-## Client-Server Architecture
+## Introducing Client-Server Architecture
 
 <Img src='/img/lectures/web/l20-client-server-architecture.webp'
   alt="Twitter post by @KevinNaughtonJr with text 'How are you gonna tell people software engineering is ''hard'' when this is all it is'
   above block-diagram showing a client on the left and a server on the right"
   width={800}
 />
-</Slide>
 
 <aside className="notes">
 - Let's see what C-S architecture is and why it's hard
 </aside>
+</Slide>
+
 <Slide>
 
 ## Client-Server Architecture
@@ -363,22 +390,42 @@ Source: https://colin-scott.github.io/personal_website/research/interactive_late
 **Clients** make requests, **servers** respond. The most ubiquitous pattern — every web app, mobile app, and service-to-service call.
 </p>
 
-<div style={{fontSize: '0.55em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.5em', marginTop: '0.3em'}}>
+
+<div>
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px' }}}%%
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '12px' }}}%%
 sequenceDiagram
     participant GA as Grading Action (CLIENT)
     participant API as Pawtograder API (SERVER)
-    GA->>API: createSubmission()
-    API-->>GA: 201 Created
-    GA->>API: submitFeedback()
+    GA->>API: POST /submitFeedback
     API-->>GA: 200 OK
 ```
 
 </div>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5em', fontSize: '0.58em', marginTop: '0.3em'}}>
+<div>
+
+```java
+// Client code (Grading Action) — what actually runs
+HttpClient client = HttpClient.newHttpClient();
+HttpRequest request = HttpRequest.newBuilder()
+    .uri(URI.create(API_URL + "/submitFeedback"))
+    .header("Authorization", "Bearer " + authToken)
+    .header("Content-Type", "application/json")
+    .POST(BodyPublishers.ofString(feedbackJson))
+    .build();
+
+HttpResponse<String> response = client.send(
+    request, BodyHandlers.ofString());
+```
+
+</div>
+
+</div>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5em', fontSize: '0.55em', marginTop: '0.4em'}}>
 
 <div style={{padding: '0.4em', border: '2px solid #4CAF50', borderRadius: '6px'}}>
 
@@ -394,17 +441,12 @@ sequenceDiagram
 
 </div>
 
-<div className="fragment">
-<p style={{fontSize: '0.6em', marginTop: '0.4em', fontStyle: 'italic', color: '#666'}}>
-<strong>Not the only pattern:</strong> Message-passing and event-driven systems enable more bi-directional communication — services publish events, others subscribe. We'll cover this in L33 (Event Systems).
-</p>
-</div>
-
 <aside className="notes">
-**Make this concrete:**
+**Make this concrete with the code:**
 - "You've used client-server every time you've used a browser. The browser is the client, the web server is the server."
-- Pawtograder: The Grading Action calls `createSubmission()` — that's a METHOD in the action code, but it's actually an HTTP request to the API. The API never calls the action.
-- "Communication is always client-initiated" — important! The server can't push to the client without a polling or websocket setup.
+- Walk through the Java code: HttpClient is Java's built-in HTTP client (since Java 11)
+- The Grading Action calls `client.send()` — that's a BLOCKING network call. The thread waits until the server responds.
+- "Communication is always client-initiated" — the server can't push to the client without polling or websockets.
 
 **The single point of failure:**
 - The API goes down? All grading actions fail — even if they're running fine on GitHub's infrastructure.
@@ -414,90 +456,149 @@ sequenceDiagram
 - Every service-to-service call in a microservices architecture is client-server
 - Understanding this is the foundation for understanding REST
 
-**Foreshadow L33:**
-- Client-server is request-response: client asks, server answers
-- Event-driven is publish-subscribe: services publish events, others react
-- L33 covers message queues, event buses, eventual consistency
-- Different tradeoffs: decoupling vs. complexity, latency vs. throughput
+**Note:** Message-passing and event-driven systems (L33) enable more bi-directional communication.
 
-→ **Transition:** OK, the client talks to the server. But HOW? What does that HTTP conversation look like?
+→ **Transition:** We've been showing HTTP code — but that's just ONE way to implement client-server. Where does HTTP fit in the bigger picture?
 </aside>
 
 </Slide>
+
+<Slide>
+
+## The Network Itself Is a Layered Architecture
+
+<p style={{fontSize: '0.72em'}}>
+Client-server doesn't require HTTP — it's just one option. The <strong>OSI model</strong> shows how network communication is organized into layers, each solving one problem. <em>Sound familiar from L19?</em>
+</p>
+
+<Img
+  src="/img/lectures/web/l20-osi-model4.webp"
+  prompt="A clean, modern educational illustration showing the OSI 7-layer network model and a network request journey. No title text.
+
+TOP RIGHT CORNER — CONTEXT CALLOUT (styled as a note/aside with a lightbulb or info icon):
+'FOR CONTEXT ONLY — not on the exam! We use HTTP (Layer 7). The rest explains why network calls can fail.'
+
+TOP — HTTP CALLOUT (next to Layer 7, with an arrow pointing to it):
+'HTTP is just ONE protocol at Layer 7. Others: gRPC, MQTT, WebSockets. You could also skip to Layer 4 (raw TCP).'
+
+LEFT SIDE — THE OSI MODEL (vertical stack, numbered 7 to 1 from top to bottom):
+Layer 7 - APPLICATION: Icon of a web browser and code. Label: 'HTTP, REST APIs, WebSockets'. Subtitle: 'Your code lives here' — THIS LAYER IS HIGHLIGHTED/EMPHASIZED
+Layer 6 - PRESENTATION: Icon of encoding/translation. Label: 'Data format, encryption'. Subtitle: 'JSON, TLS'
+Layer 5 - SESSION: Icon of a handshake. Label: 'Connection management'. Subtitle: 'Keep-alive'
+Layer 4 - TRANSPORT: Icon of numbered packets. Label: 'TCP (reliable) or UDP (fast)'. Subtitle: 'Packets, delivery'
+Layer 3 - NETWORK: Icon of a routing map with nodes. Label: 'IP addressing, routing'. Subtitle: 'Find the path'
+Layer 2 - DATA LINK: Icon of a network switch. Label: 'MAC addresses'. Subtitle: 'Local hop'
+Layer 1 - PHYSICAL: Icon of cables and radio waves. Label: 'Signals on wire'. Subtitle: 'Bits'
+
+Color gradient from warm purple (#9370DB) at top (Application) to cool teal (#4A90A4) at bottom (Physical). Layer 7 should be visually emphasized.
+
+RIGHT SIDE — THE JOURNEY:
+Show a laptop labeled 'Your Code: client.send()' at top.
+An arrow going DOWN through all 7 layers on the left side.
+At the bottom, a cloud labeled 'Internet' with the data traveling as packets.
+Then an arrow going UP through all 7 layers on a server on the right side.
+Server at top labeled 'Server Code: handle request'.
+
+BOTTOM LEFT — CS 4700 REFERENCE (small, subtle):
+'Want the full story? CS 4700 (Networks)'
+
+FOOTER TEXT across the bottom:
+'This IS Layered Architecture (L19)! Each layer solves one problem, depends only on layers below.'
+
+Style: Clean flat educational illustration, like a networking textbook diagram. Professional, clear labels, consistent iconography. Layer 7 (Application/HTTP) should be visually prominent since that's where students will work."
+  alt="The OSI 7-layer model with HTTP highlighted at Layer 7 (Application). Shows how a network request travels down through all layers on the client, across the internet, and back up on the server. Callout notes this is for context only, not on exam. Footer connects to Layered Architecture from L19."
+/>
+
+<aside className="notes">
+**SET EXPECTATIONS: This is context, not testable content!**
+- "You won't be asked to name all 7 OSI layers on the exam"
+- "The point is: when you call `client.send()`, data passes through MANY layers"
+- "Each layer can fail, add latency, or have issues — that's why network calls aren't like method calls"
+
+**Connection to L19 — This IS Layered Architecture!**
+- The OSI model is the canonical example of layered architecture
+- Each layer solves ONE problem, depends only on layers below
+- You can swap implementations: TCP ↔ UDP at Layer 4, HTTP ↔ gRPC at Layer 7
+- Same heuristics from L19: separation of concerns, downward dependencies only
+- "The internet itself is a layered architecture" — drive this home!
+
+**HTTP is one choice at Layer 7:**
+- REST/HTTP: What we'll focus on (most common for APIs)
+- gRPC: Google's binary protocol (faster, stricter contracts)
+- WebSockets: Persistent connections, server can push
+- Raw TCP (Layer 4): Maximum control, you handle everything
+
+**Why this explains fallibility:**
+- Your code hands data to the OS, which passes it down through ALL these layers
+- Each layer adds headers, does processing, can introduce failures
+- Network call can fail at ANY layer — that's why the Fallacies matter
+
+**The CS 4700 plug:**
+- We're skipping congestion control, routing algorithms, DNS, BGP
+- For SE, understanding "many layers, each can fail" is enough
+
+→ **Transition:** We'll focus on HTTP at Layer 7 — the most common choice for APIs. Let's see how it works...
+</aside>
+
+</Slide>
+
 
 {/* ============================================ */}
 {/* REST APIs */}
 {/* ============================================ */}
 
+
 <Slide>
 
 ## How Services Communicate: HTTP and REST
 
-<p style={{fontSize: '0.82em'}}>
-<strong>HTTP</strong> is the foundation — the protocol your browser uses, mobile apps use, and services use to talk to each other. <strong>REST</strong> (Representational State Transfer) is a set of conventions built on HTTP for structuring APIs.
+<p style={{fontSize: '0.78em'}}>
+<strong>HTTP</strong> is the foundation. <strong>REST</strong> (Representational State Transfer) is a set of conventions built on HTTP for structuring APIs. An HTTP request has: a <strong>method</strong> (verb), a <strong>URL</strong> (resource), and optionally a <strong>body</strong> (data).
 </p>
 
-<p style={{fontSize: '0.78em', marginTop: '0.3em'}}>
-An HTTP request has three key parts:
-</p>
+<div style={{fontSize: '0.48em', marginTop: '0.4em'}}>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5em', fontSize: '0.6em', marginTop: '0.3em'}}>
+```java
+// GET — retrieve a resource (read-only, no body)
+HttpRequest get = HttpRequest.newBuilder()
+    .uri(URI.create(BASE_URL + "/submissions?student_id=" + studentId))
+    .GET().build();
 
-<div style={{padding: '0.5em', border: '2px solid #9370DB', borderRadius: '8px', textAlign: 'center'}}>
+// POST — create a resource or trigger an action
+HttpRequest post = HttpRequest.newBuilder()
+    .uri(URI.create(BASE_URL + "/functions/v1/createSubmission"))
+    .header("Content-Type", "application/json")
+    .POST(BodyPublishers.ofString("{\"repo\": \"cs3100/hw1-alice\"}")).build();
 
-**Method (Verb)**
+// PATCH — partial update (only fields you're changing)
+HttpRequest patch = HttpRequest.newBuilder()
+    .uri(URI.create(BASE_URL + "/submissions/123"))
+    .method("PATCH", BodyPublishers.ofString("{\"score\": 87}")).build();
 
-What action you want
-
-`GET`, `POST`, `PUT`, `PATCH`, `DELETE`
-
-</div>
-
-<div style={{padding: '0.5em', border: '2px solid #4A90A4', borderRadius: '8px', textAlign: 'center'}}>
-
-**URL (Resource)**
-
-Which thing you're targeting
-
-`/submissions/123`
-
-</div>
-
-<div style={{padding: '0.5em', border: '2px solid #4CAF50', borderRadius: '8px', textAlign: 'center'}}>
-
-**Body (optional)**
-
-Data you're sending
-
-`{"score": 87, "feedback": "..."}`
-
-</div>
+// DELETE — remove a resource
+HttpRequest delete = HttpRequest.newBuilder()
+    .uri(URI.create(BASE_URL + "/submissions/123"))
+    .DELETE().build();
+```
 
 </div>
 
 <div className="fragment">
-<div style={{fontSize: '0.6em', marginTop: '0.75em'}}>
-
-| Method | Purpose | Pawtograder Example |
-|--------|---------|-------------------|
-| `GET` | Retrieve a resource | `GET /rest/v1/submissions?student_id=X` |
-| `POST` | Create a new resource | `POST /functions/v1/createSubmission` |
-| `POST` | Trigger an action | `POST /functions/v1/submitFeedback` |
-| `PATCH` | Update part of a resource | `PATCH /submissions/123` (just the score) |
-| `DELETE` | Remove a resource | `DELETE /submissions/123` |
-
-</div>
+<p style={{fontSize: '0.65em', marginTop: '0.4em', color: '#9370DB'}}>
+<strong>REST organizing principle:</strong> Organize around <em>nouns</em> (submissions, assignments, students) and manipulate them with <em>standard verbs</em>. Once you know the pattern, every RESTful API works the same way.
+</p>
 </div>
 
 <aside className="notes">
+**Walk through the code:**
+- GET: no request body — query params in URL. Used for reading.
+- POST: body contains data to create. Used for creation and actions.
+- PATCH: body contains ONLY the fields to update (vs PUT which replaces entire resource)
+- DELETE: usually no body — the URL identifies what to delete
+
 **The response half:**
 - Server responds with a STATUS CODE: 200 = success, 201 = created, 404 = not found, 401 = unauthorized, 500 = server error
 - And optionally a response BODY (usually JSON)
-
-**REST organizing principle: resources and verbs**
-- REST organizes around NOUNS (submissions, assignments, students)
-- Clients manipulate resources using STANDARD VERBS
-- Once you know the pattern, every RESTful API works the same way
 
 **Statelessness:**
 - Key REST constraint: each request contains ALL information needed to process it
@@ -506,10 +607,170 @@ Data you're sending
 
 **Mention GraphQL briefly:**
 - GraphQL lets clients specify exactly which fields they need — avoids over-fetching
-- Powerful for complex frontends, adds complexity on the backend
 - Many APIs offer GraphQL alongside REST — you should know it exists
 
-→ **Transition:** Now we know HOW services communicate. But what happens when that communication FAILS?
+→ **Transition:** REST also standardizes how servers communicate success and failure...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Sidebar: REST Was Itself an Architectural Discovery
+
+<p style={{fontSize: '0.8em'}}>
+REST didn't come from a committee. Roy Fielding co-authored the <strong>HTTP/1.0 spec</strong>, then asked: <em>why does this work so well?</em> His 2000 PhD thesis reverse-engineered HTTP into a set of architectural constraints. REST is the name he gave that style.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.58em', marginTop: '0.5em'}}>
+
+<div style={{padding: '0.6em', border: '2px solid #9370DB', borderRadius: '8px'}}>
+
+**REST's Six Architectural Constraints** *(Fielding, 2000)*
+
+- **Client-Server** — separate UI concerns from data storage
+- **Stateless** — each request contains all info needed; no session state on the server
+- **Cacheable** — responses must declare whether they can be cached
+- **Uniform Interface** — standard verbs + resource URLs + self-describing messages
+- **Layered System** — clients don't know if they're talking to the real server or a proxy
+
+</div>
+
+<div style={{padding: '0.6em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
+
+**Connection to L18: Drivers → Style**
+
+Each constraint maps to a **quality attribute driver**:
+
+| Constraint | Quality Attribute |
+|-----------|-----------------|
+| Stateless | **Scalability** — any server handles any request |
+| Cacheable | **Performance** — skip redundant fetches |
+| Uniform Interface | **Changeability** — swap server implementations |
+| Layered System | **Security + Deployability** — add proxies/CDNs transparently |
+
+The same process we used for Pawtograder — identify quality attributes, apply heuristics, let the style *emerge* — is how REST was discovered.
+
+</div>
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.73em', marginTop: '0.5em', fontStyle: 'italic', color: '#666'}}>
+REST is not a standard, a spec, or a protocol. It's an <strong>architectural style</strong> — a set of constraints that, when applied, produce a system with desirable properties. Fielding studied what made HTTP work, then named the pattern.
+</p>
+</div>
+
+<aside className="notes">
+**The origin story:**
+- Fielding was one of the principal authors of HTTP/1.0 and HTTP/1.1
+- After building it, he wanted to formally capture WHY the web's architecture was so successful
+- His 2000 PhD dissertation at UC Irvine is "Architectural Styles and the Design of Network-based Software Architectures"
+- Chapter 5 is REST — one of the most influential chapters in CS history
+- The dissertation is free online; it's surprisingly readable
+
+**The stateless constraint — most important for this lecture:**
+- "No session state on server" → any server instance can handle any request
+- This is exactly why GitHub Actions can spin up thousands of parallel grading runners — no runner needs to remember any state from previous runs
+- Contrast: PHP session files or sticky sessions on a load balancer — now every request must go to the SAME server → you lose horizontal scalability
+
+**Uniform Interface — the key insight:**
+- Once you know GET/POST/PUT/DELETE and URL conventions, you can interact with ANY REST API
+- The Grading Action's developer could read the Pawtograder API docs and know exactly how to call it without special libraries or training
+- Contrast with SOAP: you need a WSDL file, a code generator, and a specific library for each API
+
+**The L18 connection — drive this home:**
+- L18 showed: quality attribute (testability) → heuristic (separate what from how) → hexagonal architecture emerges
+- Fielding: quality attribute (scalability) → constraint (stateless) → REST emerges
+- "Architecture is discovered, not invented" applies to REST too — Fielding studied the web and discovered the pattern already present in HTTP
+
+**Interesting footnote:**
+- Most "REST" APIs today violate some of Fielding's constraints (especially HATEOAS/hypermedia)
+- Fielding himself has complained about this on his blog
+- But the core stateless + uniform interface constraints are what matter in practice
+
+→ **Transition:** One artifact of that uniform interface: standardized status codes...
+</aside>
+
+</Slide>
+
+
+<Slide>
+
+## REST Status Codes: The Language of Failure
+
+<p style={{fontSize: '0.78em'}}>
+One of REST's great gifts: <strong>standardized error codes</strong>. The status code tells you <em>where</em> to look when debugging.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.5em', marginTop: '0.4em'}}>
+
+<div>
+
+| Code | Meaning | Action |
+|------|---------|--------|
+| **2xx** | **Success** | Process response |
+| `200 OK` | Request succeeded | |
+| `201 Created` | Resource created | |
+| **4xx** | **Client Error** | Fix your code |
+| `401 Unauthorized` | Not authenticated | Refresh token |
+| `403 Forbidden` | Not allowed | Check permissions |
+| `429 Too Many` | Rate limited | Back off |
+| **5xx** | **Server Error** | Retry with backoff |
+| `503 Unavailable` | Server overloaded | Wait and retry |
+
+</div>
+
+<div>
+
+```java
+HttpResponse<String> response = client.send(
+    request, BodyHandlers.ofString());
+
+switch (response.statusCode() / 100) {
+    case 2 -> processSuccess(response.body());
+    case 4 -> {
+        if (response.statusCode() == 401) {
+            refreshToken();  // Auth expired
+        } else if (response.statusCode() == 429) {
+            sleepUntil(response.headers()
+                .firstValue("Retry-After"));
+        } else {
+            throw new ClientError(response);
+        }
+    }
+    case 5 -> throw new RetryableException(response);
+}
+```
+
+</div>
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.65em', marginTop: '0.4em', color: '#FF9800', fontWeight: 'bold'}}>
+<strong>Key insight:</strong> 4xx = your code is wrong (don't retry). 5xx = server is struggling (retry with backoff). 401 = who are you? 403 = I know you, but no.
+</p>
+</div>
+
+<aside className="notes">
+**Walk through the code:**
+- `statusCode() / 100` gives you the category (2, 4, or 5)
+- 2xx: success — process the response body
+- 4xx: client error — DON'T retry (it'll fail again), fix your code
+- 5xx: server error — DO retry with exponential backoff
+
+**The 401 vs 403 distinction is critical:**
+- 401 "Unauthorized" (poorly named — should be "Unauthenticated"): "I don't know who you are"
+- 403 "Forbidden": "I know who you are, you just can't do this"
+- In Pawtograder: 401 if auth token missing/invalid, 403 if token valid but repo not enrolled
+
+**The 429 case:**
+- Rate limiting is common in APIs
+- Response usually includes `Retry-After` header
+- Respect it or you'll get blocked
+
+→ **Transition:** Now that we can read API responses, let's look at the REAL challenge of distributed systems...
 </aside>
 
 </Slide>
@@ -632,31 +893,6 @@ Trivia: Anyone know what the code for "unavailable for legal reasons"?
 - This distinction drives retry logic: you SHOULD retry on 5xx, you should NOT retry on 4xx (it'll fail again)
 
 → **Transition:** Now that we can read API responses, let's look at the REAL challenge of distributed systems...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## REST is Built on a Layered Architecture
-
-<div style={{fontSize: '.8em', textAlign: 'center'}}>
-
-| Layer |
-|-------|
-| REST |
-| HTTP / HTTPS |
-| TLS/SSL (Transport Layer Security / Secure Sockets Layer) |
-| TCP (Transmission Control Protocol) |
-| IP (Internet Protocol) |
-| Link Layer (Ethernet, Wi-Fi) |
-| Physical Layer (copper, fiber, radio) |
-
-
-</div>
-<aside className="notes">
-- All REST needs to do is use HTTP
-- The layering protects it from lower-down details
 </aside>
 
 </Slide>
@@ -944,75 +1180,73 @@ public Response submitFeedback(Request req) {
 
 <Slide>
 
-## Fallacy 2: "Latency Is Zero" — and its friends
+## Fallacy 2: "Latency Is Zero" — Chatty vs Chunky APIs
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.62em', marginTop: '0.5em'}}>
+<p style={{fontSize: '0.72em'}}>
+Every network call takes time. Local method calls: nanoseconds. Network calls: milliseconds to seconds. <strong>Minimize round-trips.</strong>
+</p>
 
-<div style={{padding: '0.6em', border: '2px solid #9370DB', borderRadius: '8px'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.48em', marginTop: '0.3em'}}>
 
-**Fallacy 2: Latency is zero**
+<div style={{padding: '0.5em', border: '2px solid #f44336', borderRadius: '8px', backgroundColor: '#FFEBEE'}}>
 
-Every network call takes time. Local method calls: nanoseconds. Network calls: milliseconds to seconds.
+**Chatty API — 100 network round-trips**
 
-*Pawtograder:* 100 tests × 100ms per API call = 10 seconds of pure network overhead. Solution: batch all results into ONE `submitFeedback()` call.
-
-</div>
-
-<div className='fragment' style={{padding: '0.6em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
-
-**Fallacy 3: Bandwidth is infinite**
-
-Networks have limited capacity. Large payloads over constrained connections cause problems.
-
-*Pawtograder:* Grader tarball can be megabytes. Solution: SHA hash to check if unchanged — skip the download entirely if the grader hasn't changed.
+```java
+// BAD: One API call per test result
+for (TestResult result : testResults) {
+    api.submitSingleResult(submissionId, result);
+    // 100ms latency × 100 tests = 10 SECONDS
+}
+```
 
 </div>
 
-<div className='fragment'  style={{padding: '0.6em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+<div style={{padding: '0.5em', border: '2px solid #4CAF50', borderRadius: '8px', backgroundColor: '#E8F5E9'}}>
 
-**Fallacy 5: Topology doesn't change**
+**Chunky API — 1 network round-trip**
 
-IP addresses change. Servers move. DNS updates. Cached network locations can break.
-
-*Pawtograder:* API URL is a configuration parameter per assignment — allows migration to different hosts without code changes.
+```java
+// GOOD: All results in one payload
+FeedbackBatch batch = FeedbackBatch.builder()
+    .submissionId(submissionId)
+    .results(testResults)  // All 100 results
+    .build();
+api.submitFeedback(batch);
+// 100ms latency × 1 call = 100ms
+```
 
 </div>
 
-<div className='fragment' style={{padding: '0.6em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+</div>
 
-**Fallacy 8: The network is homogeneous**
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5em', fontSize: '0.52em', marginTop: '0.5em'}}>
 
-Different network paths have different characteristics. Same code behaves differently on different networks.
+<div style={{padding: '0.4em', border: '2px solid #4A90A4', borderRadius: '6px'}}>
 
-*Pawtograder:* Self-hosted runners across data centers. Same assignment: 30 seconds on warm cache, 3 minutes on cold. We don't control which runner gets the job.
+**Fallacy 3: Bandwidth is infinite** — SHA hash to skip unchanged downloads (grader tarball caching)
+
+</div>
+
+<div style={{padding: '0.4em', border: '2px solid #FF9800', borderRadius: '6px'}}>
+
+**Fallacy 5: Topology changes** — Never hardcode URLs; use config. Servers move, DNS updates.
+
+</div>
+
+<div style={{padding: '0.4em', border: '2px solid #9370DB', borderRadius: '6px'}}>
+
+**Fallacy 8: Network is homogeneous** — Same code, different behavior on different networks.
 
 </div>
 
 </div>
 
 <aside className="notes">
-**On latency (Fallacy 2):**
-- This is the big one for API design granularity
-- "Chatty" APIs — many small calls — are a latency disaster
-- The rule of thumb: "minimize network round-trips" → batch when possible
-- "Chunky" vs "chatty" APIs
+- Does anyone remember where we've seen chunking before in the Java API?
+- BufferedInputStream
 
-**On bandwidth (Fallacy 3):**
-- SHA-based caching is elegant: if the hash matches, skip the download
-- This is content-addressable caching — also used by Docker image layers, git objects
-- Saves both latency AND bandwidth (and cost)
-
-**On topology (Fallacy 5):**
-- Config over code: never hardcode network addresses
-- Pawtograder: per-assignment API URL config
-- In production: service discovery (Kubernetes DNS, AWS service mesh) handles this automatically
-
-**On homogeneity (Fallacy 8):**
-- Your careful local testing might not reproduce production behavior
-- Network conditions: mobile vs wifi vs corporate firewall vs data center
-- Same code, different timing: could trigger different code paths (race conditions!)
-
-→ **Transition:** Let me group the remaining fallacies...
+→ **Transition:** The remaining fallacies touch on security and cost...
 </aside>
 
 </Slide>
@@ -1247,6 +1481,27 @@ public SubmissionResponse handleSubmission(String submissionId) {
 {/* ARC 4: MICROSERVICES */}
 {/* ============================================ */}
 
+{/* Transition slide */}
+
+<Slide>
+
+## Transition to Microservices
+
+<Img src='/img/lectures/web/l20-Microservice-henge.png'
+  alt="Two people in animal skins next to stonehenge. One person says to the other: 'Sometimes I worry...Are we just building another distributed monolith?'"
+  width={1000}
+/>
+
+<div style={{ fontSize: '.6em' }}>
+Forrest Brazeal, [Good Tech Things](https://www.goodtechthings.com/) [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode?ref=goodtechthings.com)
+</div>
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
 <Slide>
 
 ## Microservices Architecture: Now With Context
@@ -1323,6 +1578,7 @@ A <strong>microservices architecture</strong> decomposes a system into small, in
 
 <Img
   src="/img/lectures/web/l20-distributed-monolith.webp"
+  width={1100}
   prompt="An educational illustration in a clean, modern flat-art style (NOT pixel art). No title text.
 
 LEFT SIDE — GOOD: Three distinct service boxes labeled 'Service A', 'Service B', 'Service C' connected by clean, direct HTTP arrows. Each box has its own database cylinder below it. The boxes are visually distinct and independent-looking. Label: 'TRUE MICROSERVICES: Independently deployable. Each owns its data.'
@@ -1495,11 +1751,6 @@ Each additional nine is **exponentially** harder and more expensive. High availa
 
 </div>
 
-<div className="fragment">
-<p style={{fontSize: '0.65em', marginTop: '0.5em', color: '#FF9800', fontWeight: 'bold'}}>
-<strong>Strategies we've already covered:</strong> Caching and batching (Fallacies 2-3), retry + circuit breaker (Fallacy 1), redundancy + failover (reliability). These aren't separate topics — they're all responses to distribution's challenges.
-</p>
-</div>
 
 <aside className="notes">
 **This is a vocabulary slide, not deep dive:**
@@ -1531,7 +1782,7 @@ Each additional nine is **exponentially** harder and more expensive. High availa
 Horizontal scaling only works if <strong>any server can handle any request</strong>. This requires stateless services — each request contains all information needed to process it.
 </p>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.58em', marginTop: '0.5em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.58em', marginTop: '-0.75em'}}>
 
 <div style={{padding: '0.6em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
 
@@ -1576,7 +1827,7 @@ If the server dies, the session state is lost. If load spikes, you can't add ser
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px' }}}%%
-flowchart TB
+flowchart LR
     LB[Load Balancer]
     LB --> API1["API #1<br/>(stateless)"]
     LB --> API2["API #2<br/>(stateless)"]
@@ -1755,6 +2006,7 @@ Walk through each with Pawtograder examples:
 
 <Img
   src="/img/lectures/web/l20-trust-boundary4.webp"
+  width={1200}
   prompt="A clean, modern educational illustration about trust boundaries in distributed systems. No title text.
 
 SCENE: An airport/border security checkpoint metaphor for trust boundaries.
