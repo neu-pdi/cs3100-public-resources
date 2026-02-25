@@ -56,10 +56,10 @@ TAGLINE: 'When Code Leaves the Building, Everything Changes'"
   />
 
 <aside className="notes">
-**Lecture overview:**
-- **Total time:** ~65 MINUTES
-- **Prerequisites:** L19 (monoliths, modular monoliths, microservices intro, Conway's Law preview)
-- **Connects to:** L21 (serverless — pushing these concerns to the platform), L22 (teams and Conway's Law)
+
+Network communication doesn't just change HOW components talk — it invalidates assumptions programmers make constantly.
+
+ Students who understand the eight fallacies will make better decisions when they inevitably work on distributed systems. Security isn't a feature you add — it shapes architecture from the start.
 
 **Structure:**
 - Arc 1: Motivating Example: Orkut Shortest-Path Service
@@ -67,10 +67,14 @@ TAGLINE: 'When Code Leaves the Building, Everything Changes'"
 - Arc 3: The Eight Fallacies of Distributed Computing
 - Arc 4: Microservices: Benefits and Costs
 - Arc 5: Network-Related Quality Requirements
-- **Security as an Architectural Concern** (~12 min)
+- Arc 6: Security as an Architectural Concern**
 - Bringing It Together (~5 min)
 
-**Key theme:** Network communication doesn't just change HOW components talk — it invalidates assumptions programmers make constantly. Students who understand the eight fallacies will make better decisions when they inevitably work on distributed systems. Security isn't a feature you add — it shapes architecture from the start.
+**Lecture overview:**
+- **Total time:** ~65 MINUTES
+- **Prerequisites:** L19 (monoliths, modular monoliths, microservices intro, Conway's Law preview)
+- **Connects to:** L21 (serverless — pushing these concerns to the platform), L22 (teams and Conway's Law)
+
 
 → **Transition:** Let's start with the title...
 </aside>
@@ -93,15 +97,8 @@ TAGLINE: 'When Code Leaves the Building, Everything Changes'"
 
 <aside className="notes">
 **Context:**
-- L19 ended with a tease: the road continues into fog, "Distributed Systems Ahead, Here Be Dragons"
+Last time we told you: "Distributed Systems Ahead, Here Be Dragons"
 - Today we go into that fog
-- Running examples: same as L19 — Pawtograder and Bottlenose — but now we focus on the network boundary between them
-
-**Framing the lecture:**
-- "L19 was about how we organize code INSIDE a single deployment"
-- "Today is about what happens when components move to DIFFERENT deployments, connected by a network"
-- "You are NOT expected to design distributed systems. The goal: understand why they're different, so you can read them, debug them, and make informed tradeoff decisions."
-
 → **Transition:** Here's what you'll be able to do after today...
 </aside>
 
@@ -134,20 +131,11 @@ After this lecture, you will be able to:
 </div>
 
 <aside className="notes">
-**SET EXPECTATIONS:**
 - "You will NOT be tested on 'design a microservices architecture from scratch'"
 - "You WILL be expected to read distributed systems, understand why things fail, and reason about security boundaries"
-
-**Connection to L19:**
-- L19 asked: "How do we organize code within one deployment?"
-- L20 asks: "What changes when deployment spans multiple processes and machines?"
-- The answer: nearly everything
-
-→ **Transition:** Let's start with why we'd ever leave the monolith in the first place...
 </aside>
 
 </Slide>
-
 
 <Slide>
 
@@ -280,7 +268,7 @@ Transition: Let's look at some costs...
 />
 
 <aside className="notes">
-
+- T: One more question before looking at some numbers
 </aside>
 
 </Slide>
@@ -299,7 +287,7 @@ Transition: Let's look at some costs...
 />
 
 <aside className="notes">
-
+- Well, let's see...
 </aside>
 
 </Slide>
@@ -446,23 +434,8 @@ HttpResponse<String> response = client.send(
 </div>
 
 <aside className="notes">
-**Make this concrete with the code:**
-- "You've used client-server every time you've used a browser. The browser is the client, the web server is the server."
-- Walk through the Java code: HttpClient is Java's built-in HTTP client (since Java 11)
-- The Grading Action calls `client.send()` — that's a BLOCKING network call. The thread waits until the server responds.
-- "Communication is always client-initiated" — the server can't push to the client without polling or websockets.
-
-**The single point of failure:**
-- The API goes down? All grading actions fail — even if they're running fine on GitHub's infrastructure.
-- This is one reason Pawtograder implements retry logic.
-
-**Why does this matter?**
-- Every service-to-service call in a microservices architecture is client-server
-- Understanding this is the foundation for understanding REST
-
-**Note:** Message-passing and event-driven systems (L33) enable more bi-directional communication.
-
-→ **Transition:** We've been showing HTTP code — but that's just ONE way to implement client-server. Where does HTTP fit in the bigger picture?
+You've used client-server every time you've used a browser. The browser is the client, the web server is the server.
+→ T: How is HTTP implemented?
 </aside>
 
 </Slide>
@@ -514,38 +487,12 @@ Style: Clean flat educational illustration, like a networking textbook diagram. 
 />
 
 <aside className="notes">
-**SET EXPECTATIONS: This is context, not testable content!**
-- "You won't be asked to name all 7 OSI layers on the exam"
-- "The point is: when you call `client.send()`, data passes through MANY layers"
-- "Each layer can fail, add latency, or have issues — that's why network calls aren't like method calls"
+Benefit of layered architecture
 
-**Connection to L19 — This IS Layered Architecture!**
-- The OSI model is the canonical example of layered architecture
-- Each layer solves ONE problem, depends only on layers below
-- You can swap implementations: TCP ↔ UDP at Layer 4, HTTP ↔ gRPC at Layer 7
-- Same heuristics from L19: separation of concerns, downward dependencies only
-- "The internet itself is a layered architecture" — drive this home!
-
-**HTTP is one choice at Layer 7:**
-- REST/HTTP: What we'll focus on (most common for APIs)
-- gRPC: Google's binary protocol (faster, stricter contracts)
-- WebSockets: Persistent connections, server can push
-- Raw TCP (Layer 4): Maximum control, you handle everything
-
-**Why this explains fallibility:**
-- Your code hands data to the OS, which passes it down through ALL these layers
-- Each layer adds headers, does processing, can introduce failures
-- Network call can fail at ANY layer — that's why the Fallacies matter
-
-**The CS 4700 plug:**
-- We're skipping congestion control, routing algorithms, DNS, BGP
-- For SE, understanding "many layers, each can fail" is enough
-
-→ **Transition:** We'll focus on HTTP at Layer 7 — the most common choice for APIs. Let's see how it works...
+→ T: Let's see what can be done with HTTP...
 </aside>
 
 </Slide>
-
 
 {/* ============================================ */}
 {/* REST APIs */}
@@ -556,8 +503,8 @@ Style: Clean flat educational illustration, like a networking textbook diagram. 
 
 ## How Services Communicate: HTTP and REST
 
-<p style={{fontSize: '0.78em'}}>
-<strong>HTTP</strong> is the foundation. <strong>REST</strong> (Representational State Transfer) is a set of conventions built on HTTP for structuring APIs. An HTTP request has: a <strong>method</strong> (verb), a <strong>URL</strong> (resource), and optionally a <strong>body</strong> (data).
+<p style={{fontSize: '0.7em'}}>
+<strong>REST</strong> (Representational State Transfer) is a set of conventions built on HTTP for structuring APIs.<br/><br/>An HTTP request has: a <strong>method</strong> (verb), a <strong>URL</strong> (resource), and optionally a <strong>body</strong> (data).
 </p>
 
 <div style={{fontSize: '0.48em', marginTop: '0.4em'}}>
@@ -587,33 +534,10 @@ HttpRequest delete = HttpRequest.newBuilder()
 
 </div>
 
-<div className="fragment">
-<p style={{fontSize: '0.65em', marginTop: '0.4em', color: '#9370DB'}}>
-<strong>REST organizing principle:</strong> Organize around <em>nouns</em> (submissions, assignments, students) and manipulate them with <em>standard verbs</em>. Once you know the pattern, every RESTful API works the same way.
-</p>
-</div>
 
 <aside className="notes">
-**Walk through the code:**
-- GET: no request body — query params in URL. Used for reading.
-- POST: body contains data to create. Used for creation and actions.
-- PATCH: body contains ONLY the fields to update (vs PUT which replaces entire resource)
-- DELETE: usually no body — the URL identifies what to delete
-
-**The response half:**
-- Server responds with a STATUS CODE: 200 = success, 201 = created, 404 = not found, 401 = unauthorized, 500 = server error
-- And optionally a response BODY (usually JSON)
-
-**Statelessness:**
-- Key REST constraint: each request contains ALL information needed to process it
-- The server doesn't remember previous requests
-- This makes horizontal scaling easy: any server instance can handle any request
-
-**Mention GraphQL briefly:**
-- GraphQL lets clients specify exactly which fields they need — avoids over-fetching
-- Many APIs offer GraphQL alongside REST — you should know it exists
-
-→ **Transition:** REST also standardizes how servers communicate success and failure...
+- Key REST constraint: each request contains ALL information needed to process it, making horizontal scaling easy
+→ REST standardizes how servers communicate success and failure...
 </aside>
 
 </Slide>
@@ -651,18 +575,18 @@ HttpResponse<String> response = client.send(
     request, BodyHandlers.ofString());
 
 switch (response.statusCode() / 100) {
-    case 2 -> processSuccess(response.body());
-    case 4 -> {
-        if (response.statusCode() == 401) {
-            refreshToken();  // Auth expired
-        } else if (response.statusCode() == 429) {
-            sleepUntil(response.headers()
-                .firstValue("Retry-After"));
-        } else {
-            throw new ClientError(response);
-        }
+  case 2 -> processSuccess(response.body());
+  case 4 -> {
+    if (response.statusCode() == 401) {
+        refreshToken();  // Auth expired
+    } else if (response.statusCode() == 429) {
+        sleepUntil(response.headers()
+            .firstValue("Retry-After"));
+    } else {
+        throw new ClientError(response);
+      }
     }
-    case 5 -> throw new RetryableException(response);
+  case 5 -> throw new RetryableException(response);
 }
 ```
 
@@ -672,26 +596,13 @@ switch (response.statusCode() / 100) {
 
 <div className="fragment">
 <p style={{fontSize: '0.65em', marginTop: '0.4em', color: '#FF9800', fontWeight: 'bold'}}>
-<strong>Key insight:</strong> 4xx = your code is wrong (don't retry). 5xx = server is struggling (retry with backoff). 401 = who are you? 403 = I know you, but no.
+Fun trivia: What's the code for content unavailable for legal reasons?
 </p>
 </div>
 
 <aside className="notes">
 **Walk through the code:**
 - `statusCode() / 100` gives you the category (2, 4, or 5)
-- 2xx: success — process the response body
-- 4xx: client error — DON'T retry (it'll fail again), fix your code
-- 5xx: server error — DO retry with exponential backoff
-
-**The 401 vs 403 distinction is critical:**
-- 401 "Unauthorized" (poorly named — should be "Unauthenticated"): "I don't know who you are"
-- 403 "Forbidden": "I know who you are, you just can't do this"
-- In Pawtograder: 401 if auth token missing/invalid, 403 if token valid but repo not enrolled
-
-**The 429 case:**
-- Rate limiting is common in APIs
-- Response usually includes `Retry-After` header
-- Respect it or you'll get blocked
 
 → **Transition:** Now that we can read API responses, let's look at the REAL challenge of distributed systems...
 </aside>
@@ -800,29 +711,12 @@ if (response == null) {
 
 </div>
 
-<div className="fragment">
-<p style={{fontSize: '0.73em', marginTop: '0.5em', color: '#9370DB'}}>
-<strong>Pawtograder:</strong> The Grading Action tries to submit feedback. The request times out. Retry logic with exponential backoff — wait 1s, then 2s, then 4s. Either succeeds, or the student sees "grading in progress."
-</p>
-</div>
-
 <aside className="notes">
-**The key insight:**
 - Without retry logic, a single dropped packet means a student never sees their grade
 - With retry logic, transient failures are invisible to users
 - Exponential backoff prevents overwhelming a struggling server
 
-**Exponential backoff:**
-- Don't retry immediately — that'll hammer a server that's struggling
-- Wait 1s, then 2s, then 4s, then 8s — or give up
-- Add jitter (random offset) to avoid "thundering herd" — all retries hitting at once
-
-**Graceful degradation:**
-- Notice the last comment: "Show 'grading in progress' not a crash"
-- Offering REDUCED functionality is better than NONE
-- The student knows grading is happening; they'll refresh later
-
-→ **Transition:** But if we're retrying, we need to understand the details — and a new problem retrying creates...
+→ Let's generalize this to a pattern...
 </aside>
 
 </Slide>
@@ -873,13 +767,6 @@ Exponential backoff + jitter (randomness) ensures retries don't happen at same t
 **The timeout is the most important part:**
 - Without a timeout, `client.send()` can block indefinitely
 - Always set a timeout — even if generous (30s)
-
-**Exponential backoff rationale:**
-- Imagine 100 grading actions all fail at the same moment (API restart)
-- Fixed 1s retry: all 100 retry at t+1s — waves of 100 requests on top of normal load
-- Exponential backoff: naturally spread out — 2s, 4s, 8s
-- Add jitter: `backoffMs += random.nextLong(0, 500)` — "thundering herd" prevention
-→ **Transition:** But now we have a problem: if we retry, could we run the operation twice?
 </aside>
 
 </Slide>
@@ -916,8 +803,10 @@ An action is <em>idempotent</em> if performing it multiple times has the same re
 <div className='fragment'>
 If you ask your roommate multiple times on the same day to water the plant, will they do it more than once?
 </div>
+<div className='fragment'>
+Why do we care if an operation is idempotent?
 </div>
-
+</div>
 
 <aside className="notes">
 
@@ -966,7 +855,7 @@ public Response submitFeedback(Request req) {
 </div>
 
 <aside className="notes">
-→ **Transition:** Even when the network works, it still slows you down...
+→ Even when the network works, it still slows you down...
 </aside>
 
 </Slide>
@@ -1113,7 +1002,7 @@ Network calls have real costs: computational (serialization, encryption), moneta
 <aside className="notes">
 - Where have we seen combining requests in the Java library? BufferedInputStream
 
-→ **Transition:** The fallacies also drive system-level resilience patterns — let's see two more...
+→ Let's look at another pattern...
 </aside>
 
 </Slide>
@@ -1197,22 +1086,8 @@ flowchart LR
 <aside className="notes">
 **The electrical analogy:**
 - A circuit breaker in your house trips when current is too high — protecting the wiring
-- This pattern trips when failure rate is too high — protecting the downstream service
 
-**Three states:**
-- CLOSED: all requests pass through (normal)
-- OPEN: all requests fail immediately — don't even attempt
-- HALF_OPEN: one probe through to test recovery; success → CLOSED, failure → OPEN
-
-**Why fail fast beats fail slow:**
-- Slow failures: threads pile up → thread pool exhaustion → YOUR service also goes down → cascading failure
-- Fast failures: immediately tell callers "not available" → callers degrade gracefully → no cascade
-
-**Production note:**
-- Use a library: Resilience4j (Java), Polly (.NET)
-- Don't roll your own — thread safety and half-open probe races are subtle
-
-→ **Transition:** The circuit breaker fails fast. But what do we show the user when it's open?
+→ **Transition:** What do we show the user when it's open?
 </aside>
 
 </Slide>
@@ -1250,35 +1125,14 @@ public SubmissionResponse handleSubmission(String submissionId) {
 
 </div>
 
-<div className="fragment">
-<p style={{fontSize: '0.65em', marginTop: '0.4em', color: '#9370DB'}}>
-<strong>Design your degraded state intentionally.</strong> Tell users what succeeded, what's delayed, and what to expect. A helpful message beats a stack trace. For every service call: if this fails, what should the user experience?
-</p>
-</div>
-
 <aside className="notes">
-**The key insight — tell users what they need to know:**
+**Tell users what they need to know:**
 - What succeeded: "Your code has been received"
 - What's delayed: "Grading is temporarily unavailable"
 - What will happen: "Will run automatically once system recovers"
 - What to do: "You'll receive an email"
 
-**Stale cache is another common pattern:**
-- CDNs: serve cached content when origin is down
-- Browsers: show cached pages when offline
-- "Stale data > no data" for most reads — users tolerate minutes-old data; they hate error screens
-
-**Degrade intentionally:**
-- Bad: catch exception, re-throw as 500
-- Good: catch exception, return designed fallback with human-readable message
-
-**All four patterns together — Pawtograder:**
-1. `submitFeedback()` has a 10s timeout, retries up to 3 times (Timeout + Retry)
-2. Each retry sends the same submissionId as the idempotency key (Idempotency)
-3. After 5 consecutive API failures, circuit opens (Circuit Breaker)
-4. Student sees "Code received, grading pending" instead of a crash (Graceful Degradation)
-
-→ **Transition:** Now that we understand the costs AND the patterns for handling them, let's revisit microservices with fresh eyes...
+→ Let's now take a fresh look at monoliths and microservices
 </aside>
 
 </Slide>
@@ -1304,6 +1158,45 @@ Forrest Brazeal, [Good Tech Things](https://www.goodtechthings.com/) [CC BY-NC-N
 
 <aside className="notes">
 
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Distributed Monolith: All Costs, No Benefits
+
+<Img
+  src="/img/lectures/web/l20-distributed-monolith.webp"
+  width={1100}
+  prompt="An educational illustration in a clean, modern flat-art style (NOT pixel art). No title text.
+
+LEFT SIDE — GOOD: Three distinct service boxes labeled 'Service A', 'Service B', 'Service C' connected by clean, direct HTTP arrows. Each box has its own database cylinder below it. The boxes are visually distinct and independent-looking. Label: 'TRUE MICROSERVICES: Independently deployable. Each owns its data.'
+
+RIGHT SIDE — BAD: Three service boxes that look separate at first glance, but are connected by a TANGLE of arrows going in every direction — dozens of dependencies crossing between all services. Crucially, all three boxes share ONE database cylinder at the bottom, connected by thick red lines. Some arrows are labeled: 'needs this before it can deploy', 'reads this table directly', 'must coordinate changes'. A red warning banner across the top: 'DISTRIBUTED MONOLITH'. A frustrated developer stands next to it with a speech bubble: 'We can't deploy A without also deploying B and C...'
+
+BOTTOM CENTER: A balance scale. Left side: 'Microservices complexity ✓'. Right side: 'Microservices benefits ✗'. The scale tips toward complexity. Caption: 'All the costs, none of the benefits.'
+
+Clean, modern educational illustration. Purples (#9370DB), teals, and red warning accents. Clear visual contrast between left (healthy) and right (anti-pattern)."
+  alt="Left side shows three independent microservices, each with their own database, connected by clean HTTP arrows. Right side shows the Distributed Monolith anti-pattern: three services tangled together with dozens of crossing dependencies and a shared database, labeled 'We can't deploy A without also deploying B and C.' A balance scale at bottom shows all microservices costs but none of the benefits."
+/>
+
+<p style={{fontSize: '0.72em', marginTop: '0.5em'}}>
+The <strong>distributed monolith</strong> anti-pattern: services that are deployed separately but so tightly coupled they must be changed and deployed together. You pay all eight fallacies' costs — but get none of the benefits (independent scaling, isolated failures, team autonomy).
+</p>
+
+<aside className="notes">
+**Signs you have a distributed monolith:**
+- Changing one service requires changing multiple others
+- Services share a database schema (the classic red flag)
+- You can't deploy services independently
+- Teams must coordinate every change
+
+**The message:**
+- "If you're going to pay the distributed systems tax, make sure you're getting the benefits"
+- "A well-designed monolith beats a poorly-designed microservices architecture every time"
+
+→ Now let's look again at microservices
 </aside>
 
 </Slide>
@@ -1353,77 +1246,7 @@ A <strong>microservices architecture</strong> decomposes a system into small, in
 - "We just spent 15 minutes on the fallacies. In a microservices architecture, every service-to-service call is subject to all eight."
 - This is the TAX of microservices — you pay it on every interaction
 
-**Independent scaling:**
-- In a monolith: grading is slow? You must scale the entire app.
-- In microservices: scale only the grading service — and only during deadline rushes.
-
-**Elastic scaling:**
-- Pawtograder example: 500 students submit in the last hour before deadline
-- GitHub Actions spins up 500 parallel runners — each grading job is independent
-- At 3 AM: zero runners active, zero cost
-- A monolith can't do this — you'd need to keep enough servers running to handle peak load 24/7
-
-**Team autonomy is real:**
-- Pawtograder: GitHub Actions maintainers evolve the Grading Action independently of API maintainers
-- They just need to agree on the interface (API contract)
-- This maps to Conway's Law (L22): team structure → system structure
-
-**Energy overhead:**
-- I want to flag this again: the "chatty" microservices architecture wastes energy
-- This is one reason why the design pattern of "batch operations" matters
-- And why "monolith-first" is the sustainable default
-
-→ **Transition:** There's a particularly bad outcome to watch out for...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## The Distributed Monolith: All Costs, No Benefits
-
-<Img
-  src="/img/lectures/web/l20-distributed-monolith.webp"
-  width={1100}
-  prompt="An educational illustration in a clean, modern flat-art style (NOT pixel art). No title text.
-
-LEFT SIDE — GOOD: Three distinct service boxes labeled 'Service A', 'Service B', 'Service C' connected by clean, direct HTTP arrows. Each box has its own database cylinder below it. The boxes are visually distinct and independent-looking. Label: 'TRUE MICROSERVICES: Independently deployable. Each owns its data.'
-
-RIGHT SIDE — BAD: Three service boxes that look separate at first glance, but are connected by a TANGLE of arrows going in every direction — dozens of dependencies crossing between all services. Crucially, all three boxes share ONE database cylinder at the bottom, connected by thick red lines. Some arrows are labeled: 'needs this before it can deploy', 'reads this table directly', 'must coordinate changes'. A red warning banner across the top: 'DISTRIBUTED MONOLITH'. A frustrated developer stands next to it with a speech bubble: 'We can't deploy A without also deploying B and C...'
-
-BOTTOM CENTER: A balance scale. Left side: 'Microservices complexity ✓'. Right side: 'Microservices benefits ✗'. The scale tips toward complexity. Caption: 'All the costs, none of the benefits.'
-
-Clean, modern educational illustration. Purples (#9370DB), teals, and red warning accents. Clear visual contrast between left (healthy) and right (anti-pattern)."
-  alt="Left side shows three independent microservices, each with their own database, connected by clean HTTP arrows. Right side shows the Distributed Monolith anti-pattern: three services tangled together with dozens of crossing dependencies and a shared database, labeled 'We can't deploy A without also deploying B and C.' A balance scale at bottom shows all microservices costs but none of the benefits."
-/>
-
-<p style={{fontSize: '0.72em', marginTop: '0.5em'}}>
-The <strong>distributed monolith</strong> anti-pattern: services that are deployed separately but so tightly coupled they must be changed and deployed together. You pay all eight fallacies' costs — but get none of the benefits (independent scaling, isolated failures, team autonomy).
-</p>
-
-<aside className="notes">
-**Signs you have a distributed monolith:**
-- Changing one service requires changing multiple others
-- Services share a database schema (the classic red flag)
-- You can't deploy services independently
-- Teams must coordinate every change
-
-**How it happens:**
-- Teams extract services without establishing clean boundaries
-- The old shared database stays shared
-- "We'll add an API in front of it later" → never happens
-- Services call each other in complex chains — tight coupling over the network
-
-**If you find yourself here:**
-- Option 1: Properly decouple — establish true service contracts, separate data ownership
-- Option 2: Collapse back into a monolith — seriously! A good monolith beats a bad distributed monolith.
-- This is usually a symptom of premature decomposition (splitting before understanding domain boundaries)
-
-**The message:**
-- "If you're going to pay the distributed systems tax, make sure you're getting the benefits"
-- "A well-designed monolith beats a poorly-designed microservices architecture every time"
-
-→ **Transition:** Let's look at the quality attributes that become critical in distributed systems...
+→ There's a particularly bad outcome to watch out for...
 </aside>
 
 </Slide>
@@ -1492,21 +1315,6 @@ The goal isn't to avoid distribution — it's to <em>distribute strategically</e
 - "A monolith can't survive a data center fire. A distributed system across regions can."
 - "A monolith can't scale one component independently. Microservices can."
 
-**Frame expectations:**
-- "This is a survey, not a deep dive"
-- "CS4530 (SE), CS4700 (Networks), CS4730 (Distributed Systems) go much deeper"
-- "The goal: when you see a system design doc or interview question, you know what these terms mean"
-
-**Why these three?**
-- Performance: users experience slowness directly
-- Reliability: users experience downtime directly
-- Scalability: users experience system collapse under load directly
-
-**Note: We covered the strategies in the patterns section**
-- Caching, batching → Fallacies 2-3
-- Retry, circuit breaker → Fallacy 1
-- These slides just give students the vocabulary to recognize these concepts
-
 → **Transition:** Here's the vocabulary you need...
 </aside>
 
@@ -1559,23 +1367,9 @@ Each additional nine is **exponentially** harder and more expensive. High availa
 
 
 <aside className="notes">
-**This is a vocabulary slide, not deep dive:**
-- Students will encounter these terms in interviews and design docs
-- The nines table is essential vocabulary
-- Vertical vs. horizontal is a fundamental concept
+This is a vocabulary slide, not deep dive.
 
-**Connect back to what we've covered:**
-- We already taught caching, batching, retry, circuit breaker in the patterns section
-- This slide gives them the formal names and context
-- Don't re-teach — reference back
-
-**The key insight:**
-- High availability requires redundancy
-- Redundancy requires distribution
-- Distribution requires stateless design
-- It all connects
-
-→ **Transition:** What enables horizontal scaling? Statelessness...
+→ What enables horizontal scaling? Statelessness...
 </aside>
 
 </Slide>
@@ -1649,31 +1443,15 @@ flowchart LR
 
 <aside className="notes">
 **This is the key architectural insight:**
-- REST's "stateless" constraint exists specifically for scalability
-- Fielding knew this in 2000 — statelessness enables horizontal scaling
-- "Sticky sessions" (always route user X to server Y) break horizontal scaling
+- REST's "stateless" constraint exists specifically for horizontal scalability
 
-**The pattern:**
-- Keep services stateless
-- Put all shared state in a dedicated service (database, cache)
-- Now any server can handle any request → you can add servers freely
-
-**Pawtograder example:**
-- The Grading Action is the purest example of stateless
-- Each run: fresh VM, no memory of previous runs
-- GitHub can spin up 500 VMs in parallel without coordination
-
-**Database becomes the bottleneck:**
-- This is why database scaling (replication, sharding) is its own specialty
-- More on this in L21
-
-→ **Transition:** Now let's connect to security — because security shapes all of these decisions...
+→ Now let's look at security...
 </aside>
 
 </Slide>
 
 {/* ============================================ */}
-{/* SECURITY */}
+{/* ARC 6: SECURITY */}
 {/* ============================================ */}
 
 <Slide>
@@ -1719,29 +1497,8 @@ The network is a hostile environment. Security isn't paranoia — it's engineeri
 </div>
 
 <aside className="notes">
-**Make this visceral:**
 - These aren't theoretical attacks — they're trivial to execute
-- Wireshark + coffee shop WiFi = see everyone's unencrypted traffic
-- "Man in the middle" attacks are well-automated tools
-- The Palo Alto firewall we complained about? It's DOING exactly this — reading and modifying your traffic. When it's NEU doing it, they call it "security." When it's an attacker, it's a breach.
-
-**The three attacks map to CIA:**
-- Eavesdrop → violates Confidentiality
-- Modify → violates Integrity
-- Impersonate → violates Integrity AND potentially all three
-
-**Why this matters for Pawtograder:**
-- Students submit from everywhere — dorms, cafés, airports
-- Grades are sensitive data (FERPA protected!)
-- Academic integrity depends on submissions being authentic
-- The Grading Action runs on GitHub's infrastructure — how do we trust it?
-
-**This lecture's security goal:**
-- Build the mental model for HOW we defend against these attacks
-- Not exhaustive security training — that's a whole course
-- But enough to understand architectural security decisions
-
-→ **Transition:** Let's start with a framework for thinking about what we're protecting...
+→ Let's start with a framework for thinking about what we're protecting...
 </aside>
 
 </Slide>
@@ -1780,22 +1537,11 @@ The style is clean and clear, like a security textbook diagram. Blues and teals 
 <aside className="notes">
 **This is our framework for the security discussion.**
 
-Walk through each with Pawtograder examples:
+Confidentiality: Students shouldn't be able to see solutions or other students' grades/submissions
 
-**Confidentiality:**
-- Student A can't see Student B's grades
-- Students can't see the instructor's solution before the deadline
-- OIDC tokens must not be logged (they're short-lived but still sensitive)
+Integrity: Grades and graders shouldn't be tampered with
 
-**Integrity:**
-- Grades should actually reflect test results — not be tampered with in transit
-- The grader tarball SHA hash ensures the tarball hasn't been modified in transit
-- Pawtograder's use of HTTPS ensures grades can't be modified mid-flight (MITM attack)
-
-**Availability:**
-- If students can't submit before the deadline because the API is down, that's an Availability violation
-- A DDoS attack that takes down the API is an availability attack
-- Note that "availability" is also one of the eight fallacies (Fallacy 1 — the network is reliable) — they connect!
+Availability: We need to keep service up, as much as possible
 
 **The tradeoffs:**
 - Confidentiality vs Availability: more access controls = harder for authorized users to access
