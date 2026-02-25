@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 lecture_number: 1
-title: Course Overview and Introduction to Java
+title: "L1: Course Overview and Introduction to Java"
 image: /img/lectures/web/l1.png
 ---
 
