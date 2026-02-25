@@ -848,7 +848,7 @@ public Response sendWithRetry(HttpRequest request) throws Exception {
                 Duration.ofSeconds(10));
         } catch (HttpTimeoutException | IOException e) {
             if (attempt == maxAttempts) throw e;
-            // Exponential backoff: 2s, 4s, 8s — don't hammer a struggling service
+            // Exponential backoff: 1s, 2s, 4s — don't hammer a struggling service
             Thread.sleep((long) Math.pow(2, attempt) * 1000);
         }
     }
@@ -1036,7 +1036,7 @@ api.submitFeedback(batch);
 
 <div style={{padding: '0.4em', border: '2px solid #FF9800', borderRadius: '6px'}}>
 
-**Fallacy 5: Topology changes** — Never hardcode URLs; use config. Servers move, DNS updates.
+**Fallacy 5: Topology doesn't change** — Never hardcode URLs; use config. Servers move, DNS updates.
 
 </div>
 
