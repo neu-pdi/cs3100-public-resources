@@ -74,10 +74,9 @@ Color scheme: Warm oranges/reds for the stressful car ownership side. Cool teals
 - **What Does Your App Need?** (~3 min) — bridge: problems that lead to building blocks
 - **Infrastructure Building Blocks** (~10 min) — databases, storage, queues, caches, observability
 - **Defining Serverless + FaaS** (~8 min) — includes Lambda code examples with S3 triggers
-- **Architecture Comparison** (~8 min) — universal examples: image upload, email, video
-- **Requirements Fit** — good fit vs poor fit (~3 min)
-- **Connection to Course Concepts** (~5 min)
-- **Decision Framework** (~8 min)
+- **Energy Efficiency** (~3 min) — sustainability tradeoffs
+- **Requirements Fit** (~3 min) — good fit vs poor fit
+- **Connection to Course Concepts** (~5 min) — information hiding at scale, same questions every scale
 - Bringing It Together + L22 Preview (~5 min)
 
 **Key theme:** Serverless is technical partitioning with a vendor — you write functions, they operate infrastructure. It's not magic; it's a point on a spectrum with real tradeoffs. The same architectural principles (information hiding, hexagonal architecture) apply at this scale.
@@ -358,7 +357,7 @@ VISUAL CONTRAST:
 - Right side: bright server lights in darkness, chaotic, awake, EVERYONE
 
 Color scheme: Warm purples and dark blues for the peaceful left side. Harsh teal, blinking oranges/reds, clinical whites for the right side. The contrast should feel jarring — that's the point."
-  alt="Split scene: LEFT shows a peaceful dorm room at 2:47 AM — student asleep, laptop closed, everything quiet. RIGHT shows a server at the SAME 2:47 AM, anthropomorphized as an exhausted worker surrounded by incoming requests from Tokyo, London, Sydney — it can never sleep. Tagline: When you close your laptop, GitHub is still answering requests from 100 million developers."
+  alt="Split scene: LEFT shows a peaceful dorm room at 2:47 AM — student asleep, laptop closed, everything quiet. RIGHT shows a server at the SAME 2:47 AM, anthropomorphized as an exhausted worker surrounded by incoming requests from Tokyo, London, Sydney — it can never sleep. Tagline: When you close your laptop, GitHub is still answering requests from 20 million developers."
 />
 
 <aside className="notes">
@@ -1749,17 +1748,22 @@ Instead of deploying an application that runs continuously, you deploy <strong>f
 <div style={{fontSize: '0.44em', marginTop: '0.3em'}}>
 
 ```java
-public class CreateSubmissionHandler implements RequestHandler<Request, Response> {
+public class CreateSubmissionHandler
+        implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
-    public Response handleRequest(Request request, Context context) {
+    public APIGatewayProxyResponseEvent handleRequest(
+            APIGatewayProxyRequestEvent request, Context context) {
         // Create clients for this request (platform provides connection details via environment)
         var db = new PostgresClient(System.getenv("DATABASE_URL"));
         var storage = new S3Client(System.getenv("BUCKET_NAME"));
 
         SubmissionRequest body = parseJson(request.getBody());                      // Parse input
-        OIDCClaims claims = verifyGitHubOIDC(request.getHeader("Authorization"));   // Verify caller
+        OIDCClaims claims = verifyGitHubOIDC(request.getHeaders().get("Authorization")); // Verify
         Submission sub = db.insertSubmission(body.assignmentId(), claims.repo());   // Do the work
-        return Response.ok(new SubmissionResponse(sub.id(), storage.getUrl(...)));  // Return output
+
+        return new APIGatewayProxyResponseEvent()
+            .withStatusCode(200)
+            .withBody(toJson(new SubmissionResponse(sub.id(), storage.getUrl(...))));
     }
 }
 ```
@@ -1799,7 +1803,7 @@ Container spins up, handler runs, recycles. Pay per call.
 - "You don't listen for requests — you respond to them"
 
 **② Stateless:**
-- "Notice we create the database and storage clients inside the handler"
+- "Notice we create the database and storage clients inside the handler — fresh each time"
 - "You can't rely on anything persisting between calls"
 - "This is why we need external state (databases, KV stores)"
 
@@ -1905,14 +1909,15 @@ Same image resize, but with Lambda. No <code>main()</code>, no health checks, no
 // Triggered automatically when a file is uploaded to the "uploads" S3 bucket
 public class ImageResizeHandler implements RequestHandler<S3Event, String> {
 
+    // Optimization: reuse across "warm" invocations (see note below)
     private final S3Client s3 = S3Client.create();
 
     @Override
     public String handleRequest(S3Event event, Context context) {
         // S3 tells us which file was uploaded
-        S3EventNotification.S3Entity s3Entity = event.getRecords().get(0).getS3();
-        String bucket = s3Entity.getBucket().getName();
-        String key = s3Entity.getObject().getKey();  // e.g., "uploads/profile-123.jpg"
+        var record = event.getRecords().get(0).getS3();
+        String bucket = record.getBucket().getName();
+        String key = record.getObject().getKey();  // e.g., "uploads/profile-123.jpg"
 
         // Download the original image
         byte[] original = s3.getObjectAsBytes(r -> r.bucket(bucket).key(key)).asByteArray();
@@ -1942,6 +1947,13 @@ public class ImageResizeHandler implements RequestHandler<S3Event, String> {
 - S3Event: AWS automatically passes info about the uploaded file
 - Context: metadata about this invocation (request ID, time remaining, etc.)
 - The function downloads, resizes, and uploads — that's it
+
+**Why is S3Client a field instead of created inside handleRequest?**
+- AWS recommends reusing SDK clients across "warm" invocations for performance
+- Lambda may reuse the same container for multiple requests — the field survives between calls
+- This is an optimization: creating an S3Client is expensive (DNS lookup, TLS handshake)
+- But it creates a debugging trap: if you store REQUEST-SPECIFIC state in a field, it leaks between invocations
+- Rule of thumb: SDK clients in fields = OK. Business state in fields = bug.
 
 **The trigger configuration (not shown in code):**
 - In AWS Console or infrastructure-as-code: "When a file is PUT in bucket X, invoke this function"
