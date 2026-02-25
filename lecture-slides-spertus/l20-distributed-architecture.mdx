@@ -160,7 +160,7 @@ After this lecture, you will be able to:
 - Anonymous link in your email
 - Over 150 students have completed it so far
 
-**Koury Mid-Semester Evaluations also due Friday
+**Koury Mid-Semester Evaluations also due Friday**
 
 **Team Formation Survey Released!**
 - Starting Week 10: teams of 4 for CookYourBooks GUI project
@@ -271,7 +271,7 @@ Transition: Let's look at some costs...
   choices={[
     "reading from memory",
     "reading from a SSD",
-    "reading for a hard drive",
+    "reading from a hard drive",
     "round-trip communication within a data center",
     "round-trip communication between CA and Netherlands"
     ]}
@@ -306,7 +306,8 @@ Transition: Let's look at some costs...
 ## Latency Numbers Every Programmer Should Know
 
 <Img src='/img/lectures/web/l20-latency-numbers.png'
-  alt=''
+  alt='Screenshot of Latency Numbers Every Programmer Should Know (year 2020),
+  viewable at https://colin-scott.github.io/personal_website/research/interactive_latency.html'
 />
 
 <div style={{ fontSize: '.7em' }}>
@@ -352,7 +353,8 @@ Source: https://colin-scott.github.io/personal_website/research/interactive_late
 
 <div className='fragment'>
 <Img src='/img/lectures/web/l20-horizontal-scaling.jpg'
-  alt=''
+  alt='Graphic showing a network switch connected to 3 rack-mountable servers,
+  with a graph representing a social network in the background'
 />
 </div>
 
@@ -616,87 +618,6 @@ HttpRequest delete = HttpRequest.newBuilder()
 
 <Slide>
 
-## Sidebar: REST Was Itself an Architectural Discovery
-
-<p style={{fontSize: '0.8em'}}>
-REST didn't come from a committee. Roy Fielding co-authored the <strong>HTTP/1.0 spec</strong>, then asked: <em>why does this work so well?</em> His 2000 PhD thesis reverse-engineered HTTP into a set of architectural constraints. REST is the name he gave that style.
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.58em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0.6em', border: '2px solid #9370DB', borderRadius: '8px'}}>
-
-**REST's Six Architectural Constraints** *(Fielding, 2000)*
-
-- **Client-Server** — separate UI concerns from data storage
-- **Stateless** — each request contains all info needed; no session state on the server
-- **Cacheable** — responses must declare whether they can be cached
-- **Uniform Interface** — standard verbs + resource URLs + self-describing messages
-- **Layered System** — clients don't know if they're talking to the real server or a proxy
-
-</div>
-
-<div style={{padding: '0.6em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
-
-**Connection to L18: Drivers → Style**
-
-Each constraint maps to a **quality attribute driver**:
-
-| Constraint | Quality Attribute |
-|-----------|-----------------|
-| Stateless | **Scalability** — any server handles any request |
-| Cacheable | **Performance** — skip redundant fetches |
-| Uniform Interface | **Changeability** — swap server implementations |
-| Layered System | **Security + Deployability** — add proxies/CDNs transparently |
-
-The same process we used for Pawtograder — identify quality attributes, apply heuristics, let the style *emerge* — is how REST was discovered.
-
-</div>
-
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.73em', marginTop: '0.5em', fontStyle: 'italic', color: '#666'}}>
-REST is not a standard, a spec, or a protocol. It's an <strong>architectural style</strong> — a set of constraints that, when applied, produce a system with desirable properties. Fielding studied what made HTTP work, then named the pattern.
-</p>
-</div>
-
-<aside className="notes">
-**The origin story:**
-- Fielding was one of the principal authors of HTTP/1.0 and HTTP/1.1
-- After building it, he wanted to formally capture WHY the web's architecture was so successful
-- His 2000 PhD dissertation at UC Irvine is "Architectural Styles and the Design of Network-based Software Architectures"
-- Chapter 5 is REST — one of the most influential chapters in CS history
-- The dissertation is free online; it's surprisingly readable
-
-**The stateless constraint — most important for this lecture:**
-- "No session state on server" → any server instance can handle any request
-- This is exactly why GitHub Actions can spin up thousands of parallel grading runners — no runner needs to remember any state from previous runs
-- Contrast: PHP session files or sticky sessions on a load balancer — now every request must go to the SAME server → you lose horizontal scalability
-
-**Uniform Interface — the key insight:**
-- Once you know GET/POST/PUT/DELETE and URL conventions, you can interact with ANY REST API
-- The Grading Action's developer could read the Pawtograder API docs and know exactly how to call it without special libraries or training
-- Contrast with SOAP: you need a WSDL file, a code generator, and a specific library for each API
-
-**The L18 connection — drive this home:**
-- L18 showed: quality attribute (testability) → heuristic (separate what from how) → hexagonal architecture emerges
-- Fielding: quality attribute (scalability) → constraint (stateless) → REST emerges
-- "Architecture is discovered, not invented" applies to REST too — Fielding studied the web and discovered the pattern already present in HTTP
-
-**Interesting footnote:**
-- Most "REST" APIs today violate some of Fielding's constraints (especially HATEOAS/hypermedia)
-- Fielding himself has complained about this on his blog
-- But the core stateless + uniform interface constraints are what matter in practice
-
-→ **Transition:** One artifact of that uniform interface: standardized status codes...
-</aside>
-
-</Slide>
-
-
-<Slide>
-
 ## REST Status Codes: The Language of Failure
 
 <p style={{fontSize: '0.78em'}}>
@@ -769,128 +690,6 @@ switch (response.statusCode() / 100) {
 - Rate limiting is common in APIs
 - Response usually includes `Retry-After` header
 - Respect it or you'll get blocked
-
-→ **Transition:** Now that we can read API responses, let's look at the REAL challenge of distributed systems...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Sidebar: REST Was Itself an Architectural Discovery
-
-<p style={{fontSize: '0.8em'}}>
-REST didn't come from a committee. Roy Fielding co-authored the <strong>HTTP/1.0 spec</strong>, then asked: <em>why does this work so well?</em> His 2000 PhD thesis reverse-engineered HTTP into a set of architectural constraints. REST is the name he gave that style.
-</p>
-
-<div style={{padding: '0.6em',fontSize: '0.8em', border: '2px solid #9370DB', borderRadius: '8px'}}>
-
-**REST's Six Architectural Constraints** *(Fielding, 2000)*
-
-- **Client-Server** — separate UI concerns from data storage
-- **Stateless** — each request contains all info needed; no session state on the server
-- **Cacheable** — responses must declare whether they can be cached
-- **Uniform Interface** — standard verbs + resource URLs + self-describing messages
-- **Layered System** — clients don't know if they're talking to the real server or a proxy
-
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.73em', marginTop: '0.5em', fontStyle: 'italic', color: '#666'}}>
-REST is not a standard, a spec, or a protocol. It's an <strong>architectural style</strong> — a set of constraints that, when applied, produce a system with desirable properties. Fielding studied what made HTTP work, then named the pattern.
-</p>
-</div>
-
-<aside className="notes">
-**The origin story:**
-- Fielding was one of the principal authors of HTTP/1.0 and HTTP/1.1
-- After building it, he wanted to formally capture WHY the web's architecture was so successful
-- His 2000 PhD dissertation at UC Irvine is "Architectural Styles and the Design of Network-based Software Architectures"
-- Chapter 5 is REST — one of the most influential chapters in CS history
-- The dissertation is free online; it's surprisingly readable
-
-**The stateless constraint — most important for this lecture:**
-- "No session state on server" → any server instance can handle any request
-- This is exactly why GitHub Actions can spin up thousands of parallel grading runners — no runner needs to remember any state from previous runs
-- Contrast: PHP session files or sticky sessions on a load balancer — now every request must go to the SAME server → you lose horizontal scalability
-
-**Uniform Interface — the key insight:**
-- Once you know GET/POST/PUT/DELETE and URL conventions, you can interact with ANY REST API
-- The Grading Action's developer could read the Pawtograder API docs and know exactly how to call it without special libraries or training
-- Contrast with SOAP: you need a WSDL file, a code generator, and a specific library for each API
-
-**The L18 connection — drive this home:**
-- L18 showed: quality attribute (testability) → heuristic (separate what from how) → hexagonal architecture emerges
-- Fielding: quality attribute (scalability) → constraint (stateless) → REST emerges
-- "Architecture is discovered, not invented" applies to REST too — Fielding studied the web and discovered the pattern already present in HTTP
-
-**Interesting footnote:**
-- Most "REST" APIs today violate some of Fielding's constraints (especially HATEOAS/hypermedia)
-- Fielding himself has complained about this on his blog
-- But the core stateless + uniform interface constraints are what matter in practice
-
-→ **Transition:** One artifact of that uniform interface: standardized status codes...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## REST Status Codes: The Language of Failure
-
-<p style={{fontSize: '0.82em'}}>
-One of REST's great gifts: <strong>standardized error codes</strong>. When you read API documentation or debug network issues, these are the codes you'll encounter constantly.
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75em', fontSize: '0.6em', marginTop: '0.75em'}}>
-
-<div style={{padding: '0.6em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
-
-**2xx — Success**
-
-- `200 OK` — request succeeded
-- `201 Created` — resource created
-- `204 No Content` — success, nothing to return
-
-</div>
-
-<div style={{padding: '0.6em', border: '2px solid #FF9800', borderRadius: '8px'}}>
-
-**4xx — Client Error**
-
-- `400 Bad Request` — malformed request
-- `401 Unauthorized` — not authenticated
-- `403 Forbidden` — authenticated but not allowed
-- `404 Not Found` — resource doesn't exist
-- `429 Too Many Requests` — rate limited
-
-</div>
-
-<div style={{padding: '0.6em', border: '2px solid #f44336', borderRadius: '8px'}}>
-
-**5xx — Server Error**
-
-- `500 Internal Server Error` — generic failure
-- `502 Bad Gateway` — upstream service failed
-- `503 Service Unavailable` — overloaded or down
-- `504 Gateway Timeout` — upstream too slow
-
-</div>
-
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.75em', marginTop: '0.75em', fontStyle: 'italic', color: '#666'}}>
-Trivia: Anyone know what the code for "unavailable for legal reasons"?
-</p>
-</div>
-
-<aside className="notes">
-- View status code if a request failed
-- 4xx = the client made a mistake — fix your code
-  - 429 = too many requests
-- 5xx = the server is broken — retry later (but not immediately — exponential backoff)
-- This distinction drives retry logic: you SHOULD retry on 5xx, you should NOT retry on 4xx (it'll fail again)
 
 → **Transition:** Now that we can read API responses, let's look at the REAL challenge of distributed systems...
 </aside>
@@ -984,7 +783,7 @@ while (response == null && attempts < 3) {
   try {
     response = client.send(request, Duration.ofSeconds(10));
   } catch (TimeoutException e) {
-    // This performs xponential backoff: 1s, 2s, 4s
+    // This performs exponential backoff: 1s, 2s, 4s
     Thread.sleep((long) Math.pow(2, attempts) * 1000);
     attempts++;
   }
@@ -1031,7 +830,7 @@ if (response == null) {
 ## Pattern: Timeout + Retry with Exponential Backoff
 
 <p style={{fontSize: '0.72em'}}>
-<em>Thia pattern addresses Fallacy 1 (unreliable). Never wait forever — set a deadline, then try again, backing off between attempts.</em>
+<em>This pattern addresses Fallacy 1 (unreliable). Never wait forever — set a deadline, then try again, backing off between attempts.</em>
 </p>
 
 <div style={{fontSize: '0.5em', marginTop: '0.4em'}}>
@@ -1174,7 +973,12 @@ public Response submitFeedback(Request req) {
 ## Latency
 
 <Img src='/img/lectures/web/l20-latency-cartoon.png'
-  alt='TODO'
+  alt="4-pane cartoon Simply Explained cartoon by Geek and Poke, titled 'Latency'
+  Frame 1: Lone man wearing headset asks: 'Do you love me?'
+  Frame 2: He waits silently.
+  Frame 3: He asks 'Why don't you answer me? Is there another man?' He receives reply 'Yes'.
+  Frame 4: Man has left frame. Reply arrives: 'What do you mean? Of course not!!'"
+
 />
 </Slide>
 
@@ -2457,5 +2261,16 @@ Serverless is the natural continuation of today's lesson: it's distributed compu
 </aside>
 
 </Slide>
+
+
+<Slide>
+## Bonus Slide
+
+<Img src='/img/lectures/web/l20-state-is-the-enemy.jpg'
+  alt="Epic Handshake Three Way meme uniting 'Distributed Systems',
+  'Anarchists', and 'Functional Programmers' on 'State is the Enemy'"
+/>
+</Slide>
+
 
 </RevealJS>
