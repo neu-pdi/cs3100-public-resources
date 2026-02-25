@@ -5,8 +5,6 @@ title: "L9: Interpreting Requirements"
 image: /img/lectures/web/l9.png
 ---
 
-# Interpreting Requirements
-
 ![Lecture 9: Interpreting Requirements](/img/lectures/web/l9.png)
 
 ## Explain the overall purpose of requirements analysis (10 minutes)

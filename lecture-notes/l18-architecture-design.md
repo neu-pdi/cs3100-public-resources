@@ -4,8 +4,6 @@ lecture_number: 18
 title: "L18: Thinking Architecturally"
 ---
 
-# Thinking Architecturally
-
 Suggested background reading for a deeper dive:
 - [Fundamentals of Software Architecture, 2nd Edition by Mark Richards and Neal Ford](https://learning.oreilly.com/library/view/fundamentals-of-software/9781098175504/ch02.html) - especially Chapter 2
 

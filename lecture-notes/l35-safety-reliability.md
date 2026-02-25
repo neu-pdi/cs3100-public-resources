@@ -4,8 +4,6 @@ lecture_number: 35
 title: "L35: Safety and Reliability"
 ---
 
-# Safety and Reliability
-
 [Background Material](https://learning.oreilly.com/library/view/software-architecture-in/9780136885979/ch10.xhtml#ch10)
 
 ## Define common factors that contribute to the "Reliability" and "Availability" of a software system (10 minutes)

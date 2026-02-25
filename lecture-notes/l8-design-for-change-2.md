@@ -5,8 +5,6 @@ title: "L8: Changeability III: Principles for inheritance"
 image: /img/lectures/web/l8.png
 ---
 
-# Changeability III: Principles for inheritance
-
 ![Lecture 8: Changeability III: Principles for inheritance](/img/lectures/web/l8.png)
 
 ## Other design principles related to changeability: SOLID (20 minutes)

@@ -4,8 +4,6 @@ lecture_number: 15
 title: "L15: Test Doubles and Isolation"
 ---
 
-# Test Doubles and Isolation
-
 ## Distinguish between unit, integration, and end-to-end tests (10 minutes)
 
 When we talk about automated testing, we're really talking about a whole family of different test types that vary in *scope* — how much of the system is exercised by a single test. Understanding this spectrum helps us make good decisions about what kinds of tests to write and when.

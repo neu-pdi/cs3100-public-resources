@@ -4,8 +4,6 @@ lecture_number: 36
 title: "L36: Sustainability"
 ---
 
-# Sustainability
-
 [Background Material](https://dl.acm.org/doi/10.1145/3639060) and [this article](https://arxiv.org/abs/2305.00436)
 
 ## Define software sustainability and its importance in software development (10 minutes)

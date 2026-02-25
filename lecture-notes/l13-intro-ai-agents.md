@@ -4,8 +4,6 @@ lecture_number: 13
 title: "L13: Introduction to AI Programming Agents"
 ---
 
-# Introduction to AI Programming Agents
-
 ## Define AI programming agents and enumerate their capabilities (10 minutes)
 
 ### AI amplifies human capabilities, not replaces them

@@ -4,8 +4,6 @@ lecture_number: 37
 title: "L37: Design Case Study: Map-Reduce"
 ---
 
-# Design Case Study: Map-Reduce
-
 ## Describe the purpose of Map-Reduce and the Google File System and its high-level architecture (10 minutes)
 
 ## Define the key components of Map-Reduce and their responsibilities (10 minutes)

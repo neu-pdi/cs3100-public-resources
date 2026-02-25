@@ -5,8 +5,6 @@ title: "L7: Changeability II: Coupling and Cohesion"
 image: /img/lectures/web/l7.png
 ---
 
-# Changeability II: Coupling and Cohesion
-
 ![Lecture 7: Changeability II: Coupling and Cohesion](/img/lectures/web/l7.png)
 
 ## Analyze the changeability of a software module for some hypothetical change using the language of coupling and cohesion (10 minutes)

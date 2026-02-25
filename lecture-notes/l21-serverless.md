@@ -1,10 +1,8 @@
 ---
 sidebar_position: 21
 lecture_number: 21
-title: "L21 Serverless Architecture"
+title: "L21: Serverless Architecture"
 ---
-
-# Serverless Architecture
 
 In [L20](./l20-networks.md), we explored distributed architecture—what changes when components communicate over networks. We saw the Fallacies of Distributed Computing and strategies for building reliable systems despite unreliable networks.
 

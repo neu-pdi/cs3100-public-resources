@@ -4,8 +4,6 @@ lecture_number: 20
 title: "L20: Distributed Architecture: Networks, Microservices, and Security"
 ---
 
-# Distributed Architecture: Networks, Microservices, and Security
-
 Suggested background reading for a deeper dive:
 - [Fundamentals of Software Architecture, 2nd Edition by Mark Richards and Neal Ford](https://learning.oreilly.com/library/view/fundamentals-of-software/9781098175504/ch17.html) - Chapter 17 on Microservices Architecture
 

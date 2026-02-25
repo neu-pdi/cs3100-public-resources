@@ -4,8 +4,6 @@ lecture_number: 12
 title: "L12: Domain Modeling"
 ---
 
-# Domain Modeling
-
 ## Introduction: Object-oriented design and the challenge of understandability (5 minutes)
 
 :::note Information Hiding In Action

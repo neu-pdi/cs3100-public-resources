@@ -4,8 +4,6 @@ lecture_number: 17
 title: "L17: From Code Patterns to Architecture Patterns"
 ---
 
-# From Code Patterns to Architecture Patterns
-
 ## Review the creation patterns you have already implemented (5 minutes)
 
 :::note Information Hiding In Action

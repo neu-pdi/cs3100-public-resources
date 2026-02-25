@@ -9,8 +9,6 @@ optional_preparation:
     - 'Read [Core Java Volume I: Fundamentals, Ch 3](https://learning.oreilly.com/library/view/core-java-volume/9780135328385/v1/ch3/index.xhtml#ch03lev1sec1)'
 ---
 
-# Inheritance and Polymorphism in Java
-
 ![Lecture 2: Inheritance and Polymorphism in Java](/img/lectures/web/l2.png)
 
 ## Describe why inheritance is a core concept of object-oriented programming (10 minutes)
