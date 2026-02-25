@@ -73,7 +73,7 @@ Color scheme: Warm oranges/reds for the stressful car ownership side. Cool teals
 - **The Cloud Deployment Spectrum** (~5 min) — builds on the "iceberg" foundation
 - **What Does Your App Need?** (~3 min) — bridge: problems that lead to building blocks
 - **Infrastructure Building Blocks** (~10 min) — databases, storage, queues, caches, observability
-- **Defining Serverless + FaaS** (~8 min) — includes Lambda code examples with S3 triggers and KV stores
+- **Defining Serverless + FaaS** (~8 min) — includes Lambda code examples with S3 triggers
 - **Architecture Comparison** (~8 min) — universal examples: image upload, email, video
 - **Requirements Fit** — good fit vs poor fit (~3 min)
 - **Connection to Course Concepts** (~5 min)
@@ -1006,7 +1006,7 @@ WHERE s.student_id = ?
 
 **Document (NoSQL)**
 
-Flexible schemas, JSON-like, rapid prototyping
+Flexible schemas, JSON-like storage, no schema enforcement, limited query power
 
 *MongoDB, Firestore*
 
@@ -1024,7 +1024,7 @@ Flexible schemas, JSON-like, rapid prototyping
 
 **Key-Value**
 
-Simple lookups by ID, extremely fast
+Simple lookups by ID, extremely fast, no schema enforcement, no query power (just fetch by key)
 
 *DynamoDB, Redis*
 
@@ -1039,7 +1039,7 @@ SET session:abc123 {...}
 
 <div className="fragment">
 <p style={{fontSize: '0.68em', marginTop: '0.5em', color: '#4CAF50'}}>
-<strong>Pawtograder:</strong> Uses PostgreSQL — we need queries like "find all submissions by this student across all assignments" and "calculate average scores grouped by section." Relational databases shine here. Uses Key-Value store for rate limiting requests to GitHub.
+<strong>Pawtograder:</strong> Uses PostgreSQL — we need queries like "find all submissions by this student across all assignments" and "calculate average scores grouped by section." Relational databases shine here.
 </p>
 </div>
 
@@ -1255,7 +1255,7 @@ Store copies of frequently-accessed data in memory. Serve directly instead of qu
 
 | Service | Use Case |
 |---------|----------|
-| Redis / Upstash | Rate limiting, session data |
+| Redis | Session data, fast lookups |
 | Memcached | Distributed cache |
 | CDN | Static files at edge |
 
@@ -1302,11 +1302,6 @@ flowchart LR
 - Content-addressable: cache key IS the content hash (SHA)
 - If content changes, SHA changes, cache automatically invalidates
 - This is how Docker image layers work, how Git stores objects
-
-**Why Pawtograder uses a KV store (hosted Redis):**
-- Edge Functions are stateless — can't maintain in-memory counters
-- Need external state for rate limiting
-- Redis is perfect: fast reads/writes, automatic expiration
 
 **API Gateway benefits:**
 - One place to enforce security policies
@@ -1569,7 +1564,80 @@ You gain operational simplicity and elasticity. You lose control: vendor abstrac
 - Lock-in: Supabase Edge Functions → moving to AWS Lambda requires rewrites
 - But Hexagonal Architecture helps! Domain logic behind ports can stay the same
 
-→ **Transition:** Let's see what serverless code actually looks like...
+→ **Transition:** Before we look at code, let's see what triggers these functions...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Event-Driven Execution
+
+<p style={{fontSize: '0.78em'}}>
+Serverless functions are triggered by <strong>events</strong> — not just HTTP requests. This enables reactive architectures where functions respond to changes in the system.
+</p>
+
+<Img
+  src="/img/lectures/web/l21-event-driven.webp"
+  prompt="An educational illustration in a clean, modern flat-art style (NOT pixel art). No title text.
+
+CONCEPT: 'Events Trigger Functions' — showing multiple event sources converging on serverless functions that scale automatically.
+
+TOP ROW — FOUR EVENT SOURCES (left to right):
+1. HTTP REQUEST: A lightning bolt icon hitting an API gateway box. Label: 'HTTP Request'. Example: 'POST /submissions'. Purple (#9370DB) accent.
+
+2. FILE UPLOAD: A document/file icon dropping into a storage bucket. Label: 'File Upload'. Example: 'Test files uploaded'. Teal (#4A90A4) accent.
+
+3. DATABASE CHANGE: A database cylinder with a glowing 'change' indicator (delta symbol or sparkle). Label: 'Database Change'. Example: 'New submission → notify'. Orange (#FF9800) accent.
+
+4. SCHEDULE: A clock/timer icon with cron notation. Label: 'Schedule'. Example: 'Nightly grade export'. Green (#4CAF50) accent.
+
+MIDDLE — CONVERGENCE:
+All four event sources have arrows/streams flowing downward, converging into a central area.
+
+CENTER — YOUR FUNCTION (the hero):
+A prominent hexagonal pod labeled 'fn()' or 'Your Function'. Around it, MULTIPLE COPIES of the same function are shown appearing (some solid, some semi-transparent materializing) — illustrating automatic scaling.
+
+A callout arrow pointing to the multiple copies: 'Scales automatically — 100 events = 100 instances'
+
+BOTTOM — OUTPUT:
+The function connects to downstream services: Database cylinder, Storage bucket, External API cloud.
+
+VISUAL STYLE:
+- Clean arrows showing data flow
+- Event sources are distinct icons with their own colors
+- The scaling visualization is key — show MANY function instances spawning
+- Modern, professional educational illustration
+
+Color scheme: Purple, teal, orange, green accents on white/light background."
+  alt="Four event sources (HTTP Request like POST /submissions, File Upload like test files, Database Change like new submission triggers, Schedule like nightly exports) shown as distinct icons at top, with arrows converging on a central serverless function. Multiple copies of the function appear (illustrating auto-scaling). Functions connect to downstream services."
+/>
+
+<aside className="notes">
+**The event-driven paradigm:**
+- Traditional servers: "listen on port 8080, handle whatever comes"
+- Serverless: "when THIS event happens, run THIS function"
+- More declarative, more focused
+
+**Event sources in practice:**
+- HTTP: most common, what we'll show in the code example
+- File upload: "when a file lands in this bucket, process it"
+- Database change: "when a row is inserted, trigger downstream actions"
+- Schedule: "every night at 2 AM, run this cleanup job"
+- Message queue: "when a message arrives, process it"
+
+**Pawtograder examples:**
+- HTTP: POST /submissions (student submits work), POST /feedback (grader reports results)
+- File upload: Test files for assignments stored in cloud storage
+- Schedule: could use for nightly grade exports (not currently implemented)
+- Database triggers: handled by PostgreSQL itself, not Edge Functions
+
+**The scaling insight:**
+- 100 students submit at once? 100 function instances spin up
+- You don't configure this — it just happens
+- This is the "elastic" in "elastic computing"
+
+→ **Transition:** Now let's see what the code looks like...
 </aside>
 
 </Slide>
@@ -1675,73 +1743,82 @@ Useful for logging, timeouts, debugging.
 ## Functions as a Service (FaaS)
 
 <p style={{fontSize: '0.78em'}}>
-Instead of deploying an application that runs continuously, you deploy <strong>functions</strong> that execute in response to events. Here's a function triggered by an HTTP request:
+Instead of deploying an application that runs continuously, you deploy <strong>functions</strong> that execute in response to events. Focus on the principles, not the syntax:
 </p>
 
-<div style={{fontSize: '0.46em', marginTop: '0.3em'}}>
+<div style={{fontSize: '0.44em', marginTop: '0.3em'}}>
 
 ```java
-// Handles HTTP requests via API Gateway
-public class CreateSubmissionHandler
-        implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
-    //                           ↑ HTTP request              ↑ HTTP response
+public class CreateSubmissionHandler implements RequestHandler<Request, Response> {
 
-    private final SubmissionRepository submissions;  // injected or created in constructor
-    private final StorageService storage;
+    public Response handleRequest(Request request, Context context) {
+        // Create clients for this request (platform provides connection details via environment)
+        var db = new PostgresClient(System.getenv("DATABASE_URL"));
+        var storage = new S3Client(System.getenv("BUCKET_NAME"));
 
-    @Override
-    public APIGatewayProxyResponseEvent handleRequest(
-            APIGatewayProxyRequestEvent request, Context context) {
-
-        // Parse the JSON body from the HTTP request
-        SubmissionRequest body = parseJson(request.getBody());
-
-        // Verify the auth token from the request headers
-        String token = request.getHeaders().get("Authorization");
-        OIDCClaims claims = verifyGitHubOIDC(token);
-
-        // Create submission record in database
-        Submission submission = submissions.create(body.assignmentId(), claims.repository());
-
-        // Return HTTP response with grader URL
-        String graderUrl = storage.getSignedUrl(body.assignmentId());
-        return new APIGatewayProxyResponseEvent()
-            .withStatusCode(200)
-            .withBody(toJson(new SubmissionResponse(submission.id(), graderUrl)));
+        SubmissionRequest body = parseJson(request.getBody());                      // Parse input
+        OIDCClaims claims = verifyGitHubOIDC(request.getHeader("Authorization"));   // Verify caller
+        Submission sub = db.insertSubmission(body.assignmentId(), claims.repo());   // Do the work
+        return Response.ok(new SubmissionResponse(sub.id(), storage.getUrl(...)));  // Return output
     }
 }
 ```
 
 </div>
 
-<div className="fragment">
-<p style={{fontSize: '0.62em', marginTop: '0.2em', color: '#4CAF50'}}>
-<strong>The provider lifecycle:</strong> Request arrives → AWS spins up container (or reuses warm one) → calls <code>handleRequest()</code> → returns response → container may be recycled. <strong>You pay only for execution time.</strong>
-</p>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '0.5em', fontSize: '0.48em', marginTop: '0.5em'}}>
+
+<div style={{padding: '0.4em', border: '2px solid #9370DB', borderRadius: '6px'}}>
+<strong>① Event-Driven</strong><br/>
+Platform calls you when event arrives. No main(), no server.
+</div>
+
+<div style={{padding: '0.4em', border: '2px solid #4A90A4', borderRadius: '6px'}}>
+<strong>② Stateless</strong><br/>
+No state persists between calls. Create what you need fresh.
+</div>
+
+<div style={{padding: '0.4em', border: '2px solid #FF9800', borderRadius: '6px'}}>
+<strong>③ Input → Output</strong><br/>
+Request in, response out. Pure transformation.
+</div>
+
+<div style={{padding: '0.4em', border: '2px solid #4CAF50', borderRadius: '6px'}}>
+<strong>④ Platform Lifecycle</strong><br/>
+Container spins up, handler runs, recycles. Pay per call.
+</div>
+
 </div>
 
 <aside className="notes">
-**Walk through the code:**
-- This is conceptually what Pawtograder's createSubmission does
-- Pawtograder uses TypeScript/Deno, but the PATTERN is identical
-- Notice: no server setup, no port binding, no main() method
-- The function is JUST the handler — everything else is the platform's job
+**Four key FaaS principles (the boxes):**
 
-**The provider lifecycle:**
-1. Request arrives at provider's infrastructure
-2. Provider routes to your function
-3. If no warm container: cold start (spin up new container, load runtime)
-4. If warm container exists: reuse it (fast!)
-5. Execute your function
-6. Return response
-7. Container stays warm for a bit, then gets recycled
+**① Event-Driven:**
+- "Notice what's MISSING: no main(), no server startup, no port binding"
+- "The platform calls YOUR code when an event happens"
+- "You don't listen for requests — you respond to them"
+
+**② Stateless:**
+- "Notice we create the database and storage clients inside the handler"
+- "You can't rely on anything persisting between calls"
+- "This is why we need external state (databases, KV stores)"
+
+**③ Input → Output:**
+- "Request comes in, response goes out"
+- "Like a pure function at the infrastructure level"
+- "Same principle as functional programming — minimize side effects"
+
+**④ Platform Lifecycle:**
+- Request arrives → AWS routes it
+- Cold start: spin up new container, load runtime (100ms-5s)
+- Warm container: reuse existing (fast!)
+- Execute your handler
+- Return response, maybe recycle container
+- You pay ONLY for the time your code runs
 
 **What you DON'T write:**
-- Server startup code
-- Health check endpoints
-- Graceful shutdown handling
-- Process management
-- Scaling logic
+- Server startup code, health checks, graceful shutdown
+- Process management, scaling logic, load balancing
 
 → **Transition:** Let's compare traditional vs serverless...
 </aside>
@@ -1880,167 +1957,6 @@ public class ImageResizeHandler implements RequestHandler<S3Event, String> {
 - Instagram, TikTok, any app with user uploads
 - Also: video transcoding, PDF generation, log processing
 
-→ **Transition:** But serverless functions are stateless — what about state?
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Lambda + KV Store: Rate Limiting with External State
-
-<p style={{fontSize: '0.78em'}}>
-Serverless functions are <strong>stateless</strong> — they can't remember anything between invocations. For state like rate limits, you need an external store. Remember the <strong>Key-Value stores</strong> from our building blocks? This is exactly what they're for.
-</p>
-
-<div style={{fontSize: '0.44em', marginTop: '0.3em'}}>
-
-```java
-// Rate limit API requests: max 100 requests per minute per user
-public class RateLimitedApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
-
-    // Redis KV store client — connects over HTTPS, no persistent connection needed
-    private final JedisPooled redis = new JedisPooled("https://your-redis-url.example.io", 6379,
-        new JedisClientConfig().password("your-redis-token"));
-
-    @Override
-    public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request, Context ctx) {
-        String userId = request.getRequestContext().getIdentity().getUser();
-        String rateLimitKey = "ratelimit:" + userId;
-
-        // INCR atomically increments and returns the new count
-        long requestCount = redis.incr(rateLimitKey);
-
-        // First request? Set expiration to 60 seconds
-        if (requestCount == 1) {
-            redis.expire(rateLimitKey, 60);
-        }
-
-        // Check if over limit
-        if (requestCount > 100) {
-            return new APIGatewayProxyResponseEvent()
-                .withStatusCode(429)
-                .withBody("{\"error\": \"Rate limit exceeded. Try again in a minute.\"}");
-        }
-
-        // Process the actual request...
-        return new APIGatewayProxyResponseEvent()
-            .withStatusCode(200)
-            .withBody("{\"message\": \"Success!\", \"requests_remaining\": " + (100 - requestCount) + "}");
-    }
-}
-```
-
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.62em', marginTop: '0.2em', color: '#FF9800'}}>
-<strong>Why a managed KV store?</strong> Traditional Redis needs a persistent connection. Serverless-friendly KV stores (Upstash, AWS ElastiCache, etc.) are HTTP-based — perfect for serverless where connections are expensive and functions are ephemeral.
-</p>
-</div>
-
-<aside className="notes">
-**The stateless problem:**
-- Lambda function runs, returns, disappears
-- Can't store "user X has made 47 requests" in memory — memory is gone
-- Need external state store
-
-**Why Redis / KV stores:**
-- Redis: in-memory key-value store, extremely fast
-- INCR: atomic increment — no race conditions even with concurrent requests
-- EXPIRE: key automatically deletes after 60 seconds — rate limit window resets
-- Managed KV stores (Upstash, ElastiCache): HTTP API, pay per request, no connection management
-
-**The pattern:**
-- Key: "ratelimit:user123"
-- Value: request count
-- TTL: 60 seconds (auto-expires, window resets)
-- Atomic increment prevents race conditions
-
-**Real-world usage:**
-- API rate limiting (prevent abuse)
-- Session storage
-- Caching expensive computations
-- Distributed locks
-
-**Cost model:**
-- Managed KV stores: ~$0.20 per 100K commands
-- For rate limiting: 1 INCR + maybe 1 EXPIRE per request
-- Very cheap even at scale
-
-→ **Transition:** Functions respond to many event types, not just HTTP...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Event-Driven Execution
-
-<p style={{fontSize: '0.78em'}}>
-Serverless functions are triggered by <strong>events</strong> — not just HTTP requests. This enables reactive architectures where functions respond to changes in the system.
-</p>
-
-<Img
-  src="/img/lectures/web/l21-event-driven.webp"
-  prompt="An educational illustration in a clean, modern flat-art style (NOT pixel art). No title text.
-
-CONCEPT: 'Events Trigger Functions' — showing multiple event sources converging on serverless functions that scale automatically.
-
-TOP ROW — FOUR EVENT SOURCES (left to right):
-1. HTTP REQUEST: A lightning bolt icon hitting an API gateway box. Label: 'HTTP Request'. Example: 'POST /submissions'. Purple (#9370DB) accent.
-
-2. FILE UPLOAD: A document/file icon dropping into a storage bucket. Label: 'File Upload'. Example: 'Test files uploaded'. Teal (#4A90A4) accent.
-
-3. DATABASE CHANGE: A database cylinder with a glowing 'change' indicator (delta symbol or sparkle). Label: 'Database Change'. Example: 'New submission → notify'. Orange (#FF9800) accent.
-
-4. SCHEDULE: A clock/timer icon with cron notation. Label: 'Schedule'. Example: 'Nightly grade export'. Green (#4CAF50) accent.
-
-MIDDLE — CONVERGENCE:
-All four event sources have arrows/streams flowing downward, converging into a central area.
-
-CENTER — YOUR FUNCTION (the hero):
-A prominent hexagonal pod labeled 'fn()' or 'Your Function'. Around it, MULTIPLE COPIES of the same function are shown appearing (some solid, some semi-transparent materializing) — illustrating automatic scaling.
-
-A callout arrow pointing to the multiple copies: 'Scales automatically — 100 events = 100 instances'
-
-BOTTOM — OUTPUT:
-The function connects to downstream services: Database cylinder, Storage bucket, External API cloud.
-
-VISUAL STYLE:
-- Clean arrows showing data flow
-- Event sources are distinct icons with their own colors
-- The scaling visualization is key — show MANY function instances spawning
-- Modern, professional educational illustration
-
-Color scheme: Purple, teal, orange, green accents on white/light background."
-  alt="Four event sources (HTTP Request like POST /submissions, File Upload like test files, Database Change like new submission triggers, Schedule like nightly exports) shown as distinct icons at top, with arrows converging on a central serverless function. Multiple copies of the function appear (illustrating auto-scaling). Functions connect to downstream services."
-/>
-
-<aside className="notes">
-**The event-driven paradigm:**
-- Traditional servers: "listen on port 8080, handle whatever comes"
-- Serverless: "when THIS event happens, run THIS function"
-- More declarative, more focused
-
-**Event sources in practice:**
-- HTTP: most common, what we showed in the code example
-- File upload: "when a file lands in this bucket, process it"
-- Database change: "when a row is inserted, trigger downstream actions"
-- Schedule: "every night at 2 AM, run this cleanup job"
-- Message queue: "when a message arrives, process it"
-
-**Pawtograder examples:**
-- HTTP: POST /submissions (student submits work), POST /feedback (grader reports results)
-- File upload: Test files for assignments stored in cloud storage
-- Schedule: could use for nightly grade exports (not currently implemented)
-- Database triggers: handled by PostgreSQL itself, not Edge Functions
-
-**The scaling insight:**
-- 100 students submit at once? 100 function instances spin up
-- You don't configure this — it just happens
-- This is the "elastic" in "elastic computing"
-
 → **Transition:** There are also some broader considerations worth discussing...
 </aside>
 
@@ -2149,10 +2065,10 @@ Four concrete examples with small illustrations:
 - Caption: 'Database event triggers function'
 - Subtext: 'Fire-and-forget, async OK'
 
-3. BOTTOM-LEFT: 'API RATE LIMITING'
-- Small visual: API gateway with counter badge, connected to Redis/KV store icon
-- Caption: 'External state in KV store'
-- Subtext: 'Stateless function + external store'
+3. BOTTOM-LEFT: 'WEBHOOK HANDLERS'
+- Small visual: GitHub logo sending arrow to function, function sends arrow to database
+- Caption: 'GitHub push → process → done'
+- Subtext: 'Quick, stateless, event-driven'
 
 4. BOTTOM-RIGHT: 'SUBMISSIONS AT DEADLINE'
 - Small visual: Traffic graph with huge spike labeled '11:59 PM' then flat labeled '3 AM: $0'
@@ -2194,7 +2110,7 @@ VISUAL STYLE:
 - Red side feels heavy, blocked, expensive
 
 Color scheme: Green (#4CAF50) for good fit, Red (#f44336) for poor fit, clean professional style."
-  alt="Split illustration showing serverless fit. LEFT (green): Image resize (S3 trigger), Welcome emails (database trigger), API rate limiting (KV store), Profile uploads at deadline (bursty traffic). RIGHT (red): Video encoding (timeout), Multiplayer games (cold starts), In-memory cache (stateless problem), High-frequency trading (sustained load). Center shows the three key questions: scaling, latency, ops."
+  alt="Split illustration showing serverless fit. LEFT (green): Image resize (S3 trigger), Welcome emails (database trigger), Webhook handlers (GitHub events), Submissions at deadline (bursty traffic). RIGHT (red): Video encoding (timeout), Multiplayer games (cold starts), In-memory cache (stateless problem), High-frequency trading (sustained load). Center shows the three key questions: scaling, latency, ops."
 />
 
 <aside className="notes">
@@ -2203,13 +2119,13 @@ Color scheme: Green (#4CAF50) for good fit, Red (#f44336) for poor fit, clean pr
 **GREEN SIDE — we built these!**
 - "Image resize: Remember the Lambda code? S3 event triggers function, no server running."
 - "Welcome emails: From our architecture comparison — database trigger fires function."
-- "Rate limiting: We used a KV store because functions are stateless — external store solves it."
+- "Webhook handlers: GitHub sends push event, function processes it, done. Quick, stateless."
 - "Bursty traffic: 1000 profile uploads at deadline? 1000 Lambda instances. $0 at 3 AM."
 
 **RED SIDE — these need different solutions:**
 - "Video encoding: 30 minutes to transcode. Lambda times out at 15. Use containers."
 - "Multiplayer games: Cold start of 2 seconds = player dies waiting. Need always-warm."
-- "In-memory cache: Function memory disappears. That's WHY we used a KV store for rate limiting."
+- "In-memory cache: Function memory disappears between calls. Need external storage."
 - "High-frequency trading: Sustained 1M requests/sec. Per-invocation pricing gets expensive fast."
 
 **The three questions in the center:**
@@ -2235,12 +2151,8 @@ Color scheme: Green (#4CAF50) for good fit, Red (#f44336) for poor fit, clean pr
 
 ## Information Hiding at Scale
 
-<p style={{fontSize: '0.78em'}}>
-The principles from <strong>L6 (Information Hiding)</strong> scale all the way up to cloud architecture. Serverless isn't a departure from what we've learned — it's the same principles at a different scale.
-</p>
-
 <Img
-  src="/img/lectures/web/l21-information-hiding-scale5.webp"
+  src="/img/lectures/web/l21-information-hiding-scale3.webp"
   prompt="An educational illustration in a clean, modern flat-art style (NOT pixel art). No title text.
 
 CONCEPT: 'Information Hiding is Fractal' — showing how the same principle applies at every scale, using a concrete grading system example (POST /submissions).
@@ -2331,274 +2243,6 @@ GitHub Actions calls <code>POST /submissions</code> and <code>POST /feedback</co
 - We accepted LATENCY tradeoff (cold starts)
 - Same quality attribute reasoning as L19
 
-→ **Transition:** So how do you decide what to use?
-</aside>
-
-</Slide>
-
-{/* ============================================ */}
-{/* DECISION FRAMEWORK */}
-{/* ============================================ */}
-
-<Slide>
-
-## Choosing an Architecture: Three Key Questions
-
-<p style={{fontSize: '0.78em'}}>
-We've covered monoliths, containers, and serverless. How do you decide which to use? It comes down to three questions.
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.8em', fontSize: '0.58em', marginTop: '0.75em'}}>
-
-<div style={{padding: '0.7em', border: '3px solid #4A90A4', borderRadius: '8px'}}>
-
-**1. What's your scaling pattern?**
-
-| Pattern | Best Fit |
-|---------|----------|
-| **Steady, predictable** | Monolith or containers |
-| **Bursty with idle periods** | Serverless |
-| **Sustained high throughput** | Dedicated containers |
-
-*Profile pic uploads spike at 6 PM. Video encoding runs 24/7.*
-
-</div>
-
-<div style={{padding: '0.7em', border: '3px solid #FF9800', borderRadius: '8px'}}>
-
-**2. What's your latency tolerance?**
-
-| Requirement | Best Fit |
-|-------------|----------|
-| **Sub-100ms (interactive)** | Monolith or warm containers |
-| **Background tasks** | Serverless is fine |
-| **Real-time (games, trading)** | Dedicated infrastructure |
-
-*Cold starts (100ms-5s) kill real-time apps but don't matter for image resizing.*
-
-</div>
-
-<div style={{padding: '0.7em', border: '3px solid #9370DB', borderRadius: '8px'}}>
-
-**3. What's your operational capacity?**
-
-| Team Reality | Best Fit |
-|--------------|----------|
-| **No dedicated ops** | Serverless / managed PaaS |
-| **Small ops team** | Managed containers |
-| **Strong ops team** | Self-managed (save $ at scale) |
-
-*If you can't explain what Kubernetes does, don't use it.*
-
-</div>
-
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.7em', marginTop: '0.6em', color: '#4CAF50', fontWeight: 'bold'}}>
-These questions interact: bursty traffic + no ops team + tolerant of cold starts = serverless is a great fit.
-</p>
-</div>
-
-<aside className="notes">
-**Frame these as the BIG THREE:**
-- "Most architectural decisions come down to these three questions"
-- "They interact — you're looking for alignment"
-
-**Scaling pattern:**
-- Bursty = serverless shines (pay nothing when idle, scale instantly when busy)
-- Sustained = serverless gets expensive — dedicated capacity is cheaper
-- Example: Social media — bursty user uploads, but sustained content delivery
-
-**Latency tolerance:**
-- Interactive user-facing → cold starts hurt
-- Background processing → cold starts don't matter
-- Example: Image resize triggered by upload — user already moved on, nobody cares if it takes 2 extra seconds
-
-**Operational capacity:**
-- This is about your TEAM, not the technology
-- Kubernetes is powerful but complex — needs expertise to run well
-- Serverless pushes ops complexity to the vendor
-- Tradeoff: vendor charges for that convenience
-
-**The interaction:**
-- If all three align with serverless → strong signal
-- If they conflict → need to weigh priorities
-- Example: Real-time game with bursty traffic but strict latency → containers with auto-scaling, not serverless
-
-→ **Transition:** Let's see how Pawtograder applied these questions...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## The Pawtograder Case Study
-
-<p style={{fontSize: '0.78em'}}>
-Why does Pawtograder use a <strong>hybrid architecture</strong>? Different components have different requirements.
-</p>
-
-<div style={{fontSize: '0.58em', marginTop: '0.5em'}}>
-
-| Component | Architecture | Why This Choice? |
-|-----------|--------------|------------------|
-| **Web API** | Serverless functions | Traffic is bursty (assignment deadlines), small team can't manage servers |
-| **Grading execution** | GitHub Actions | Jobs run for minutes, needs isolation for student code |
-| **Business logic** | PostgreSQL database | Data consistency matters, database is always-on (no cold starts) |
-| **Rate limiting** | Redis (fast key-value store) | Track API usage without slowing down requests |
-
-</div>
-
-<div className="fragment">
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.55em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0.5em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
-
-**What the decision framework predicted:**
-
-- Bursty traffic → serverless ✓
-- Long-running + untrusted → separate execution ✓
-- Small team → managed services ✓
-
-</div>
-
-<div style={{padding: '0.5em', border: '2px solid #9370DB', borderRadius: '8px'}}>
-
-**Hexagonal Architecture made this possible:**
-
-Domain logic behind ports. Different adapters (Edge Functions, background workers) can implement the same interface.
-
-</div>
-
-</div>
-</div>
-
-<aside className="notes">
-**Why hybrid?**
-- No single architecture fits all components
-- The decision framework asks different questions for different parts
-- Hexagonal architecture (L16) enables mixing architectures
-
-**Walk through each component:**
-
-**API (Edge Functions):**
-- Traffic pattern: spiky (deadlines), then quiet
-- Operations: stateless (verify token, create record, return URL)
-- Team: no dedicated ops person
-- → Perfect serverless fit
-
-**Grading (GitHub Actions):**
-- Jobs run for minutes (timeout issues with functions)
-- Student code is untrusted (need isolation)
-- GitHub already provides this infrastructure
-- → Leverage existing managed compute
-
-**Business logic (always-on database):**
-- Deadline enforcement needs to be fast and reliable
-- Cold starts would slow down every grade visibility check
-- Database is always warm — no startup delay
-- → Critical paths avoid serverless cold starts
-
-**Rate limiting (KV store):**
-- Edge Functions can't hold state in memory
-- Need fast external storage for rate limit counters
-- Redis/KV stores are purpose-built for this
-- → Managed KV service
-
-**The architectural insight:**
-- Different parts of ONE system can use different architectural styles
-- The boundaries matter more than consistency of style
-- Hexagonal architecture enables this flexibility
-
-→ **Transition:** What mistakes should you avoid?
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Common Mistakes to Avoid
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.6em', marginTop: '0.75em'}}>
-
-<div style={{padding: '0.75em', border: '2px solid #f44336', borderRadius: '8px'}}>
-
-**Premature microservices**
-
-Don't split into services until you have a clear reason. The distributed systems complexity is real.
-
-*"We might need to scale independently someday"* is not a reason.
-
-</div>
-
-<div style={{padding: '0.75em', border: '2px solid #f44336', borderRadius: '8px'}}>
-
-**Ignoring operational costs**
-
-Microservices and serverless require observability tooling, distributed debugging skills, CI/CD for each component.
-
-Budget for this. It's not free.
-
-</div>
-
-<div style={{padding: '0.75em', border: '2px solid #f44336', borderRadius: '8px'}}>
-
-**Chasing trends**
-
-"Netflix uses microservices" doesn't mean you should.
-
-Netflix has thousands of engineers and billions of users. You probably don't.
-
-</div>
-
-<div style={{padding: '0.75em', border: '2px solid #f44336', borderRadius: '8px'}}>
-
-**One-way doors**
-
-Some choices are hard to reverse — vendor lock-in, data model decisions.
-
-Be more careful with those than with easily-reversible choices.
-
-</div>
-
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.7em', marginTop: '0.5em', color: '#9370DB', fontWeight: 'bold'}}>
-A well-designed monolith beats a poorly-designed microservices architecture every time. Complexity is not a feature.
-</p>
-</div>
-
-<aside className="notes">
-**Premature microservices:**
-- The #1 mistake teams make
-- "We'll need to scale eventually" — maybe, but you don't know WHERE yet
-- Start monolith, understand domain, THEN extract when needed
-- Extracting from a monolith is easier than merging microservices
-
-**Operational costs:**
-- Each service needs: CI/CD pipeline, monitoring, alerting, logging
-- Debugging across services requires distributed tracing
-- On-call rotation gets more complex
-- These costs are real — budget for them
-
-**Chasing trends:**
-- Conference talks show success stories, not failures
-- Survivorship bias: you hear about Netflix, not the startups that failed
-- Your context matters more than what works for FAANG
-
-**One-way doors:**
-- Easy to reverse: which HTTP framework, which test runner
-- Hard to reverse: which cloud provider, which database, service boundaries
-- Spend more decision energy on hard-to-reverse choices
-- "Two-way door" decisions can be made quickly
-
-**The final message:**
-- Complexity has costs
-- Simplicity has value
-- Choose the simplest architecture that meets your requirements
-
 → **Transition:** Let's bring it all together...
 </aside>
 
@@ -2672,7 +2316,252 @@ No single architecture is right for everything. Pawtograder's hybrid approach de
 - The eight fallacies always apply (unless you own the data center)
 - Hexagonal architecture makes architectural decisions more reversible
 
-→ **Transition:** What's next?
+→ **Transition:** These same questions work at every scale...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* SAME QUESTIONS, EVERY SCALE */}
+{/* ============================================ */}
+
+<Slide>
+
+## Same Questions, Every Scale
+
+<p style={{fontSize: '0.82em'}}>
+At every level — class, module, service, system — you ask the same four questions:
+</p>
+
+<div style={{fontSize: '0.62em', marginTop: '0.75em'}}>
+
+| Question | What It Determines |
+|----------|-------------------|
+| **What changes independently?** | Where to draw boundaries |
+| **Who needs to know?** | What the interface should hide |
+| **What can fail?** | How explicit your error handling must be |
+| **What are you trading?** | Whether the tradeoff is worth it |
+
+</div>
+
+<div className="fragment">
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '0.5em', fontSize: '0.5em', marginTop: '0.75em'}}>
+
+<div style={{padding: '0.5em', border: '2px solid #9370DB', borderRadius: '8px', textAlign: 'center'}}>
+
+**L6-L7**
+
+Classes & methods
+
+*Private fields, cohesive modules*
+
+</div>
+
+<div style={{padding: '0.5em', border: '2px solid #4A90A4', borderRadius: '8px', textAlign: 'center'}}>
+
+**L16-L18**
+
+Services & boundaries
+
+*Ports, adapters, APIs*
+
+</div>
+
+<div style={{padding: '0.5em', border: '2px solid #FF9800', borderRadius: '8px', textAlign: 'center'}}>
+
+**L20**
+
+Network boundaries
+
+*Fallacies, failures, security*
+
+</div>
+
+<div style={{padding: '0.5em', border: '2px solid #4CAF50', borderRadius: '8px', textAlign: 'center'}}>
+
+**L21**
+
+Vendor boundaries
+
+*Managed infra, tradeoffs*
+
+</div>
+
+</div>
+</div>
+
+<aside className="notes">
+**The four questions are universal:**
+- They work when you're designing a class
+- They work when you're drawing service boundaries
+- They work when you're choosing between serverless and containers
+- The SCALE changes. The QUESTIONS don't.
+
+**Walk through each:**
+1. "What changes independently?" → This is L6's information hiding, L18's rate-of-change heuristic, L21's "what can you outsource?"
+2. "Who needs to know?" → This is interfaces at every level — method signatures, API contracts, vendor abstractions
+3. "What can fail?" → This becomes MORE critical as scale increases (L20's fallacies)
+4. "What are you trading?" → L19's quality attributes — every choice has costs and benefits
+
+**The progression across lectures:**
+- Same questions, different consequences
+- At class level: failure = exception, cost = complexity
+- At network level: failure = timeout/retry, cost = latency/reliability
+- At vendor level: failure = outage, cost = lock-in/flexibility
+
+→ **Transition:** This is what thinking like an architect means...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Architect's Toolkit
+
+<p style={{fontSize: '0.82em'}}>
+You now have a framework for approaching any system:
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.6em', marginTop: '0.75em'}}>
+
+<div style={{padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px'}}>
+
+**When you see a boundary, ask:**
+- What's hiding behind it?
+- Who owns each side?
+- What happens when communication fails?
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
+
+**When you're drawing a boundary, ask:**
+- What changes independently?
+- Who needs to know about what?
+- Is this a one-way door or two-way door?
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+
+**When evaluating an architecture, ask:**
+- What quality attributes drove these choices?
+- What tradeoffs were accepted?
+- What would break if requirements changed?
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+
+**When choosing complexity, ask:**
+- Do I have a specific problem this solves?
+- Can I start simpler and evolve?
+- What's the cost of being wrong?
+
+</div>
+
+</div>
+
+<p className="fragment" style={{fontSize: '0.78em', marginTop: '0.75em', fontWeight: 'bold', color: '#9370DB'}}>
+The principles scale. The details change. The questions stay the same.
+</p>
+
+<aside className="notes">
+**This is the synthesis of L18-L21:**
+- Not just facts to memorize, but a WAY OF THINKING
+- These questions work in interviews, code reviews, architecture discussions
+- They work whether you're looking at a monolith or a distributed system
+
+**The meta-lesson:**
+- Architecture isn't about memorizing style names
+- It's about asking the right questions consistently
+- The answers differ based on context — but the questions are universal
+
+**For their careers:**
+- When they join a company and see an existing architecture, these questions help them understand WHY
+- When they're asked to make architectural decisions, these questions guide them
+- When they're debugging distributed systems, "what can fail?" becomes critical
+
+**Final thought:**
+- L22 adds one more dimension: the PEOPLE who build these systems
+- Conway's Law says team structure shapes architecture
+- The questions expand: "Who will build this? Who will maintain it?"
+
+→ **Transition:** One more thought before we move on...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Quality Without a Name
+
+<p style={{fontSize: '0.82em'}}>
+In L18, we mentioned <strong>Christopher Alexander</strong> — the architect whose work inspired software design patterns.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.62em', marginTop: '0.75em'}}>
+
+<div style={{padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px'}}>
+
+**Alexander's insight:**
+
+The most livable, enduring structures emerge through *gradual, adaptive growth* — not grand master plans.
+
+You don't design the perfect building. You create the conditions for one to emerge.
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
+
+**The same is true for software:**
+
+- Start with good boundaries (L18)
+- Let styles emerge from understanding (L19)
+- Respect what networks add (L20)
+- Choose vendors consciously (L21)
+
+Then let the system *grow* within those constraints.
+
+</div>
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.78em', marginTop: '0.75em', fontStyle: 'italic', color: '#666'}}>
+Alexander called this ineffable quality that makes spaces feel <em>alive</em> the <strong>"Quality Without a Name."</strong> You can't define it precisely — but you know it when you see it. Well-designed software has it too.
+</p>
+</div>
+
+<aside className="notes">
+**Why end with Alexander?**
+- He's the intellectual ancestor of everything we've discussed
+- "Design Patterns" (GoF) explicitly cites his work
+- His philosophy connects architecture (buildings) to architecture (software)
+
+**The Timeless Way of Building (1979):**
+- Alexander argued against top-down master planning
+- The best buildings, neighborhoods, cities emerge through gradual growth
+- But NOT random growth — growth guided by patterns and principles
+- Sound familiar? That's exactly what we've been saying about software.
+
+**Quality Without a Name (QWAN):**
+- Alexander's term for what makes a space feel "alive"
+- He couldn't define it precisely — but devoted his career to understanding it
+- Some software has this quality: it feels *right*, it's pleasant to work with
+- You can't achieve QWAN through checklists — but the principles we've discussed create conditions for it
+
+**The connection to this module:**
+- L18: "Just enough architecture" — decide what's hard to reverse, defer the rest
+- L19: Styles emerge from understanding, not from picking off a menu
+- L20-L21: Respect constraints, work with them rather than against them
+- Together: create conditions for good software to emerge
+
+**Easter egg:**
+- "QWAN Coffee" in the Pawtograder example (L18) = Quality Without A Name
+- Students who noticed it get the reference now
+
+→ **Transition:** Speaking of conditions for emergence — teams are one of those conditions...
 </aside>
 
 </Slide>
@@ -2726,50 +2615,7 @@ That's an organizational decision as much as a technical one.
 - Look at the decision flowchart when making your own architectural choices
 - Remember: start simple, add complexity when you need it
 
-→ **Wrap up.**
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Key Takeaways
-
-<div style={{fontSize: '0.65em', marginTop: '0.75em'}}>
-
-1. **The cloud deployment spectrum** ranges from "own everything" to "own nothing but your code." Serverless is the rightmost portion — PaaS and FaaS.
-
-2. **Infrastructure building blocks** (databases, queues, storage, caches, observability) appear in all architectures. Serverless = composing managed versions.
-
-3. **Serverless = technical partitioning with a vendor.** You write functions; they operate infrastructure.
-
-4. **Tradeoffs are real:** Serverless offers elasticity and zero idle cost, but introduces cold starts, timeouts, and vendor lock-in.
-
-5. **Good fit:** Event-driven, stateless, bursty workloads. **Poor fit:** Long-running, stateful, low-latency, high-throughput sustained.
-
-6. **Decision framework:** Start with team size, scaling needs, latency requirements. The default is monolith — extract when you have a specific problem.
-
-7. **Same principles at every scale:** Information hiding, hexagonal architecture, quality attributes. Serverless is one point in the design space, not magic.
-
-</div>
-
-<aside className="notes">
-**Final framing:**
-- These seven points are what students should remember
-- The rest is detail they can look up when they need it
-
-**For the exam:**
-- Understand the spectrum (own vs. managed)
-- Know the building blocks
-- Recognize good vs. poor fit for serverless
-- Apply the decision framework
-
-**For their careers:**
-- They WILL encounter serverless in internships and jobs
-- Understanding the tradeoffs helps them make good decisions
-- "Start simple, add complexity when needed" is timeless advice
-
-**End of lecture.**
+→ **End of lecture.**
 </aside>
 
 </Slide>
