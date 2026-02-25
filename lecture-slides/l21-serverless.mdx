@@ -65,17 +65,17 @@ Color scheme: Warm oranges/reds for the stressful car ownership side. Cool teals
 **Lecture overview:**
 - **Total time:** ~65-70 MINUTES
 - **Prerequisites:** L19 (monoliths, modular monoliths, architectural styles), L20 (distributed systems, eight fallacies, REST, security)
-- **Connects to:** L22 (teams and Conway's Law), L31-33 (concurrency, event architecture)
+- **Connects to:** L22 (teams and collaboration), L31-33 (concurrency, event architecture)
 
 **Structure:**
-- **Foundational: What is Infrastructure?** (~8 min) — first principles for freshmen
-- Recap: From Distributed to Serverless (~3 min)
+- **Warm-up: Image Resize Example** (~8 min) — concrete feature → server code → infrastructure iceberg
+- Recap: From Distributed to Serverless (~3 min) — connects L19/L20 arc
 - **The Cloud Deployment Spectrum** (~5 min) — builds on the "iceberg" foundation
 - **What Does Your App Need?** (~3 min) — bridge: problems that lead to building blocks
 - **Infrastructure Building Blocks** (~10 min) — databases, storage, queues, caches, observability
-- **Defining Serverless + FaaS** (~8 min) — includes Lambda code examples with S3 triggers and Upstash
+- **Defining Serverless + FaaS** (~8 min) — includes Lambda code examples with S3 triggers and KV stores
 - **Architecture Comparison** (~8 min) — universal examples: image upload, email, video
-- **Requirements Fit** — good fit vs poor fit (~10 min)
+- **Requirements Fit** — good fit vs poor fit (~3 min)
 - **Connection to Course Concepts** (~5 min)
 - **Decision Framework** (~8 min)
 - Bringing It Together + L22 Preview (~5 min)
@@ -166,15 +166,154 @@ After this lecture, you will be able to:
 </Slide>
 
 {/* ============================================ */}
-{/* FOUNDATIONAL: YOUR CODE LIVES SOMEWHERE */}
+{/* WARM-UP: A SIMPLE FEATURE */}
 {/* ============================================ */}
 
 <Slide>
 
-## Your Code Lives Somewhere
+## Warm-Up: A Simple Feature
 
 <p style={{fontSize: '0.82em'}}>
-When you run code in IntelliJ, it executes on <strong>your laptop</strong>. But when you visit a website like Canvas or GitHub, that code is running on <strong>someone else's computer</strong> — somewhere in the world, right now, waiting for your request.
+You're building an app that lets users upload photos. You need a feature: <strong>resize images to create thumbnails</strong>. The core logic is straightforward — we will use an image processing library.
+</p>
+
+<div style={{fontSize: '0.5em', marginTop: '0.5em'}}>
+
+```java
+public class ImageUtils {
+    public static byte[] resize(byte[] imageData, int width, int height) {
+        BufferedImage original = ImageIO.read(new ByteArrayInputStream(imageData));
+        BufferedImage thumbnail = new BufferedImage(width, height, original.getType());
+        
+        Graphics2D g = thumbnail.createGraphics();
+        g.drawImage(original, 0, 0, width, height, null);
+        g.dispose();
+        
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ImageIO.write(thumbnail, "jpg", out);
+        return out.toByteArray();
+    }
+}
+```
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.75em', marginTop: '0.5em', color: '#4CAF50'}}>
+<strong>This is the easy part.</strong> ~15 lines of code. You could write this in an hour.
+</p>
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.75em', marginTop: '0.3em', color: '#f44336'}}>
+<strong>But how do users actually send you an image?</strong> This code runs on your laptop. Your users are... not on your laptop.
+</p>
+</div>
+
+<aside className="notes">
+**Start with something concrete:**
+- "Let's say you're building an app — Instagram clone, e-commerce site, whatever"
+- "Users upload photos. You need thumbnails."
+- "The image processing itself? Not that hard."
+
+**Walk through the code:**
+- Read image bytes into a BufferedImage
+- Create a new smaller image
+- Draw the original into the smaller canvas
+- Write it back to bytes
+
+**The twist:**
+- "This code works great... on your laptop"
+- "But your users aren't on your laptop"
+- "How do they send you an image to resize?"
+
+→ **Transition:** You need to expose this as a service...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Now Make It a Service
+
+<p style={{fontSize: '0.78em'}}>
+For users to access your image resizer, you need an <strong>HTTP server</strong> that listens for requests. Now look how much code you need:
+</p>
+
+<div style={{fontSize: '0.36em', marginTop: '0.3em'}}>
+
+```java
+public class ImageResizeServer {
+    private static final int PORT = 8080;
+    private static volatile boolean running = true;
+
+    public static void main(String[] args) throws Exception {
+        // YOU set up the server
+        HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
+        server.createContext("/resize", exchange -> {
+            byte[] imageData = parseMultipartUpload(exchange);  // Parsing uploads is painful
+            byte[] thumbnail = ImageUtils.resize(imageData, 200, 200);  // ← Your actual logic
+            exchange.sendResponseHeaders(200, thumbnail.length);
+            exchange.getResponseBody().write(thumbnail);
+            exchange.close();
+        });
+        server.createContext("/health", ex -> {  // Load balancers need this
+            ex.sendResponseHeaders(200, 2);
+            ex.getResponseBody().write("OK".getBytes());
+            ex.close();
+        });
+
+        // YOU handle graceful shutdown
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            running = false;
+            server.stop(5);
+        }));
+
+        server.start();
+        System.out.println("Server running on port " + PORT);
+        while (running) { Thread.sleep(1000); }  // Runs FOREVER until killed
+    }
+}
+```
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.65em', marginTop: '0.3em', color: '#FF9800'}}>
+Your <strong>15 lines of business logic</strong> are now buried in <strong>30+ lines of server boilerplate</strong>. And we haven't even talked about where this server runs...
+</p>
+</div>
+
+<aside className="notes">
+**Walk through what got added:**
+- main() method: YOU start the server
+- Port binding: pick 8080, hope nothing else uses it
+- Health check endpoint: load balancers ping this to know you're alive
+- Shutdown hook: stop gracefully so in-flight requests complete
+- while(running) loop: keep the JVM alive forever
+
+**What we're NOT showing (even more work):**
+- Multipart form parsing (notoriously painful)
+- SSL/TLS certificate configuration
+- Request logging and metrics
+- Rate limiting
+- Error handling
+
+**The key observation:**
+- "Your actual business logic? One line: ImageUtils.resize()"
+- "Everything else is ceremony to make it accessible"
+
+→ **Transition:** And this server needs to run somewhere...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Where Does This Server Run?
+
+<p style={{fontSize: '0.78em'}}>
+You can run <code>java ImageResizeServer</code> on your laptop. But your laptop sleeps when you sleep. <strong>Your users are in different time zones.</strong>
 </p>
 
 <Img
@@ -223,33 +362,31 @@ Color scheme: Warm purples and dark blues for the peaceful left side. Harsh teal
 />
 
 <aside className="notes">
-**Start with what they know:**
-- "You've been writing Java code all semester. Where does it run?"
-- "On your laptop. Your machine. Under your desk."
-- "When you close your laptop, the code stops. That's fine for homework."
+**The laptop limitation:**
+- "You can demo this on your laptop"
+- "But production? Your laptop closes. You sleep. You go to class."
+- "Someone in Tokyo wants to resize an image at 3 AM Boston time"
 
-**Bridge to the question:**
-- "But think about Canvas, or GitHub, or Spotify..."
-- "When you close YOUR laptop, those sites keep working"
-- "Someone in Tokyo can use GitHub while you sleep"
-- "That code is running SOMEWHERE — but where?"
+**The 24/7 reality:**
+- "Real services run on computers that NEVER sleep"
+- "Those computers need to be reachable from anywhere"
+- "This is fundamentally different from running code locally"
 
-**The insight:**
-- "Web applications run on computers that are ALWAYS ON"
-- "Those computers need to be reachable from anywhere in the world"
-- "This is the fundamental problem we're solving today"
+**The question:**
+- "So where do you PUT this server?"
+- "What does it take to run code 24/7?"
 
-→ **Transition:** So what does it take to keep code running 24/7?
+→ **Transition:** Let's trace what's actually needed...
 </aside>
 
 </Slide>
 
 <Slide>
 
-## What Does It Take to Run Code 24/7?
+## The Infrastructure Iceberg
 
 <p style={{fontSize: '0.78em'}}>
-Running code that serves users around the clock requires more than just a computer. Let's trace what's actually needed — this is what we call <strong>infrastructure</strong>.
+Your <code>ImageResizeServer</code> needs to run somewhere. Running code that serves users around the clock requires far more than just "a computer." This is what we call <strong>infrastructure</strong>.
 </p>
 
 <Img
@@ -339,11 +476,12 @@ TAGLINE at bottom: 'Your app is just the tip of the iceberg.'"
 **Your app (finally!):**
 - "All that infrastructure... just so YOUR code can run"
 - "The iceberg visual: your code is the tiny visible tip"
+- "Your ImageResizeServer with its 15 lines of business logic... sits on top of ALL of this"
 
 **Key insight:**
 - "Infrastructure = everything beneath your code"
 - "Someone has to manage ALL of these layers"
-- "The question is: who?"
+- "The question is: who manages this for your image resize service?"
 
 → **Transition:** You have two choices for who manages this...
 </aside>
@@ -491,11 +629,6 @@ Today's key insight: Serverless doesn't eliminate distributed systems complexity
 - All eight fallacies still apply to YOUR code
 - The vendor handles retry logic, scaling, availability — but you pay for that in other ways
 
-**Conway's Law preview:**
-- Serverless is technical partitioning taken to the organizational level
-- The vendor specializes in infrastructure; you specialize in your domain
-- This is the same principle as L19's "technical vs. domain partitioning" — but across company boundaries
-
 → **Transition:** The "own vs. rent" choice isn't binary — it's a spectrum. Let's map it out...
 </aside>
 
@@ -570,6 +703,12 @@ Color scheme: Orange (#FF9800) for developer responsibility, Teal (#4A90A4) for 
   alt="A horizontal spectrum of seven cloud deployment models. Each station shows an 8-layer stack (Facility, Power, Network, Hardware, Virtualization, OS, Runtime, App) with orange layers (you manage) and teal layers (provider manages). LEFT: Own Data Center has all orange layers, sweating developer. Moving RIGHT: progressively more teal layers. RIGHT: FaaS has almost all teal, with developer relaxing on a cloud-shaped hammock holding only a tiny fn() function. Legend shows orange=you, teal=provider."
 />
 
+<div className="fragment">
+<p style={{fontSize: '0.65em', marginTop: '0.4em', fontStyle: 'italic', color: '#666'}}>
+<strong>Not shown:</strong> SaaS (Software as a Service) — even further right. For image resizing, you could outsource entirely to a vendor: call their API, pay per transformation, write zero image code. Maximum convenience, zero customization.
+</p>
+</div>
+
 <aside className="notes">
 **Connect to the iceberg:**
 - "Remember the iceberg? All those layers beneath your code?"
@@ -595,10 +734,19 @@ Color scheme: Orange (#FF9800) for developer responsibility, Teal (#4A90A4) for 
 - Almost the entire iceberg is managed FOR you
 - Pawtograder lives here (Supabase Edge Functions)
 
+**Not shown: SaaS (the extreme right):**
+- "There's actually one more step we didn't show"
+- SaaS = you don't even write code, you just USE someone else's service
+- Image resize example: Cloudinary, imgix, Cloudflare Images
+- You call their API: "resize this image to 200x200" — done
+- You pay per transformation, they handle everything
+- Trade-off: maximum convenience, but zero customization
+
 **The key insight:**
 - "Serverless" isn't one thing — it's the rightmost portion of this spectrum
 - The vendor handles more of the iceberg; you handle less
 - But you're not getting something for nothing — you pay in flexibility, vendor lock-in, and sometimes cost at scale
+- SaaS is even further right: you don't write ANY code, but you're locked into their exact feature set
 
 **Connect to L20:**
 - "Remember the eight fallacies? They apply at EVERY level except 'own data center'"
@@ -891,7 +1039,7 @@ SET session:abc123 {...}
 
 <div className="fragment">
 <p style={{fontSize: '0.68em', marginTop: '0.5em', color: '#4CAF50'}}>
-<strong>Pawtograder:</strong> Uses PostgreSQL (via Supabase) — we need queries like "find all submissions by this student across all assignments" and "calculate average scores grouped by section." Relational databases shine here.
+<strong>Pawtograder:</strong> Uses PostgreSQL — we need queries like "find all submissions by this student across all assignments" and "calculate average scores grouped by section." Relational databases shine here. Uses Key-Value store for rate limiting requests to GitHub.
 </p>
 </div>
 
@@ -929,13 +1077,13 @@ SET session:abc123 {...}
 %%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px' }}}%%
 flowchart LR
     subgraph Upload["Upload Flow"]
-        I[Instructor] -->|uploads| G[Grader Tarball<br/>5MB archive]
-        G -->|stored in| S[(Supabase Storage)]
+        I[Instructor] -->|uploads| G[Test Files<br/>5MB]
+        G -->|stored in| S[(Cloud Storage)]
     end
 
     subgraph Download["Grading Flow"]
-        S -->|signed URL| A[Grading Action]
-        A -->|downloads| L[Local Cache]
+        S -->|download link| A[Grading System]
+        A -->|downloads| L[Local Copy]
     end
 ```
 
@@ -970,7 +1118,7 @@ flowchart LR
 
 <div className="fragment">
 <p style={{fontSize: '0.68em', marginTop: '0.4em', color: '#FF9800'}}>
-<strong>Pawtograder:</strong> Grader tarballs (test code, build config) can be several MB. They go to Supabase Storage; Grading Actions download via signed URLs. You wouldn't put a 5MB tarball in a database column.
+<strong>Pawtograder:</strong> Test files for grading can be several MB. They go to cloud storage; the grading system downloads them when needed. You wouldn't put a 5MB file in a database column.
 </p>
 </div>
 
@@ -978,13 +1126,13 @@ flowchart LR
 **Why not just use the database?**
 - Databases are expensive per GB — object storage is pennies
 - Databases are optimized for queries, not serving large files
-- A 5MB grader tarball doesn't need SQL queries — just "give me this file"
+- A 5MB test file doesn't need SQL queries — just "give me this file"
 
-**Signed URLs:**
-- Object storage can generate time-limited URLs
-- "This URL works for 1 hour, then expires"
-- Security without complex auth — the URL IS the credential
-- Pawtograder generates signed URLs for grading actions to download tarballs
+**Signed URLs (time-limited download links):**
+- Object storage can generate URLs that expire after a set time
+- "This link works for 1 hour, then stops working"
+- Security without complex auth — knowing the URL IS the permission
+- Pawtograder generates these links so the grading system can download test files
 
 **The architectural pattern:**
 - Store metadata (file name, size, owner) in the database
@@ -1009,16 +1157,16 @@ A <strong>message queue</strong> lets components communicate without being onlin
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px' }}}%%
 flowchart LR
-    subgraph Producer["Producer (Web Server)"]
-        P[Student submits]
+    subgraph Producer["Producer (GitHub)"]
+        P[Student pushes code]
     end
 
     subgraph Queue["Message Queue"]
         Q[(Messages wait here<br/>until processed)]
     end
 
-    subgraph Consumer["Consumer (Worker)"]
-        C[Grading worker]
+    subgraph Consumer["Consumer (GitHub Actions)"]
+        C[Grading workflow]
     end
 
     P -->|"enqueue job"| Q
@@ -1035,17 +1183,17 @@ flowchart LR
 
 <div style={{padding: '0.5em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
 
-**Bottlenose + Orca**
+**Pawtograder: Grading**
 
-Student submits → web server enqueues grading job → Orca worker picks it up.
+Student pushes to GitHub → GitHub enqueues an Actions workflow → grading runs when a runner is available.
 
-Student sees "grading in progress" immediately. If Orca crashes, the message returns to the queue — no submissions lost.
+Student sees "grading started" immediately. If the runner crashes, GitHub re-queues the job — no submissions lost.
 
 </div>
 
 <div style={{padding: '0.5em', border: '2px solid #9370DB', borderRadius: '8px'}}>
 
-**Pawtograder + pgmq**
+**Pawtograder: Repo Creation**
 
 Creating repos for 200 students → enqueue "create repo" tasks → background process works through at GitHub's rate limit (60/min).
 
@@ -1072,7 +1220,13 @@ Instructor sees immediate confirmation; repos appear over minutes.
 - You can't hold work "in memory" waiting
 - Queues provide durable storage for pending work
 
-**The Pawtograder example:**
+**The grading example:**
+- Student pushes code to GitHub
+- GitHub Actions has a queue of pending workflow runs
+- When a runner is free, it picks up the next job
+- If runner crashes mid-job, GitHub re-queues it automatically
+
+**The repo creation example:**
 - GitHub rate limits: 60 API calls/minute
 - 200 students × 1 repo each = 200 calls needed
 - Without queue: fail at student 61, lose progress
@@ -1080,7 +1234,7 @@ Instructor sees immediate confirmation; repos appear over minutes.
 
 **Examples:**
 - AWS SQS, Google Pub/Sub, RabbitMQ, Apache Kafka
-- pgmq: PostgreSQL extension — queue semantics in your existing database
+- GitHub Actions itself uses queues internally!
 
 → **Transition:** What about speeding up repeated access?
 </aside>
@@ -1149,7 +1303,7 @@ flowchart LR
 - If content changes, SHA changes, cache automatically invalidates
 - This is how Docker image layers work, how Git stores objects
 
-**Why Pawtograder uses Upstash (hosted Redis):**
+**Why Pawtograder uses a KV store (hosted Redis):**
 - Edge Functions are stateless — can't maintain in-memory counters
 - Need external state for rate limiting
 - Redis is perfect: fast reads/writes, automatic expiration
@@ -1237,6 +1391,121 @@ Serverless functions are ephemeral — they spin up, execute, and disappear. You
 - Datadog: full observability (logs, metrics, traces, dashboards)
 - CloudWatch: AWS's built-in, basic but functional
 
+→ **Transition:** You've used logging before — let's see how it changes in serverless...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## The Request ID: Finding Your Logs in the Chaos
+
+<p style={{fontSize: '0.78em'}}>
+You've used SLF4J — a <strong>facade</strong> that lets you write <code>logger.info()</code> without knowing where logs go. Serverless platforms tag every log line with a <strong>Request ID</strong>. This seems minor until you see the alternative.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.44em', marginTop: '0.5em'}}>
+
+<div style={{padding: '0.5em', border: '2px solid #f44336', borderRadius: '8px'}}>
+
+**Without Request IDs: Interleaved chaos**
+
+```text
+[INFO] Processing submission for alice
+[INFO] Processing submission for bob
+[INFO] Running tests...
+[INFO] Processing submission for carol
+[ERROR] Test failed: NullPointerException
+[INFO] Running tests...
+[INFO] Completed in 847ms
+[INFO] Running tests...
+[ERROR] Timeout after 30s
+[INFO] Completed in 234ms
+```
+
+*Which error belongs to which student? Good luck.*
+
+</div>
+
+<div style={{padding: '0.5em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+
+**With Request IDs: Filter by one request**
+
+```text
+Filter: RequestId = "3f1e..."
+
+START RequestId: 3f1e...
+[INFO] 3f1e Processing submission for bob  
+[INFO] 3f1e Running tests...
+[ERROR] 3f1e Test failed: NullPointerException
+END RequestId: 3f1e...
+REPORT Duration: 892ms Status: 500
+```
+
+*One student's entire request, start to finish.*
+
+</div>
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.65em', marginTop: '0.5em', color: '#4CAF50'}}>
+<strong>Key insight:</strong> When 100 students submit at once, you get 100 concurrent function instances writing to the same log stream. The Request ID is how you untangle them. The platform adds it automatically — you just filter by it when debugging.
+</p>
+</div>
+
+<div className="fragment">
+<div style={{fontSize: '0.52em', marginTop: '0.4em', padding: '0.4em', backgroundColor: '#f5f5f5', borderRadius: '8px'}}>
+
+**Beyond filtering:** Error collection services (Sentry, Datadog) also provide **alerting** (Slack when errors spike), **error grouping** (100 identical stack traces → 1 issue), **dashboards** (error rate over time), and **distributed tracing** (follow a request across multiple services).
+
+</div>
+</div>
+
+<aside className="notes">
+**The problem with concurrent logs:**
+- "Imagine 100 students submit at the deadline"
+- "100 function instances start running simultaneously"
+- "All of them write to the same log stream"
+- "Without Request IDs, the logs are interleaved — completely unreadable"
+
+**Show the left side first:**
+- "Look at this mess. Which NullPointerException goes with which student?"
+- "Which 'Completed' message matches which 'Processing' message?"
+- "This is what logs look like without correlation IDs"
+
+**The platform solution:**
+- Every log line is tagged with the Request ID
+- When debugging: filter by that ID
+- You see ONLY the logs from that one invocation
+- Start, your logs, end, report — all together
+
+**The facade pattern still applies:**
+- Your code still just calls logger.info()
+- Platform injects the Request ID automatically
+- Different platforms (AWS, Google, Azure) all do this
+- SLF4J with Logback → SLF4J with LambdaLogger — code doesn't change
+
+**Pawtograder example:**
+- Student says "my submission failed"
+- Find the Request ID from the error notification
+- Filter CloudWatch: see exactly what happened to THEIR request
+- No need to scroll through thousands of interleaved log lines
+
+**Beyond basic logging — what observability services provide:**
+- **Alerting:** "Send a Slack message if error rate exceeds 5%"
+- **Error grouping:** 100 students hit the same bug → shows as 1 issue with count
+- **Stack traces:** Full stack trace with source code context
+- **Dashboards:** Visualize error rates, latency percentiles over time
+- **Distributed tracing:** Follow one request across API → Database → External service
+- **Anomaly detection:** "Error rate is 10x higher than usual"
+
+**Services to know:**
+- Sentry: Error tracking, great for catching exceptions with context
+- Datadog: Full observability platform (logs, metrics, traces, APM)
+- AWS CloudWatch: Built-in, basic but functional
+- Grafana + Loki: Open-source alternative
+
 → **Transition:** With this vocabulary, let's define what "serverless" actually means...
 </aside>
 
@@ -1269,13 +1538,13 @@ Serverless takes technical partitioning to the **organizational level**: a cloud
 
 <div style={{padding: '0.75em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
 
-**Conway's Law in Action**
+**Specialization Through Outsourcing**
 
-The vendor's org specializes in infrastructure — container orchestration, auto-scaling, security patching.
+The vendor specializes in infrastructure — container orchestration, auto-scaling, security patching.
 
-Your org specializes in your domain — courses, assignments, grading.
+You specialize in your domain — courses, assignments, grading.
 
-The system boundary (your functions ↔ their infra) mirrors the organizational boundary.
+Each side focuses on what they do best.
 
 </div>
 
@@ -1291,11 +1560,7 @@ You gain operational simplicity and elasticity. You lose control: vendor abstrac
 **The "technical partitioning with a vendor" framing:**
 - This connects directly to L19's discussion of partitioning
 - In L19: do you organize CODE by technical role or domain?
-- In serverless: you partition ORGANIZATIONS — vendor handles infra, you handle domain
-
-**Conway's Law:**
-- "Organizations produce systems that mirror their communication structures"
-- You and the vendor are separate orgs with a well-defined interface
+- In serverless: you outsource the technical layers to a vendor who specializes in them
 - The vendor serves thousands of clients → economies of scale you can't achieve alone
 
 **The tradeoffs are real:**
@@ -1485,78 +1750,53 @@ public class CreateSubmissionHandler
 
 <Slide>
 
-## Traditional Server: Image Resize
+## Traditional Server: Image Resize (Revisited)
 
 <p style={{fontSize: '0.78em'}}>
-With a traditional server, YOU manage the infrastructure. Here's what image resizing looks like with a simple HTTP server:
+Remember our warm-up? With a traditional server, YOU manage the infrastructure. Let's summarize what that <code>ImageResizeServer</code> requires:
 </p>
 
-<div style={{fontSize: '0.38em', marginTop: '0.2em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.55em', marginTop: '0.5em'}}>
 
-```java
-public class ImageResizeServer {
-    private static final int PORT = 8080;
-    private static volatile boolean running = true;
-    
-    public static void main(String[] args) throws Exception {
-        // YOU set up the server
-        HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
-        server.createContext("/resize", new ResizeHandler());
-        server.createContext("/health", ex -> {  // Health check for load balancer
-            ex.sendResponseHeaders(200, 2);
-            ex.getResponseBody().write("OK".getBytes());
-            ex.close();
-        });
-        
-        // YOU handle graceful shutdown
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            running = false;
-            server.stop(5);  // 5 second grace period
-        }));
-        
-        server.start();
-        System.out.println("Server running on port " + PORT);  // Runs FOREVER until killed
-        
-        while (running) { Thread.sleep(1000); }  // Keep main thread alive
-    }
-    
-    static class ResizeHandler implements HttpHandler {
-        public void handle(HttpExchange exchange) throws IOException {
-            // Parse multipart form data (not shown — it's complicated)
-            byte[] imageData = parseMultipartUpload(exchange);
-            byte[] thumbnail = ImageUtils.resize(imageData, 200, 200);
-            
-            exchange.sendResponseHeaders(200, thumbnail.length);
-            exchange.getResponseBody().write(thumbnail);
-            exchange.close();
-        }
-    }
-}
-```
+<div style={{padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px'}}>
+
+**Your code responsibilities:**
+
+- `main()` method to start the server
+- Port binding and configuration
+- Health check endpoints for load balancers
+- Graceful shutdown handling
+- Multipart form parsing
+- Error handling and logging
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #f44336', borderRadius: '8px'}}>
+
+**Infrastructure responsibilities:**
+
+- Server runs 24/7 (even at 3 AM with zero requests)
+- YOU restart it when it crashes
+- YOU scale horizontally (more instances)
+- YOU configure load balancing
+- YOU handle SSL certificates
+- YOU pay for idle time
+
+</div>
 
 </div>
 
 <div className="fragment">
-<p style={{fontSize: '0.6em', marginTop: '0.2em', color: '#f44336'}}>
-<strong>What YOU manage:</strong> Server setup, port binding, health checks, graceful shutdown, process lifecycle, scaling (run more instances), load balancing, SSL termination... <em>and the server runs 24/7 even when nobody's uploading.</em>
+<p style={{fontSize: '0.68em', marginTop: '0.5em', color: '#FF9800'}}>
+<strong>The 15 lines of image resize logic</strong> are buried under all this operational work. What if you could just write the resize function and let someone else handle the rest?
 </p>
 </div>
 
 <aside className="notes">
-**Walk through the boilerplate:**
-- main() method: YOU start the server
-- Port binding: YOU pick 8080, configure firewall
-- Health check endpoint: load balancers need this to know you're alive
-- Shutdown hook: graceful termination so in-flight requests complete
-- while(running) loop: keep the JVM alive
-
-**What's NOT shown (even more work):**
-- SSL/TLS configuration
-- Multipart form parsing (notoriously painful in Java)
-- Rate limiting
-- Request logging
-- Metrics collection
-- Horizontal scaling (run multiple instances, load balance)
+**Reference back to warm-up:**
+- "Remember at the start — we had 15 lines of actual business logic"
+- "Then 30+ lines of server boilerplate"
+- "Then the whole infrastructure iceberg beneath it"
 
 **The economic reality:**
 - This server runs 24/7
@@ -1647,10 +1887,10 @@ public class ImageResizeHandler implements RequestHandler<S3Event, String> {
 
 <Slide>
 
-## Lambda + Upstash: Rate Limiting with External State
+## Lambda + KV Store: Rate Limiting with External State
 
 <p style={{fontSize: '0.78em'}}>
-Serverless functions are <strong>stateless</strong> — they can't remember anything between invocations. For state like rate limits, you need an external store. <strong>Upstash</strong> provides serverless Redis.
+Serverless functions are <strong>stateless</strong> — they can't remember anything between invocations. For state like rate limits, you need an external store. Remember the <strong>Key-Value stores</strong> from our building blocks? This is exactly what they're for.
 </p>
 
 <div style={{fontSize: '0.44em', marginTop: '0.3em'}}>
@@ -1659,9 +1899,9 @@ Serverless functions are <strong>stateless</strong> — they can't remember anyt
 // Rate limit API requests: max 100 requests per minute per user
 public class RateLimitedApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
-    // Upstash Redis client — connects over HTTPS, no persistent connection needed
-    private final JedisPooled redis = new JedisPooled("https://your-upstash-url.upstash.io", 6379,
-        new JedisClientConfig().password("your-upstash-token"));
+    // Redis KV store client — connects over HTTPS, no persistent connection needed
+    private final JedisPooled redis = new JedisPooled("https://your-redis-url.example.io", 6379,
+        new JedisClientConfig().password("your-redis-token"));
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request, Context ctx) {
@@ -1695,7 +1935,7 @@ public class RateLimitedApiHandler implements RequestHandler<APIGatewayProxyRequ
 
 <div className="fragment">
 <p style={{fontSize: '0.62em', marginTop: '0.2em', color: '#FF9800'}}>
-<strong>Why Upstash?</strong> Traditional Redis needs a persistent connection. Upstash is HTTP-based — perfect for serverless where connections are expensive and functions are ephemeral.
+<strong>Why a managed KV store?</strong> Traditional Redis needs a persistent connection. Serverless-friendly KV stores (Upstash, AWS ElastiCache, etc.) are HTTP-based — perfect for serverless where connections are expensive and functions are ephemeral.
 </p>
 </div>
 
@@ -1705,11 +1945,11 @@ public class RateLimitedApiHandler implements RequestHandler<APIGatewayProxyRequ
 - Can't store "user X has made 47 requests" in memory — memory is gone
 - Need external state store
 
-**Why Redis / Upstash:**
+**Why Redis / KV stores:**
 - Redis: in-memory key-value store, extremely fast
 - INCR: atomic increment — no race conditions even with concurrent requests
 - EXPIRE: key automatically deletes after 60 seconds — rate limit window resets
-- Upstash: serverless Redis — HTTP API, pay per request, no connection management
+- Managed KV stores (Upstash, ElastiCache): HTTP API, pay per request, no connection management
 
 **The pattern:**
 - Key: "ratelimit:user123"
@@ -1724,7 +1964,7 @@ public class RateLimitedApiHandler implements RequestHandler<APIGatewayProxyRequ
 - Distributed locks
 
 **Cost model:**
-- Upstash: ~$0.20 per 100K commands
+- Managed KV stores: ~$0.20 per 100K commands
 - For rate limiting: 1 INCR + maybe 1 EXPIRE per request
 - Very cheap even at scale
 
@@ -1748,11 +1988,11 @@ Serverless functions are triggered by <strong>events</strong> — not just HTTP 
 CONCEPT: 'Events Trigger Functions' — showing multiple event sources converging on serverless functions that scale automatically.
 
 TOP ROW — FOUR EVENT SOURCES (left to right):
-1. HTTP REQUEST: A lightning bolt icon hitting an API gateway box. Label: 'HTTP Request'. Example: 'createSubmission()'. Purple (#9370DB) accent.
+1. HTTP REQUEST: A lightning bolt icon hitting an API gateway box. Label: 'HTTP Request'. Example: 'POST /submissions'. Purple (#9370DB) accent.
 
-2. FILE UPLOAD: A document/file icon dropping into a storage bucket. Label: 'File Upload'. Example: 'Process grader tarball'. Teal (#4A90A4) accent.
+2. FILE UPLOAD: A document/file icon dropping into a storage bucket. Label: 'File Upload'. Example: 'Test files uploaded'. Teal (#4A90A4) accent.
 
-3. DATABASE CHANGE: A database cylinder with a glowing 'change' indicator (delta symbol or sparkle). Label: 'Database Change'. Example: 'Sync to analytics'. Orange (#FF9800) accent.
+3. DATABASE CHANGE: A database cylinder with a glowing 'change' indicator (delta symbol or sparkle). Label: 'Database Change'. Example: 'New submission → notify'. Orange (#FF9800) accent.
 
 4. SCHEDULE: A clock/timer icon with cron notation. Label: 'Schedule'. Example: 'Nightly grade export'. Green (#4CAF50) accent.
 
@@ -1774,7 +2014,7 @@ VISUAL STYLE:
 - Modern, professional educational illustration
 
 Color scheme: Purple, teal, orange, green accents on white/light background."
-  alt="Four event sources (HTTP Request, File Upload, Database Change, Schedule) shown as distinct icons at top, with arrows converging on a central serverless function. Multiple copies of the function appear (illustrating auto-scaling) with callout: Scales automatically — 100 events = 100 instances. Functions connect to downstream services (database, storage, APIs)."
+  alt="Four event sources (HTTP Request like POST /submissions, File Upload like test files, Database Change like new submission triggers, Schedule like nightly exports) shown as distinct icons at top, with arrows converging on a central serverless function. Multiple copies of the function appear (illustrating auto-scaling). Functions connect to downstream services."
 />
 
 <aside className="notes">
@@ -1791,7 +2031,8 @@ Color scheme: Purple, teal, orange, green accents on white/light background."
 - Message queue: "when a message arrives, process it"
 
 **Pawtograder examples:**
-- HTTP: createSubmission, submitFeedback
+- HTTP: POST /submissions (student submits work), POST /feedback (grader reports results)
+- File upload: Test files for assignments stored in cloud storage
 - Schedule: could use for nightly grade exports (not currently implemented)
 - Database triggers: handled by PostgreSQL itself, not Edge Functions
 
@@ -1800,217 +2041,14 @@ Color scheme: Purple, teal, orange, green accents on white/light background."
 - You don't configure this — it just happens
 - This is the "elastic" in "elastic computing"
 
-→ **Transition:** Let's see how this compares to traditional architectures...
+→ **Transition:** There are also some broader considerations worth discussing...
 </aside>
 
 </Slide>
 
 {/* ============================================ */}
-{/* ARCHITECTURE COMPARISON */}
+{/* BROADER CONSIDERATIONS */}
 {/* ============================================ */}
-
-<Slide>
-
-## The Same Problem, Three Architectures
-
-<p style={{fontSize: '0.78em'}}>
-These patterns appear everywhere. Here's how three common problems get solved differently depending on your architectural approach.
-</p>
-
-<Img
-  src="/img/lectures/web/l21-three-problems2.webp"
-  prompt="An educational illustration in a clean, modern flat-art style (NOT pixel art). No title text.
-
-CONCEPT: 'Same Problems, Different Architectures' — A 3x3 grid showing three common problems (rows) solved with three different architectures (columns).
-
-LAYOUT: 3 columns (Monolith, Containers, Serverless) × 3 rows (Image Upload, Welcome Email, Video Processing)
-
-COLUMN HEADERS (top):
-- MONOLITH (purple #9370DB) — heavy building icon
-- CONTAINERS (teal #4A90A4) — shipping container icon
-- SERVERLESS (orange #FF9800) — cloud with lightning bolt icon
-
-ROW 1 — IMAGE UPLOAD (when user uploads a profile picture):
-
-MONOLITH cell:
-- User uploads → Server resizes inline → User waits
-- Visual: A user icon with an hourglass/spinner, waiting
-- Small label: 'User waits while resizing'
-- Sad/bored user face
-
-CONTAINERS cell:
-- User uploads → Job queued → Worker resizes → Done
-- Visual: Upload goes into a pipe/queue, separate worker box processes
-- Small label: 'Queue decouples upload from processing'
-- User gets immediate response, work happens in background
-
-SERVERLESS cell:
-- File lands in bucket → Lambda auto-triggers → Resized
-- Visual: File dropping into a bucket, lightning bolt triggers a small function pod
-- Small label: 'Storage event triggers function'
-- No server running until needed
-
-ROW 2 — WELCOME EMAIL (when new user signs up):
-
-MONOLITH cell:
-- Signup handler calls email service inline
-- Visual: Single box doing signup AND sending email
-- Small label: 'If email fails, signup might fail'
-
-CONTAINERS cell:
-- Signup enqueues 'send email' job → Email worker sends
-- Visual: Signup service puts message in queue, email service picks it up
-- Small label: 'Email failure doesnt affect signup'
-
-SERVERLESS cell:
-- New row in users table → Database trigger → Lambda sends email
-- Visual: Database with a sparkle/trigger icon, arrow to small function
-- Small label: 'Database event triggers function'
-
-ROW 3 — VIDEO PROCESSING (when creator uploads a video):
-
-MONOLITH cell:
-- Upload blocks while encoding all formats
-- Visual: User waiting a LONG time (multiple hourglasses)
-- Small label: 'Hope you have time...'
-- Very sad user
-
-CONTAINERS cell:
-- Upload queues encoding jobs → Specialized workers process
-- Visual: Multiple worker containers processing in parallel
-- Small label: 'Scale workers independently'
-
-SERVERLESS cell:
-- Upload triggers encoding pipeline → Functions process chunks
-- Visual: File triggers multiple parallel function pods
-- Small label: 'Massive parallelism, pay per second'
-
-VISUAL STYLE:
-- Each cell is a small vignette showing the flow
-- Consistent icons across rows (user, queue, function pod, database)
-- Color-coded by column (purple/teal/orange)
-- Simple arrows showing data flow
-- Keep it scannable — not too much detail per cell
-
-BOTTOM INSIGHT:
-'Same problem. Same result. Different operational tradeoffs.'
-
-Color scheme: Purple (#9370DB) for monolith column, Teal (#4A90A4) for containers column, Orange (#FF9800) for serverless column."
-  alt="A 3x3 grid comparing three architectures across three problems. ROWS: Image Upload, Welcome Email, Video Processing. COLUMNS: Monolith (user waits, inline processing), Containers (queue decouples, workers process), Serverless (events trigger functions). Each cell shows a small visual of the data flow. Bottom text: Same problem. Same result. Different operational tradeoffs."
-/>
-
-<aside className="notes">
-**Walk through each row:**
-
-**Image Upload (profile pictures):**
-- Monolith: User uploads, server resizes inline, user waits 2-3 seconds
-- Containers: Upload returns immediately, resize job queued, worker processes
-- Serverless: File lands in S3/storage bucket, triggers Lambda, auto-resizes
-- The RESULT is the same — user gets a resized image. The EXPERIENCE and OPERATIONS differ.
-
-**Welcome Email:**
-- Monolith: If email service is slow or down, signup might timeout or fail
-- Containers: Signup succeeds immediately, email job queued, sent async
-- Serverless: Database trigger on new user row fires function — signup code doesnt even know about emails
-- Serverless shows 'reactive' architecture — respond to events, not orchestrate
-
-**Video Processing:**
-- This is where architecture differences REALLY matter
-- Monolith: Encoding takes minutes/hours — you cant block the user
-- Containers: Queue jobs, scale encoding workers horizontally
-- Serverless: Massive parallelism — split video into chunks, process in parallel, pay only for compute time
-- YouTube, TikTok, etc. all use event-driven pipelines for this
-
-**Key insight:**
-- These are UNIVERSAL patterns — not specific to any company or domain
-- The choice depends on scale, team size, and operational capacity
-- 'Which is best?' → 'Best for WHAT requirements?'
-
-→ **Transition:** Let's quantify these tradeoffs...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Comparing the Tradeoffs
-
-<div style={{fontSize: '0.58em', marginTop: '0.5em'}}>
-
-| Aspect | Monolith | Containers | Serverless |
-|--------|:--------:|:------------:|:------------:|
-| **Scaling** | Manual | Configured | Automatic |
-| **Idle cost** | Full (runs 24/7) | Reduced (scale-to-zero possible) | Zero (pay per invocation) |
-| **Cold start** | None | Minimal | Noticeable (100ms-5s) |
-| **Complexity** | Low | High (orchestration) | Medium |
-| **Vendor lock-in** | Low | Low-Medium | High |
-| **State management** | Easy (in-memory) | Medium | Difficult (must externalize) |
-| **Long-running tasks** | Fine | Fine | Limited (timeouts) |
-
-</div>
-
-<div className="fragment">
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.55em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0.5em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
-
-**Serverless shines:** 1000 users upload profile pics at once → 1000 resize functions spin up automatically. Zero config. $0 at 3 AM when nobody's uploading.
-
-</div>
-
-<div style={{padding: '0.5em', border: '2px solid #f44336', borderRadius: '8px'}}>
-
-**Serverless struggles:** Video encoding takes 30 minutes → exceeds function timeout. Solution: use containers for long-running work, serverless for the trigger.
-
-</div>
-
-</div>
-</div>
-
-<aside className="notes">
-**Unpack each row:**
-
-**Scaling:**
-- Monolith: YOU decide when to add servers, manually provision
-- Containers: you configure rules ("scale up when queue > 10")
-- Serverless: just happens — you don't think about it (until the bill)
-
-**Idle cost:**
-- Monolith pays 24/7 whether anyone's using it or not
-- Containers CAN scale to zero but it's tricky to configure
-- Serverless truly pays $0 when idle — no invocations = no cost
-
-**Cold start:**
-- Monolith: always warm, instant response
-- Containers: warm if running, seconds to spin up if not
-- Serverless: 100ms-5s if function hasn't run recently
-- For background tasks (image resize), cold starts rarely matter
-- For interactive features, they can feel sluggish
-
-**Complexity:**
-- Monolith: one thing to deploy and debug
-- Containers + Kubernetes: notoriously complex orchestration
-- Serverless: medium — simpler ops, but debugging across functions is harder
-
-**Vendor lock-in:**
-- Monolith on a VM can move anywhere
-- Containers are portable (Docker runs everywhere)
-- Serverless often uses provider-specific APIs — migration = rewrites
-
-**State management:**
-- Monolith: hold state in memory, sessions, caches — easy
-- Containers: harder with scaling, need external state stores
-- Serverless: MUST externalize ALL state — functions are stateless by design
-
-**Long-running:**
-- Most serverless functions timeout at 15 min max
-- Video encoding can take hours
-- Solution: use containers for long-running work, serverless for triggers
-
-→ **Transition:** There's also an environmental angle...
-</aside>
-
-</Slide>
 
 <Slide>
 
@@ -2030,7 +2068,7 @@ Serverless architecture has interesting <strong>sustainability implications</str
 
 - **Shared infrastructure:** Cloud providers achieve high utilization across thousands of customers. 80% utilization > 10%.
 
-- **Right-sized execution:** Functions get exactly the resources needed, no over-provisioned VMs.
+- **Right-sized execution:** Functions get exactly the resources needed (modulo startup overhead).
 
 </div>
 
@@ -2112,8 +2150,8 @@ Four concrete examples with small illustrations:
 - Subtext: 'Fire-and-forget, async OK'
 
 3. BOTTOM-LEFT: 'API RATE LIMITING'
-- Small visual: API gateway with counter badge, connected to Redis/Upstash icon
-- Caption: 'External state in Upstash'
+- Small visual: API gateway with counter badge, connected to Redis/KV store icon
+- Caption: 'External state in KV store'
 - Subtext: 'Stateless function + external store'
 
 4. BOTTOM-RIGHT: 'SUBMISSIONS AT DEADLINE'
@@ -2156,7 +2194,7 @@ VISUAL STYLE:
 - Red side feels heavy, blocked, expensive
 
 Color scheme: Green (#4CAF50) for good fit, Red (#f44336) for poor fit, clean professional style."
-  alt="Split illustration showing serverless fit. LEFT (green): Image resize (S3 trigger), Welcome emails (database trigger), API rate limiting (Upstash), Profile uploads at deadline (bursty traffic). RIGHT (red): Video encoding (timeout), Multiplayer games (cold starts), In-memory cache (stateless problem), High-frequency trading (sustained load). Center shows the three key questions: scaling, latency, ops."
+  alt="Split illustration showing serverless fit. LEFT (green): Image resize (S3 trigger), Welcome emails (database trigger), API rate limiting (KV store), Profile uploads at deadline (bursty traffic). RIGHT (red): Video encoding (timeout), Multiplayer games (cold starts), In-memory cache (stateless problem), High-frequency trading (sustained load). Center shows the three key questions: scaling, latency, ops."
 />
 
 <aside className="notes">
@@ -2165,13 +2203,13 @@ Color scheme: Green (#4CAF50) for good fit, Red (#f44336) for poor fit, clean pr
 **GREEN SIDE — we built these!**
 - "Image resize: Remember the Lambda code? S3 event triggers function, no server running."
 - "Welcome emails: From our architecture comparison — database trigger fires function."
-- "Rate limiting: We used Upstash because functions are stateless — external store solves it."
+- "Rate limiting: We used a KV store because functions are stateless — external store solves it."
 - "Bursty traffic: 1000 profile uploads at deadline? 1000 Lambda instances. $0 at 3 AM."
 
 **RED SIDE — these need different solutions:**
 - "Video encoding: 30 minutes to transcode. Lambda times out at 15. Use containers."
 - "Multiplayer games: Cold start of 2 seconds = player dies waiting. Need always-warm."
-- "In-memory cache: Function memory disappears. That's WHY we used Upstash for rate limiting."
+- "In-memory cache: Function memory disappears. That's WHY we used a KV store for rate limiting."
 - "High-frequency trading: Sustained 1M requests/sec. Per-invocation pricing gets expensive fast."
 
 **The three questions in the center:**
@@ -2183,273 +2221,6 @@ Color scheme: Green (#4CAF50) for good fit, Red (#f44336) for poor fit, clean pr
 - "This isn't about 'serverless good' or 'serverless bad'"
 - "It's about matching the tool to the problem"
 - "Now you have concrete examples to pattern-match against"
-
-→ **Transition:** Let's look at the green side in more detail...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Good Fit for Serverless
-
-<p style={{fontSize: '0.78em'}}>
-Serverless shines for certain types of workloads. If your requirements match these patterns, serverless is worth considering.
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.55em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0.6em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
-
-**Event-driven, stateless operations**
-
-```java
-// Good: Register submission, return grader URL
-public Response handleRequest(Request req) {
-    OIDCClaims token = verifyOIDC(req.getAuth());
-    Submission sub = db.create(req.assignmentId());
-    return Response.ok(storage.getSignedUrl(...));
-}
-```
-
-No state between requests. Each call is independent.
-
-</div>
-
-<div style={{padding: '0.6em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
-
-**Variable or unpredictable workloads**
-
-Submission traffic spikes 100× near deadlines, then drops to zero.
-
-Pay for actual usage, not provisioned capacity for peak. At 3 AM: $0.
-
-</div>
-
-<div style={{padding: '0.6em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
-
-**Glue code and integrations**
-
-- Transform data between services
-- Respond to webhooks (GitHub push → trigger action)
-- Forward events to other systems
-
-</div>
-
-<div style={{padding: '0.6em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
-
-**APIs with moderate traffic**
-
-REST/GraphQL endpoints that don't need sub-10ms latency.
-
-Traffic patterns with idle periods fit serverless pricing perfectly.
-
-</div>
-
-</div>
-
-<aside className="notes">
-**Event-driven + stateless:**
-- The createSubmission example: verify token, create record, return URL
-- No "remember what happened last time"
-- Perfect for serverless — each invocation is independent
-
-**Variable workloads:**
-- This is serverless's killer feature
-- Traditional: provision for peak, pay 24/7
-- Serverless: pay only for what you use
-- Deadline rush: 100 instances spin up. 3 AM: zero cost.
-
-**Glue code:**
-- "When X happens, do Y"
-- Webhook handlers, event processors, data transformers
-- Small, focused functions that don't need persistent state
-
-**APIs with moderate traffic:**
-- Cold starts add 100ms-5s
-- For background API calls (grading action → API), this doesn't matter
-- For user-facing interactive features, might feel sluggish
-
-→ **Transition:** But serverless has real limitations...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Poor Fit for Serverless
-
-<p style={{fontSize: '0.78em'}}>
-Serverless introduces constraints that make it unsuitable for some workloads. Recognize these patterns and choose a different approach.
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.55em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0.6em', border: '2px solid #f44336', borderRadius: '8px'}}>
-
-**Long-running computations**
-
-```java
-// Bad: This will timeout (typically 15 min max)
-public void gradeAllSubmissions(String assignmentId) {
-    List<Submission> subs = getSubmissions(assignmentId);
-    for (Submission sub : subs) {
-        runTests(sub);  // Each takes 2-3 minutes...
-    }
-}
-```
-
-That's why Pawtograder uses GitHub Actions for grading!
-
-</div>
-
-<div style={{padding: '0.6em', border: '2px solid #f44336', borderRadius: '8px'}}>
-
-**Stateful operations**
-
-Serverless functions are stateless by design.
-
-Can't hold connections, caches, or session data in memory across requests. Must externalize ALL state.
-
-</div>
-
-<div style={{padding: '0.6em', border: '2px solid #f44336', borderRadius: '8px'}}>
-
-**Low-latency requirements**
-
-Cold starts add 100ms-5s latency.
-
-For real-time applications (games, trading), this is unacceptable.
-
-</div>
-
-<div style={{padding: '0.6em', border: '2px solid #f44336', borderRadius: '8px'}}>
-
-**High-throughput, sustained load**
-
-Per-invocation pricing can exceed server costs at high volume.
-
-If you're processing millions of requests/day consistently, dedicated servers may be cheaper.
-
-</div>
-
-</div>
-
-<aside className="notes">
-**Long-running:**
-- AWS Lambda: 15 minute timeout max
-- Supabase Edge Functions: shorter
-- Grading a complex assignment can take several minutes
-- That's why Pawtograder delegates grading to GitHub Actions
-- GitHub Actions: can run for hours, designed for CI/CD
-
-**Stateful:**
-- Traditional server: hold database connection pool in memory
-- Serverless: establish new connection per request (expensive!)
-- Session data: can't store in memory across requests
-- Solution: externalize to Redis, database, etc.
-
-**Low-latency:**
-- Real-time games need sub-10ms response
-- Trading systems: microseconds matter
-- Cold start of 2 seconds = unacceptable
-- Keep servers warm, or don't use serverless
-
-**High-throughput:**
-- Serverless pricing: per-invocation + execution time
-- At scale, can exceed dedicated server costs
-- Rule of thumb: sustained high load → dedicated; bursty → serverless
-
-→ **Transition:** Pawtograder has an interesting pattern for pushing logic to the database...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Pattern: Domain Logic in the Database
-
-<p style={{fontSize: '0.78em'}}>
-Pawtograder pushes much domain logic into PostgreSQL itself — triggers, functions, and Row-Level Security. This is a distinctive serverless pattern worth understanding.
-</p>
-
-<div style={{fontSize: '0.48em', marginTop: '0.4em'}}>
-
-```sql
--- PostgreSQL trigger enforces submission deadlines
-CREATE FUNCTION check_deadline() RETURNS TRIGGER AS $$
-DECLARE
-  effective_deadline TIMESTAMP;
-BEGIN
-  -- Calculate deadline: base deadline + any per-student extension
-  SELECT a.deadline + COALESCE(e.additional_hours, 0) * INTERVAL '1 hour'
-  INTO effective_deadline
-  FROM assignments a
-  LEFT JOIN assignment_due_date_exceptions e
-    ON e.assignment_id = a.id AND e.user_id = auth.uid()
-  WHERE a.id = NEW.assignment_id;
-
-  IF NOW() > effective_deadline THEN
-    RAISE EXCEPTION 'Submission past deadline';
-  END IF;
-  RETURN NEW;  -- Allow the INSERT to proceed
-END;
-$$ LANGUAGE plpgsql;
-```
-
-</div>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.55em', marginTop: '0.4em'}}>
-
-<div style={{padding: '0.5em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
-
-**Why put logic in the database?**
-
-- **Atomic enforcement:** Check + insert = one operation
-- **Always runs:** Whether from Edge Function, PostgREST, or direct SQL
-- **No cold starts:** Database is always warm
-- **Single source of truth:** Rules live where data lives
-
-</div>
-
-<div style={{padding: '0.5em', border: '2px solid #FF9800', borderRadius: '8px'}}>
-
-**Tradeoffs**
-
-- Harder to test (need database fixtures)
-- Less familiar to developers (SQL vs TypeScript)
-- Vendor lock-in to PostgreSQL (though it's portable within PostgreSQL providers)
-
-</div>
-
-</div>
-
-<aside className="notes">
-**Walk through the code:**
-- This trigger fires BEFORE any submission INSERT
-- Calculates effective deadline (base + any extension for this student)
-- If past deadline, RAISE EXCEPTION prevents the insert
-- No Edge Function needed — the database enforces the rule
-
-**Why this pattern?**
-- Serverless functions have cold starts — database doesn't
-- Race conditions are harder — the trigger is atomic with the insert
-- PostgREST exposes the database directly — triggers enforce rules regardless of entry point
-
-**The "database as application server" pattern:**
-- Controversial! Developers often prefer application code
-- But for data consistency rules, database IS the right place
-- Deadline enforcement, grade visibility, enrollment checks — all fundamentally about data consistency
-
-**When to use this:**
-- Invariants that MUST be enforced (deadlines, permissions)
-- Rules that apply regardless of how data is accessed
-- High-frequency operations where cold starts matter
-
-**When NOT to use:**
-- Complex business logic with external dependencies
-- Anything that needs to call external APIs
-- Logic that changes frequently (deploy cycle for database objects is different)
 
 → **Transition:** Let's connect this back to course concepts...
 </aside>
@@ -2469,84 +2240,86 @@ The principles from <strong>L6 (Information Hiding)</strong> scale all the way u
 </p>
 
 <Img
-  src="/img/lectures/web/l21-information-hiding-scale.webp"
+  src="/img/lectures/web/l21-information-hiding-scale5.webp"
   prompt="An educational illustration in a clean, modern flat-art style (NOT pixel art). No title text.
 
-CONCEPT: 'Information Hiding is Fractal' — showing how the same principle of hiding implementation details applies at every scale, from private fields to cloud architecture.
+CONCEPT: 'Information Hiding is Fractal' — showing how the same principle applies at every scale, using a concrete grading system example (POST /submissions).
 
 VISUAL: A ZOOM-OUT SEQUENCE — four nested boxes, each zooming out to reveal the next level:
 
 INNERMOST (smallest, purple #9370DB):
-A class diagram showing:
-- Class with 'private' fields (lock icon)
-- Public methods as the interface
-Label: 'L6: Private Fields'
-Caption: 'Hide data behind methods'
+A Submission class diagram showing:
+- Private fields: studentId, assignmentId, timestamp, status (lock icons)
+- Public methods: create(), getStatus(), submit()
+Label: 'L6: Submission Class'
+Caption: 'Private fields, public methods'
 
 SECOND LEVEL (medium, teal #4A90A4):
-The class is now inside a hexagon (Hexagonal Architecture):
-- Domain core in the center
-- Ports on the edges
-- Adapters on the outside
-Label: 'L16-18: Hexagonal Architecture'
-Caption: 'Hide adapters behind ports'
+The Submission class is inside a hexagon (Hexagonal Architecture):
+- Domain core: Submission + GradingRules in the center (warm golden glow, like L16)
+- Ports on edges (shown as interface sockets): SubmissionRepositoryPort, FileStoragePort, NotificationPort
+- Production adapters outside (solid lines): PostgresSubmissionAdapter, S3StorageAdapter
+- Test adapters shown in green dashed lines: InMemorySubmissionAdapter, FakeStorageAdapter
+Label: 'L16: Ports and Adapters'
+Caption: 'Domain behind ports'
 
 THIRD LEVEL (larger, orange #FF9800):
-The hexagon is now inside a service boundary:
-- Multiple hexagons as internal modules
-- A single API surface (HTTP endpoints)
-- Other services can only see the API
-Label: 'L19-20: Service Boundaries'
-Caption: 'Hide internals behind APIs'
+The hexagon is inside a service boundary labeled 'Pawtograder API':
+- Internal modules: Submissions, Grading, Feedback (small hexagons)
+- Single API surface: POST /submissions, GET /grades
+- External caller (GitHub Actions icon) only sees the API endpoints
+Label: 'L18: Service Boundaries'
+Caption: 'Modules behind API'
 
 OUTERMOST (largest, green #4CAF50):
-The service is now just one of many in a cloud:
-- Multiple services as small boxes
-- Cloud provider infrastructure surrounding them
-- External clients just see 'functions' — they don't know if it's serverless, containers, or VMs
-Label: 'L21: Cloud Architecture'
-Caption: 'Hide infrastructure behind functions'
+The Pawtograder service is one box among cloud infrastructure:
+- Pawtograder API box
+- Supabase/AWS cloud surrounding it
+- GitHub Actions caller on the left, just sees 'POST /submissions'
+- Caller doesn't know if it's Edge Functions, Lambda, or containers
+Label: 'L21: Serverless'
+Caption: 'Infrastructure behind endpoints'
 
 CONNECTING VISUAL:
 Dotted lines or magnifying glass metaphor showing each level 'contains' the previous.
 
 KEY INSIGHT CALLOUT (bottom):
-'The Grading Action calls createSubmission(). It doesn't know if that's an Edge Function, Lambda, or a traditional server. Same principle, different scale.'
+'GitHub Actions calls POST /submissions. It doesn't know about Submission.java, PostgresSubmissionAdapter, or Edge Functions. Same principle at every scale.'
 
-TAGLINE: 'Information hiding isn't about private fields — it's a fractal principle.'
+TAGLINE: 'L6 said: Hide what might change. Private fields. Adapters. Services. Infrastructure. Same principle, every scale.'
 
 Color scheme: Purple (innermost) → Teal → Orange → Green (outermost), showing progression from code to cloud."
-  alt="A zoom-out sequence showing information hiding at four scales: INNERMOST (purple) shows a class with private fields hidden behind methods. SECOND (teal) shows the class inside a hexagonal architecture with adapters hidden behind ports. THIRD (orange) shows the hexagon inside a service boundary with internals hidden behind APIs. OUTERMOST (green) shows the service in a cloud with infrastructure hidden behind functions. Tagline: Information hiding is a fractal principle."
+  alt="A zoom-out sequence showing information hiding at four scales: INNERMOST (L6) shows a Submission class with private fields hidden behind public methods. SECOND (L16) shows the class inside hexagonal architecture with ports (SubmissionRepositoryPort, FileStoragePort) and adapters (PostgresSubmissionAdapter, S3StorageAdapter). THIRD (L18) shows the Pawtograder service with modules hidden behind API endpoints. OUTERMOST (L21) shows the service in the cloud where GitHub Actions just calls POST /submissions. Tagline: L6 said hide what might change — same principle at every scale."
 />
 
 <div className="fragment">
 <p style={{fontSize: '0.68em', marginTop: '0.3em', color: '#4CAF50'}}>
-The Grading Action calls <code>createSubmission()</code> and <code>submitFeedback()</code>. It doesn't know — or care — whether these are Edge Functions, Lambda, or a traditional server. <strong>That's information hiding at the architectural level.</strong>
+GitHub Actions calls <code>POST /submissions</code> and <code>POST /feedback</code>. It doesn't know — or care — whether these are Edge Functions, Lambda, or a traditional server. <strong>That's information hiding at the architectural level.</strong>
 </p>
 </div>
 
 <aside className="notes">
-**The fractal nature of design principles:**
-- L6: private fields hide implementation from other classes
-- L16: ports hide adapters from domain logic
-- L21: serverless hides infrastructure from your functions
+**The fractal nature of information hiding:**
+- L6: classes hide implementation behind public methods
+- L16: hexagonal architecture hides adapters behind ports
+- L21: serverless hides infrastructure behind API endpoints
 
 **Walk through the table:**
 
 **Hexagonal Architecture:**
-- Domain logic (deadline enforcement, grade calculation) in PostgreSQL triggers
-- Edge Functions are just adapters — thin wrappers that delegate to the database
+- Domain logic (deadline enforcement, grade calculation) stays in the core
+- Edge Functions are just adapters — thin wrappers around the domain
 - The hexagon's domain core doesn't know it's "serverless"
 
 **Dependency Injection:**
 - Edge Functions receive configured clients (database, storage) from the runtime
 - Environment variables inject connection strings
-- Same pattern as L17-L18, at infrastructure scale
+- Same pattern as L17 (Dependency Injection), at infrastructure scale
 
 **Information Hiding:**
-- The Grading Action's code doesn't mention "Supabase" or "Edge Functions"
-- It just calls HTTP endpoints
-- If we migrated to AWS Lambda, the action wouldn't change
+- GitHub Actions code just calls POST /submissions and POST /feedback
+- It doesn't mention "Supabase" or "Edge Functions" — just HTTP endpoints
+- If we migrated to AWS Lambda, the grading workflow wouldn't change
 
 **Fallacies (L20):**
 - Edge Functions still deal with network unreliability
@@ -2670,10 +2443,10 @@ Why does Pawtograder use a <strong>hybrid architecture</strong>? Different compo
 
 | Component | Architecture | Why This Choice? |
 |-----------|--------------|------------------|
-| **Pawtograder API** | Serverless (Edge Functions) | Bursty traffic, stateless operations, minimal ops team |
-| **Grading execution** | GitHub Actions (managed compute) | Long-running jobs, isolation for untrusted code, leverages existing infra |
-| **Domain logic** | PostgreSQL (triggers, RLS) | Data consistency is paramount, no cold starts, single source of truth |
-| **Rate limiting** | Redis (Upstash) | Fast external state for stateless functions |
+| **Web API** | Serverless functions | Traffic is bursty (assignment deadlines), small team can't manage servers |
+| **Grading execution** | GitHub Actions | Jobs run for minutes, needs isolation for student code |
+| **Business logic** | PostgreSQL database | Data consistency matters, database is always-on (no cold starts) |
+| **Rate limiting** | Redis (fast key-value store) | Track API usage without slowing down requests |
 
 </div>
 
@@ -2694,7 +2467,7 @@ Why does Pawtograder use a <strong>hybrid architecture</strong>? Different compo
 
 **Hexagonal Architecture made this possible:**
 
-Domain logic behind ports. Different adapters (Edge Functions vs. PostgreSQL triggers) can implement the same interface.
+Domain logic behind ports. Different adapters (Edge Functions, background workers) can implement the same interface.
 
 </div>
 
@@ -2721,17 +2494,17 @@ Domain logic behind ports. Different adapters (Edge Functions vs. PostgreSQL tri
 - GitHub already provides this infrastructure
 - → Leverage existing managed compute
 
-**Domain logic (PostgreSQL):**
-- Deadline enforcement MUST be atomic
+**Business logic (always-on database):**
+- Deadline enforcement needs to be fast and reliable
 - Cold starts would slow down every grade visibility check
-- RLS policies enforce permissions regardless of entry point
-- → Database as application server
+- Database is always warm — no startup delay
+- → Critical paths avoid serverless cold starts
 
-**Rate limiting (Upstash):**
+**Rate limiting (KV store):**
 - Edge Functions can't hold state in memory
 - Need fast external storage for rate limit counters
-- Redis is purpose-built for this
-- → Managed Redis service
+- Redis/KV stores are purpose-built for this
+- → Managed KV service
 
 **The architectural insight:**
 - Different parts of ONE system can use different architectural styles
@@ -2906,10 +2679,10 @@ No single architecture is right for everything. Pawtograder's hybrid approach de
 
 <Slide>
 
-## What's Next: Teams and Conway's Law
+## What's Next: Teams and Collaboration
 
 <p style={{fontSize: '0.82em'}}>
-We've been implicitly assuming a single developer making all decisions. Real software is built by <strong>teams</strong> — and as Conway's Law suggests, system architecture and team structure are deeply intertwined.
+We've been implicitly assuming a single developer making all decisions. Real software is built by <strong>teams</strong> — and team structure has a big impact on how software gets built.
 </p>
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em', marginTop: '1em'}}>
@@ -2919,9 +2692,9 @@ We've been implicitly assuming a single developer making all decisions. Real sof
 **L22: Teams and Collaboration**
 
 - How teams organize, communicate, coordinate
-- Conway's Law in depth: org structure → system structure
-- The "inverse Conway maneuver"
+- Why org structure shapes system structure
 - Architectural boundaries often become team boundaries
+- Strategies for effective collaboration
 
 </div>
 
@@ -2929,7 +2702,7 @@ We've been implicitly assuming a single developer making all decisions. Real sof
 
 **The connection:**
 
-Today we saw serverless as "technical partitioning with a vendor" — your team focuses on domain logic, the vendor focuses on infrastructure.
+Today we saw serverless as outsourcing infrastructure to a specialist vendor — your team focuses on domain logic, they focus on infra.
 
 That's an organizational decision as much as a technical one.
 
@@ -2937,22 +2710,11 @@ That's an organizational decision as much as a technical one.
 
 </div>
 
-<div className="fragment">
-<p style={{fontSize: '0.73em', marginTop: '0.75em', fontStyle: 'italic', color: '#666'}}>
-"Organizations which design systems are constrained to produce designs which are copies of the communication structures of those organizations." — Melvin Conway, 1967
-</p>
-</div>
-
 <aside className="notes">
 **Preview L22:**
-- We mentioned Conway's Law several times today
-- L22 goes deep on this
-- How team structure shapes — and is shaped by — architecture
-
-**The connection to serverless:**
-- Serverless = organizational decision to outsource infrastructure
-- You're choosing to make the vendor "part of your org" for infrastructure
-- The service boundary (your code vs. their infra) is an org boundary
+- We've focused on technical architecture — how code is organized
+- L22 looks at human architecture — how teams are organized
+- The two are deeply connected
 
 **What students should think about:**
 - Your team project is coming up
@@ -2979,7 +2741,7 @@ That's an organizational decision as much as a technical one.
 
 2. **Infrastructure building blocks** (databases, queues, storage, caches, observability) appear in all architectures. Serverless = composing managed versions.
 
-3. **Serverless = technical partitioning with a vendor.** You write functions; they operate infrastructure. Conway's Law applies.
+3. **Serverless = technical partitioning with a vendor.** You write functions; they operate infrastructure.
 
 4. **Tradeoffs are real:** Serverless offers elasticity and zero idle cost, but introduces cold starts, timeouts, and vendor lock-in.
 
