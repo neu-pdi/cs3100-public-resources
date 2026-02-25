@@ -1,0 +1,379 @@
+cards:
+# Functional Programming Basics
+  - title: "What is Functional Programming?"
+    prompt: |
+      What does "functional programming" mean in Java?
+    answer: |
+      A programming style where **functions are first-class values**.
+
+      - Functions can be stored in variables
+      - Functions can be passed as arguments
+      - Functions can be returned from other functions
+
+      Introduced in Java 8 (2014) via lambda expressions.
+
+  - title: "Functional Interface"
+    prompt: |
+      What is a functional interface in Java?
+    answer: |
+      An interface that declares **exactly one abstract method**.
+
+      ```
+      public interface Comparator<T> {
+          int compare(T o1, T o2);  // Single abstract method
+      }
+      ```
+
+      - Can have other `static` or `default` methods
+      - The single abstract method is what makes it "functional"
+      - Enables use with lambda expressions
+
+  - title: "Comparator vs Comparable"
+    prompt: |
+      What's the difference between `Comparator` and `Comparable`?
+    answer: |
+      | Feature | `Comparable` | `Comparator` |
+      |---------|--------------|--------------|
+      | Defined on | The class itself | Separate object |
+      | Method | `compareTo(T o)` | `compare(T o1, T o2)` |
+      | Orderings | Only ONE per class | Multiple possible |
+
+      Use `Comparator` when you need **different sort orderings** at runtime:
+      ```
+      lights.sort(brightnessComparator);
+      lights.sort(locationComparator);
+      ```
+
+# Lambda Expressions
+  - title: "Lambda Expression Syntax"
+    prompt: |
+      What is the syntax for lambda expressions in Java?
+    answer: |
+      ```
+      (parameters) -> expression
+      ```
+
+      Examples:
+      ```
+      // No parameters
+      () -> System.out.println("Hello")
+
+      // One parameter (parentheses optional)
+      s -> s.toUpperCase()
+
+      // Multiple parameters
+      (l1, l2) -> Integer.compare(l1.getBrightness(), l2.getBrightness())
+
+      // Multi-line body (requires braces and return)
+      (a, b) -> {
+          int sum = a + b;
+          return sum * 2;
+      }
+      ```
+
+  - title: "Lambda Type Inference"
+    prompt: |
+      How does Java infer types in lambda expressions?
+    answer: |
+      Types are inferred from **context**:
+
+      ```
+      // Types inferred from Comparator<DimmableLight>
+      lights.sort((l1, l2) -> Integer.compare(
+          l1.getBrightness(), l2.getBrightness()));
+
+      // Can add explicit types if it helps readability
+      lights.sort((DimmableLight l1, DimmableLight l2) ->
+          Integer.compare(l1.getBrightness(), l2.getBrightness()));
+      ```
+
+      Return type is always inferred from the expression.
+
+  - title: "Variable Capture in Lambdas"
+    prompt: |
+      What restrictions apply when lambdas access variables from enclosing scope?
+    answer: |
+      Variables must be **final or effectively final**:
+
+      ```
+      String message = "Hello";  // Effectively final
+      Runnable r = () -> System.out.println(message);  // OK
+
+      int i = 0;
+      for (i = 0; i < 10; i++) {
+          Runnable r = () -> System.out.println(i);  // ERROR!
+      }
+      ```
+
+      - Lambdas share variable names with enclosing scope
+      - Cannot use same name as existing variable in scope
+
+# Method References
+  - title: "Method Reference Syntax"
+    prompt: |
+      What is a method reference and how do you write one?
+    answer: |
+      A shorthand for lambdas that just call a single method:
+
+      ```
+      // Lambda
+      lights.sort((l1, l2) -> Integer.compare(
+          l1.getBrightness(), l2.getBrightness()));
+
+      // Method reference
+      lights.sort(Comparator.comparingInt(DimmableLight::getBrightness));
+      ```
+
+      Syntax: `ClassName::methodName` or `object::methodName`
+
+      **Prefer method references** - they're more concise and readable.
+
+  - title: "When to Use Lambdas vs Method References"
+    prompt: |
+      When should you use a lambda instead of a method reference?
+    answer: |
+      **Prefer method references** when possible - more concise.
+
+      **Use lambdas when:**
+      - Parameter names help understand the code
+      - Logic is more than a single method call
+      - Method reference would be unclear
+
+      ```
+      // Method reference - clear
+      list.forEach(System.out::println);
+
+      // Lambda - names clarify meaning
+      map.forEach((key, value) -> process(key, value));
+      ```
+
+# Standard Functional Interfaces
+  - title: "Standard Functional Interfaces"
+    prompt: |
+      What are the main standard functional interfaces in `java.util.function`?
+    answer: |
+      | Interface | Method | Signature |
+      |-----------|--------|-----------|
+      | `Predicate<T>` | `test` | `T -> boolean` |
+      | `Function<T,R>` | `apply` | `T -> R` |
+      | `Consumer<T>` | `accept` | `T -> void` |
+      | `Supplier<T>` | `get` | `() -> T` |
+      | `BiFunction<T,U,R>` | `apply` | `(T, U) -> R` |
+
+      **Use these** before creating custom functional interfaces.
+
+  - title: "Primitive Functional Interfaces"
+    prompt: |
+      Why use primitive functional interfaces like `IntPredicate`?
+    answer: |
+      Avoid boxing overhead with primitive specializations:
+
+      ```
+      // Bad: boxes every int to Integer
+      Function<DimmableLight, Integer> getBrightness =
+          DimmableLight::getBrightness;
+
+      // Good: returns primitive int directly
+      ToIntFunction<DimmableLight> getBrightness =
+          DimmableLight::getBrightness;
+      ```
+
+      Available for `int`, `long`, `double`:
+      - `IntPredicate`, `LongPredicate`, `DoublePredicate`
+      - `IntFunction<R>`, `ToIntFunction<T>`
+      - `IntConsumer`, `IntSupplier`
+
+# Strategy Pattern
+  - title: "Strategy Pattern"
+    prompt: |
+      What is the Strategy pattern and how does it relate to lambdas?
+    answer: |
+      Strategy pattern: select algorithm at runtime via interface.
+
+      ```
+      // Strategy pattern (pre-Java 8)
+      Comparator<DimmableLight> strategy = new BrightnessComparator();
+      Collections.sort(lights, strategy);
+
+      // Same thing with lambda
+      lights.sort((l1, l2) ->
+          Integer.compare(l1.getBrightness(), l2.getBrightness()));
+      ```
+
+      **Recognize** the strategy pattern in code, but **prefer lambdas** - they remove boilerplate and make behavior clearer.
+
+  - title: "When NOT to Use Lambdas"
+    prompt: |
+      When should you avoid using lambda expressions?
+    answer: |
+      Avoid lambdas when:
+
+      - **More than ~3 lines** - use a named method instead
+      - **Behavior not self-explanatory** - needs documentation
+      - **Reused in multiple places** - extract to a method
+
+      Lambdas have no names and no documentation. If the behavior isn't obvious from a single expression, use a named method or class.
+
+# Modern Java Features
+  - title: "Records"
+    prompt: |
+      What is a record in Java and when should you use it?
+    answer: |
+      A concise way to declare immutable data classes:
+
+      ```
+      // 30+ lines of boilerplate becomes:
+      public record Point(int x, int y) {}
+      ```
+
+      Automatically provides:
+      - Constructor
+      - Accessor methods (`x()`, `y()`)
+      - `equals`, `hashCode`, `toString`
+      - Immutability (all fields `final`)
+
+      **Use records** for any class that's primarily a carrier of immutable data.
+
+  - title: "Record Validation"
+    prompt: |
+      How do you add validation to a record?
+    answer: |
+      Use a **compact constructor**:
+
+      ```
+      public record ColorTemperature(int kelvin) {
+          public ColorTemperature {  // No parentheses!
+              if (kelvin < 1000 || kelvin > 10000) {
+                  throw new IllegalArgumentException(
+                      "Kelvin must be between 1000 and 10000");
+              }
+          }
+
+          // Can also add custom methods
+          public int toMired() {
+              return 1000000 / kelvin;
+          }
+      }
+      ```
+
+  - title: "Pattern Matching for instanceof"
+    prompt: |
+      How does pattern matching improve instanceof checks?
+    answer: |
+      Combines type check and cast in one step:
+
+      ```
+      // Old way: separate check and cast
+      if (obj instanceof DimmableLight) {
+          DimmableLight other = (DimmableLight) obj;
+          other.setBrightness(50);
+      }
+
+      // New way: pattern matching
+      if (obj instanceof DimmableLight other) {
+          other.setBrightness(50);  // Already cast!
+      }
+      ```
+
+      - Cleaner and safer
+      - Variable only in scope where type is guaranteed
+      - Introduced in Java 16
+
+# Code Readability
+  - title: "Why Readability Matters"
+    prompt: |
+      Why is code readability so important?
+    answer: |
+      **Most software cost is maintenance**, not initial development.
+
+      Code must be readable to:
+      - Future maintainers (different background/language)
+      - New team members (reduce onboarding time)
+      - International contributors (different cultural context)
+
+      If only original authors can maintain code:
+      - Creates "bus factor" risk
+      - You can't move to bigger projects
+      - The code becomes a liability
+
+  - title: "Style Guides and Formatters"
+    prompt: |
+      What role do style guides play in readability?
+    answer: |
+      Style guides provide **consistent formatting** to reduce cognitive load.
+
+      But formatting alone doesn't make code readable:
+      - A perfectly formatted mess is still a mess
+      - Use automated formatters (Spotless, google-java-format)
+      - Focus on what matters more: **structure and naming**
+
+      More important than formatting:
+      - How you decompose into methods/classes
+      - What abstractions you create
+      - How you name things
+
+  - title: "Name Molds - Step 1"
+    prompt: |
+      What is Step 1 of Feitelson's name molds approach?
+    answer: |
+      **Select the concepts to include in the name.**
+
+      For a color temperature field, consider:
+      - *What* we're tracking (color temperature)
+      - *When* it applies (startup? current? target?)
+      - *Unit* of measurement (Kelvins? mired?)
+
+      ```
+      int startupColorTemperature;
+      // or with unit:
+      int startupColorTemperatureKelvin;
+      ```
+
+      Include units if different units are used in the codebase.
+
+  - title: "Name Molds - Step 2"
+    prompt: |
+      What is Step 2 of Feitelson's name molds approach?
+    answer: |
+      **Choose words consistently for each concept.**
+
+      ```
+      // GOOD: Same word throughout
+      int getColorTemperature();
+      void setColorTemperature(int colorTemperature);
+      Predicate<Light> filterByColorTemperature;
+
+      // BAD: Mixed synonyms
+      int getColorTemperature();
+      void setColorTemp(int cct);
+      Predicate<Light> filterByWhitePoint;
+      ```
+
+      When the same word always means the same concept, readers build a reliable mental model.
+
+  - title: "Name Molds - Step 3"
+    prompt: |
+      What is Step 3 of Feitelson's name molds approach?
+    answer: |
+      **Construct the name using consistent patterns.**
+
+      *Word ordering*: Pick a convention and stick with it
+      ```
+      // Consistent: modifier-first
+      startupColorTemperature
+      targetColorTemperature
+      currentBrightness
+
+      // Inconsistent: don't mix!
+      startupColorTemperature
+      colorTemperatureTarget  // Wrong order
+      ```
+
+      *Name length*: Match scope
+      ```
+      // Short scope = short name OK
+      for (Light l : lights) { ... }
+
+      // Long-lived field = descriptive
+      private final int startupColorTemperature;
+      ```

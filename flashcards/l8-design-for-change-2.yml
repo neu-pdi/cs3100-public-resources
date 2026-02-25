@@ -1,0 +1,124 @@
+cards:
+  - title: "SOLID Principles Guide Decisions About Class Design"
+    prompt: |
+      What are the SOLID principles in object-oriented design?
+    answer: |
+      SOLID is an acronym for five principles that guide object-oriented design for maintainability and extensibility:
+
+      - **S**ingle Responsibility Principle (SRP)
+      - **O**pen/Closed Principle (OCP)
+      - **L**iskov Substitution Principle (LSP)
+      - **I**nterface Segregation Principle (ISP)
+      - **D**ependency Inversion Principle (DIP)
+
+  - title: "Single Responsibility Principle (SRP)"
+    prompt: |
+      What is the Single Responsibility Principle?
+    answer: |
+      A class should have only **one reason to change**. This means it should have only one job or responsibility.
+
+      High cohesion is achieved when a class adheres to SRP.
+
+      Example: Separating data storage, business logic, and UI presentation into different classes — each has one responsibility.
+
+  - title: "Open/Closed Principle (OCP)"
+    prompt: |
+      What is the Open/Closed Principle?
+    answer: |
+      Software entities should be **open for extension** but **closed for modification**.
+
+      - **Open for extension**: New behavior can be added
+      - **Closed for modification**: Existing code doesn't need to change
+
+      Achieved through abstraction: define interfaces, then add new implementations without modifying existing code. The Strategy and Decorator patterns exemplify OCP.
+
+  - title: "Liskov Substitution Principle (LSP)"
+    prompt: |
+      What is the Liskov Substitution Principle?
+    answer: |
+      Subtypes must be **substitutable for their base types** without altering the correctness of the program.
+
+      If `S` is a subtype of `T`, then objects of type `T` can be replaced with objects of type `S` without breaking anything.
+
+      **Violations**: A `Square` extending `Rectangle` where `setWidth()` also changes height breaks LSP because client code assumes width and height are independent.
+
+  - title: "Interface Segregation Principle (ISP)"
+    prompt: |
+      What is the Interface Segregation Principle?
+    answer: |
+      Clients should not be forced to depend on interfaces they **don't use**. Prefer many **small, focused** interfaces over one large "fat" interface.
+
+      Example:
+      - **Bad**: `Worker` interface with `work()`, `eat()`, `sleep()` — a `Robot` doesn't eat or sleep
+      - **Good**: Separate `Workable`, `Eatable`, `Sleepable` interfaces
+
+  - title: "Dependency Inversion Principle (DIP)"
+    prompt: |
+      What is the Dependency Inversion Principle?
+    answer: |
+      - High-level modules should not depend on low-level modules. Both should depend on **abstractions**.
+      - Abstractions should not depend on details. Details should depend on **abstractions**.
+
+      Example: A `NotificationSender` should depend on a `MessageService` interface, not directly on `EmailService` or `SMSService`. This allows swapping implementations without changing the sender.
+
+  - title: "Composition Over Inheritance"
+    prompt: |
+      Why is composition generally preferred over inheritance?
+    answer: |
+      Inheritance creates **tight coupling** between parent and child classes:
+      - Changes to the parent can break subclasses
+      - Subclasses inherit all behavior, even what they don't need
+      - Inheritance hierarchies are rigid and hard to change
+
+      **Composition** (has-a) is more flexible:
+      - Behavior can be changed at runtime by swapping components
+      - Only the needed behavior is included
+      - Objects are composed from independent, reusable parts
+
+  - title: "Safe Inheritance Rules"
+    prompt: |
+      What are the rules for safe inheritance?
+    answer: |
+      1. **Design and document for inheritance**, or **prohibit it** (use `final`)
+      2. Document the **self-use patterns** (does method A call method B internally?)
+      3. Don't call overridable methods from **constructors**
+      4. Prefer `final` classes unless inheritance is explicitly designed for
+      5. When in doubt, **use composition instead**
+
+      Inheritance should be a deliberate design choice, not a default.
+
+  - title: "The Decorator Pattern"
+    prompt: |
+      What is the Decorator pattern, and what problem does it solve?
+    answer: |
+      Dynamically adds behavior to objects through **composition** instead of inheritance. It avoids "class explosion" when you need many combinations of behavior.
+
+      Structure:
+      - A **component interface** defines the base behavior
+      - **Concrete components** implement the base behavior
+      - **Decorators** wrap a component and add behavior while delegating to the wrapped component
+
+      Example: `BufferedReader(new FileReader(file))` — `BufferedReader` decorates `FileReader` with buffering.
+
+  - title: "Decorator Pattern vs. Inheritance"
+    prompt: |
+      Why use the Decorator pattern instead of subclassing?
+    answer: |
+      **Subclassing problem**: If you have 3 independent features (A, B, C), you'd need 7 subclass combinations (A, B, C, AB, AC, BC, ABC).
+
+      **Decorator solution**: Create 3 decorator classes that can be **freely combined** at runtime:
+      ```java
+      new FeatureA(new FeatureB(new FeatureC(base)))
+      ```
+
+      Decorators compose **linearly** while subclass combinations grow **exponentially**.
+
+  - title: "How SOLID Connects to Coupling and Cohesion"
+    prompt: |
+      How do the SOLID principles relate to coupling and cohesion?
+    answer: |
+      - **SRP** → Promotes **high cohesion** (one responsibility = functionally cohesive)
+      - **OCP** → Reduces **coupling** (extend without modifying existing code)
+      - **LSP** → Ensures **safe coupling** through inheritance (subtypes don't break contracts)
+      - **ISP** → Reduces **stamp coupling** (clients only depend on what they use)
+      - **DIP** → Reduces **coupling** to concretions (depend on abstractions instead)

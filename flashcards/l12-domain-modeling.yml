@@ -1,0 +1,164 @@
+cards:
+  - title: "What is Domain Modeling?"
+    prompt: |
+      What is domain modeling, and why does it matter for software design?
+    answer: |
+      Domain modeling is the process of creating a **conceptual representation** of the problem space before making implementation decisions. It forces us to be explicit about our understanding of the problem domain.
+
+      Benefits:
+      - Code mirrors the problem domain, improving **understandability**
+      - Developers can navigate from requirements to implementation
+      - Easier to predict where functionality lives
+      - Enables communication with non-technical stakeholders
+
+  - title: "Domain-Aligned vs. Technical-Focused Design"
+    prompt: |
+      What is the difference between a domain-aligned design and a technical-focused design?
+    answer: |
+      - **Technical-focused**: Uses implementation primitives (HashMaps, counters, byte arrays, string concatenation for keys). Hard to understand intent.
+      - **Domain-aligned**: Uses classes named after real-world concepts (Submission, GradingSession, Student). Code reads like a description of the business process.
+
+      Domain-aligned designs are more **understandable** because developers can map domain knowledge directly to code structure.
+
+  - title: "Steps to Build a Domain Model"
+    prompt: |
+      What are the four steps to build an initial domain model from requirements?
+    answer: |
+      1. **Extract Candidate Concepts**: Identify all nouns and noun phrases from requirements
+      2. **Filter and Consolidate**: Remove synonyms, distinguish attributes from concepts, choose canonical names
+      3. **Discover Hidden Concepts**: Look for implied but unnamed concepts (e.g., "ensure fair distribution" → WorkloadDistributor)
+      4. **Build the Initial Model**: Create a class diagram showing concepts, attributes, and relationships with multiplicities
+
+  - title: "Common Domain Modeling Problem: Modeling Verbs as Nouns"
+    prompt: |
+      When should a verb become a noun (an object) in your domain model?
+    answer: |
+      When an **action is important enough to be a first-class concept**. Signs include:
+
+      - The action has its own lifecycle (pending → in progress → complete)
+      - Multiple pieces of data are associated with it
+      - It needs to be tracked, audited, or referenced later
+
+      Example: "regrade" as a method vs. `RegradeRequest` as a class with requester, reason, status, and response history.
+
+  - title: "Common Domain Modeling Problem: Missing Temporal Aspects"
+    prompt: |
+      Why is it important to capture temporal aspects in a domain model?
+    answer: |
+      Real domains involve **history and change over time**. A naive model that only stores current state loses important information.
+
+      Example:
+      - **Naive**: `Submission` with a single `currentGrade`
+      - **Better**: `Submission` with a `List<GradingSession>` capturing all grading attempts and previous versions
+
+      History enables auditing, understanding how state evolved, and supporting undo/revert operations.
+
+  - title: "Common Domain Modeling Problem: Over-Modeling"
+    prompt: |
+      What is over-modeling, and how do you avoid it?
+    answer: |
+      Over-modeling means creating separate classes for concepts that are better represented as **simple primitive values**.
+
+      Example of over-modeling:
+      - `LineNumber` class wrapping a single `int`
+      - `CommentText` class wrapping a single `String`
+
+      Better: Use `int lineNumber` and `String comment` directly in the containing class. Not everything needs to be a class.
+
+  - title: "Validating Domain Models with Stakeholders"
+    prompt: |
+      What techniques help validate domain models with stakeholders?
+    answer: |
+      1. **Scenario Walkthroughs**: Trace specific use cases through the model to expose missing states or constraints
+      2. **Terminology Review**: Ensure model uses the same terms stakeholders actually use
+      3. **Multiplicity Verification**: Confirm relationship cardinalities (one-to-one vs. one-to-many)
+      4. **Missing Concepts Discovery**: Ask about exceptions and special cases
+
+      Validation often reveals hidden business rules, temporal constraints, and cross-cutting concerns.
+
+  - title: "Information Expert Pattern"
+    prompt: |
+      What is the Information Expert pattern for responsibility assignment?
+    answer: |
+      **Assign responsibility to the class that has the information needed to fulfill it.**
+
+      Example: Who should determine if a regrade request can be escalated?
+      → `RegradeRequest` itself, because it knows its response history, current status, and timestamps.
+
+      This keeps behavior close to the data it operates on, promoting high cohesion.
+
+  - title: "Creator Pattern"
+    prompt: |
+      What is the Creator pattern for responsibility assignment?
+    answer: |
+      **Assign class B the responsibility to create instances of class A if B aggregates, contains, records, or has the initializing data for A.**
+
+      Examples:
+      - `GradingSession` creates `InlineComment` objects (it contains them)
+      - `RegradeService` creates `RegradeResponse` objects (it has all the necessary data and coordinates the process)
+
+  - title: "Controller Pattern"
+    prompt: |
+      What is the Controller pattern for responsibility assignment?
+    answer: |
+      **Assign responsibility for handling system events to a controller class that coordinates the response.**
+
+      Controllers manage the flow of complex operations **without implementing business logic** themselves. They:
+      - Authenticate and authorize
+      - Validate inputs
+      - Delegate to services for business logic
+      - Transform results for the response
+
+  - title: "What is the Representational Gap?"
+    prompt: |
+      What is the representational gap in domain modeling?
+    answer: |
+      The **difference between the domain model** (how we understand the problem) and the **object-oriented design** (how we implement the solution).
+
+      Sources of gap:
+      - **Technical infrastructure** (repositories, DTOs, transactions)
+      - **Performance optimization** (caching, lazy loading)
+      - **Concurrent access** (locking, transactions)
+
+      Some gap is inevitable; the goal is to **minimize it** and keep it well-contained.
+
+  - title: "Strategies to Minimize the Representational Gap"
+    prompt: |
+      What strategies help minimize the representational gap between domain model and code?
+    answer: |
+      1. **Rich Domain Model**: Put behavior in domain classes, not just getters/setters
+      2. **Hexagonal Architecture (Ports and Adapters)**: Isolate domain logic from infrastructure
+      3. **Repository Pattern**: Make persistence look like in-memory collections using domain language
+      4. **Domain-Driven Design (DDD)**: Use bounded contexts, aggregates, and ubiquitous language
+      5. **Event Sourcing**: Store domain events instead of current state for audit-critical systems
+
+  - title: "Rich vs. Anemic Domain Model"
+    prompt: |
+      What is the difference between a rich and an anemic domain model?
+    answer: |
+      - **Anemic**: Domain objects are just data containers with getters/setters. Business logic lives in separate service classes. Larger representational gap.
+      - **Rich**: Domain objects contain **both data and behavior**. Business logic lives close to the data it operates on. Smaller representational gap.
+
+      Example: `RegradeRequest.canEscalate()` (rich) vs. `RegradeService.canEscalate(request)` (anemic).
+
+  - title: "Measuring the Representational Gap"
+    prompt: |
+      How can you evaluate whether your representational gap is well-managed?
+    answer: |
+      Ask these questions:
+      1. Can a **domain expert** read your core classes and understand them?
+      2. Do method names use **domain vocabulary** or technical jargon?
+      3. Is domain logic **mixed with** technical concerns?
+      4. How many **layers** between user story and implementation?
+      5. Could you explain the code structure by **sketching the domain model**?
+
+  - title: "Domain Models Are Expensive to Change"
+    prompt: |
+      Why are domain modeling decisions costly in the long run?
+    answer: |
+      Domain concepts **propagate through the entire codebase**: method names, class hierarchies, database schemas, API contracts.
+
+      Changing a core domain concept touches everything. When creating models, explicitly identify assumptions and ask:
+      - What would trigger a rewrite?
+      - How likely is that?
+      - Can we design to make likely changes cheaper?
