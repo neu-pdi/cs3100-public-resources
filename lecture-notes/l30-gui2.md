@@ -4,6 +4,8 @@ lecture_number: 30
 title: "L30: GUI Patterns and Testing"
 ---
 
+# GUI Patterns and Testing
+
 ## Define the Model-View-ViewModel (MVVM) pattern (15 minutes)
 
 In the previous lecture, we introduced Model-View-Controller (MVC) as a way to separate concerns in GUI applications. MVC has served developers well for decades, but as applications grew more complex—and as testability became more critical—limitations emerged.

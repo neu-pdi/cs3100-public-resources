@@ -4,6 +4,8 @@ lecture_number: 38
 title: "L38: The Future of Programming"
 ---
 
+# The Future of Programming
+
 ## Review major socio-technical trends in software development and speculate on their future impact (20 minutes)
 
 ## Debate the ultimate impact of AI on software development (20 minutes)

@@ -5,6 +5,8 @@ title: "L6: Changeability I: Modularity and Information Hiding"
 image: /img/lectures/web/l6.png
 ---
 
+# Changeability I: Modularity and Information Hiding
+
 ![Lecture 6: Changeability I: Modularity and Information Hiding](/img/lectures/web/l6.png)
 
 ## Describe the importance of changeability as a goal of program design and implementation (10 minutes)

@@ -4,6 +4,8 @@ lecture_number: 33
 title: "L33: Event-Driven Architecture"
 ---
 
+# Event-Driven Architecture
+
 ## Define and describe the event-driven architecture (10 minutes)
 
 ## Compare and contrast event-driven architecture and synchronous communication (10 minutes)

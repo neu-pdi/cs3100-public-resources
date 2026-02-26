@@ -4,6 +4,8 @@ lecture_number: 16
 title: "L16: Designing for Testability"
 ---
 
+# Designing for Testability
+
 In the previous lecture, we learned about test doubles — stubs, fakes, spies, and mocks — that let us test code in isolation. But we glossed over an important question: *why was `ThermostatController` so easy to test?* The answer lies in how it was designed.
 
 Some systems are more testable than others. Imagine that for a single test case, you need to set up three different web services, create five different files in different folders, and put the database in a specific state. After all that, you exercise the feature under test and, to assert correct behavior, need to check that the three web services were invoked correctly, the five files were consumed, and the database is now in a different state. All of this is *doable* — but couldn't it be simpler?

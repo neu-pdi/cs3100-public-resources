@@ -4,6 +4,8 @@ lecture_number: 27
 title: "L27: User-Centered Design"
 ---
 
+# User-Centered Design
+
 ## Describe the value of user-centered design in software development (10 minutes)
 
 In [Lecture 24 (Usability)](l24-usability.md), we introduced usability and heuristic evaluation—a technique for finding usability problems by examining an interface against established principles. Heuristic evaluation is valuable because you can do it early, without users. But it has a fundamental limitation: **experts evaluating against heuristics are not the same as real users trying to accomplish real goals**.

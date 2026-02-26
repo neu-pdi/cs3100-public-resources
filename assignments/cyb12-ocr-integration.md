@@ -3,6 +3,8 @@ title: "Group Assignment 2: Feature Buffet"
 sidebar_position: 10
 ---
 
+# Feature Buffet
+
 :::warning Preliminary Content
 
 This assignment is preliminary content and is subject to change until the release date of the assignment.

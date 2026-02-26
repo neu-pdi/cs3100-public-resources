@@ -4,6 +4,8 @@ lecture_number: 31
 title: "L31: Concurrency I"
 ---
 
+# Concurrency I
+
 ## Describe the role of threads as a concurrency mechanism and understand the concept of "interrupts" (15 minutes)
 
 ## Recognize the need for synchronization in concurrent programs and understand the concept of "atomicity" (15 minutes)

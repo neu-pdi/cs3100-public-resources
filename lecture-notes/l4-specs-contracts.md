@@ -5,6 +5,8 @@ title: "L4: Specifications and Common Contracts"
 image: /img/lectures/web/l4.png
 ---
 
+# Specifications and Common Contracts
+
 ![Lecture 4: Specifications and Common Contracts](/img/lectures/web/l4.png)
 
 ## Describe the role of method specifications in achieving program modularity and improving readability (10 minutes)

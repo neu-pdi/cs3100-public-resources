@@ -4,6 +4,8 @@ lecture_number: 29
 title: "L29: GUIs in Java"
 ---
 
+# GUIs in Java
+
 ## Describe the historical context of GUI development in Java (10 minutes)
 
 Java has been through three major GUI toolkits, each representing different eras of thinking about how to build graphical interfaces:

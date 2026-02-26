@@ -4,6 +4,8 @@ lecture_number: 14
 title: "L14: Program Understanding & Debugging"
 ---
 
+# Program Understanding & Debugging
+
 ## Situate debugging within the software development lifecycle (5 minutes)
 
 Debugging is not a separate phase of software development—it's an integral part of the Implementation and Validation phases. When we encounter unexpected behavior, we need to understand:

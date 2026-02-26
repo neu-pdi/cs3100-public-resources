@@ -1,8 +1,9 @@
 ---
 sidebar_position: 11
+title: "Lab 11: User-Centered Design"
 ---
 
-# Lab 11: User-Centered Design
+# User-Centered Design
 
 ## Learning Objectives
 

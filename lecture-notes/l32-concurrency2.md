@@ -4,6 +4,8 @@ lecture_number: 32
 title: "L32: Concurrency II: Asynchronous Programming"
 ---
 
+# Concurrency II: Asynchronous Programming
+
 ## Compare and contrast the use of threads and asynchronous programming (10 minutes)
 
 ## Understand the concept of "blocking" and "non-blocking" operations (5 minutes)

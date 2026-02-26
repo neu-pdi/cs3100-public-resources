@@ -5,6 +5,9 @@ title: "L1: Course Overview and Introduction to Java"
 image: /img/lectures/web/l1.png
 ---
 
+
+# Course Overview and Introduction to Java
+
 ![Lecture 1: Course Overview and Introduction to Java](/img/lectures/web/l1.png)
 
 ## Understand the structure of this course and what will be expected of you every week (15 minutes)

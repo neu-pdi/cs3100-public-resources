@@ -3,6 +3,8 @@ title: "Group Assignment 0: Design Sprint"
 sidebar_position: 9
 ---
 
+# Design Sprint
+
 :::warning Preliminary Content
 
 This assignment is preliminary content and is subject to change until the release date of the assignment.

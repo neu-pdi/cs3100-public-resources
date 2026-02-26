@@ -1,8 +1,9 @@
 ---
 sidebar_position: 9
+title: "Lab 9: Serverless"
 ---
 
-# Lab 9: Serverless
+# Serverless
 
 ## Learning Objectives
 

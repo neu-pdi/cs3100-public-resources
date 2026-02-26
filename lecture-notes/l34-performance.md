@@ -4,6 +4,8 @@ lecture_number: 34
 title: "L34: Performance"
 ---
 
+# Performance
+
 ## Compare relative latencies across the memory hierarchy (5 minutes)
 
 (CPU registers → L1/L2 cache → RAM → disk → network)

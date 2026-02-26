@@ -4,6 +4,8 @@ lecture_number: 22
 title: "L22: Teams and Collaboration"
 ---
 
+# Teams and Collaboration
+
 ## Explain key advantages of working in a team and sharing information with your team (10 minutes)
 
 Almost all real-world software is built by teams, not individuals. Even if you're the most talented programmer in the world, there are compelling reasons why professional software development is a team activity. We all work in teams: consider simply the scale of the course you are taking right now: with 500 students, 30 TAs and 4 instructors, the course only exists because of the work of many people.

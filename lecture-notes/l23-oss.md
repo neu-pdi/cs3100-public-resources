@@ -4,6 +4,8 @@ lecture_number: 23
 title: "L23: Open Source Frameworks"
 ---
 
+# Open Source Frameworks
+
 ## Explain how component reuse simplifies software development and the role of OSS ecosystems in distributing reusable components (15 minutes)
 
 Modern software is not written from scratch. A typical application depends on dozens—sometimes hundreds—of open source libraries and frameworks. When you add dependencies to your `build.gradle`, you're pulling in code written by thousands of developers around the world.

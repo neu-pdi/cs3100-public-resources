@@ -4,6 +4,8 @@ lecture_number: 24
 title: "L24: Usability"
 ---
 
+# Usability
+
 ## Define usability and describe the five key aspects of usability (15 minutes)
 
 There's a significant gap between software that *works* and software that people *want to use*. You can build a system that passes every test, implements every requirement, and never crashes—and still end up with software that users hate, avoid, or misuse. This gap is what usability addresses.

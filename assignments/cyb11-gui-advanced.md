@@ -3,6 +3,8 @@ title: "Group Assignment 1: Core Features"
 sidebar_position: 9
 ---
 
+# Core Features
+
 :::warning Preliminary Content
 
 This assignment is preliminary content and is subject to change until the release date of the assignment.
