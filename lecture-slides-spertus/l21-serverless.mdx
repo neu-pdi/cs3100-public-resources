@@ -122,7 +122,7 @@ Color scheme: Warm oranges/reds for the stressful car ownership side. Cool teals
 **Late tokens CAN be used on group assignments.**
 - See details in link from syllabus.
 
-**Due Friday, 2/27**
+**Due Friday**
 - Midterm survey via Qualtrics
 - Team formation survey
 - Khoury mid-semester evaluation
@@ -553,7 +553,7 @@ Requests are accepted immediately. Workers drain the queue as fast as they can. 
 
 <div className="fragment">
 <p style={{fontSize: '0.68em', marginTop: '0.5em', color: '#FF9800'}}>
-<strong>Common services:</strong> AWS SQS, Google Pub/Sub, RabbitMQ. The queue guarantees every request is eventually processed — even if a worker crashes mid-job, the message goes back on the queue.
+<strong>Common services:</strong> AWS SQS, Google Pub/Sub, RabbitMQ. Queues usually provide <em>at-least-once delivery</em> with retries/visibility timeouts; handlers should be idempotent, and poison messages should go to a dead-letter queue.
 </p>
 </div>
 
@@ -1134,8 +1134,8 @@ Platform calls your function when an event arrives. You don't listen for request
 **② Stateless**
 No state persists between calls. All state lives in external services.
 
-**③ Input → Output**
-Request in, response out. Your function is a pure transformation.
+**③ Clear contract**
+Request in, response out. Keep side effects explicit (e.g., DB/storage writes) and bounded.
 
 **④ Pay per invocation**
 No requests? No cost. 1M requests? Billed for exactly that.
