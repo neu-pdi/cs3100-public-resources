@@ -107,14 +107,8 @@ Color scheme: Warm oranges/reds for the stressful car ownership side. Cool teals
 **Context:**
 - L20 ended with the preview: "Serverless pushes many of today's concerns to the platform level"
 - Today we explore what that means concretely
-- Running examples: same as L19-L20 — Pawtograder and Bottlenose
 
-**Framing the lecture:**
-- "L20 was about what happens when components communicate over networks"
-- "Today is about what happens when someone ELSE manages the infrastructure those components run on"
-- "You're NOT expected to design serverless architectures from scratch. The goal: understand the tradeoffs so you can evaluate when serverless makes sense."
-
-→ **Transition:** Here's what you'll be able to do after today...
+→ Here's what you'll be able to do after today...
 </aside>
 
 </Slide>
@@ -164,21 +158,7 @@ After this lecture, you will be able to:
 </div>
 
 <aside className="notes">
-**SET EXPECTATIONS:**
-- "You will NOT be tested on 'design a serverless architecture from scratch'"
-- "You WILL be expected to understand tradeoffs, recognize when serverless fits, and read systems that use it"
-
-**Connection to L19-L20:**
-- L19: How do we organize code? (architectural styles)
-- L20: What changes when code crosses the network? (distributed systems)
-- L21: What changes when someone else manages the infrastructure?
-
-**The progression:**
-- Same principles at different scales
-- Information hiding, hexagonal architecture, quality attributes — all still apply
-- Serverless is one point in a design space, not a silver bullet
-
-→ **Transition:** But first — let's make sure we're all on the same page about what "infrastructure" even means...
+→ Let's start with a thought experiment...
 </aside>
 
 </Slide>
@@ -209,6 +189,7 @@ generator and server. What will you want to spend your time on?
 
 <aside className="notes">
 - Multiple select
+→ Most of us find the app, rather than the infrastructure, the fun part
 </aside>
 
 </Slide>
@@ -250,11 +231,7 @@ A developer (dark-skinned woman from India) at her desk at 2 AM, visibly frantic
 
 - Small label at bottom: 'YOU manage everything'
 
-
-
 CENTER DIVIDER — A clean vertical line or lightning bolt
-
-
 
 RIGHT SIDE — 'CLOUD INFRASTRUCTURE' (cool, calming purples and teals):
 
@@ -272,19 +249,19 @@ The SAME developer, now peacefully asleep in a tidy bedroom. Meanwhile:
 
 - Small label at bottom: 'CLOUD manages everything'
 
-
-
 VISUAL CONTRAST:
 
 - Left side: chaotic, cluttered, harsh lighting, red warning colors
 
 - Right side: peaceful, minimal, soft moonlight, greens and teals indicating healthy systems
 
-
-
 Color scheme: Angry reds and oranges for the left. Calming purples (#9370DB), teals (#4A90A4), and soft greens for the right. The contrast should feel immediate and obvious."
   alt="A split illustration: LEFT shows a exhausted developer at 2:47 AM surrounded by smoking servers and error screens, overwhelmed by infrastructure worries and angry user complaints. RIGHT shows the same developer sleeping peacefully while a cloud diagram displays healthy managed infrastructure and happy users reacting with hearts and laughter."
 />
+
+<aside className="notes">
+→ Our app is only the tip of the iceberg
+</aside>
 
 </Slide>
 
@@ -348,46 +325,7 @@ TAGLINE at bottom: 'Your app is just the tip of the iceberg.'"
 />
 
 <aside className="notes">
-**Walk through each layer (bottom to top):**
-
-**Physical space:**
-- "Someone needs a building. With doors that lock."
-- "Fire suppression systems. Security guards. Insurance."
-
-**Power and cooling:**
-- "Computers need electricity. Constant electricity."
-- "They generate heat — a lot of it. Need AC running 24/7."
-- "Power goes out? Your app goes down."
-
-**Network:**
-- "Need an internet connection. A FAST one."
-- "Not your home WiFi — enterprise-grade networking"
-- "Multiple redundant connections so one failure doesn't kill you"
-
-**The computer:**
-- "Actual physical hardware. CPUs, RAM, hard drives."
-- "Hard drives fail. RAM goes bad. CPUs overheat."
-- "Someone needs to notice and replace them."
-
-**Operating system:**
-- "Linux, Windows Server — manages the hardware"
-- "Security patches. Updates. Configuration."
-
-**Runtime:**
-- "Java needs a JVM. Python needs an interpreter."
-- "These need to be installed, configured, kept up to date."
-
-**Your app (finally!):**
-- "All that infrastructure... just so YOUR code can run"
-- "The iceberg visual: your code is the tiny visible tip"
-- "Your ImageResizeServer with its 15 lines of business logic... sits on top of ALL of this"
-
-**Key insight:**
-- "Infrastructure = everything beneath your code"
-- "Someone has to manage ALL of these layers"
-- "The question is: who manages this for your image resize service?"
-
-→ **Transition:** You have two choices for who manages this...
+→ Let's see how this plays out with our meme app.
 </aside>
 
 </Slide>
@@ -445,16 +383,13 @@ Flexible JSON documents. Easy to add fields. No joins.
 
 </div>
 
-<div className="fragment">
 <p style={{fontSize: '0.68em', marginTop: '0.5em', color: '#FF9800'}}>
 Images are stored separately in cheaper object storage.
 </p>
-</div>
 
 <aside className="notes">
 - Relational: "find all memes by this author with rating above 4, sorted by date" — easy with SQL
 - Firestore: "store this meme quickly with whatever fields I have right now" — easy with documents
-- The image_url is a reference into object storage (S3, Cloud Storage) — the database holds metadata, not the binary data itself
 
 → Now that we can store memes, how do we find them quickly?
 </aside>
@@ -515,30 +450,14 @@ Index narrows to matching rows instantly. Response time: milliseconds at any sca
 **Make the analogy concrete:**
 - "Imagine finding every mention of 'distracted boyfriend' in a 10,000-page book"
 - "Without an index: read every page. With an index: turn to page 847."
-- "The database builds and maintains this index automatically after you create it"
-
-**The write penalty:**
-- Indexes aren't free — every INSERT or UPDATE must also update the index
-- Read-heavy workloads (like search) benefit enormously
-- Write-heavy workloads (like logging) may want fewer indexes
-
-**When to reach for dedicated search:**
-- PostgreSQL full-text search is good for moderate scale
-- Elasticsearch, Algolia, Meilisearch are purpose-built for search
-- They support: fuzzy matching ('distarcted boyfriend' still finds results), ranking by relevance, faceted filters
-- Algolia powers the search on many major sites students use daily
-
-**Connection to the poll:**
-- "This is infrastructure nobody votes to build — but without it, your search box is broken at scale"
-
-→ **Transition:** Indexes help with search. But what if thousands of users search for the same thing simultaneously?
+→ Indexes help with search. But what if thousands of users search for the same thing simultaneously?
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Caching: Stop Repeating Yourself
+## Caching
 
 <p style={{fontSize: '0.78em'}}>
 When the same data is requested repeatedly, <strong>caching</strong> stores the result so you don't recompute it. Trade a little memory for a lot of speed.
@@ -564,22 +483,25 @@ Each request pays the full query cost. Popular searches hammer the database.
 **With cache (Redis)**
 ```
 search:"drake meme" → [4821, 4799, 4755, ...]
-search:"distracted" → [4821, 4603, 4512, ...]
+template:12         → "templates/drake.jpg"
 meme:4821           → { top_text: "Me", ... }
 ```
-
+<p>
 Results stored by key. First request hits the database; the next 9,999 are served from memory.
-
+</p>
+<p>
+Select images (such as the most popular templates)
+can also be stored in memory.
+</p>
 </div>
 
 </div>
 
 <aside className="notes">
-- Redis is an in-memory key-value store — extremely fast
-- The key is typically the query type and string; the value is the result
+- Redis (RED-us) is an in-memory key-value store — extremely fast
 - Hit rate matters: 99% hit rate means the database sees 1% of the traffic
 
-→ **Transition:** Fast search and retrieval covered. What about sudden traffic spikes?
+→ Fast search and retrieval covered. What about sudden traffic spikes?
 </aside>
 
 </Slide>
@@ -640,7 +562,7 @@ Requests are accepted immediately. Workers drain the queue as fast as they can. 
 - Users get an immediate "your meme is being generated" response rather than a timeout
 - Workers can be scaled up independently to drain the queue faster
 
-→ **Transition:** We can handle the traffic. But how do users find us in the first place?
+→ What about authentication? Didn't we say that was hard?
 </aside>
 
 </Slide>
@@ -691,10 +613,8 @@ Your meme generator needs to know who's who. <strong>Authentication is deceptive
 <aside className="notes">
 - Auth is a solved problem — but solving it correctly from scratch is genuinely hard
 - Every item on the "what could go wrong" list has caused major real-world breaches
-- Managed auth services (Auth0, Supabase Auth, Firebase Auth) handle all of this
-- This is a good example of the build vs. buy tradeoff — almost always buy for auth
 
-→ **Transition:** Even with everything running smoothly, things will eventually break...
+→ Even with everything running smoothly, things will eventually break...
 </aside>
 
 </Slide>
@@ -749,10 +669,9 @@ Your meme generator is running in production. <strong>How do you catch problems 
 
 <aside className="notes">
 - Alerting is the difference between "we fixed it in 5 minutes" and "it was down for 3 hours before anyone noticed"
-- On-call rotations are a real part of engineering jobs — students will encounter this
-- Alerting tells you something is wrong; observability tells you why
+- On-call rotations are a real part of engineering jobs
 
-→ **Transition:** Alerting wakes you up. But then what?
+→ Alerting wakes you up. But then what?
 </aside>
 
 </Slide>
@@ -826,11 +745,10 @@ Without the trace, you might spend hours guessing. With it, the problem is obvio
 </div>
 
 <aside className="notes">
-- Logs, metrics, and traces are the "three pillars of observability"
 - The Asia example is realistic — CDN misconfiguration is a common cause of regional latency
 - Without observability, distributed systems are essentially undebuggable
 
-→ **Transition:** What else might you want?
+→ What else might you want?
 </aside>
 
 </Slide>
@@ -886,10 +804,9 @@ One place to enforce policies. Backend services only see authenticated, routed r
 
 <aside className="notes">
 - API gateways are a single entry point — clients never talk directly to backend services
-- Auth and rate limiting in one place means one place to audit and update
-- This is information hiding at the infrastructure level — backend services don't need to know about auth policy
+- They handle authentication and rate limiting.
 
-→ **Transition:** We've now covered all the infrastructure behind your meme generator. Let's step back and look at the big picture.
+→ We've now covered all the infrastructure behind your meme generator. Let's review the building blocks.
 </aside>
 
 </Slide>
@@ -978,30 +895,10 @@ Serverless architecture is fundamentally about <strong>composing these managed s
 </div>
 
 <aside className="notes">
-**Connect to the problems we just saw:**
 - "Each of these solves one of the problems we just identified"
-- "Databases → data persistence"
-- "Object Storage → large files"
-- "Message Queues → traffic spikes"
-- "Caches → repeated work"
-- "API Gateways → routing and access"
-- "Observability → debugging"
-
-**Frame this section:**
 - "These aren't serverless-specific — they appear in monoliths, microservices, everywhere"
 - "But in serverless, you COMPOSE these services rather than deploying your own"
-- "Let's look at each one and see how Pawtograder uses them"
-
-**The key insight:**
-- Traditional: you deploy PostgreSQL on your own server
-- Serverless: you use Supabase (managed PostgreSQL) and just connect to it
-- Same database, different operational model
-
-**Why this matters:**
-- When you read system architecture diagrams, you'll see these components
-- Knowing what they do helps you understand the system's capabilities and constraints
-
-→ **Transition:** Let's start with the most fundamental: databases...
+→ Let's see how that works for our meme generator
 </aside>
 
 </Slide>
@@ -1042,9 +939,8 @@ The purple box is what <i>you</i> write. Everything else is managed infrastructu
 <aside className="notes">
 - This is the key insight of serverless: your code is a small piece of a larger composed system
 - You didn't write the database, the cache, the queue, or the auth service — you just connected to them
-- The same diagram applies whether you're using Lambda, containers, or Edge Functions — the building blocks are the same
 
-→ **Transition:** So what does this mean for how you spend your time?
+→ There's a range of choices in how much you manage for yourself...
 </aside>
 
 </Slide>
@@ -1130,46 +1026,9 @@ Color scheme: Orange (#FF9800) for developer responsibility, Teal (#4A90A4) for 
 - "Remember the iceberg? All those layers beneath your code?"
 - "This spectrum shows WHO manages each layer"
 - "Each step to the right trades CONTROL for OPERATIONAL SIMPLICITY"
+- "The 8 fallacies don't disappear — the responsibility shifts"
 
-**Walk through the spectrum (reference the iceberg layers):**
-
-**Left side — you manage the entire iceberg:**
-- Own data center: you manage ALL layers (facility, power, network, hardware, OS, runtime, app)
-- Real companies do this! Google, Amazon, large banks — when scale justifies it
-- Most of you will never need to think about power and cooling
-
-**Middle — the cloud IaaS era (2006-2015):**
-- EC2 launched 2006 — revolutionary! No more buying hardware
-- The cloud provider handles the bottom of the iceberg (physical stuff)
-- But you still patch the OS, configure the firewall, scale manually
-- Bottlenose lives here (VMs + containers)
-
-**Right side — serverless territory:**
-- PaaS (Heroku, 2007) was the first "just deploy your code"
-- FaaS (Lambda, 2014) went further: just deploy FUNCTIONS
-- Almost the entire iceberg is managed FOR you
-- Pawtograder lives here (Supabase Edge Functions)
-
-**Not shown: SaaS (the extreme right):**
-- "There's actually one more step we didn't show"
-- SaaS = you don't even write code, you just USE someone else's service
-- Image resize example: Cloudinary, imgix, Cloudflare Images
-- You call their API: "resize this image to 200x200" — done
-- You pay per transformation, they handle everything
-- Trade-off: maximum convenience, but zero customization
-
-**The key insight:**
-- "Serverless" isn't one thing — it's the rightmost portion of this spectrum
-- The vendor handles more of the iceberg; you handle less
-- But you're not getting something for nothing — you pay in flexibility, vendor lock-in, and sometimes cost at scale
-- SaaS is even further right: you don't write ANY code, but you're locked into their exact feature set
-
-**Connect to L20:**
-- "Remember the eight fallacies? They apply at EVERY level except 'own data center'"
-- "But as you move right, the VENDOR deals with more of the retry logic, scaling, and availability"
-- "The fallacies don't disappear — the responsibility shifts"
-
-→ **Transition:** But wait — just having compute isn't enough. Real apps need more than just somewhere to run code...
+→ Is serverless really serverless?
 </aside>
 
 </Slide>
@@ -1422,24 +1281,7 @@ The architectural lesson: <strong>batch operations when possible</strong>. Pawto
 - Companies are tracking carbon footprint of their software
 - Architecture choices have real environmental impact
 
-**The calculation:**
-- 6,000 grading runs/semester
-- 100 tests per assignment
-- Batching saves ~99 API calls per run
-- 594,000 fewer API calls per semester
-- Real energy savings
-
-**The design principle:**
-- "Chatty" APIs waste energy (and money, and latency)
-- Batch when possible
-- This is the same principle as L20's "minimize network round-trips"
-
-**Monolith-first, again:**
-- A monolith's method calls are essentially free
-- Distributed calls have overhead
-- Don't pay distributed costs until you need distributed benefits
-
-→ **Transition:** When SHOULD you use serverless?
+→ When SHOULD you use serverless?
 </aside>
 
 </Slide>
@@ -1601,25 +1443,7 @@ No single architecture is right for everything. Pawtograder's hybrid approach de
 - Each lecture built on the previous
 - The principles are consistent; the scale changes
 
-**The common thread:**
-- L6: Hide implementation behind interfaces
-- L16: Hexagonal architecture — domain core doesn't know about adapters
-- L19: Service boundaries follow the same principle at larger scale
-- L20: Network boundaries require explicit handling of failure
-- L21: Vendor boundaries let you outsource infrastructure concerns
-
-**Pawtograder as a case study:**
-- We used the same autograding example across all three lectures
-- Different perspectives on the same system
-- Shows how these concepts work together in practice
-
-**What you should remember:**
-- Architecture is about tradeoffs, not "best practices"
-- Start simple, add complexity when you have a reason
-- The eight fallacies always apply (unless you own the data center)
-- Hexagonal architecture makes architectural decisions more reversible
-
-→ **Transition:** These same questions work at every scale...
+→ These same questions work at every scale...
 </aside>
 
 </Slide>
@@ -1694,25 +1518,13 @@ Vendor boundaries
 </div>
 
 <aside className="notes">
-**The four questions are universal:**
-- They work when you're designing a class
-- They work when you're drawing service boundaries
-- They work when you're choosing between serverless and containers
-- The SCALE changes. The QUESTIONS don't.
-
-**Walk through each:**
-1. "What changes independently?" → This is L6's information hiding, L18's rate-of-change heuristic, L21's "what can you outsource?"
-2. "Who needs to know?" → This is interfaces at every level — method signatures, API contracts, vendor abstractions
-3. "What can fail?" → This becomes MORE critical as scale increases (L20's fallacies)
-4. "What are you trading?" → L19's quality attributes — every choice has costs and benefits
-
 **The progression across lectures:**
 - Same questions, different consequences
 - At class level: failure = exception, cost = complexity
-- At network level: failure = timeout/retry, cost = latency/reliability
+
 - At vendor level: failure = outage, cost = lock-in/flexibility
 
-→ **Transition:** This is what thinking like an architect means...
+→ This is what thinking like an architect means...
 </aside>
 
 </Slide>
@@ -1770,101 +1582,11 @@ The principles scale. The details change. The questions stay the same.
 </p>
 
 <aside className="notes">
-**This is the synthesis of L18-L21:**
-- Not just facts to memorize, but a WAY OF THINKING
-- These questions work in interviews, code reviews, architecture discussions
-- They work whether you're looking at a monolith or a distributed system
-
-**The meta-lesson:**
 - Architecture isn't about memorizing style names
 - It's about asking the right questions consistently
 - The answers differ based on context — but the questions are universal
 
-**For their careers:**
-- When they join a company and see an existing architecture, these questions help them understand WHY
-- When they're asked to make architectural decisions, these questions guide them
-- When they're debugging distributed systems, "what can fail?" becomes critical
-
-**Final thought:**
-- L22 adds one more dimension: the PEOPLE who build these systems
-- Conway's Law says team structure shapes architecture
-- The questions expand: "Who will build this? Who will maintain it?"
-
-→ **Transition:** One more thought before we move on...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## The Quality Without a Name
-
-<p style={{fontSize: '0.82em'}}>
-In L18, we mentioned <strong>Christopher Alexander</strong> — the architect whose work inspired software design patterns.
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.62em', marginTop: '0.75em'}}>
-
-<div style={{padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px'}}>
-
-**Alexander's insight:**
-
-The most livable, enduring structures emerge through *gradual, adaptive growth* — not grand master plans.
-
-You don't design the perfect building. You create the conditions for one to emerge.
-
-</div>
-
-<div style={{padding: '0.75em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
-
-**The same is true for software:**
-
-- Start with good boundaries (L18)
-- Let styles emerge from understanding (L19)
-- Respect what networks add (L20)
-- Choose vendors consciously (L21)
-
-Then let the system *grow* within those constraints.
-
-</div>
-
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.78em', marginTop: '0.75em', fontStyle: 'italic', color: '#666'}}>
-Alexander called this ineffable quality that makes spaces feel <em>alive</em> the <strong>"Quality Without a Name."</strong> You can't define it precisely — but you know it when you see it. Well-designed software has it too.
-</p>
-</div>
-
-<aside className="notes">
-**Why end with Alexander?**
-- He's the intellectual ancestor of everything we've discussed
-- "Design Patterns" (GoF) explicitly cites his work
-- His philosophy connects architecture (buildings) to architecture (software)
-
-**The Timeless Way of Building (1979):**
-- Alexander argued against top-down master planning
-- The best buildings, neighborhoods, cities emerge through gradual growth
-- But NOT random growth — growth guided by patterns and principles
-- Sound familiar? That's exactly what we've been saying about software.
-
-**Quality Without a Name (QWAN):**
-- Alexander's term for what makes a space feel "alive"
-- He couldn't define it precisely — but devoted his career to understanding it
-- Some software has this quality: it feels *right*, it's pleasant to work with
-- You can't achieve QWAN through checklists — but the principles we've discussed create conditions for it
-
-**The connection to this module:**
-- L18: "Just enough architecture" — decide what's hard to reverse, defer the rest
-- L19: Styles emerge from understanding, not from picking off a menu
-- L20-L21: Respect constraints, work with them rather than against them
-- Together: create conditions for good software to emerge
-
-**Easter egg:**
-- "QWAN Coffee" in the Pawtograder example (L18) = Quality Without A Name
-- Students who noticed it get the reference now
-
-→ **Transition:** Speaking of conditions for emergence — teams are one of those conditions...
+→ After break, we'll start looking at teams.
 </aside>
 
 </Slide>
@@ -1901,25 +1623,6 @@ That's an organizational decision as much as a technical one.
 </div>
 
 </div>
-
-<aside className="notes">
-**Preview L22:**
-- We've focused on technical architecture — how code is organized
-- L22 looks at human architecture — how teams are organized
-- The two are deeply connected
-
-**What students should think about:**
-- Your team project is coming up
-- How you divide work among team members will shape your architecture
-- If two people can't communicate, their code won't integrate well
-
-**End-of-lecture recommendations:**
-- Review the Pawtograder architecture diagram in the lecture notes
-- Look at the decision flowchart when making your own architectural choices
-- Remember: start simple, add complexity when you need it
-
-→ **End of lecture.**
-</aside>
 
 </Slide>
 
