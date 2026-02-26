@@ -119,6 +119,24 @@ Color scheme: Warm oranges/reds for the stressful car ownership side. Cool teals
 
 </Slide>
 
+<Slide>
+
+## Announcements
+
+<div style={{fontSize: '0.85em', textAlign: 'left'}}>
+
+**Late tokens CAN be used on group assignments.**
+- See details in link from syllabus.
+
+**Due Friday, 2/27**
+- Midterm survey via Qualtrics
+- Team formation survey
+- Khoury mid-semester evaluation
+
+</div>
+
+</Slide>
+
 {/* ============================================ */}
 {/* LEARNING OBJECTIVES */}
 {/* ============================================ */}
@@ -166,216 +184,107 @@ After this lecture, you will be able to:
 </Slide>
 
 {/* ============================================ */}
-{/* WARM-UP: A SIMPLE FEATURE */}
+{/* MOTIVATION */}
 {/* ============================================ */}
 
 <Slide>
 
-## Warm-Up: A Simple Feature
+## Poll: What's the fun part?
 
-<p style={{fontSize: '0.82em'}}>
-You're building an app that lets users upload photos. You need a feature: <strong>resize images to create thumbnails</strong>. The core logic is straightforward — we will use an image processing library.
-</p>
-
-<div style={{fontSize: '0.5em', marginTop: '0.5em'}}>
-
-```java
-public class ImageUtils {
-    public static byte[] resize(byte[] imageData, int width, int height) {
-        BufferedImage original = ImageIO.read(new ByteArrayInputStream(imageData));
-        BufferedImage thumbnail = new BufferedImage(width, height, original.getType());
-
-        Graphics2D g = thumbnail.createGraphics();
-        g.drawImage(original, 0, 0, width, height, null);
-        g.dispose();
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ImageIO.write(thumbnail, "jpg", out);
-        return out.toByteArray();
-    }
-}
-```
-
+<div style={{ fontSize: '.8em' }}>
+Imagine memes haven't been invented, and you decide to create the first meme
+generator and server. What will you want to spend your time on?
 </div>
 
-<div className="fragment">
-<p style={{fontSize: '0.75em', marginTop: '0.5em', color: '#4CAF50'}}>
-<strong>This is the easy part.</strong> ~15 lines of code. You could write this in an hour.
-</p>
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.75em', marginTop: '0.3em', color: '#f44336'}}>
-<strong>But how do users actually send you an image?</strong> This code runs on your laptop. Your users are... not on your laptop.
-</p>
-</div>
-
-<aside className="notes">
-**Start with something concrete:**
-- "Let's say you're building an app — Instagram clone, e-commerce site, whatever"
-- "Users upload photos. You need thumbnails."
-- "The image processing itself? Not that hard."
-
-**Walk through the code:**
-- Read image bytes into a BufferedImage
-- Create a new smaller image
-- Draw the original into the smaller canvas
-- Write it back to bytes
-
-**The twist:**
-- "This code works great... on your laptop"
-- "But your users aren't on your laptop"
-- "How do they send you an image to resize?"
-
-→ **Transition:** You need to expose this as a service...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Now Make It a Service
-
-<p style={{fontSize: '0.8em'}}>
-For users to access your image resizer, you need an <strong>HTTP server</strong> that listens for requests:
-</p>
-
-<div style={{fontSize: '0.7em', marginTop: '-1em', marginBottom: '-1em'}}>
-```java
-public class ImageResizeServer {
-    private static final int PORT = 8080; // hope it's available
-    private static volatile boolean running = true;
-
-    public static void main(String[] args) throws Exception {
-        // YOU set up the server
-        HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
-        server.createContext("/resize", exchange -> {
-            byte[] imageData = parseMultipartUpload(exchange);  // Parsing uploads is painful
-            byte[] thumbnail = ImageUtils.resize(imageData, 200, 200);  // ← Your actual logic
-            exchange.sendResponseHeaders(200, thumbnail.length);
-            exchange.getResponseBody().write(thumbnail);
-            exchange.close();
-        });
-        server.createContext("/health", ex -> {  // Load balancers need this
-            ex.sendResponseHeaders(200, 2);
-            ex.getResponseBody().write("OK".getBytes());
-            ex.close();
-        });
-
-        // YOU handle graceful shutdown
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            running = false;
-            server.stop(5);
-        }));
-
-        server.start();
-        System.out.println("Server running on port " + PORT);
-        while (running) { Thread.sleep(1000); }  // Runs FOREVER until killed
-    }
-}
-```
-
-</div>
-
-
-<aside className="notes">
-**Walk through what got added:**
-Your <strong>15 lines of business logic</strong> are now buried in <strong>30+ lines of server boilerplate</strong>. And we haven't even talked about where this server runs...
-
-- main() method: YOU start the server
-- Port binding: pick 8080, hope nothing else uses it
-- Health check endpoint: load balancers ping this to know you're alive
-- Shutdown hook: stop gracefully so in-flight requests complete
-- while(running) loop: keep the JVM alive forever
-
-**What we're NOT showing (even more work):**
-- Multipart form parsing (notoriously painful)
-- SSL/TLS certificate configuration
-- Request logging and metrics
-- Rate limiting
-- Error handling
-
-**The key observation:**
-- "Your actual business logic? One line: ImageUtils.resize()"
-- "Everything else is ceremony to make it accessible"
-
-→ **Transition:** And this server needs to run somewhere...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Where Does This Server Run?
-
-<p style={{fontSize: '0.78em'}}>
-You can run <code>java ImageResizeServer</code> on your laptop. But your laptop sleeps when you sleep. <strong>Your users are in different time zones.</strong>
-</p>
-
-<Img
-  style={{marginTop: '-0.5rem', marginBottom: '0.5rem'}}
-  src="/img/lectures/web/l21-code-lives-somewhere3.webp"
-  width={1200}
-  prompt="An educational illustration in a clean, modern flat-art style (NOT pixel art). No title text.
-
-CONCEPT: 'Your Laptop Sleeps. Servers Never Do.' — A split scene contrasting the cozy, finite world of local development with the relentless 24/7 reality of production servers.
-
-SPLIT SCENE with strong visual contrast:
-
-LEFT SIDE — 'YOUR LAPTOP' (warm, cozy, purple #9370DB accents):
-A peaceful bedroom scene at night. A college student is asleep in bed, their laptop CLOSED on the desk nearby, also 'sleeping' (maybe with cartoon Z's floating above it). The room is dark, moonlight through window.
-
-Key visual elements:
-- Laptop lid CLOSED — it's off duty
-- Student sleeping peacefully — the code can wait until morning
-- Clock showing 2:47 AM
-- A single coffee mug, some textbooks — cozy dorm vibes
-- Small label: 'Your code sleeps when you sleep'
-- Everything is peaceful, quiet, personal
-
-CENTER DIVIDER — A jagged lightning bolt or stark vertical line separating the two worlds
-
-RIGHT SIDE — 'A SERVER' (harsh, industrial, teal #4A90A4 and warning orange accents):
-A dramatically different scene: a server rack in a data center, surrounded by chaos and activity even though it's the SAME 2:47 AM.
-
-The server is ANTHROPOMORPHIZED as an exhausted but determined worker — maybe with tired eyes but still working, or a robot that can't stop. Around it:
-- Multiple speech bubbles or request indicators coming in simultaneously from all directions
-- Small icons representing users from different time zones: someone in Tokyo having lunch, someone in London at breakfast, someone in Sydney at dinner
-- Blinking status lights, spinning fans
-- A phone ringing (incident alert?)
-- Coffee cups everywhere (it runs on electricity, not sleep)
-- Clock ALSO showing 2:47 AM — same time, different reality
-- Small labels: 'Tokyo: lunchtime', 'London: morning commute', 'Sydney: dinner rush'
-- The server looks stressed but CAN'T STOP
-
-BOTTOM TAGLINE spanning both sides:
-'When you close your laptop at 2 AM, GitHub is still answering requests from 20 million developers.'
-
-VISUAL CONTRAST:
-- Left side: dark, peaceful, sleeping, ONE person
-- Right side: bright server lights in darkness, chaotic, awake, EVERYONE
-
-Color scheme: Warm purples and dark blues for the peaceful left side. Harsh teal, blinking oranges/reds, clinical whites for the right side. The contrast should feel jarring — that's the point."
-  alt="Split scene: LEFT shows a peaceful dorm room at 2:47 AM — student asleep, laptop closed, everything quiet. RIGHT shows a server at the SAME 2:47 AM, anthropomorphized as an exhausted worker surrounded by incoming requests from Tokyo, London, Sydney — it can never sleep. Tagline: When you close your laptop, GitHub is still answering requests from 20 million developers."
+<PollSlide username='espertus'
+  choices={[
+    "the GUI, including the meme editor",
+    "keeping search and retrieval fast with 10M memes",
+    "handling traffic when a meme goes viral",
+    "authenticating users securely",
+    "scrambling to fix production problems at 2 AM",
+    "diagnosing why memes randomly fail in Asia"
+  ]}
 />
 
 <aside className="notes">
-**The laptop limitation:**
-- "You can demo this on your laptop"
-- "But production? Your laptop closes. You sleep. You go to class."
-- "Someone in Tokyo wants to resize an image at 3 AM Boston time"
-
-**The 24/7 reality:**
-- "Real services run on computers that NEVER sleep"
-- "Those computers need to be reachable from anywhere"
-- "This is fundamentally different from running code locally"
-
-**The question:**
-- "So where do you PUT this server?"
-- "What does it take to run code 24/7?"
-
-→ **Transition:** Let's trace what's actually needed...
+- Multiple select
 </aside>
+
+</Slide>
+
+<Slide>
+
+## DIY or Cloud
+
+<Img src='/img/lectures/web/l21-dyi-or-cloud.png'
+  prompt="An educational illustration in a clean, modern flat-art style (NOT pixel art). No title text.
+
+
+
+CONCEPT: 'You Handle the Fun Part. The Cloud Handles the Rest.' — A split scene contrasting the nightmare of managing your own infrastructure with the peace of outsourcing it to the cloud.
+
+
+
+SPLIT SCENE with strong visual contrast:
+
+
+
+LEFT SIDE — 'DIY INFRASTRUCTURE' (harsh reds and oranges):
+
+A developer (dark-skinned woman from India) at her desk at 2 AM, visibly frantic. Around them:
+
+- A teetering physical stack of servers on the desk, some with blinking warning lights
+
+- Multiple browser tabs open: error logs, monitoring dashboards, all red
+
+- Thought bubbles crowded with infrastructure concerns: 'Is the DB down?', 'Cache invalidation?', 'Out of disk?', 'Memory leak?'
+
+- Angry user complaint bubbles flying in from the right: 'Why is it so slow??', 'My meme won't load!', 'This app is broken!'
+
+- Empty coffee cups everywhere
+
+- Clock showing 2:47 AM
+
+- The developer looks exhausted and overwhelmed, hair disheveled
+
+- Small label at bottom: 'YOU manage everything'
+
+
+
+CENTER DIVIDER — A clean vertical line or lightning bolt
+
+
+
+RIGHT SIDE — 'CLOUD INFRASTRUCTURE' (cool, calming purples and teals):
+
+The SAME developer, now peacefully asleep in a tidy bedroom. Meanwhile:
+
+- The wall behind the bed includes a few framed magazine covers and awards for the app and developer.
+
+- Happy user reaction bubbles: hearts, stars, 'LOL!', '😂', thumbs up — memes delighting users around the world
+
+- The developer's phone on the nightstand shows no notifications — no pages, no alerts
+
+- Clock also showing 2:47 AM — same time, totally different reality
+
+- A small floating diagram showing: databases, caches, queues, object storage — all managed, all healthy
+
+- Small label at bottom: 'CLOUD manages everything'
+
+
+
+VISUAL CONTRAST:
+
+- Left side: chaotic, cluttered, harsh lighting, red warning colors
+
+- Right side: peaceful, minimal, soft moonlight, greens and teals indicating healthy systems
+
+
+
+Color scheme: Angry reds and oranges for the left. Calming purples (#9370DB), teals (#4A90A4), and soft greens for the right. The contrast should feel immediate and obvious."
+  alt="A split illustration: LEFT shows a exhausted developer at 2:47 AM surrounded by smoking servers and error screens, overwhelmed by infrastructure worries and angry user complaints. RIGHT shows the same developer sleeping peacefully while a cloud diagram displays healthy managed infrastructure and happy users reacting with hearts and laughter."
+/>
 
 </Slide>
 
@@ -383,12 +292,7 @@ Color scheme: Warm purples and dark blues for the peaceful left side. Harsh teal
 
 ## The Infrastructure Iceberg
 
-<p style={{fontSize: '0.78em'}}>
-Your <code>ImageResizeServer</code> requires *infrastructure* to be available to users.
-</p>
-
 <Img
-  style={{marginTop: '-2em'}}
   src="/img/lectures/web/l21-infrastructure-stack.webp"
   width={1200}
   prompt="An educational illustration in a clean, modern flat-art style (NOT pixel art). No title text.
@@ -490,376 +394,506 @@ TAGLINE at bottom: 'Your app is just the tip of the iceberg.'"
 
 <Slide>
 
-## Two Choices: Own It or Rent It
+## Storing Memes: We Need a Database and Object Storage
 
-<p style={{fontSize: '0.82em'}}>
-You have a fundamental choice about who manages all that infrastructure. This is the core tradeoff that defines cloud computing — and it's exactly like choosing between <strong>owning a car</strong> and <strong>taking the T</strong>.
+<p style={{fontSize: '0.78em'}}>
+Every meme has metadata and an image that need to outlive your server process. A database gives you <strong>persistent storage for metadata</strong>.
 </p>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.6em', marginTop: '0.75em'}}>
-
-<div className='fragment' style={{padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px'}}>
-
-**Own Your Infrastructure**
-
-Buy servers. Rent data center space. Hire ops engineers. Configure everything yourself.
-
-- **Total control** — choose any hardware, any software
-- **Predictable costs** at high scale
-- **You're responsible** for everything: uptime, security, maintenance
-- When something breaks at 3 AM, **your phone rings**
-
-</div>
-
-<div className='fragment' style={{padding: '0.75em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
-
-**Rent from a Cloud Provider**
-
-AWS, Google Cloud, Azure, Supabase — they own the data centers, you use their services.
-
-- **Less control** — work within their constraints
-- **Pay-per-use** pricing (can be cheaper... or more expensive)
-- **They handle** most operational concerns
-- When their stuff breaks at 3 AM, **their phone rings**
-
-</div>
-
-</div>
-
-<aside className="notes">
-**The ownership tradeoff:**
-- "This is a fundamental decision in software engineering"
-- "Own vs. rent — it applies to infrastructure just like cars"
-
-**Own it:**
-- "Companies like Google and Amazon own their data centers"
-- "They have tens of thousands of servers, teams of engineers"
-- "When you're at that scale, it makes sense"
-- "But for a small team or a class project? Probably not."
-
-**Rent it:**
-- "Cloud providers own massive infrastructure"
-- "They spread the cost across thousands of customers"
-- "You rent a small slice"
-- "Like an apartment vs. owning a house"
-
-**The Boston analogy:**
-- "This should feel familiar to any of you who've debated bringing a car to Boston"
-- "Parking at Northeastern: $2,200/semester"
-- "CharlieCard: $2.40/ride"
-- "If you only need to go somewhere occasionally, the math is obvious"
-- "But if you need to go somewhere the T doesn't go... you're stuck"
-
-**Foreshadowing serverless:**
-- "Serverless is like ONLY paying for the rides you take"
-- "No monthly parking fee. No insurance. Just per-trip cost."
-- "But you REALLY have to follow their rules."
-
-→ **Transition:** Let's see this as a spectrum...
-</aside>
-
-</Slide>
-
-{/* ============================================ */}
-{/* RECAP: FROM DISTRIBUTED TO SERVERLESS */}
-{/* ============================================ */}
-
-<Slide>
-
-## Recap: From Distributed Systems to Serverless
-
-<p style={{fontSize: '0.82em'}}>
-In <strong>L19</strong>, we explored architectural styles — monoliths, modular monoliths, and the tradeoffs between them. In <strong>L20</strong>, we crossed the network boundary and discovered the <strong>Eight Fallacies of Distributed Computing</strong>.
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75em', fontSize: '0.6em', marginTop: '0.75em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.55em', marginTop: '0.5em'}}>
 
 <div style={{padding: '0.6em', border: '2px solid #9370DB', borderRadius: '8px'}}>
 
-**L19: How do we organize code?**
+**PostgreSQL (relational)**
+```
+memes
+─────────────────────────────────────
+id          | 4821
+template_id | 12
+top_text    | 'Me'
+bottom_text | 'A new programming language'
+author_id   | 99
+rating      | 4.7
+image_url   | 'memes/4821.jpg'
+```
 
-Architectural styles emerge from quality attribute requirements. Monolith-first is usually right.
+Rows, columns, strict schema. Supports joins, aggregations, transactions,
+making it more suitable for our meme server.
 
 </div>
 
 <div style={{padding: '0.6em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
 
-**L20: What changes over networks?**
+**Firestore (NoSQL)**
+```json
+{
+  "id": "meme_4821",
+  "template": "distracted-boyfriend",
+  "text": {
+    "top": "Me",
+    "bottom": "A new programming language"
+  },
+  "author": 99,
+  "rating": 4.7,
+  "image_url": "memes/4821.jpg"
+}
+```
 
-The eight fallacies. Latency, failures, security boundaries. Every call needs timeout + retry.
+Flexible JSON documents. Easy to add fields. No joins.
+
+</div>
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.68em', marginTop: '0.5em', color: '#FF9800'}}>
+Images are stored separately in cheaper object storage.
+</p>
+</div>
+
+<aside className="notes">
+- Relational: "find all memes by this author with rating above 4, sorted by date" — easy with SQL
+- Firestore: "store this meme quickly with whatever fields I have right now" — easy with documents
+- The image_url is a reference into object storage (S3, Cloud Storage) — the database holds metadata, not the binary data itself
+
+→ Now that we can store memes, how do we find them quickly?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Indexing: Finding Memes Without Reading Everything
+
+<p style={{fontSize: '0.78em'}}>
+With 10 million memes, you can't scan every row on every search. A database <strong>index</strong> is a pre-computed lookup structure — like a book's index, but rebuilt automatically as data changes.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.55em', marginTop: '0.5em'}}>
+
+<div style={{padding: '0.6em', border: '2px solid #f44336', borderRadius: '8px'}}>
+
+**Without index: full table scan**
+```sql
+SELECT * FROM memes
+WHERE top_text LIKE '%programming%'
+  OR bottom_text LIKE '%programming%';
+```
+
+Reads all 10M rows. Every search. Gets slower as library grows. Response time: seconds.
+
+</div>
+
+<div style={{padding: '0.6em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+
+**With index: direct lookup**
+```sql
+-- Create a composite index over both text fields
+CREATE INDEX memes_text_search
+  ON memes
+  USING gin(to_tsvector('english', top_text || ' ' || bottom_text));
+
+-- Query using the index
+SELECT * FROM memes
+WHERE to_tsvector('english', top_text || ' ' || bottom_text)
+   @@ to_tsquery('english', 'programming');
+```
+
+Index narrows to matching rows instantly. Response time: milliseconds at any scale.
+
+</div>
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.68em', marginTop: '0.5em', color: '#FF9800'}}>
+<strong>The database builds and maintains the index automatically.</strong> You declare what to index; it handles the rest.
+</p>
+</div>
+
+<aside className="notes">
+**Make the analogy concrete:**
+- "Imagine finding every mention of 'distracted boyfriend' in a 10,000-page book"
+- "Without an index: read every page. With an index: turn to page 847."
+- "The database builds and maintains this index automatically after you create it"
+
+**The write penalty:**
+- Indexes aren't free — every INSERT or UPDATE must also update the index
+- Read-heavy workloads (like search) benefit enormously
+- Write-heavy workloads (like logging) may want fewer indexes
+
+**When to reach for dedicated search:**
+- PostgreSQL full-text search is good for moderate scale
+- Elasticsearch, Algolia, Meilisearch are purpose-built for search
+- They support: fuzzy matching ('distarcted boyfriend' still finds results), ranking by relevance, faceted filters
+- Algolia powers the search on many major sites students use daily
+
+**Connection to the poll:**
+- "This is infrastructure nobody votes to build — but without it, your search box is broken at scale"
+
+→ **Transition:** Indexes help with search. But what if thousands of users search for the same thing simultaneously?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Caching: Stop Repeating Yourself
+
+<p style={{fontSize: '0.78em'}}>
+When the same data is requested repeatedly, <strong>caching</strong> stores the result so you don't recompute it. Trade a little memory for a lot of speed.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.58em', marginTop: '0.5em'}}>
+
+<div style={{padding: '0.6em', border: '2px solid #9370DB', borderRadius: '8px'}}>
+
+**Without cache**
+```
+User → App → Database → App → User
+         ↑ repeated 10,000×
+         for "drake meme" results
+```
+
+Each request pays the full query cost. Popular searches hammer the database.
+
+</div>
+
+<div style={{padding: '0.6em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+
+**With cache (Redis)**
+```
+search:"drake meme" → [4821, 4799, 4755, ...]
+search:"distracted" → [4821, 4603, 4512, ...]
+meme:4821           → { top_text: "Me", ... }
+```
+
+Results stored by key. First request hits the database; the next 9,999 are served from memory.
+
+</div>
+
+</div>
+
+<aside className="notes">
+- Redis is an in-memory key-value store — extremely fast
+- The key is typically the query type and string; the value is the result
+- Hit rate matters: 99% hit rate means the database sees 1% of the traffic
+
+→ **Transition:** Fast search and retrieval covered. What about sudden traffic spikes?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Handling Traffic When a Meme Goes Viral
+
+<p style={{fontSize: '0.78em'}}>
+Your meme generator handles 100 requests/second on a normal day. Then your <em>distracted boyfriend</em> meme gets posted on Reddit. Suddenly: 100,000 requests/second. <strong>How do you not crash?</strong>
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.58em', marginTop: '0.5em'}}>
+
+<div style={{padding: '0.6em', border: '2px solid #f44336', borderRadius: '8px'}}>
+
+**Without a queue: direct processing**
+```
+100,000 users
+      ↓
+   Your server
+   (built for 100)
+      ↓
+   💥 crash
+```
+
+Requests pile up, server runs out of memory, everyone gets an error.
+
+</div>
+
+<div style={{padding: '0.6em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+
+**With a queue: buffered processing**
+```
+100,000 users
+      ↓
+   Message queue
+   (holds requests)
+      ↓
+   Workers process
+   at sustainable pace
+```
+
+Requests are accepted immediately. Workers drain the queue as fast as they can. No crashes, no lost requests.
+
+</div>
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.68em', marginTop: '0.5em', color: '#FF9800'}}>
+<strong>Common services:</strong> AWS SQS, Google Pub/Sub, RabbitMQ. The queue guarantees every request is eventually processed — even if a worker crashes mid-job, the message goes back on the queue.
+</p>
+</div>
+
+<aside className="notes">
+- The queue decouples accepting requests from processing them
+- Users get an immediate "your meme is being generated" response rather than a timeout
+- Workers can be scaled up independently to drain the queue faster
+
+→ **Transition:** We can handle the traffic. But how do users find us in the first place?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Authenticating Users Securely
+
+<p style={{fontSize: '0.78em'}}>
+Your meme generator needs to know who's who. <strong>Authentication is deceptively hard to get right</strong> — and the consequences of getting it wrong are severe.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.58em', marginTop: '0.5em'}}>
+
+<div style={{padding: '0.6em', border: '2px solid #f44336', borderRadius: '8px'}}>
+
+**What could go wrong?**
+
+- Passwords stored in plain text — one breach exposes everyone
+- Weak session tokens — attackers can impersonate users
+- No rate limiting — brute-force login attacks
+- Forgotten password reset flaws — account takeover
+- No MFA — stolen password = full access
+
+</div>
+
+<div style={{padding: '0.6em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
+
+**What you actually need**
+
+- Secure password hashing (bcrypt, Argon2)
+- Short-lived, signed session tokens (JWT)
+- Rate limiting on login attempts
+- Secure password reset flows
+- Multi-factor authentication support
+- OAuth ("Sign in with Google")
+
+</div>
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.68em', marginTop: '0.5em', color: '#FF9800'}}>
+<strong>This is why teams use managed auth services.</strong> The attack surface is large, the stakes are high, and the requirements are well-understood. This is exactly the kind of problem best outsourced to specialists.
+</p>
+</div>
+
+<aside className="notes">
+- Auth is a solved problem — but solving it correctly from scratch is genuinely hard
+- Every item on the "what could go wrong" list has caused major real-world breaches
+- Managed auth services (Auth0, Supabase Auth, Firebase Auth) handle all of this
+- This is a good example of the build vs. buy tradeoff — almost always buy for auth
+
+→ **Transition:** Even with everything running smoothly, things will eventually break...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Monitoring and Alerting
+
+<p style={{fontSize: '0.78em'}}>
+Your meme generator is running in production. <strong>How do you catch problems before they blow up?</strong>
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.58em', marginTop: '0.5em'}}>
+
+<div style={{padding: '0.6em', border: '2px solid #f44336', borderRadius: '8px'}}>
+
+**Without alerting**
+
+- Users notice before you do
+- You find out via angry tweets
+- You have no idea when it started
+- You don't know how many users are affected
+- You're guessing at the cause
+
+</div>
+
+<div style={{padding: '0.6em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+
+**With alerting**
+
+- Monitor key metrics: error rate, latency, queue depth
+- Set thresholds: "page me if error rate exceeds 1%"
+- Get notified before users do
+- Know exactly when the problem started
+- On-call rotation shares the burden
+
+</div>
+
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.68em', marginTop: '0.5em', color: '#FF9800'}}>
+<strong>Common services:</strong> PagerDuty, Datadog, AWS CloudWatch. The goal is to be <i>proactive</i> — your monitoring catches the problem, not your users.
+</p>
+</div>
+
+<div className="fragment">
+<p style={{fontSize: '0.68em', marginTop: '0.5em', color: '#4A90A4'}}>
+<strong>What you don't get paged about:</strong> disk failures, server reboots, OS upgrades, network outages, hardware replacements. The cloud handles these — you only get woken up for problems in <i>your</i> code.
+</p>
+</div>
+
+<aside className="notes">
+- Alerting is the difference between "we fixed it in 5 minutes" and "it was down for 3 hours before anyone noticed"
+- On-call rotations are a real part of engineering jobs — students will encounter this
+- Alerting tells you something is wrong; observability tells you why
+
+→ **Transition:** Alerting wakes you up. But then what?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Observability: Diagnosing Why Memes Fail in Asia
+
+<p style={{fontSize: '0.78em'}}>
+Alerting tells you <i>something</i> is wrong. <strong>Observability</strong> tells you <i>why</i> — even when the problem only affects some users, in some regions, some of the time.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75em', fontSize: '0.55em', marginTop: '0.5em'}}>
+
+<div style={{padding: '0.6em', border: '2px solid #9370DB', borderRadius: '8px'}}>
+
+**Logs**
+
+A record of what happened
+```
+[ERROR] meme:4821 failed to load
+  region: ap-northeast-1
+  latency: 8200ms
+  cause: storage timeout
+```
+
+</div>
+
+<div style={{padding: '0.6em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
+
+**Metrics**
+
+Aggregated measurements over time
+```
+error_rate{region="asia"} 12%
+error_rate{region="us"}    0.1%
+p99_latency{region="asia"} 8s
+p99_latency{region="us"}  120ms
+```
 
 </div>
 
 <div style={{padding: '0.6em', border: '2px solid #FF9800', borderRadius: '8px'}}>
 
-**L21: What if someone else manages it?**
+**Traces**
 
-Serverless = technical partitioning with a vendor. You write functions; they operate infrastructure.
+The path of a single request
+```
+User request (8200ms total)
+ ├─ Auth check       12ms
+ ├─ Database query   45ms
+ └─ Image fetch    8100ms ⚠
+      └─ CDN miss → origin
+            (wrong region)
+```
 
 </div>
 
 </div>
 
 <div className="fragment">
-<p style={{fontSize: '0.78em', marginTop: '0.75em', fontWeight: 'bold', color: '#4CAF50'}}>
-Today's key insight: Serverless doesn't eliminate distributed systems complexity — it shifts <em>who deals with it</em>. The eight fallacies still apply. You just don't write the retry logic yourself.
+<p style={{fontSize: '0.68em', marginTop: '0.5em', color: '#4CAF50'}}>
+Without the trace, you might spend hours guessing. With it, the problem is obvious: images are being fetched from the wrong region. <strong>Common services:</strong> Datadog, Sentry, AWS CloudWatch.
 </p>
 </div>
-
-<aside className="notes">
-**Connect to what we just covered:**
-- "We just saw the iceberg — all that infrastructure beneath your code"
-- "The 'own it vs. rent it' choice"
-- "Now let's connect this to our architectural journey from L19 and L20"
-
-**Connect the arc:**
-- L19: Inside a single deployment — how do we structure code?
-- L20: Across deployments — what changes when components talk over networks?
-- L21: Who operates the infrastructure those deployments run on?
-
-**The key framing:**
-- "Serverless" sounds like magic — "no servers!"
-- Reality: there ARE servers, you just don't manage them — it's the "rent it" extreme
-- All eight fallacies still apply to YOUR code
-- The vendor handles retry logic, scaling, availability — but you pay for that in other ways
-
-→ **Transition:** The "own vs. rent" choice isn't binary — it's a spectrum. Let's map it out...
-</aside>
-
-</Slide>
-
-{/* ============================================ */}
-{/* THE CLOUD DEPLOYMENT SPECTRUM */}
-{/* ============================================ */}
-
-<Slide>
-
-## The Cloud Deployment Spectrum
-
-<Img
-  src="/img/lectures/web/l21-cloud-spectrum6.webp"
-  style={{marginTop: '-1em', marginBottom: '-.5em'}}
-  prompt="An educational illustration in a clean, modern flat-art style (NOT pixel art). No title text.
-
-A horizontal 'responsibility spectrum' showing seven deployment models from left to right. Each station has a VERTICAL STACK of labeled layers. Layers YOU manage are colored ORANGE (#FF9800). Layers the PROVIDER manages are colored TEAL (#4A90A4).
-
-LAYOUT: Seven vertical 'stations' arranged left-to-right. Each station shows a stack of 8 layers (bottom to top): FACILITY | POWER | NETWORK | HARDWARE | VIRTUALIZATION | OS | RUNTIME | APP
-
-STATION 1 — 'OWN DATA CENTER' (leftmost):
-Stack: ALL 8 layers colored ORANGE (you manage everything)
-- FACILITY (orange) | POWER (orange) | NETWORK (orange) | HARDWARE (orange) | VIRTUALIZATION (orange) | OS (orange) | RUNTIME (orange) | APP (orange)
-Developer figure: sweating, carrying enormous backpack with server rack, cables, hard drives, power generator, HVAC units, fire suppression system, security cameras, etc.
-Label below: 'You manage: EVERYTHING'
-
-STATION 2 — 'COLOCATION':
-Stack: Bottom 3 layers TEAL, top 5 layers ORANGE
-- FACILITY (teal) | POWER (teal) | NETWORK (teal) | HARDWARE (orange) | VIRTUALIZATION (orange) | OS (orange) | RUNTIME (orange) | APP (orange)
-Developer: lighter load, no power equipment
-Example: 'Equinix, Digital Realty'
-
-STATION 3 — 'IaaS (VMs)':
-Stack: Bottom 5 layers TEAL, top 3 layers ORANGE
-- FACILITY (teal) | POWER (teal) | NETWORK (teal) | HARDWARE (teal) | VIRTUALIZATION (teal) | OS (orange) | RUNTIME (orange) | APP (orange)
-Developer: carrying OS disk, runtime package, app bundle
-Example: 'AWS EC2, Google Compute, Azure VMs'
-
-STATION 4 — 'MANAGED CONTAINERS':
-Stack: Bottom 6 layers TEAL, top 2 layers ORANGE
-- FACILITY (teal) | POWER (teal) | NETWORK (teal) | HARDWARE (teal) | VIRTUALIZATION (teal) | OS (teal) | RUNTIME (orange) | APP (orange)
-Developer: carrying container boxes
-Example: 'AWS Fargate, Google Cloud Run'
-
-STATION 5 — 'CONTAINER ORCHESTRATION':
-Stack: Bottom 6 layers TEAL, RUNTIME split (teal handles scaling/networking), APP (orange)
-- Same as Station 4, but RUNTIME shows 'scaling, health' in teal section
-Developer: carrying app code and small YAML config
-Example: 'AWS EKS, GKE, AKS'
-
-STATION 6 — 'PaaS':
-Stack: Bottom 7 layers TEAL, only APP (orange)
-- FACILITY (teal) | POWER (teal) | NETWORK (teal) | HARDWARE (teal) | VIRTUALIZATION (teal) | OS (teal) | RUNTIME (teal) | APP (orange)
-Developer: carrying only small app bundle
-Example: 'Hasura, Firebase, Supabase'
-
-STATION 7 — 'FaaS / SERVERLESS' (rightmost):
-Stack: ALL layers TEAL except tiny 'fn()' slice at top (orange)
-- Everything teal, with just a small orange 'fn()' function symbol at the very top
-Developer: RELAXED, floating on a fluffy CLOUD-SHAPED HAMMOCK, holding tiny 'fn()' symbol, maybe sipping a drink
-Example: 'AWS Lambda, Vercel Functions, Cloudflare Workers'
-
-VISUAL ELEMENTS:
-- Ground/base gets progressively more cloud-like from left to right
-- Left label: 'MORE CONTROL' with steering wheel icon
-- Right label: 'LESS BURDEN' with cloud icon
-- Bracket spanning stations 6-7: 'SERVERLESS TERRITORY'
-- Legend: ORANGE = You Manage, TEAL = Provider Manages
-
-Color scheme: Orange (#FF9800) for developer responsibility, Teal (#4A90A4) for provider responsibility, purple (#9370DB) accents."
-  alt="A horizontal spectrum of seven cloud deployment models. Each station shows an 8-layer stack (Facility, Power, Network, Hardware, Virtualization, OS, Runtime, App) with orange layers (you manage) and teal layers (provider manages). LEFT: Own Data Center has all orange layers, sweating developer. Moving RIGHT: progressively more teal layers. RIGHT: FaaS has almost all teal, with developer relaxing on a cloud-shaped hammock holding only a tiny fn() function. Legend shows orange=you, teal=provider."
-/>
 
 <div className="fragment">
-<p style={{fontSize: '0.65em', marginTop: '0.4em', fontStyle: 'italic', color: '#666'}}>
-<strong>Not shown:</strong> SaaS (Software as a Service) — even further right. For image resizing, you could outsource entirely to a vendor: call their API, pay per transformation, write zero image code. Maximum convenience, zero customization.
+<p style={{fontSize: '0.68em', marginTop: '0.5em', color: '#4A90A4'}}>
+<strong>Who configures this?</strong> The platform automatically captures infrastructure logs (server restarts, network errors, scaling events). <i>You</i> add application logs — the lines in your code that record what your meme generator is actually doing.
 </p>
 </div>
 
 <aside className="notes">
-**Connect to the iceberg:**
-- "Remember the iceberg? All those layers beneath your code?"
-- "This spectrum shows WHO manages each layer"
-- "Each step to the right trades CONTROL for OPERATIONAL SIMPLICITY"
+- Logs, metrics, and traces are the "three pillars of observability"
+- The Asia example is realistic — CDN misconfiguration is a common cause of regional latency
+- Without observability, distributed systems are essentially undebuggable
 
-**Walk through the spectrum (reference the iceberg layers):**
-
-**Left side — you manage the entire iceberg:**
-- Own data center: you manage ALL layers (facility, power, network, hardware, OS, runtime, app)
-- Real companies do this! Google, Amazon, large banks — when scale justifies it
-- Most of you will never need to think about power and cooling
-
-**Middle — the cloud IaaS era (2006-2015):**
-- EC2 launched 2006 — revolutionary! No more buying hardware
-- The cloud provider handles the bottom of the iceberg (physical stuff)
-- But you still patch the OS, configure the firewall, scale manually
-- Bottlenose lives here (VMs + containers)
-
-**Right side — serverless territory:**
-- PaaS (Heroku, 2007) was the first "just deploy your code"
-- FaaS (Lambda, 2014) went further: just deploy FUNCTIONS
-- Almost the entire iceberg is managed FOR you
-- Pawtograder lives here (Supabase Edge Functions)
-
-**Not shown: SaaS (the extreme right):**
-- "There's actually one more step we didn't show"
-- SaaS = you don't even write code, you just USE someone else's service
-- Image resize example: Cloudinary, imgix, Cloudflare Images
-- You call their API: "resize this image to 200x200" — done
-- You pay per transformation, they handle everything
-- Trade-off: maximum convenience, but zero customization
-
-**The key insight:**
-- "Serverless" isn't one thing — it's the rightmost portion of this spectrum
-- The vendor handles more of the iceberg; you handle less
-- But you're not getting something for nothing — you pay in flexibility, vendor lock-in, and sometimes cost at scale
-- SaaS is even further right: you don't write ANY code, but you're locked into their exact feature set
-
-**Connect to L20:**
-- "Remember the eight fallacies? They apply at EVERY level except 'own data center'"
-- "But as you move right, the VENDOR deals with more of the retry logic, scaling, and availability"
-- "The fallacies don't disappear — the responsibility shifts"
-
-→ **Transition:** But wait — just having compute isn't enough. Real apps need more than just somewhere to run code...
+→ **Transition:** What else might you want?
 </aside>
 
 </Slide>
 
-{/* ============================================ */}
-{/* BRIDGE: WHAT ELSE DOES YOUR APP NEED? */}
-{/* ============================================ */}
-
 <Slide>
 
-## Beyond Compute: What Else Does Your Application Need?
+## Offering an API: You Need a Gateway
 
 <p style={{fontSize: '0.78em'}}>
-Okay, you've got a server (or a function) running your code. But code alone isn't enough. Real applications have <strong>needs</strong> that go beyond just executing instructions.
+Your meme generator is a hit. Developers want to build mobile apps, bots, and integrations on top of it. You decide to offer a public API. <strong>Every request needs auth, routing, and rate limiting — but you don't have to write any of it yourself.</strong>
 </p>
 
-<Img
-  src="/img/lectures/web/l21-app-needs2.webp"
-  style={{marginTop: '-1em', marginBottom: '-.5em'}}
-  width={1200}
-  prompt="An educational illustration in a clean, modern flat-art style (NOT pixel art). No title text.
+<div style={{fontSize: '0.55em', marginTop: '0.5em'}}>
+```
+Client request
+      ↓
+ API Gateway
+  ├─ Authenticate: is this a valid API key?
+  ├─ Rate limit: has this client exceeded 100 requests/min?
+  ├─ Route: /memes/* → meme service
+  │         /users/* → user service
+  │         /templates/* → template service
+  └─ Forward to your code
+```
 
-CONCEPT: 'Your Application Has Needs' — showing a small application character surrounded by question bubbles representing common problems that arise when running real software.
+</div>
 
-CENTER: A small, friendly application mascot (maybe a little box with a face, or a simple robot) looking overwhelmed. It's standing on a cloud/server platform, clearly running, but CONFUSED by all the questions around it.
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.55em', marginTop: '0.5em'}}>
 
-SURROUNDING THE APP — Six question bubbles or thought clouds, each representing a real problem:
+<div style={{padding: '0.6em', border: '2px solid #f44336', borderRadius: '8px'}}>
 
-1. TOP-LEFT (purple #9370DB):
-Question: 'Where do I put user data so it survives a restart?'
-Small icon: A floppy disk or database cylinder with a question mark
-Problem: DATA PERSISTENCE
+**Without a gateway**
 
-2. TOP-RIGHT (teal #4A90A4):
-Question: 'Where do I store this 50MB video file?'
-Small icon: A large file icon, too big to fit in a small box
-Problem: LARGE FILE STORAGE
+Every service reimplements auth, rate limiting, and routing. Changes must be made everywhere. One misconfiguration exposes your entire backend.
 
-3. MIDDLE-LEFT (orange #FF9800):
-Question: 'Help! 1000 requests just arrived at once!'
-Small icon: A flood of incoming arrows overwhelming the app
-Problem: HANDLING TRAFFIC SPIKES
+</div>
 
-4. MIDDLE-RIGHT (green #4CAF50):
-Question: 'Why am I fetching the same data over and over?'
-Small icon: A hamster wheel or repeated arrows going in circles
-Problem: REPEATED WORK
+<div style={{padding: '0.6em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
 
-5. BOTTOM-LEFT (red #f44336):
-Question: 'How do users even find me on the internet?'
-Small icon: A lost-looking user with a map, confused
-Problem: ROUTING & ACCESS
+**With a gateway**
 
-6. BOTTOM-RIGHT (gray #666):
-Question: 'Something broke at 3 AM... what happened?'
-Small icon: A crashed app with smoke, detective magnifying glass
-Problem: DEBUGGING & MONITORING
+One place to enforce policies. Backend services only see authenticated, routed requests. Add a new service without changing client code.
 
-VISUAL STYLE:
-- The app in the center looks stressed but determined
-- Each question bubble is clearly a PROBLEM, not yet a solution
-- The layout suggests these are universal challenges, not app-specific
-- Playful but educational tone
+</div>
 
-TAGLINE at bottom: 'Every real application faces these problems. Infrastructure solves them.'
+</div>
 
-Color scheme: Each problem has its own accent color matching what will become the building block categories."
-  alt="A small application mascot standing on a cloud, surrounded by six question bubbles: 'Where do I put user data?' (persistence), 'Where do I store large files?' (storage), '1000 requests at once!' (traffic spikes), 'Why fetch the same data repeatedly?' (caching), 'How do users find me?' (routing), 'What broke at 3 AM?' (debugging). Tagline: Every real application faces these problems."
-/>
+<div className="fragment">
+<p style={{fontSize: '0.68em', marginTop: '0.5em', color: '#FF9800'}}>
+<strong>Common services:</strong> AWS API Gateway, Kong, Supabase. Configure policies in one place — your backend code never sees an unauthenticated or over-limit request.
+</p>
+</div>
 
 <aside className="notes">
-**Frame this as universal problems:**
-- "So you've got your code running somewhere. Great!"
-- "But immediately you hit problems that EVERY web application faces"
-- "These aren't unique to your app — they're so common that the industry has standardized solutions"
+- API gateways are a single entry point — clients never talk directly to backend services
+- Auth and rate limiting in one place means one place to audit and update
+- This is information hiding at the infrastructure level — backend services don't need to know about auth policy
 
-**Walk through each problem:**
-
-**Data persistence:**
-- "Your app tracks user accounts. Where does that data GO?"
-- "If the server restarts, is that data gone?"
-- "You need somewhere to STORE data permanently"
-
-**Large files:**
-- "A user uploads a profile picture. Or a video. Or a 50MB PDF."
-- "You can't just keep that in memory. Where does it live?"
-
-**Traffic spikes:**
-- "Your app is quiet most of the day. Then everyone submits at 11:59 PM."
-- "How do you handle 1000 requests when you were handling 10?"
-
-**Repeated work:**
-- "Every request asks 'what's the course name?' — same answer every time"
-- "Why fetch it from the database 1000 times?"
-
-**Routing:**
-- "Your code is running somewhere. How does a user's browser FIND it?"
-- "How do you handle authentication before requests even reach your code?"
-
-**Debugging:**
-- "Something broke. You can't SSH in (especially with serverless). Now what?"
-- "How do you even know something is broken?"
-
-**Key insight:**
-- "These problems are so universal that cloud platforms provide standard SOLUTIONS"
-- "Let's give names to those solutions..."
-
-→ **Transition:** Cloud platforms solve these with standardized building blocks...
+→ **Transition:** We've now covered all the infrastructure behind your meme generator. Let's step back and look at the big picture.
 </aside>
 
 </Slide>
+
 
 {/* ============================================ */}
 {/* INFRASTRUCTURE BUILDING BLOCKS */}
@@ -867,7 +901,7 @@ Color scheme: Each problem has its own accent color matching what will become th
 
 <Slide>
 
-## Infrastructure Building Blocks
+## Summary: Infrastructure Building Blocks
 
 <p style={{fontSize: '0.82em'}}>
 Cloud platforms provide standardized components that solve these recurring problems. Just as we have <strong>design patterns</strong> in code, these "building blocks" appear across architectural styles.
@@ -971,536 +1005,171 @@ Serverless architecture is fundamentally about <strong>composing these managed s
 </aside>
 
 </Slide>
-
 <Slide>
 
-## Databases: Structured Data Persistence
+## Your Meme Generator: Composed from Managed Services
 
 <p style={{fontSize: '0.78em'}}>
-When your application needs to remember something across restarts — user accounts, submissions, grades — that data lives in a database. The "right" choice depends on <strong>query patterns</strong>.
+You wrote the meme generation logic. Everything else? <strong>Managed services you composed together.</strong>
 </p>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75em', fontSize: '0.58em', marginTop: '0.5em'}}>
+<div style={{fontSize: '0.5em', marginTop: '0.5em'}}>
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '13px' }}}%%
+flowchart TD
+    U[Browser / Mobile App<br/>GUI] --> G[API Gateway]
+    G --> A[Auth Service]
+    G --> F[Your Code<br/>Meme Logic]
+    F --> DB[(Database<br/>PostgreSQL)]
+    F --> S3[(Object Storage<br/>S3 / Cloud Storage)]
+    F --> C[(Cache<br/>Redis)]
+    F --> Q[Message Queue<br/>SQS / Pub/Sub]
+    Q --> W[Worker<br/>Image Processing]
+    W --> S3
+    F --> O[Observability<br/>Datadog / Sentry]
 
-<div style={{padding: '0.6em', border: '2px solid #9370DB', borderRadius: '8px'}}>
-
-**Relational (SQL)**
-
-Complex queries, relationships, transactions
-
-*PostgreSQL, MySQL*
-
-```sql
-SELECT s.*, a.name
-FROM submissions s
-JOIN assignments a ON s.assignment_id = a.id
-WHERE s.student_id = ?
+    style F fill:#9370DB,stroke:#5b3a8c,color:#fff
 ```
-
-</div>
-
-<div style={{padding: '0.6em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
-
-**Document (NoSQL)**
-
-Flexible schemas, JSON-like storage, no schema enforcement, limited query power
-
-*MongoDB, Firestore*
-
-```javascript
-{
-  student: "alice",
-  scores: [85, 92, 78],
-  metadata: { ... }
-}
-```
-
-</div>
-
-<div style={{padding: '0.6em', border: '2px solid #FF9800', borderRadius: '8px'}}>
-
-**Key-Value**
-
-Simple lookups by ID, extremely fast, no schema enforcement, no query power (just fetch by key)
-
-*DynamoDB, Redis*
-
-```
-GET user:12345
-SET session:abc123 {...}
-```
-
-</div>
 
 </div>
 
 <div className="fragment">
 <p style={{fontSize: '0.68em', marginTop: '0.5em', color: '#4CAF50'}}>
-<strong>Pawtograder:</strong> Uses PostgreSQL — we need queries like "find all submissions by this student across all assignments" and "calculate average scores grouped by section." Relational databases shine here.
+The purple box is what <i>you</i> write. Everything else is managed infrastructure — operated by specialists, scaled automatically, billed by usage.
 </p>
 </div>
 
 <aside className="notes">
-**Query patterns drive the choice:**
-- Pawtograder queries: "submissions by student," "average scores by assignment," "students who haven't submitted"
-- These involve RELATIONSHIPS between students, courses, assignments, submissions
-- Document databases would struggle — you'd fetch all data and filter in code
+- This is the key insight of serverless: your code is a small piece of a larger composed system
+- You didn't write the database, the cache, the queue, or the auth service — you just connected to them
+- The same diagram applies whether you're using Lambda, containers, or Edge Functions — the building blocks are the same
 
-**The tradeoff:**
-- Relational: powerful queries, ACID transactions, but rigid schema
-- Document: flexible schema, rapid iteration, but limited query power
-- Key-Value: blazing fast for simple lookups, useless for complex queries
-
-**Both Bottlenose and Pawtograder use PostgreSQL:**
-- Autograding platforms inherently involve complex relationships
-- The query patterns demand relational capabilities
-
-**Looking ahead:**
-- We'll explore consistency tradeoffs more in L31-32 (Concurrency)
-- "What happens when two students submit at the exact same moment?"
-
-→ **Transition:** But not everything belongs in a database...
+→ **Transition:** So what does this mean for how you spend your time?
 </aside>
 
 </Slide>
 
-<Slide>
-
-## Object Storage: Files and Binary Data
-
-<div style={{fontSize: '0.55em', marginTop: '0.5em'}}>
-
-```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px' }}}%%
-flowchart LR
-    subgraph Upload["Upload Flow"]
-        I[Instructor] -->|uploads| G[Test Files<br/>5MB]
-        G -->|stored in| S[(Cloud Storage)]
-    end
-
-    subgraph Download["Grading Flow"]
-        S -->|download link| A[Grading System]
-        A -->|downloads| L[Local Copy]
-    end
-```
-
-</div>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.58em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0.5em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
-
-**Object Storage Characteristics**
-
-- **Cheap** for large amounts of data
-- **Durable** (replicated across locations)
-- **Simple** (put, get, delete by key)
-
-</div>
-
-<div style={{padding: '0.5em', border: '2px solid #9370DB', borderRadius: '8px'}}>
-
-**Common Services**
-
-| Provider | Service |
-|----------|---------|
-| AWS | S3 |
-| Google | Cloud Storage |
-| Azure | Blob Storage |
-| Supabase | Storage (built on S3) |
-
-</div>
-
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.68em', marginTop: '0.4em', color: '#FF9800'}}>
-<strong>Pawtograder:</strong> Test files for grading can be several MB. They go to cloud storage; the grading system downloads them when needed. You wouldn't put a 5MB file in a database column.
-</p>
-</div>
-
-<aside className="notes">
-**Why not just use the database?**
-- Databases are expensive per GB — object storage is pennies
-- Databases are optimized for queries, not serving large files
-- A 5MB test file doesn't need SQL queries — just "give me this file"
-
-**Signed URLs (time-limited download links):**
-- Object storage can generate URLs that expire after a set time
-- "This link works for 1 hour, then stops working"
-- Security without complex auth — knowing the URL IS the permission
-- Pawtograder generates these links so the grading system can download test files
-
-**The architectural pattern:**
-- Store metadata (file name, size, owner) in the database
-- Store the actual file in object storage
-- Link them with a storage key or URL
-
-→ **Transition:** What about communication between components?
-</aside>
-
-</Slide>
+{/* ============================================ */}
+{/* THE CLOUD DEPLOYMENT SPECTRUM */}
+{/* ============================================ */}
 
 <Slide>
 
-## Message Queues: Asynchronous Communication
-
-<p style={{fontSize: '0.78em'}}>
-A <strong>message queue</strong> lets components communicate without being online at the same time. Producer puts a message; consumer picks it up later. This decouples producers from consumers and buffers work during spikes.
-</p>
-
-<div style={{fontSize: '0.5em', marginTop: '0.3em'}}>
-
-```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px' }}}%%
-flowchart LR
-    subgraph Producer["Producer (GitHub)"]
-        P[Student pushes code]
-    end
-
-    subgraph Queue["Message Queue"]
-        Q[(Messages wait here<br/>until processed)]
-    end
-
-    subgraph Consumer["Consumer (GitHub Actions)"]
-        C[Grading workflow]
-    end
-
-    P -->|"enqueue job"| Q
-    Q -->|"dequeue when ready"| C
-
-    style Queue fill:#FF9800,stroke:#e65100,stroke-width:2px
-    style Producer fill:#4A90A4,stroke:#2c5f73,stroke-width:2px
-    style Consumer fill:#9370DB,stroke:#5b3a8c,stroke-width:2px
-```
-
-</div>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.55em', marginTop: '0.4em'}}>
-
-<div style={{padding: '0.5em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
-
-**Pawtograder: Grading**
-
-Student pushes to GitHub → GitHub enqueues an Actions workflow → grading runs when a runner is available.
-
-Student sees "grading started" immediately. If the runner crashes, GitHub re-queues the job — no submissions lost.
-
-</div>
-
-<div style={{padding: '0.5em', border: '2px solid #9370DB', borderRadius: '8px'}}>
-
-**Pawtograder: Repo Creation**
-
-Creating repos for 200 students → enqueue "create repo" tasks → background process works through at GitHub's rate limit (60/min).
-
-Instructor sees immediate confirmation; repos appear over minutes.
-
-</div>
-
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.65em', marginTop: '0.4em', color: '#4CAF50'}}>
-<strong>Key property:</strong> Once the queue confirms receipt, it <strong>guarantees eventual delivery</strong>. The producer moves on; work happens even if consumers crash and restart. This is the <em>retry + graceful degradation</em> pattern from L20, built into infrastructure.
-</p>
-</div>
-
-<aside className="notes">
-**Connect to L20:**
-- Remember the retry pattern? Queues BUILD THAT IN
-- Producer doesn't need to implement retry — the queue handles it
-- "At-least-once delivery" is the default guarantee
-
-**Why queues matter for serverless:**
-- Serverless functions are stateless and ephemeral
-- You can't hold work "in memory" waiting
-- Queues provide durable storage for pending work
-
-**The grading example:**
-- Student pushes code to GitHub
-- GitHub Actions has a queue of pending workflow runs
-- When a runner is free, it picks up the next job
-- If runner crashes mid-job, GitHub re-queues it automatically
-
-**The repo creation example:**
-- GitHub rate limits: 60 API calls/minute
-- 200 students × 1 repo each = 200 calls needed
-- Without queue: fail at student 61, lose progress
-- With queue: work through at sustainable pace, guaranteed completion
-
-**Examples:**
-- AWS SQS, Google Pub/Sub, RabbitMQ, Apache Kafka
-- GitHub Actions itself uses queues internally!
-
-→ **Transition:** What about speeding up repeated access?
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Caches and API Gateways
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.6em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
-
-**Caches: Fast Access to Hot Data**
-
-Store copies of frequently-accessed data in memory. Serve directly instead of querying the database every time.
-
-| Service | Use Case |
-|---------|----------|
-| Redis | Session data, fast lookups |
-| Memcached | Distributed cache |
-| CDN | Static files at edge |
-
-<p style={{fontSize: '0.9em', marginTop: '0.5em', color: '#FF9800'}}>
-**Tradeoff:** Speed vs. staleness. When should the cache refresh?
-</p>
-
-</div>
-
-<div style={{padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px'}}>
-
-**API Gateways: Unified Entry Point**
-
-Single entry point for your APIs. Routes requests, handles auth, enforces rate limits.
-
-```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '11px' }}}%%
-flowchart LR
-    C[Clients] --> G{API Gateway}
-    G -->|"/rest/*"| DB[(Database)]
-    G -->|"/functions/*"| F[Functions]
-    G -->|"/auth/*"| A[Auth]
-
-    style G fill:#9370DB,stroke:#5b3a8c
-```
-
-*Pawtograder example:* Supabase Gateway routes
-- `/auth/*` → authentication
-- `/rest/v1/*` → PostgREST (database)
-- `/functions/v1/*` → Edge Functions
-
-</div>
-
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.68em', marginTop: '0.5em', fontStyle: 'italic', color: '#666'}}>
-<strong>Connection to L20:</strong> Caching addresses Fallacies 2-3 (latency, bandwidth). API gateways centralize the authentication and security concerns we discussed.
-</p>
-</div>
-
-<aside className="notes">
-**Caching patterns:**
-- Content-addressable: cache key IS the content hash (SHA)
-- If content changes, SHA changes, cache automatically invalidates
-- This is how Docker image layers work, how Git stores objects
-
-**API Gateway benefits:**
-- One place to enforce security policies
-- Clients don't need to know which backend handles what
-- Can add features (caching, logging) without changing backends
-
-**The serverless pattern:**
-- Your functions don't handle auth directly
-- Gateway verifies JWT before request reaches your code
-- Separation of concerns at the infrastructure level
-
-→ **Transition:** What about when things go wrong?
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Observability: Seeing Inside Distributed Systems
-
-<p style={{fontSize: '0.78em'}}>
-In a monolith, debugging is (relatively) straightforward: one log file, one stack trace. In serverless, a single user action might trigger multiple functions across different machines that <strong>may not even exist anymore</strong>.
-</p>
+## The Cloud Deployment Spectrum
 
 <Img
-  src="/img/lectures/web/l21-observability2.webp"
+  src="/img/lectures/web/l21-cloud-spectrum6.webp"
   style={{marginTop: '-1em', marginBottom: '-.5em'}}
-  width={1100}
   prompt="An educational illustration in a clean, modern flat-art style (NOT pixel art). No title text.
 
-CONCEPT: 'Ephemeral Functions, Persistent Observability' — showing how serverless functions appear and disappear but their logs/metrics/traces persist.
+A horizontal 'responsibility spectrum' showing seven deployment models from left to right. Each station has a VERTICAL STACK of labeled layers. Layers YOU manage are colored ORANGE (#FF9800). Layers the PROVIDER manages are colored TEAL (#4A90A4).
 
-TOP SECTION — THE EPHEMERAL FUNCTIONS:
-A cloud-like environment with multiple small hexagonal function pods. Some are SOLID (currently running), some are FADING/GHOSTLY (recently terminated), some are just APPEARING (spinning up). Each function emits small streams of data (visualized as colored particles or streams):
-- PURPLE streams labeled 'LOGS' (text snippets floating)
-- TEAL streams labeled 'METRICS' (small graphs/numbers)
-- ORANGE streams labeled 'TRACES' (dotted connection lines showing path)
+LAYOUT: Seven vertical 'stations' arranged left-to-right. Each station shows a stack of 8 layers (bottom to top): FACILITY | POWER | NETWORK | HARDWARE | VIRTUALIZATION | OS | RUNTIME | APP
 
-A speech bubble near a fading function: 'I'm gone in 50ms... did you capture my logs?'
+STATION 1 — 'OWN DATA CENTER' (leftmost):
+Stack: ALL 8 layers colored ORANGE (you manage everything)
+- FACILITY (orange) | POWER (orange) | NETWORK (orange) | HARDWARE (orange) | VIRTUALIZATION (orange) | OS (orange) | RUNTIME (orange) | APP (orange)
+Developer figure: sweating, carrying enormous backpack with server rack, cables, hard drives, power generator, HVAC units, fire suppression system, security cameras, etc.
+Label below: 'You manage: EVERYTHING'
 
-MIDDLE — THE FLOW:
-All the colored streams converge downward into a funnel/pipeline.
+STATION 2 — 'COLOCATION':
+Stack: Bottom 3 layers TEAL, top 5 layers ORANGE
+- FACILITY (teal) | POWER (teal) | NETWORK (teal) | HARDWARE (orange) | VIRTUALIZATION (orange) | OS (orange) | RUNTIME (orange) | APP (orange)
+Developer: lighter load, no power equipment
+Example: 'Equinix, Digital Realty'
 
-BOTTOM SECTION — LOG AGGREGATION:
-A central dashboard/monitor showing:
-- A searchable log viewer with text lines
-- A metrics graph with spikes and trends
-- A trace diagram showing Function A → Database → Function B → External API
+STATION 3 — 'IaaS (VMs)':
+Stack: Bottom 5 layers TEAL, top 3 layers ORANGE
+- FACILITY (teal) | POWER (teal) | NETWORK (teal) | HARDWARE (teal) | VIRTUALIZATION (teal) | OS (orange) | RUNTIME (orange) | APP (orange)
+Developer: carrying OS disk, runtime package, app bundle
+Example: 'AWS EC2, Google Compute, Azure VMs'
 
-VISUAL CONTRAST:
-- Top: chaotic, ephemeral, appearing/disappearing
-- Bottom: organized, persistent, searchable
+STATION 4 — 'MANAGED CONTAINERS':
+Stack: Bottom 6 layers TEAL, top 2 layers ORANGE
+- FACILITY (teal) | POWER (teal) | NETWORK (teal) | HARDWARE (teal) | VIRTUALIZATION (teal) | OS (teal) | RUNTIME (orange) | APP (orange)
+Developer: carrying container boxes
+Example: 'AWS Fargate, Google Cloud Run'
 
-CALLOUT BOX (bottom corner): 'You can't debug a function that no longer exists. Capture logs before it disappears.'
+STATION 5 — 'CONTAINER ORCHESTRATION':
+Stack: Bottom 6 layers TEAL, RUNTIME split (teal handles scaling/networking), APP (orange)
+- Same as Station 4, but RUNTIME shows 'scaling, health' in teal section
+Developer: carrying app code and small YAML config
+Example: 'AWS EKS, GKE, AKS'
 
-Color scheme: Purples (#9370DB) for logs, teals (#4A90A4) for metrics, oranges (#FF9800) for traces. Clean educational style."
-  alt="An illustration showing ephemeral serverless functions (some solid, some fading, some appearing) emitting streams of logs (purple), metrics (teal), and traces (orange) that flow down into a central log aggregation dashboard showing searchable logs, metrics graphs, and trace diagrams. Callout: You can't SSH into a function that no longer exists."
+STATION 6 — 'PaaS':
+Stack: Bottom 7 layers TEAL, only APP (orange)
+- FACILITY (teal) | POWER (teal) | NETWORK (teal) | HARDWARE (teal) | VIRTUALIZATION (teal) | OS (teal) | RUNTIME (teal) | APP (orange)
+Developer: carrying only small app bundle
+Example: 'Hasura, Firebase, Supabase'
+
+STATION 7 — 'FaaS / SERVERLESS' (rightmost):
+Stack: ALL layers TEAL except tiny 'fn()' slice at top (orange)
+- Everything teal, with just a small orange 'fn()' function symbol at the very top
+Developer: RELAXED, floating on a fluffy CLOUD-SHAPED HAMMOCK, holding tiny 'fn()' symbol, maybe sipping a drink
+Example: 'AWS Lambda, Vercel Functions, Cloudflare Workers'
+
+VISUAL ELEMENTS:
+- Ground/base gets progressively more cloud-like from left to right
+- Left label: 'MORE CONTROL' with steering wheel icon
+- Right label: 'LESS BURDEN' with cloud icon
+- Bracket spanning stations 6-7: 'SERVERLESS TERRITORY'
+- Legend: ORANGE = You Manage, TEAL = Provider Manages
+
+Color scheme: Orange (#FF9800) for developer responsibility, Teal (#4A90A4) for provider responsibility, purple (#9370DB) accents."
+  alt="A horizontal spectrum of seven cloud deployment models. Each station shows an 8-layer stack (Facility, Power, Network, Hardware, Virtualization, OS, Runtime, App) with orange layers (you manage) and teal layers (provider manages). LEFT: Own Data Center has all orange layers, sweating developer. Moving RIGHT: progressively more teal layers. RIGHT: FaaS has almost all teal, with developer relaxing on a cloud-shaped hammock holding only a tiny fn() function. Legend shows orange=you, teal=provider."
 />
 
 <div className="fragment">
-<p style={{fontSize: '0.68em', marginTop: '0.3em', color: '#f44336', fontWeight: 'bold'}}>
-Serverless functions are ephemeral — they spin up, execute, and disappear. You can't SSH in and look around. You <em>must</em> invest in observability, or debugging becomes impossible.
+<p style={{fontSize: '0.65em', marginTop: '0.4em', fontStyle: 'italic', color: '#666'}}>
+<strong>Not shown:</strong> SaaS (Software as a Service) — even further right.
 </p>
 </div>
 
 <aside className="notes">
-**Why this is critical for serverless:**
-- Functions are ephemeral — no persistent process to inspect
-- Can't "SSH into the server" because there's no server
-- If you don't capture logs BEFORE the function terminates, they're gone
+**Connect to the iceberg:**
+- "Remember the iceberg? All those layers beneath your code?"
+- "This spectrum shows WHO manages each layer"
+- "Each step to the right trades CONTROL for OPERATIONAL SIMPLICITY"
 
-**Pawtograder example:**
-- Grading run fails → instructor asks "why did my student get 0?"
-- We need to see: Did the build fail? Tests timeout? API call fail?
-- Structured logs capture this; instructors can pull up the grading log
+**Walk through the spectrum (reference the iceberg layers):**
 
-**The hidden cost:**
-- When you split a monolith into serverless functions, debuggability decreases
-- You MUST invest in observability tooling to compensate
-- This is one of the hidden costs teams often underestimate
+**Left side — you manage the entire iceberg:**
+- Own data center: you manage ALL layers (facility, power, network, hardware, OS, runtime, app)
+- Real companies do this! Google, Amazon, large banks — when scale justifies it
+- Most of you will never need to think about power and cooling
 
-**Services:**
-- Sentry: error tracking with stack traces, breadcrumbs
-- Datadog: full observability (logs, metrics, traces, dashboards)
-- CloudWatch: AWS's built-in, basic but functional
+**Middle — the cloud IaaS era (2006-2015):**
+- EC2 launched 2006 — revolutionary! No more buying hardware
+- The cloud provider handles the bottom of the iceberg (physical stuff)
+- But you still patch the OS, configure the firewall, scale manually
+- Bottlenose lives here (VMs + containers)
 
-→ **Transition:** You've used logging before — let's see how it changes in serverless...
-</aside>
+**Right side — serverless territory:**
+- PaaS (Heroku, 2007) was the first "just deploy your code"
+- FaaS (Lambda, 2014) went further: just deploy FUNCTIONS
+- Almost the entire iceberg is managed FOR you
+- Pawtograder lives here (Supabase Edge Functions)
 
-</Slide>
+**Not shown: SaaS (the extreme right):**
+- "There's actually one more step we didn't show"
+- SaaS = you don't even write code, you just USE someone else's service
+- Image resize example: Cloudinary, imgix, Cloudflare Images
+- You call their API: "resize this image to 200x200" — done
+- You pay per transformation, they handle everything
+- Trade-off: maximum convenience, but zero customization
 
-<Slide>
+**The key insight:**
+- "Serverless" isn't one thing — it's the rightmost portion of this spectrum
+- The vendor handles more of the iceberg; you handle less
+- But you're not getting something for nothing — you pay in flexibility, vendor lock-in, and sometimes cost at scale
+- SaaS is even further right: you don't write ANY code, but you're locked into their exact feature set
 
-## The Request ID: Finding Your Logs in the Chaos
+**Connect to L20:**
+- "Remember the eight fallacies? They apply at EVERY level except 'own data center'"
+- "But as you move right, the VENDOR deals with more of the retry logic, scaling, and availability"
+- "The fallacies don't disappear — the responsibility shifts"
 
-<p style={{fontSize: '0.78em'}}>
-You've used SLF4J — a <strong>facade</strong> that lets you write <code>logger.info()</code> without knowing where logs go. Serverless platforms tag every log line with a <strong>Request ID</strong>. This seems minor until you see the alternative.
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.44em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0.5em', border: '2px solid #f44336', borderRadius: '8px'}}>
-
-**Without Request IDs: Interleaved chaos**
-
-```text
-[INFO] Processing submission for alice
-[INFO] Processing submission for bob
-[INFO] Running tests...
-[INFO] Processing submission for carol
-[ERROR] Test failed: NullPointerException
-[INFO] Running tests...
-[INFO] Completed in 847ms
-[INFO] Running tests...
-[ERROR] Timeout after 30s
-[INFO] Completed in 234ms
-```
-
-*Which error belongs to which student? Good luck.*
-
-</div>
-
-<div style={{padding: '0.5em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
-
-**With Request IDs: Filter by one request**
-
-```text
-Filter: RequestId = "3f1e..."
-
-START RequestId: 3f1e...
-[INFO] 3f1e Processing submission for bob
-[INFO] 3f1e Running tests...
-[ERROR] 3f1e Test failed: NullPointerException
-END RequestId: 3f1e...
-REPORT Duration: 892ms Status: 500
-```
-
-*One student's entire request, start to finish.*
-
-</div>
-
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.65em', marginTop: '0.5em', color: '#4CAF50'}}>
-<strong>Key insight:</strong> When 100 students submit at once, you get 100 concurrent function instances writing to the same log stream. The Request ID is how you untangle them. The platform adds it automatically — you just filter by it when debugging.
-</p>
-</div>
-
-<div className="fragment">
-<div style={{fontSize: '0.52em', marginTop: '0.4em', padding: '0.4em', backgroundColor: '#f5f5f5', borderRadius: '8px'}}>
-
-**Beyond filtering:** Error collection services (Sentry, Datadog) also provide **alerting** (Slack when errors spike), **error grouping** (100 identical stack traces → 1 issue), **dashboards** (error rate over time), and **distributed tracing** (follow a request across multiple services).
-
-</div>
-</div>
-
-<aside className="notes">
-**The problem with concurrent logs:**
-- "Imagine 100 students submit at the deadline"
-- "100 function instances start running simultaneously"
-- "All of them write to the same log stream"
-- "Without Request IDs, the logs are interleaved — completely unreadable"
-
-**Show the left side first:**
-- "Look at this mess. Which NullPointerException goes with which student?"
-- "Which 'Completed' message matches which 'Processing' message?"
-- "This is what logs look like without correlation IDs"
-
-**The platform solution:**
-- Every log line is tagged with the Request ID
-- When debugging: filter by that ID
-- You see ONLY the logs from that one invocation
-- Start, your logs, end, report — all together
-
-**The facade pattern still applies:**
-- Your code still just calls logger.info()
-- Platform injects the Request ID automatically
-- Different platforms (AWS, Google, Azure) all do this
-- SLF4J with Logback → SLF4J with LambdaLogger — code doesn't change
-
-**Pawtograder example:**
-- Student says "my submission failed"
-- Find the Request ID from the error notification
-- Filter CloudWatch: see exactly what happened to THEIR request
-- No need to scroll through thousands of interleaved log lines
-
-**Beyond basic logging — what observability services provide:**
-- **Alerting:** "Send a Slack message if error rate exceeds 5%"
-- **Error grouping:** 100 students hit the same bug → shows as 1 issue with count
-- **Stack traces:** Full stack trace with source code context
-- **Dashboards:** Visualize error rates, latency percentiles over time
-- **Distributed tracing:** Follow one request across API → Database → External service
-- **Anomaly detection:** "Error rate is 10x higher than usual"
-
-**Services to know:**
-- Sentry: Error tracking, great for catching exceptions with context
-- Datadog: Full observability platform (logs, metrics, traces, APM)
-- AWS CloudWatch: Built-in, basic but functional
-- Grafana + Loki: Open-source alternative
-
-→ **Transition:** With this vocabulary, let's define what "serverless" actually means...
+→ **Transition:** But wait — just having compute isn't enough. Real apps need more than just somewhere to run code...
 </aside>
 
 </Slide>
