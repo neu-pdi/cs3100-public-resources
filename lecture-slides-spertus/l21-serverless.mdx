@@ -100,7 +100,7 @@ Color scheme: Warm oranges/reds for the stressful car ownership side. Cool teals
 ## Lecture 21: Serverless Architecture
 
 <p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
-  ©2026 Jonathan Bell, CC-BY-SA
+  ©2026 Jonathan Bell & Ellen Spertus, CC-BY-SA
 </p>
 
 <aside className="notes">
@@ -1028,7 +1028,7 @@ flowchart TD
     W --> S3
     F --> O[Observability<br/>Datadog / Sentry]
 
-    style F fill:#9370DB,stroke:#5b3a8c,color:#fff
+    style F fill:#e8d5f5,stroke:#9370DB,stroke-width:3px,color:#000
 ```
 
 </div>
@@ -1180,59 +1180,117 @@ Color scheme: Orange (#FF9800) for developer responsibility, Teal (#4A90A4) for 
 
 <Slide>
 
-## Defining "Serverless"
+## What Is Serverless?
 
-<p style={{fontSize: '0.82em'}}>
-"Serverless" is a bit of a misnomer — there are still servers, you just don't manage them. The key insight is <strong>organizational</strong>: serverless is <em>technical partitioning with a vendor</em>.
+<p style={{fontSize: '0.78em'}}>
+"Serverless" doesn't mean no servers. It means <strong>someone else manages them</strong>. You write code and compose managed services; the cloud provider handles everything beneath.
 </p>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.6em', marginTop: '0.75em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.58em', marginTop: '0.5em'}}>
 
-<div style={{padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px'}}>
+<div style={{padding: '0.6em', border: '2px solid #f44336', borderRadius: '8px'}}>
 
-**Remember L19: Technical vs. Domain Partitioning?**
+**Traditional**
 
-- **Technical:** Organize by role (controllers, services, repositories)
-- **Domain:** Organize by business capability (users, grading, submissions)
-
-Serverless takes technical partitioning to the **organizational level**: a cloud vendor operates infrastructure *as a service*.
+- You provision servers
+- You configure the OS and runtime
+- You handle scaling and restarts
+- You pay for idle time
+- You get paged when hardware fails
 
 </div>
 
-<div style={{padding: '0.75em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
+<div style={{padding: '0.6em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
 
-**Specialization Through Outsourcing**
+**Serverless**
 
-The vendor specializes in infrastructure — container orchestration, auto-scaling, security patching.
-
-You specialize in your domain — courses, assignments, grading.
-
-Each side focuses on what they do best.
+- Vendor provisions servers
+- Vendor configures OS and runtime
+- Vendor handles scaling and restarts
+- You pay only for execution time
+- Vendor gets paged when hardware fails
 
 </div>
 
 </div>
 
 <div className="fragment">
-<p style={{fontSize: '0.73em', marginTop: '0.6em', color: '#FF9800', fontWeight: 'bold'}}>
-You gain operational simplicity and elasticity. You lose control: vendor abstractions constrain how you build, pricing determines costs at scale, and switching vendors means rewriting infrastructure code.
+<p style={{fontSize: '0.68em', marginTop: '0.5em', color: '#9370DB'}}>
+Your meme generator is already largely serverless — managed database, object storage, cache, queue, auth, and API gateway. The last piece: your own code. That's where <strong>Functions as a Service</strong> comes in.
 </p>
 </div>
 
 <aside className="notes">
-**The "technical partitioning with a vendor" framing:**
-- This connects directly to L19's discussion of partitioning
-- In L19: do you organize CODE by technical role or domain?
-- In serverless: you outsource the technical layers to a vendor who specializes in them
-- The vendor serves thousands of clients → economies of scale you can't achieve alone
+- "Serverless" is a marketing term — there are always servers, just not yours
+- The key shift: operational responsibility moves to the vendor
+- Students have already seen this with Supabase, Firebase, etc.
 
-**The tradeoffs are real:**
-- Vendor abstractions: Edge Functions have timeouts, cold starts, memory limits
-- Pricing: cheap at low scale, can be expensive at high sustained load
-- Lock-in: Supabase Edge Functions → moving to AWS Lambda requires rewrites
-- But Hexagonal Architecture helps! Domain logic behind ports can stay the same
+→ **Transition:** So how do you deploy your own code in a serverless world?
+</aside>
 
-→ **Transition:** Before we look at code, let's see what triggers these functions...
+</Slide>
+
+<Slide>
+
+## Functions as a Service (FaaS)
+
+<p style={{fontSize: '0.78em'}}>
+Instead of a server running 24/7, you deploy <strong>functions</strong> that execute in response to events. No <code>main()</code>, no server setup — just your logic.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.55em', marginTop: '0.5em'}}>
+
+<div style={{padding: '0.6em', border: '2px solid #9370DB', borderRadius: '8px'}}>
+
+**Meme generation function**
+```java
+public class GenerateMemeHandler
+    implements RequestHandler<APIGatewayProxyRequestEvent,
+                              APIGatewayProxyResponseEvent> {
+
+  public APIGatewayProxyResponseEvent handleRequest(
+      APIGatewayProxyRequestEvent request,
+      Context context) {
+
+    MemeRequest body = parseJson(request.getBody());
+    byte[] template = storage.get(body.templateId());
+    byte[] meme = MemeUtils.addText(
+        template, body.topText(), body.bottomText());
+    String url = storage.put("memes/", meme);
+    db.insert(new Meme(body, url));
+    return ok(new MemeResponse(url));
+  }
+}
+```
+
+</div>
+
+<div style={{padding: '0.6em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
+
+**Four key properties**
+
+**① Event-driven**
+Platform calls your function when an event arrives. You don't listen for requests.
+
+**② Stateless**
+No state persists between calls. All state lives in external services.
+
+**③ Input → Output**
+Request in, response out. Your function is a pure transformation.
+
+**④ Pay per invocation**
+No requests? No cost. 1M requests? Billed for exactly that.
+
+</div>
+
+</div>
+
+<aside className="notes">
+- No main(), no port binding, no health checks — the platform handles all of that
+- The function only contains business logic: fetch template, add text, store result, record in DB
+- Students have seen the Strategy pattern — this is the same idea at infrastructure scale
+
+→ **Transition:** Now let's look at where serverless fits — and where it doesn't.
 </aside>
 
 </Slide>
@@ -1311,338 +1369,6 @@ Color scheme: Purple, teal, orange, green accents on white/light background."
 
 </Slide>
 
-<Slide>
-
-## The AWS Lambda SDK: A Programming Model
-
-<p style={{fontSize: '0.78em'}}>
-AWS Lambda provides a Java library that defines how your code interacts with the platform. The key abstraction is the <code>RequestHandler</code> interface — a <strong>generic interface</strong> you implement.
-</p>
-
-<div style={{fontSize: '0.5em', marginTop: '0.4em'}}>
-
-```java
-// From the AWS Lambda Java SDK (aws-lambda-java-core)
-public interface RequestHandler<I, O> {
-    O handleRequest(I input, Context context);
-}
-```
-
-</div>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.55em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0.6em', border: '2px solid #9370DB', borderRadius: '8px'}}>
-
-**The Generic Types**
-
-- **`I` (Input):** What triggers your function
-  - `S3Event` — file uploaded to S3
-  - `APIGatewayProxyRequestEvent` — HTTP request
-  - `SQSEvent` — message from a queue
-  - `ScheduledEvent` — schedule/timer trigger
-
-- **`O` (Output):** What your function returns
-  - `APIGatewayProxyResponseEvent` — HTTP response
-  - `String` — simple text output
-  - `void` — fire-and-forget
-
-</div>
-
-<div style={{padding: '0.6em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
-
-**The Context Object**
-
-AWS passes metadata about the invocation:
-
-```java
-context.getFunctionName();     // "ImageResizer"
-context.getRemainingTimeInMillis(); // 29000
-context.getAwsRequestId();     // unique ID
-context.getMemoryLimitInMB();  // 512
-context.getLogger();           // CloudWatch logger
-```
-
-Useful for logging, timeouts, debugging.
-
-</div>
-
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.65em', marginTop: '0.4em', color: '#FF9800'}}>
-<strong>Notice:</strong> No <code>main()</code> method. No server setup. No port binding. You implement ONE method — AWS handles the rest.
-</p>
-</div>
-
-<aside className="notes">
-**Frame this as a library/SDK:**
-- "Just like JUnit has @Test annotations, Lambda has RequestHandler"
-- "You implement an interface, the framework calls your code"
-- "This is Dependency Inversion at the platform level"
-
-**The generic types pattern:**
-- "You've seen generics before — List of String, Map of K to V"
-- "RequestHandler of I and O — I is input type, O is output type"
-- "Different event sources have different input types"
-- "The SDK provides pre-built types for common triggers"
-
-**Event types in the SDK:**
-- S3Event: contains bucket name, object key, event type
-- APIGatewayProxyRequestEvent: contains headers, body, path, query params
-- SQSEvent: contains message body, attributes, receipt handle
-- ScheduledEvent: contains scheduled time, rule name
-
-**The Context object:**
-- "AWS gives you metadata about THIS invocation"
-- "getRemainingTimeInMillis() is crucial — check before long operations"
-- "getLogger() writes to CloudWatch — how you debug serverless"
-
-**Connection to course concepts:**
-- "This is the Strategy pattern! Your handler is the strategy, AWS is the context."
-- "Also Dependency Injection — AWS injects the event and context"
-
-→ **Transition:** Let's see this in action with a real example...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Functions as a Service (FaaS)
-
-<p style={{fontSize: '0.78em'}}>
-Instead of deploying an application that runs continuously, you deploy <strong>functions</strong> that execute in response to events. Focus on the principles, not the syntax:
-</p>
-
-<div style={{fontSize: '0.44em', marginTop: '0.3em'}}>
-
-```java
-public class CreateSubmissionHandler
-        implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
-
-    public APIGatewayProxyResponseEvent handleRequest(
-            APIGatewayProxyRequestEvent request, Context context) {
-        // Create clients for this request (platform provides connection details via environment)
-        var db = new PostgresClient(System.getenv("DATABASE_URL"));
-        var storage = new S3Client(System.getenv("BUCKET_NAME"));
-
-        SubmissionRequest body = parseJson(request.getBody());                      // Parse input
-        OIDCClaims claims = verifyGitHubOIDC(request.getHeaders().get("Authorization")); // Verify
-        Submission sub = db.insertSubmission(body.assignmentId(), claims.repo());   // Do the work
-
-        return new APIGatewayProxyResponseEvent()
-            .withStatusCode(200)
-            .withBody(toJson(new SubmissionResponse(sub.id(), storage.getUrl(...))));
-    }
-}
-```
-
-</div>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '0.5em', fontSize: '0.48em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0.4em', border: '2px solid #9370DB', borderRadius: '6px'}}>
-<strong>① Event-Driven</strong><br/>
-Platform calls you when event arrives. No main(), no server.
-</div>
-
-<div style={{padding: '0.4em', border: '2px solid #4A90A4', borderRadius: '6px'}}>
-<strong>② Stateless</strong><br/>
-No state persists between calls. Create what you need fresh.
-</div>
-
-<div style={{padding: '0.4em', border: '2px solid #FF9800', borderRadius: '6px'}}>
-<strong>③ Input → Output</strong><br/>
-Request in, response out. Pure transformation.
-</div>
-
-<div style={{padding: '0.4em', border: '2px solid #4CAF50', borderRadius: '6px'}}>
-<strong>④ Platform Lifecycle</strong><br/>
-Container spins up, handler runs, recycles. Pay per call.
-</div>
-
-</div>
-
-<aside className="notes">
-**Four key FaaS principles (the boxes):**
-
-**① Event-Driven:**
-- "Notice what's MISSING: no main(), no server startup, no port binding"
-- "The platform calls YOUR code when an event happens"
-- "You don't listen for requests — you respond to them"
-
-**② Stateless:**
-- "Notice we create the database and storage clients inside the handler — fresh each time"
-- "You can't rely on anything persisting between calls"
-- "This is why we need external state (databases, KV stores)"
-
-**③ Input → Output:**
-- "Request comes in, response goes out"
-- "Like a pure function at the infrastructure level"
-- "Same principle as functional programming — minimize side effects"
-
-**④ Platform Lifecycle:**
-- Request arrives → AWS routes it
-- Cold start: spin up new container, load runtime (100ms-5s)
-- Warm container: reuse existing (fast!)
-- Execute your handler
-- Return response, maybe recycle container
-- You pay ONLY for the time your code runs
-
-**What you DON'T write:**
-- Server startup code, health checks, graceful shutdown
-- Process management, scaling logic, load balancing
-
-→ **Transition:** Let's compare traditional vs serverless...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Traditional Server: Image Resize (Revisited)
-
-<p style={{fontSize: '0.78em'}}>
-Remember our warm-up? With a traditional server, YOU manage the infrastructure. Let's summarize what that <code>ImageResizeServer</code> requires:
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.55em', marginTop: '0.5em'}}>
-
-<div style={{padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px'}}>
-
-**Your code responsibilities:**
-
-- `main()` method to start the server
-- Port binding and configuration
-- Health check endpoints for load balancers
-- Graceful shutdown handling
-- Multipart form parsing
-- Error handling and logging
-
-</div>
-
-<div style={{padding: '0.75em', border: '2px solid #f44336', borderRadius: '8px'}}>
-
-**Infrastructure responsibilities:**
-
-- Server runs 24/7 (even at 3 AM with zero requests)
-- YOU restart it when it crashes
-- YOU scale horizontally (more instances)
-- YOU configure load balancing
-- YOU handle SSL certificates
-- YOU pay for idle time
-
-</div>
-
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.68em', marginTop: '0.5em', color: '#FF9800'}}>
-<strong>The 15 lines of image resize logic</strong> are buried under all this operational work. What if you could just write the resize function and let someone else handle the rest?
-</p>
-</div>
-
-<aside className="notes">
-**Reference back to warm-up:**
-- "Remember at the start — we had 15 lines of actual business logic"
-- "Then 30+ lines of server boilerplate"
-- "Then the whole infrastructure iceberg beneath it"
-
-**The economic reality:**
-- This server runs 24/7
-- Most of the time, nobody's uploading images
-- You're paying for idle CPU and memory
-- 3 AM on a Tuesday? Server's running. Zero requests.
-
-**The operational burden:**
-- Server crashes? YOU need to restart it (or configure systemd)
-- Need more capacity? YOU spin up more instances
-- Need to deploy new version? YOU handle zero-downtime deployment
-
-→ **Transition:** Now let's see the same thing with Lambda...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Lambda: Same Feature, Less Code
-
-<p style={{fontSize: '0.78em'}}>
-Same image resize, but with Lambda. No <code>main()</code>, no health checks, no shutdown hooks. Just implement the handler — AWS runs it when a file arrives.
-</p>
-
-<div style={{fontSize: '0.44em', marginTop: '0.3em'}}>
-
-```java
-// Triggered automatically when a file is uploaded to the "uploads" S3 bucket
-public class ImageResizeHandler implements RequestHandler<S3Event, String> {
-
-    // Optimization: reuse across "warm" invocations (see note below)
-    private final S3Client s3 = S3Client.create();
-
-    @Override
-    public String handleRequest(S3Event event, Context context) {
-        // S3 tells us which file was uploaded
-        var record = event.getRecords().get(0).getS3();
-        String bucket = record.getBucket().getName();
-        String key = record.getObject().getKey();  // e.g., "uploads/profile-123.jpg"
-
-        // Download the original image
-        byte[] original = s3.getObjectAsBytes(r -> r.bucket(bucket).key(key)).asByteArray();
-
-        // Resize it (using any image library)
-        byte[] thumbnail = ImageUtils.resize(original, 200, 200);
-
-        // Save the thumbnail to a different location
-        String thumbKey = key.replace("uploads/", "thumbnails/");
-        s3.putObject(r -> r.bucket(bucket).key(thumbKey), RequestBody.fromBytes(thumbnail));
-
-        return "Resized: " + key + " → " + thumbKey;
-    }
-}
-```
-
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.62em', marginTop: '0.2em', color: '#4CAF50'}}>
-<strong>What you didn't write:</strong> No polling loop checking for new files. No server listening. No scaling config. Upload 1000 images? 1000 functions run in parallel.
-</p>
-</div>
-
-<aside className="notes">
-**Walk through the code:**
-- S3Event: AWS automatically passes info about the uploaded file
-- Context: metadata about this invocation (request ID, time remaining, etc.)
-- The function downloads, resizes, and uploads — that's it
-
-**Why is S3Client a field instead of created inside handleRequest?**
-- AWS recommends reusing SDK clients across "warm" invocations for performance
-- Lambda may reuse the same container for multiple requests — the field survives between calls
-- This is an optimization: creating an S3Client is expensive (DNS lookup, TLS handshake)
-- But it creates a debugging trap: if you store REQUEST-SPECIFIC state in a field, it leaks between invocations
-- Rule of thumb: SDK clients in fields = OK. Business state in fields = bug.
-
-**The trigger configuration (not shown in code):**
-- In AWS Console or infrastructure-as-code: "When a file is PUT in bucket X, invoke this function"
-- You configure which events trigger which functions
-- The function itself doesn't know about the trigger — it just receives the event
-
-**Why this is powerful:**
-- No server running 24/7 waiting for uploads
-- Scales automatically — 1000 uploads = 1000 parallel invocations
-- Pay only for execution time (typically milliseconds per image)
-
-**Real-world usage:**
-- Instagram, TikTok, any app with user uploads
-- Also: video transcoding, PDF generation, log processing
-
-→ **Transition:** There are also some broader considerations worth discussing...
-</aside>
-
-</Slide>
 
 {/* ============================================ */}
 {/* BROADER CONSIDERATIONS */}
@@ -1727,7 +1453,7 @@ The architectural lesson: <strong>batch operations when possible</strong>. Pawto
 ## When Does Serverless Fit?
 
 <Img
-  src="/img/lectures/web/l21-fit2.webp"
+  src="/img/lectures/web/l21-fit3.png"
   prompt="An educational illustration in a clean, modern flat-art style (NOT pixel art). No title text.
 
 CONCEPT: 'Serverless Fit Assessment' — showing concrete examples that are good vs poor fits for serverless, with recognizable scenarios from the lecture.
@@ -1737,9 +1463,9 @@ SPLIT LAYOUT — LEFT SIDE (GREEN, GOOD FIT) vs RIGHT SIDE (RED, POOR FIT):
 LEFT SIDE — 'SERVERLESS WINS' (green #4CAF50 accents):
 Four concrete examples with small illustrations:
 
-1. TOP-LEFT: 'IMAGE RESIZE'
-- Small visual: Photo icon dropping into S3 bucket → lightning bolt → thumbnail appears
-- Caption: 'S3 upload triggers Lambda'
+1. TOP-LEFT: 'MEME GENERATION'
+- Small visual: User submitting a request with template + text → lightning bolt → finished meme with text overlay appears
+- Caption: 'HTTP request triggers function'
 - Subtext: 'Event-driven, stateless, quick'
 
 2. TOP-RIGHT: 'WELCOME EMAILS'
@@ -1752,8 +1478,8 @@ Four concrete examples with small illustrations:
 - Caption: 'GitHub push → process → done'
 - Subtext: 'Quick, stateless, event-driven'
 
-4. BOTTOM-RIGHT: 'SUBMISSIONS AT DEADLINE'
-- Small visual: Traffic graph with huge spike labeled '11:59 PM' then flat labeled '3 AM: $0'
+4. BOTTOM-RIGHT: 'MEME GOES VIRAL'
+- Small visual: Traffic graph with huge spike labeled 'Reddit post' then flat labeled '3 AM: $0'
 - Caption: 'Bursty with idle periods'
 - Subtext: 'Auto-scales, zero idle cost'
 
@@ -1821,112 +1547,6 @@ Color scheme: Green (#4CAF50) for good fit, Red (#f44336) for poor fit, clean pr
 - "Now you have concrete examples to pattern-match against"
 
 → **Transition:** Let's connect this back to course concepts...
-</aside>
-
-</Slide>
-
-{/* ============================================ */}
-{/* CONNECTION TO EARLIER CONCEPTS */}
-{/* ============================================ */}
-
-<Slide>
-
-## Information Hiding at Scale
-
-<Img
-  style={{marginTop: '-1em', marginBottom: '-.5em'}}
-  src="/img/lectures/web/l21-information-hiding-scale3.webp"
-  prompt="An educational illustration in a clean, modern flat-art style (NOT pixel art). No title text.
-
-CONCEPT: 'Information Hiding is Fractal' — showing how the same principle applies at every scale, using a concrete grading system example (POST /submissions).
-
-VISUAL: A ZOOM-OUT SEQUENCE — four nested boxes, each zooming out to reveal the next level:
-
-INNERMOST (smallest, purple #9370DB):
-A Submission class diagram showing:
-- Private fields: studentId, assignmentId, timestamp, status (lock icons)
-- Public methods: create(), getStatus(), submit()
-Label: 'L6: Submission Class'
-Caption: 'Private fields, public methods'
-
-SECOND LEVEL (medium, teal #4A90A4):
-The Submission class is inside a hexagon (Hexagonal Architecture):
-- Domain core: Submission + GradingRules in the center (warm golden glow, like L16)
-- Ports on edges (shown as interface sockets): SubmissionRepositoryPort, FileStoragePort, NotificationPort
-- Production adapters outside (solid lines): PostgresSubmissionAdapter, S3StorageAdapter
-- Test adapters shown in green dashed lines: InMemorySubmissionAdapter, FakeStorageAdapter
-Label: 'L16: Ports and Adapters'
-Caption: 'Domain behind ports'
-
-THIRD LEVEL (larger, orange #FF9800):
-The hexagon is inside a service boundary labeled 'Pawtograder API':
-- Internal modules: Submissions, Grading, Feedback (small hexagons)
-- Single API surface: POST /submissions, GET /grades
-- External caller (GitHub Actions icon) only sees the API endpoints
-Label: 'L18: Service Boundaries'
-Caption: 'Modules behind API'
-
-OUTERMOST (largest, green #4CAF50):
-The Pawtograder service is one box among cloud infrastructure:
-- Pawtograder API box
-- Supabase/AWS cloud surrounding it
-- GitHub Actions caller on the left, just sees 'POST /submissions'
-- Caller doesn't know if it's Edge Functions, Lambda, or containers
-Label: 'L21: Serverless'
-Caption: 'Infrastructure behind endpoints'
-
-CONNECTING VISUAL:
-Dotted lines or magnifying glass metaphor showing each level 'contains' the previous.
-
-KEY INSIGHT CALLOUT (bottom):
-'GitHub Actions calls POST /submissions. It doesn't know about Submission.java, PostgresSubmissionAdapter, or Edge Functions. Same principle at every scale.'
-
-TAGLINE: 'L6 said: Hide what might change. Private fields. Adapters. Services. Infrastructure. Same principle, every scale.'
-
-Color scheme: Purple (innermost) → Teal → Orange → Green (outermost), showing progression from code to cloud."
-  alt="A zoom-out sequence showing information hiding at four scales: INNERMOST (L6) shows a Submission class with private fields hidden behind public methods. SECOND (L16) shows the class inside hexagonal architecture with ports (SubmissionRepositoryPort, FileStoragePort) and adapters (PostgresSubmissionAdapter, S3StorageAdapter). THIRD (L18) shows the Pawtograder service with modules hidden behind API endpoints. OUTERMOST (L21) shows the service in the cloud where GitHub Actions just calls POST /submissions. Tagline: L6 said hide what might change — same principle at every scale."
-/>
-
-<div className="fragment">
-<p style={{fontSize: '0.68em', marginTop: '0.3em', color: '#4CAF50'}}>
-GitHub Actions calls <code>POST /submissions</code> and <code>POST /feedback</code>. It doesn't know — or care — whether these are Edge Functions, Lambda, or a traditional server. <strong>That's information hiding at the architectural level.</strong>
-</p>
-</div>
-
-<aside className="notes">
-**The fractal nature of information hiding:**
-- L6: classes hide implementation behind public methods
-- L16: hexagonal architecture hides adapters behind ports
-- L21: serverless hides infrastructure behind API endpoints
-
-**Walk through the table:**
-
-**Hexagonal Architecture:**
-- Domain logic (deadline enforcement, grade calculation) stays in the core
-- Edge Functions are just adapters — thin wrappers around the domain
-- The hexagon's domain core doesn't know it's "serverless"
-
-**Dependency Injection:**
-- Edge Functions receive configured clients (database, storage) from the runtime
-- Environment variables inject connection strings
-- Same pattern as L17 (Dependency Injection), at infrastructure scale
-
-**Information Hiding:**
-- GitHub Actions code just calls POST /submissions and POST /feedback
-- It doesn't mention "Supabase" or "Edge Functions" — just HTTP endpoints
-- If we migrated to AWS Lambda, the grading workflow wouldn't change
-
-**Fallacies (L20):**
-- Edge Functions still deal with network unreliability
-- Supabase's client libraries include retry logic
-- The fallacies don't disappear — they're handled at the infrastructure level
-
-**Quality Attributes:**
-- We chose serverless for SCALABILITY (deadline spikes) and COST (pay-per-use)
-- We accepted LATENCY tradeoff (cold starts)
-- Same quality attribute reasoning as L19
-
-→ **Transition:** Let's bring it all together...
 </aside>
 
 </Slide>
