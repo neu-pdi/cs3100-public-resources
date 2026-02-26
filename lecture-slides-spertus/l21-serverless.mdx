@@ -6,6 +6,7 @@ image: /img/lectures/web/l21.png
 
 import Img from '@site/src/components/Img';
 import RevealJS, { Slide } from '@site/src/components/RevealJS';
+import PollSlide from "@site/src/components/PollSlide";
 
 <RevealJS transition="slide">
 
@@ -183,11 +184,11 @@ public class ImageUtils {
     public static byte[] resize(byte[] imageData, int width, int height) {
         BufferedImage original = ImageIO.read(new ByteArrayInputStream(imageData));
         BufferedImage thumbnail = new BufferedImage(width, height, original.getType());
-        
+
         Graphics2D g = thumbnail.createGraphics();
         g.drawImage(original, 0, 0, width, height, null);
         g.dispose();
-        
+
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ImageIO.write(thumbnail, "jpg", out);
         return out.toByteArray();
@@ -235,15 +236,14 @@ public class ImageUtils {
 
 ## Now Make It a Service
 
-<p style={{fontSize: '0.78em'}}>
-For users to access your image resizer, you need an <strong>HTTP server</strong> that listens for requests. Now look how much code you need:
+<p style={{fontSize: '0.8em'}}>
+For users to access your image resizer, you need an <strong>HTTP server</strong> that listens for requests:
 </p>
 
-<div style={{fontSize: '0.36em', marginTop: '0.3em'}}>
-
+<div style={{fontSize: '0.7em', marginTop: '-1em', marginBottom: '-1em'}}>
 ```java
 public class ImageResizeServer {
-    private static final int PORT = 8080;
+    private static final int PORT = 8080; // hope it's available
     private static volatile boolean running = true;
 
     public static void main(String[] args) throws Exception {
@@ -277,14 +277,11 @@ public class ImageResizeServer {
 
 </div>
 
-<div className="fragment">
-<p style={{fontSize: '0.65em', marginTop: '0.3em', color: '#FF9800'}}>
-Your <strong>15 lines of business logic</strong> are now buried in <strong>30+ lines of server boilerplate</strong>. And we haven't even talked about where this server runs...
-</p>
-</div>
 
 <aside className="notes">
 **Walk through what got added:**
+Your <strong>15 lines of business logic</strong> are now buried in <strong>30+ lines of server boilerplate</strong>. And we haven't even talked about where this server runs...
+
 - main() method: YOU start the server
 - Port binding: pick 8080, hope nothing else uses it
 - Health check endpoint: load balancers ping this to know you're alive
@@ -316,7 +313,9 @@ You can run <code>java ImageResizeServer</code> on your laptop. But your laptop 
 </p>
 
 <Img
+  style={{marginTop: '-0.5rem', marginBottom: '0.5rem'}}
   src="/img/lectures/web/l21-code-lives-somewhere3.webp"
+  width={1200}
   prompt="An educational illustration in a clean, modern flat-art style (NOT pixel art). No title text.
 
 CONCEPT: 'Your Laptop Sleeps. Servers Never Do.' — A split scene contrasting the cozy, finite world of local development with the relentless 24/7 reality of production servers.
@@ -385,11 +384,13 @@ Color scheme: Warm purples and dark blues for the peaceful left side. Harsh teal
 ## The Infrastructure Iceberg
 
 <p style={{fontSize: '0.78em'}}>
-Your <code>ImageResizeServer</code> needs to run somewhere. Running code that serves users around the clock requires far more than just "a computer." This is what we call <strong>infrastructure</strong>.
+Your <code>ImageResizeServer</code> requires *infrastructure* to be available to users.
 </p>
 
 <Img
+  style={{marginTop: '-2em'}}
   src="/img/lectures/web/l21-infrastructure-stack.webp"
+  width={1200}
   prompt="An educational illustration in a clean, modern flat-art style (NOT pixel art). No title text.
 
 CONCEPT: 'The Infrastructure Iceberg' — showing that running a web application requires many layers beneath the surface, like an iceberg.
@@ -497,7 +498,7 @@ You have a fundamental choice about who manages all that infrastructure. This is
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.6em', marginTop: '0.75em'}}>
 
-<div style={{padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px'}}>
+<div className='fragment' style={{padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px'}}>
 
 **Own Your Infrastructure**
 
@@ -510,7 +511,7 @@ Buy servers. Rent data center space. Hire ops engineers. Configure everything yo
 
 </div>
 
-<div style={{padding: '0.75em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
+<div className='fragment' style={{padding: '0.75em', border: '2px solid #4A90A4', borderRadius: '8px'}}>
 
 **Rent from a Cloud Provider**
 
@@ -523,12 +524,6 @@ AWS, Google Cloud, Azure, Supabase — they own the data centers, you use their 
 
 </div>
 
-</div>
-
-<div className="fragment">
-<p style={{fontSize: '0.73em', marginTop: '0.6em', fontStyle: 'italic', color: '#666'}}>
-This is the same tradeoff you make with transportation in Boston. Own a car? Total freedom, but you pay for parking, insurance, gas, maintenance — even when it sits unused. Take the T? Cheaper per trip, but you follow their schedule and routes.
-</p>
 </div>
 
 <aside className="notes">
@@ -643,6 +638,7 @@ Today's key insight: Serverless doesn't eliminate distributed systems complexity
 
 <Img
   src="/img/lectures/web/l21-cloud-spectrum6.webp"
+  style={{marginTop: '-1em', marginBottom: '-.5em'}}
   prompt="An educational illustration in a clean, modern flat-art style (NOT pixel art). No title text.
 
 A horizontal 'responsibility spectrum' showing seven deployment models from left to right. Each station has a VERTICAL STACK of labeled layers. Layers YOU manage are colored ORANGE (#FF9800). Layers the PROVIDER manages are colored TEAL (#4A90A4).
@@ -771,6 +767,8 @@ Okay, you've got a server (or a function) running your code. But code alone isn'
 
 <Img
   src="/img/lectures/web/l21-app-needs2.webp"
+  style={{marginTop: '-1em', marginBottom: '-.5em'}}
+  width={1200}
   prompt="An educational illustration in a clean, modern flat-art style (NOT pixel art). No title text.
 
 CONCEPT: 'Your Application Has Needs' — showing a small application character surrounded by question bubbles representing common problems that arise when running real software.
@@ -779,7 +777,7 @@ CENTER: A small, friendly application mascot (maybe a little box with a face, or
 
 SURROUNDING THE APP — Six question bubbles or thought clouds, each representing a real problem:
 
-1. TOP-LEFT (purple #9370DB): 
+1. TOP-LEFT (purple #9370DB):
 Question: 'Where do I put user data so it survives a restart?'
 Small icon: A floppy disk or database cylinder with a question mark
 Problem: DATA PERSISTENCE
@@ -1277,7 +1275,7 @@ flowchart LR
     G -->|"/rest/*"| DB[(Database)]
     G -->|"/functions/*"| F[Functions]
     G -->|"/auth/*"| A[Auth]
-    
+
     style G fill:#9370DB,stroke:#5b3a8c
 ```
 
@@ -1327,6 +1325,8 @@ In a monolith, debugging is (relatively) straightforward: one log file, one stac
 
 <Img
   src="/img/lectures/web/l21-observability2.webp"
+  style={{marginTop: '-1em', marginBottom: '-.5em'}}
+  width={1100}
   prompt="An educational illustration in a clean, modern flat-art style (NOT pixel art). No title text.
 
 CONCEPT: 'Ephemeral Functions, Persistent Observability' — showing how serverless functions appear and disappear but their logs/metrics/traces persist.
@@ -1429,7 +1429,7 @@ You've used SLF4J — a <strong>facade</strong> that lets you write <code>logger
 Filter: RequestId = "3f1e..."
 
 START RequestId: 3f1e...
-[INFO] 3f1e Processing submission for bob  
+[INFO] 3f1e Processing submission for bob
 [INFO] 3f1e Running tests...
 [ERROR] 3f1e Test failed: NullPointerException
 END RequestId: 3f1e...
@@ -1578,6 +1578,7 @@ Serverless functions are triggered by <strong>events</strong> — not just HTTP 
 
 <Img
   src="/img/lectures/web/l21-event-driven.webp"
+  style={{marginTop: '-1em', marginBottom: '-.5em'}}
   prompt="An educational illustration in a clean, modern flat-art style (NOT pixel art). No title text.
 
 CONCEPT: 'Events Trigger Functions' — showing multiple event sources converging on serverless functions that scale automatically.
@@ -2113,7 +2114,7 @@ Four concrete anti-examples:
 CENTER DIVIDER:
 A vertical line with icons showing the three key questions from the lecture:
 - Scaling pattern? (graph icon)
-- Latency needs? (stopwatch icon)  
+- Latency needs? (stopwatch icon)
 - Ops capacity? (wrench icon)
 
 VISUAL STYLE:
@@ -2164,6 +2165,7 @@ Color scheme: Green (#4CAF50) for good fit, Red (#f44336) for poor fit, clean pr
 ## Information Hiding at Scale
 
 <Img
+  style={{marginTop: '-1em', marginBottom: '-.5em'}}
   src="/img/lectures/web/l21-information-hiding-scale3.webp"
   prompt="An educational illustration in a clean, modern flat-art style (NOT pixel art). No title text.
 
