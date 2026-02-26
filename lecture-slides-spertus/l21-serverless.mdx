@@ -916,13 +916,11 @@ You wrote the meme generation logic. Everything else? <strong>Managed services y
 flowchart TD
     U[Browser / Mobile App<br/>GUI] --> G[API Gateway]
     G --> A[Auth Service]
+    A --> G
     G --> F[Your Code<br/>Meme Logic]
     F --> DB[(Database<br/>PostgreSQL)]
     F --> S3[(Object Storage<br/>S3 / Cloud Storage)]
     F --> C[(Cache<br/>Redis)]
-    F --> Q[Message Queue<br/>SQS / Pub/Sub]
-    Q --> W[Worker<br/>Image Processing]
-    W --> S3
     F --> O[Observability<br/>Datadog / Sentry]
 
     style F fill:#e8d5f5,stroke:#9370DB,stroke-width:3px,color:#000
@@ -1630,6 +1628,7 @@ That's an organizational decision as much as a technical one.
 ## Bonus Slide
 
 <Img src='/img/lectures/web/l21-serverless-meme.webp'
+  width={600}
   alt="Two-part meme with Fred from Scooby Doo unmasking a ghost.
   Part 1: 'Let's see you you really are...', reaching for a sheet-wearing person labeled 'Serverless Computing'.
   Part 2: The removed mask reveals 'Servers'."
