@@ -1,8 +1,10 @@
 ---
 sidebar_position: 33
 lecture_number: 33
-title: Event-Driven Architecture
+title: "L33: Event-Driven Architecture"
 ---
+
+# Event-Driven Architecture
 
 ## Define and describe the event-driven architecture (10 minutes)
 
