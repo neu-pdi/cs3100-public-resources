@@ -8,13 +8,13 @@ image: /img/assignments/web/a5.png
 
 In this assignment, you'll build an **interactive command-line interface (CLI)** for CookYourBooks — a rich, command-oriented terminal application that lets users manage their recipe library, import recipes, scale and convert ingredients, generate shopping lists, and follow recipes step-by-step while cooking.
 
-The CLI is your first **driving adapter** in the hexagonal architecture. But here's the twist: you won't use the `RecipeService` from A4. Instead, you'll design your own service layer — one that's actually well-suited for *multiple* user interfaces. In A4, we told you `RecipeService` was not ideal design. Now you get to prove you understand *why* by building something better.
+The CLI is your first **driving adapter** in the [hexagonal architecture](/lecture-notes/l16-testing2) — an adapter that *drives* the application by calling into your service layer on behalf of a user (as opposed to *driven* adapters like repositories, which the application calls out to). But here's the twist: you won't use the `RecipeService` from A4. Instead, you'll design your own service layer — one that's actually well-suited for *multiple* user interfaces. In A4, we told you `RecipeService` was not ideal design. Now you get to prove you understand *why* by building something better.
 
 Your assignment has two parts:
 1. **Design and implement CLI-oriented services** that coordinate the domain model and repositories for what your CLI needs
 2. **Build a rich interactive CLI** on top of those services — with command parsing, tab completion, interactive cooking mode, and interactive scaling
 
-This is a **design-heavy assignment.** We provide the commands your CLI must support at a high level, and we provide explicit guidance on service boundaries through the **actor heuristic** and other boundary heuristics from [L18: Thinking Architecturally](/lecture-notes/l18-boundaries). But *how* you decompose the service layer — which specific methods each service exposes, how they coordinate, and where you draw the lines — requires you to apply those heuristics thoughtfully. You'll document your decisions using Architecture Decision Records (ADRs) from L18.
+This is a **design-heavy assignment.** We provide the commands your CLI must support at a high level, and we provide explicit guidance on service boundaries through the **actor heuristic** and other boundary heuristics from [L18: Thinking Architecturally](/lecture-notes/l18-architecture-design). But *how* you decompose the service layer — which specific methods each service exposes, how they coordinate, and where you draw the lines — requires you to apply those heuristics thoughtfully. You'll document your decisions using Architecture Decision Records (ADRs) from L18.
 
 :::danger Design Quality Is the Primary Learning Outcome
 
@@ -37,7 +37,7 @@ The goal is to demonstrate that you can apply the architectural thinking from le
 
 **What you'll build:** A CLI-oriented service layer (your design) and a rich interactive CLI with command parsing, navigation, collection/recipe management (create, rename, delete, edit), and two interactive modes (cook mode and scaling mode).
 
-**The main challenge:** Designing services that serve your CLI's needs *and* will be reusable for a GUI in Group Deliverable 1 (unlike the A4 facade), applying the four service boundary heuristics from L18, and documenting your decisions in ADRs.
+**The main challenge:** Designing services that serve your CLI's needs *and* will be reusable for a GUI in Group Deliverable 1 (unlike the A4 `RecipeService`, which was a facade — a single interface bundling too many responsibilities), applying the four service boundary heuristics from L18, and documenting your decisions in ADRs.
 
 **What you'll test:** End-to-end CLI behavior using JLine's dumb terminal mode. The provided test suite covers core functionality; you'll add tests for your specific design choices.
 
@@ -47,10 +47,10 @@ The goal is to demonstrate that you can apply the architectural thinking from le
 
 By completing this assignment, you will demonstrate proficiency in:
 
-- **Applying service boundary heuristics** — using the four heuristics from [L18: Thinking Architecturally](/lecture-notes/l18-boundaries) (rate of change, actor, interface segregation, testability) to decompose your service layer
-- **Writing Architecture Decision Records (ADRs)** — documenting the *why* behind your service boundaries and design choices ([L18](/lecture-notes/l18-boundaries))
-- **Designing a UI-agnostic service layer** — creating application services that can be consumed by multiple driving adapters (CLI now, GUI in A6), informed by what you learned about bad service design in A4 ([L17: From Code Patterns to Architecture Patterns](/lecture-notes/l17-creation-patterns))
-- **Building a driving adapter** — implementing the CLI as a hexagonal driving adapter that consumes your services without leaking domain logic into the presentation layer; preparing for a second adapter (GUI) in the next assignment
+- **Applying service boundary heuristics** — using the four heuristics from [L18: Thinking Architecturally](/lecture-notes/l18-architecture-design) (rate of change, actor, interface segregation, testability) to decompose your service layer
+- **Writing Architecture Decision Records (ADRs)** — documenting the *why* behind your service boundaries and design choices ([L18](/lecture-notes/l18-architecture-design))
+- **Designing a UI-agnostic service layer** — creating application services that can be consumed by multiple driving adapters (CLI now, GUI in Group Deliverable 1), informed by what you learned about bad service design in A4 and hexagonal architecture ([L16: Testability](/lecture-notes/l16-testing2), [L19: Architectural Qualities](/lecture-notes/l19-monoliths))
+- **Building a driving adapter** — implementing the CLI as a hexagonal driving adapter (it *drives* the application on behalf of the user) that consumes your services without leaking domain logic into the presentation layer; preparing for a second driving adapter (GUI) in the group project
 - **Designing a command architecture** — creating an extensible system for dispatching, parsing, and executing commands
 - **Designing a completer architecture** — applying the same boundary heuristics to tab completion, separating argument type declarations from value suppliers and presentation logic
 - **End-to-end testing with JLine** — writing integration tests using dumb terminal mode to verify CLI behavior
@@ -160,7 +160,7 @@ You must design and implement **your own application service(s)** for the CLI. Y
 
 #### Actors: Who Uses CookYourBooks?
 
-Recall from [L18: Thinking Architecturally](/lecture-notes/l18-boundaries) that the **actor heuristic** says: *different actors — people who use the system in different ways and whose needs change independently — should be served by different service boundaries.* In the Pawtograder example, we saw how the Student, Instructor, Sysadmin, and Intrepid Instructor each "owned" a different slice of the system.
+Recall from [L18: Thinking Architecturally](/lecture-notes/l18-architecture-design) that the **actor heuristic** says: *different actors — people who use the system in different ways and whose needs change independently — should be served by different service boundaries.* In the Pawtograder example, we saw how the Student, Instructor, Sysadmin, and Intrepid Instructor each "owned" a different slice of the system.
 
 CookYourBooks serves three distinct actors, each representing a different way people interact with recipe software:
 
@@ -172,7 +172,7 @@ CookYourBooks serves three distinct actors, each representing a different way pe
 
 **The Converter** (scaling and unit conversion) is a **cross-cutting capability** that serves both the Cook (scaling mid-recipe) and the Planner (converting units for shopping or dietary calculations). This suggests it may warrant its own service boundary.
 
-Your architecture should support building "product stacks" for each actor — cohesive feature sets that can evolve together. In your group project, your four-member team will divide the GUI work by actor: one teammate builds the Cook's step-by-step interface, another builds the Librarian's collection management views, etc. If your service boundaries align with actors, teammates can work in parallel without stepping on each other's code — just like in the Pawtograder example where changes from one actor don't ripple to another's code. A change to how the Cook experiences step navigation shouldn't require touching the Librarian's import logic.
+Your architecture should support cohesive feature sets for each actor that can evolve together. This matters for your group project: your four-member team will divide the GUI work by actor — one teammate builds the Cook's step-by-step interface, another builds the Librarian's collection management views, etc. If your service boundaries align with actors, teammates can work in parallel without stepping on each other's code. This is Conway's Law in action ([L22](/lecture-notes/l22-teams)) — the structure of your code mirrors the structure of your team. A change to how the Cook experiences step navigation shouldn't require touching the Librarian's import logic.
 
 :::warning Actor-Aligned Services Required
 
@@ -972,30 +972,9 @@ Tab completion involves three distinct concerns with different rates of change a
 
 **Apply the L18 heuristics to decide where each concern belongs.** Which heuristic tells you who should own argument type declarations? Who should provide available values? Who should handle presentation formatting? Document your reasoning in the required tab completion ADR.
 
-### Error Handling and Usability
+### Error Handling
 
-Your CLI should follow Nielsen's usability heuristics wherever applicable:
-
-| Heuristic | Application |
-|-----------|-------------|
-| **Visibility of system status** | Confirm actions ("Imported...", "Saved..."), show progress for long operations |
-| **Match between system and real world** | Use cooking terminology, natural command names |
-| **User control and freedom** | `cancel` in interactive modes, `prev` in cook mode, confirm before saving |
-| **Consistency and standards** | Consistent command syntax, consistent error message format |
-| **Error prevention** | Validate arguments before calling services; confirm destructive actions |
-| **Recognition rather than recall** | Show available commands as hints, tab completion |
-| **Help and documentation** | `help` command, contextual hints in interactive modes |
-
-**Error messages must be actionable.** Don't just say "Error" — tell the user what went wrong and what they can do about it:
-
-```text
-// BAD
-Error: not found
-
-// GOOD
-Collection not found: 'Desert Recipes'. Did you mean 'Dessert Recipes'?
-Use 'collections' to see available collections.
-```
+The exact error messages for each command are specified in the [Command Reference](#command-reference) above. The general principle: **error messages must be actionable** — tell the user what went wrong and what they can do about it.
 
 #### Ambiguous Match Format
 
@@ -1022,7 +1001,7 @@ The command is **not re-prompted** — the user must re-enter the entire command
 
 ### Design Requirements
 
-This assignment emphasizes design quality. You have freedom in *how* you structure both your service layer and CLI code, but your design must demonstrate thoughtful application of the principles from L17-L18.
+This assignment emphasizes design quality. You have freedom in *how* you structure both your service layer and CLI code, but your design must demonstrate thoughtful application of the principles from L17-L19.
 
 #### Design Documentation (Required)
 
@@ -1030,7 +1009,7 @@ You must submit design documentation that captures your architectural decisions.
 
 **Required: Architecture Decision Records (ADRs)**
 
-Create exactly **4 ADRs** in a `docs/adr/` folder. Each ADR documents a significant design decision using the format from [L18](/lecture-notes/l18-boundaries):
+Create exactly **4 ADRs** in a `docs/adr/` folder. Each ADR documents a significant design decision using the format from [L18](/lecture-notes/l18-architecture-design):
 
 ```markdown
 # ADR-001: [Title of Decision]
@@ -1054,21 +1033,24 @@ Create exactly **4 ADRs** in a `docs/adr/` folder. Each ADR documents a signific
 
 #### Service Layer Design
 
-- **Services depend only on port interfaces** (`RecipeRepository`, `RecipeCollectionRepository`, `ConversionRegistry`) — never on concrete adapter classes
-- **Dependency injection** — services receive their dependencies through constructors
+- **Services depend only on port interfaces** (`RecipeRepository`, `RecipeCollectionRepository`, `ConversionRegistry`) — never on concrete adapter classes ([L16](/lecture-notes/l16-testing2))
+- **Dependency injection** — services receive their dependencies through constructors ([L17](/lecture-notes/l17-creation-patterns))
 - **Separation of transformation from persistence** — your design should enable "preview before save" workflows (this should be documented in an ADR)
 - **Immutability** — transformations return new `Recipe` objects; don't mutate the original
 
 #### Separation of Concerns
 
-- **Services** coordinate domain operations (scaling, conversion, aggregation, search, persistence) — they do NOT contain formatting or I/O logic
-- **Controllers** handle command parsing and dispatch — they do NOT contain formatting logic or domain logic mixed together
-- **Views / Formatters** handle output — recipe display, table formatting, error messages. They should be reusable (e.g., the same recipe formatter is used by `show`, `cook`, and `scale`)
-- **The CLI layer never performs domain logic** — no ingredient parsing, no quantity arithmetic, no conversion math. If you're doing math or parsing in a command class, move it to a service.
+Think of your CLI as a layered system ([L19: Architectural Qualities](/lecture-notes/l19-monoliths)). Your code needs to handle three distinct responsibilities, and code for one responsibility should not mix in the concerns of another. How you name and organize these layers is up to you — what matters is that they stay separated:
+
+- **Application services** (your service layer) coordinate domain operations (scaling, conversion, aggregation, search, persistence) — they do NOT contain formatting or I/O logic
+- **Presentation logic** (the code that receives a user command and decides what to do) handles command parsing and dispatch — it does NOT contain domain logic like ingredient math or conversion calculations
+- **Formatting logic** (the code that turns data into displayable output) handles recipe display, table formatting, error messages — it should be reusable across commands (e.g., the same recipe formatter is used by `show`, `cook`, and `scale`)
+
+**The key rule:** the CLI layer never performs domain logic — no ingredient parsing, no quantity arithmetic, no conversion math. If you're doing math or parsing in a command class, move it to a service.
 
 #### Command Architecture
 
-Design an extensible command system. You don't need to use any specific pattern, but you must have *some* principled command architecture. Putting all commands in one giant `switch` or `if-else` statement is not acceptable.
+Design an extensible command system. **Lab 9** will walk you through a hands-on example of a command dispatch pattern you can use as a starting point, but you're free to use any principled approach. What you must *not* do is put all commands in one giant `switch` or `if-else` statement — that's the same anti-pattern as a monolithic service, just at the CLI layer.
 
 #### Testability
 
@@ -1353,7 +1335,7 @@ Update `REFLECTION.md` to address:
 Your submission should demonstrate:
 
 - **Architectural Thinking:** Service boundaries informed by the L18 heuristics and actor analysis (Librarian, Cook, Planner); ADRs that show you considered tradeoffs, not just picked the first option
-- **Service Design:** Well-decomposed service layer that separates transformation from persistence; clear alignment with actor-driven workflows; UI-agnostic (ready for GUI reuse in A6); a clear improvement over A4's `RecipeService`
+- **Service Design:** Well-decomposed service layer that separates transformation from persistence; clear alignment with actor-driven workflows; UI-agnostic (ready for GUI reuse in Group Deliverable 1); a clear improvement over A4's `RecipeService`
 - **Correctness:** All provided tests pass; interactive modes behave correctly
 - **Separation of Concerns:** Clean boundaries between services, controllers, and formatters; no domain logic in CLI layer; UI formatting separated from domain operations (rate of change heuristic)
 - **Testability:** Design supports E2E testing with dumb terminal; piped input/output works correctly
