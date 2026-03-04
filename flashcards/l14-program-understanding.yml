@@ -1,0 +1,184 @@
+cards:
+  - title: "Debugging Within the Software Lifecycle"
+    prompt: |
+      How does debugging relate to the software development lifecycle?
+    answer: |
+      Debugging is **not a separate phase** — it's integral to Implementation and Validation. When encountering unexpected behavior, we need to understand:
+
+      1. What the program **is actually doing** (Program Understanding)
+      2. What the program **should be doing** (Requirements & Design)
+      3. **Why** there's a mismatch (Debugging)
+
+  - title: "Control Flow Analysis"
+    prompt: |
+      What is control flow analysis, and what questions should you ask?
+    answer: |
+      Control flow describes the **order in which statements execute**. It helps identify which code paths are actually executed, which branches are taken, and loop termination conditions.
+
+      **Key questions:**
+      - Which branches are possible given different inputs?
+      - Are there paths that never execute? (Dead code)
+      - Are there paths that should execute but don't? (Missing functionality)
+      - What are the loop termination conditions?
+      - If there is recursion, what is the base case?
+
+  - title: "Common Control Flow Bugs"
+    prompt: |
+      What are common control flow bugs?
+    answer: |
+      - **Off-by-one errors** in loops
+      - **Incorrect boolean logic** in conditionals
+      - **Early returns** preventing necessary cleanup
+      - **Missing else branches** for edge cases
+
+  - title: "Data Flow Analysis"
+    prompt: |
+      What is data flow analysis, and what questions should you ask?
+    answer: |
+      Data flow describes **how data moves through your program** and how values change. It helps track variable assignments, reads, and transformations.
+
+      **Key questions:**
+      - Where is this variable **assigned**?
+      - Where is it **read**?
+      - What are all **possible values** at this point?
+      - Are there **unintended mutations**?
+      - Is the variable used **before it's properly initialized**?
+
+  - title: "Common Data Flow Bugs"
+    prompt: |
+      What are common data flow bugs?
+    answer: |
+      - Using variables **before initialization**
+      - Unintended **mutation of shared state**
+      - **Divide by zero** from unchecked denominators
+      - **Null pointer exceptions** from missing null checks
+      - **Off-by-one errors** from incorrect index calculations
+
+  - title: "Interprocedural Control Flow Analysis"
+    prompt: |
+      What is interprocedural control flow analysis?
+    answer: |
+      Examining control flow **across method boundaries** — not just the current method, but also the methods it calls.
+
+      IDE tools help with this:
+      - **Find All References**: Shows all places that call a given method
+      - **Jump to Definition**: Takes you to a method's definition
+
+      Often represented as a **call graph** — a graph of all methods and their call relationships.
+
+  - title: "Diagrams for Visualizing Program Flow"
+    prompt: |
+      What types of diagrams help visualize program behavior for debugging?
+    answer: |
+      **Call graphs**: Show which methods call which others, reveal recursion.
+      - Start with the entry point, add direct calls, expand selectively
+
+      **Sequence diagrams**: Show the order of method calls between objects, including loops and returns.
+      - Reveal who is active when, return values, and interaction chains
+
+      Both can be hand-sketched first, then formalized with Mermaid. AI can help generate them, but always **verify** the output.
+
+  - title: "Debugging as the Scientific Method"
+    prompt: |
+      What are the steps of the scientific method applied to debugging?
+    answer: |
+      1. **Observe**: Notice unexpected behavior or test failure
+      2. **Hypothesize**: Form a theory about the cause
+      3. **Predict**: Determine what evidence would support or refute the hypothesis
+      4. **Test**: Gather evidence (debugger, logging, tests)
+      5. **Analyze**: Evaluate whether the hypothesis is supported
+      6. **Iterate**: Refine the hypothesis or implement the fix
+
+      Rule of thumb: If you can't fix it in one or two tries, open a **debugging log** to track hypotheses and evidence.
+
+  - title: "Building an Observation Table"
+    prompt: |
+      What is an observation table in systematic debugging?
+    answer: |
+      A systematic record of test cases with columns for:
+      - **Input**: What was provided
+      - **Expectation**: What should happen
+      - **Output**: What actually happened
+      - **Outcome**: ✔ (pass) or ✘ (fail)
+
+      This helps identify patterns — which inputs cause failures, which succeed — guiding hypothesis formation.
+
+  - title: "Using Assertions to Test Hypotheses"
+    prompt: |
+      How can assertions help debug code?
+    answer: |
+      Assertions **encode your assumptions** about program state. If an assertion fails, your assumption is wrong.
+
+      Example from HTML markup debugging:
+      - `assert !tag;` → Tests hypothesis "tag should never be true for this input"
+      - `assert false;` → Tests hypothesis "this code path should never be reached"
+
+      Assertions help systematically **confirm or refute** hypotheses about variable values and code paths.
+
+  - title: "Core Debugger Concepts"
+    prompt: |
+      What are the core concepts of using a debugger?
+    answer: |
+      **Breakpoints:**
+      - Line breakpoints: Pause at a specific line
+      - Conditional breakpoints: Pause only when a condition is true
+      - Exception breakpoints: Pause when an exception is thrown
+
+      **Stepping commands:**
+      - Step Over, Step Into, Step Out, Continue
+
+      **Inspection:**
+      - View variable values, evaluate expressions, view the call stack, watch variables
+
+  - title: "Effective Debugger Workflow"
+    prompt: |
+      How does the debugger workflow align with the scientific method?
+    answer: |
+      1. **Observe**: Reproduce the bug reliably (write a test case if possible)
+      2. **Hypothesize**: Form a theory about the bug's location
+      3. **Predict & Test**: Set strategic breakpoints, use conditional breakpoints, watch variables
+      4. **Analyze**: Step through execution, compare actual vs. expected values
+      5. **Iterate & Verify**: Refine hypotheses, confirm the fix in the debugger, write a test
+
+      The debugger **accelerates** the scientific method — it doesn't replace it.
+
+  - title: "Common Debugger Pitfalls"
+    prompt: |
+      What are common pitfalls when using a debugger?
+    answer: |
+      - **Over-reliance on stepping**: Use breakpoints strategically instead of stepping through every line
+      - **Not using conditional breakpoints**: e.g., use `i == 47` instead of pressing Step 47 times
+      - **Ignoring the call stack**: The bug might be in the caller, not the current method
+      - **Modifying code while debugging without understanding**: First understand the problem fully, then make intentional changes
+
+  - title: "AI as a Debugging Assistant"
+    prompt: |
+      What are AI agents good and bad at when debugging?
+    answer: |
+      **Good at:**
+      - Pattern recognition (common bug patterns)
+      - Generating test cases to reproduce bugs
+      - Analyzing unfamiliar code for potential issues
+      - Suggesting multiple hypotheses
+      - Explaining complex code flows
+
+      **Bad at:**
+      - Domain-specific logic and business rules
+      - Runtime state (can't observe your program executing)
+      - Environmental issues (config, dependencies, race conditions)
+      - Root cause analysis (may fix symptoms, not causes)
+
+  - title: "Effective vs. Ineffective Debugging Prompts"
+    prompt: |
+      What makes a good debugging prompt for an AI agent?
+    answer: |
+      ❌ **Ineffective**: "This code doesn't work. Fix it."
+
+      ✅ **Effective**: Provide:
+      - The **unexpected behavior** (what went wrong)
+      - The **expected behavior** (what should happen)
+      - **Relevant code** (not the entire codebase)
+      - **Your hypothesis** (if you have one)
+      - Ask for **analysis**, not just a fix
+
+      This aligns with the 6-step workflow: Identify → Engage → Evaluate → Calibrate → Tweak → Finalize.

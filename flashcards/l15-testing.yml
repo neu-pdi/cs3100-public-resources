@@ -1,0 +1,190 @@
+cards:
+  - title: "Unit Tests vs. Integration Tests vs. End-to-End Tests"
+    prompt: |
+      What are the three types of automated tests by scope?
+    answer: |
+      - **Unit tests**: Test a single class or small set of related classes **in isolation**. Fast (milliseconds), focused, numerous.
+      - **Integration tests**: Test multiple components **working together**. Verify communication, data formats, timing. Slower, harder to debug.
+      - **End-to-end (E2E) tests**: Test the entire system **as a user experiences it**. Slow, expensive, flaky, but test what actually matters.
+
+      Use a mix: **many** unit tests, **some** integration tests, **few** E2E tests.
+
+  - title: "The Challenge of Testing with Dependencies"
+    prompt: |
+      Why is it hard to unit test code that depends on external components?
+    answer: |
+      Consider testing `ThermostatController` that uses `TemperatureSensor`, `HVACService`, and `NotificationService`.
+
+      - Real sensors need actual **hardware**
+      - Real HVAC service would turn on actual **heating systems**
+      - Real notifications would **spam real users**
+
+      The fundamental problem: How do we test a unit's logic **in isolation** when it depends on other components?
+
+  - title: "What Are Test Doubles?"
+    prompt: |
+      What are test doubles, and why are they called that?
+    answer: |
+      Objects that **stand in for real dependencies** during testing. The term comes from the film industry, where **stunt doubles** stand in for actors — they just need to do their specific job convincingly, not replicate everything about the real thing.
+
+      Types: **Stubs**, **Fakes**, and **Spies** (from simplest to most sophisticated).
+
+  - title: "Stubs: Returning Canned Answers"
+    prompt: |
+      What is a stub, and when do you use one?
+    answer: |
+      A test double that returns **pre-programmed responses**. It doesn't do any real work.
+
+      ```java
+      class StubTemperatureSensor implements TemperatureSensor {
+          private final double fixedTemperature;
+          public double readTemperature(String zoneId) {
+              return fixedTemperature; // Always same value
+          }
+      }
+      ```
+
+      Use when you need a dependency to provide a **specific value** for testing, without caring about its real behavior.
+
+  - title: "Fakes: Simplified Working Implementations"
+    prompt: |
+      What is a fake, and how does it differ from a stub?
+    answer: |
+      A fake is a **working implementation** that takes shortcuts. Unlike stubs (canned values), fakes actually function, just more simply than the real thing.
+
+      Example: A `FakeUserRepository` using a `HashMap` instead of a real database:
+      - Actually stores and retrieves data
+      - Doesn't persist to disk or handle concurrency
+
+      The line between stubs and fakes can be blurry. Key distinction: fakes have **working implementations**; stubs just return canned values.
+
+  - title: "Spies: Recording What Happened"
+    prompt: |
+      What is a spy, and when do you use one?
+    answer: |
+      A test double that **records how it was used** — what methods were called, with what arguments.
+
+      ```java
+      class SpyHVACService implements HVACService {
+          private boolean activateCalled = false;
+          private String activatedZone = null;
+          public void activate(String zoneId) {
+              activateCalled = true;
+              activatedZone = zoneId;
+          }
+          public boolean wasActivateCalled() { return activateCalled; }
+      }
+      ```
+
+      Use when you need to **verify that your code did something** — not just that it returned a right value.
+
+  - title: "The Pain of Hand-Rolling Test Doubles"
+    prompt: |
+      Why is hand-writing test doubles problematic?
+    answer: |
+      - Requires creating **separate classes** for each test double (stub, spy, etc.)
+      - Each new test scenario may need **different stub values** or spy behavior
+      - Lots of **boilerplate code** just to test one method
+      - Doesn't scale well to testing edge cases, error conditions, and multiple paths
+
+      This is why **mocking frameworks** like Mockito exist.
+
+  - title: "Mockito Basics"
+    prompt: |
+      How does Mockito simplify creating test doubles?
+    answer: |
+      Mockito generates test doubles **at runtime**, combining stub and spy capabilities:
+
+      ```java
+      // Create test doubles
+      TemperatureSensor mockSensor = mock(TemperatureSensor.class);
+      HVACService mockHVAC = mock(HVACService.class);
+
+      // Stub behavior
+      when(mockSensor.readTemperature("livingRoom")).thenReturn(65.0);
+
+      // Exercise code under test
+      controller.adjustToTargetTemperature(72.0, "livingRoom");
+
+      // Spy verification
+      verify(mockHVAC).setMode(HVACMode.HEATING, "livingRoom");
+      verify(mockHVAC).activate("livingRoom");
+      ```
+
+  - title: "How Mockito Works Under the Hood"
+    prompt: |
+      What does Mockito actually do when you call `mock()`?
+    answer: |
+      1. Uses **reflection** to examine the interface
+      2. **Generates a new class** at runtime that implements every method
+      3. Methods **return defaults** (null, 0, false) by default
+      4. **Records every method call** (the spy part)
+      5. Lets you **configure return values** with `when()` (the stub part)
+
+      You could write all this by hand — Mockito just saves you the trouble.
+
+  - title: "Argument Matchers in Mockito"
+    prompt: |
+      What are argument matchers in Mockito, and when do you use them?
+    answer: |
+      Matchers let you configure stubs or verify spies **without caring about exact argument values**:
+
+      ```java
+      // Stub: return 65.0 for ANY zone
+      when(mockSensor.readTemperature(anyString())).thenReturn(65.0);
+
+      // Verify with custom condition
+      verify(mockNotifier).send(
+          argThat(msg -> msg.contains("HVAC activated")),
+          eq(NotificationLevel.INFO)
+      );
+      ```
+
+      `argThat()` takes a lambda for partial matching — useful for verifying key parts without exact string matching.
+
+  - title: "Benefits of Test Doubles"
+    prompt: |
+      What are the benefits of using test doubles?
+    answer: |
+      - **Speed**: Run in milliseconds — no network, disk, or hardware
+      - **Determinism**: Stubs always return the same value — no flaky tests
+      - **Isolation**: When a test fails, the bug is in the code under test
+      - **Edge case testing**: Easily simulate errors (e.g., `thenThrow(new SensorException())`)
+
+  - title: "Dangers of Test Doubles"
+    prompt: |
+      What are the dangers of over-using test doubles?
+    answer: |
+      - **False confidence**: Tests pass with test doubles but fail with real dependencies (e.g., stubs return clean values but real sensors return noisy data)
+      - **Brittle tests**: Tests that verify exact method calls break when you refactor, even if behavior is unchanged
+      - **Testing the wrong thing**: Tests may just verify methods were called, not that the actual logic is correct
+
+      **Heuristic**: If mock setup is more complex than the code under test, consider an integration test instead.
+
+  - title: "Guidelines for Using Test Doubles"
+    prompt: |
+      When should you use test doubles, and when should you be cautious?
+    answer: |
+      **Use when:**
+      - Real dependency is slow, unreliable, or unavailable
+      - You need to simulate error conditions
+      - You want to verify interactions with dependencies
+      - Dependencies have side effects (sending emails, charging cards)
+
+      **Be cautious when:**
+      - Mock setup is more complex than the code under test
+      - You're verifying **implementation details** rather than behavior
+      - You're mocking types **you don't own** (third-party libraries)
+
+  - title: "Using AI to Generate Tests"
+    prompt: |
+      How should you use AI assistants when writing tests?
+    answer: |
+      AI is good at generating stubs, edge cases, Mockito syntax, and test data. But follow these principles:
+
+      1. Start by describing behavior in **plain English** and generate a *plan* first
+      2. **Review** generated test code — does it actually test what it claims?
+      3. Run tests and verify they **fail when the code is broken**
+      4. Check that mock configurations make sense for **real-world scenarios**
+
+      Only ask AI to produce what you can **effectively review for accuracy**.

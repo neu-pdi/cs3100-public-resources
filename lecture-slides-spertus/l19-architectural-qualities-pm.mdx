@@ -1,6 +1,6 @@
 ---
 sidebar_position: 19
-title: "Architectural Styles: From Hexagons to Monoliths"
+title: "Architectural Styles: From Hexagons to Monoliths (PM)"
 image: /img/lectures/web/l19.png
 ---
 <style>
@@ -74,12 +74,108 @@ Warm teals, blues, purples (#9370DB), and orange (#FF9800) accents in retro pixe
 * What's one question you have?
 
 New policy: I'm leaving the poll open for students who arrive late (but they
-must still be in the room to complete it).
+must still be in the room (or attending remotely by invitation) to complete it).
 
 <PollSlide username='espertus'
 />
 </Slide>
 
+{/* ============================================ */}
+{/* ANNOUNCEMENTS */}
+{/* ============================================ */}
+
+<Slide>
+
+## Announcements
+
+<div style={{fontSize: '0.85em', textAlign: 'left'}}>
+
+**Team Formation Survey Released!**
+- Starting Week 10: teams of 4 for CookYourBooks GUI project
+- Tell us your preferences + availability
+- **Due Friday 2/26 @ 11:59 PM**
+- [Complete the Survey](https://docs.google.com/forms/d/e/1FAIpQLScP-pp6S2tP4Do1J5buWmFLDDHwO5r8dxAmjZCB5wH20UDDiQ/viewform): choose students in either Oakland section
+
+**HW4 Due Thursday Night**
+- Deadline is GitHub Action time, not submission time
+
+</div>
+
+</Slide>
+
+<Slide>
+
+## Facade Design Pattern
+
+A simple interface to a complex implementation.
+
+<Img src="/img/lectures/web/l19-facade-illustration.jpg"
+  prompt="A side-by-side cutaway illustration. Left: a college classroom where a middle-aged female professor with curly brown hair and glasses presses a wall button. A projector screen displays 'FACADE' to seated students. Wires run from the button through a brick dividing wall. Right: a cramped utility room containing a complex Rube Goldberg machine powering the screen, featuring pulleys, a mechanical kicking boot, a hamster wheel, and a toy steam train on tracks. Warm, colorful cartoon style."
+  alt="A side-by-side cutaway illustration. On the left, a professor in a college classroom presses a simple wall button. The projector screen lowers, displaying the word 'FACADE' to her students. Wires connect the button through a brick wall to a hidden utility room on the right. This room contains a chaotic Rube Goldberg machine powering the screen, featuring a hamster running on a wheel, a toy train on tracks, pulleys, and a mechanical kicking boot, illustrating a complex backend hidden behind a simple user interface."
+  />
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+## Facade and Hexagonal Architecture in Assignment 4
+
+```mermaid
+flowchart TB
+    subgraph "Driving Adapters (A5+)"
+        CLI[CLI Controller]
+        GUI[GUI Controller]
+    end
+
+    subgraph "Application Services (A4)"
+        RS["RecipeService (facade — prescribed interface)"]
+        RSI["RecipeServiceImpl (YOUR design)"]
+    end
+
+    subgraph "Domain (A2+)"
+        R[Recipe]
+    end
+
+    subgraph "Ports (A2/A3)"
+        RR[RecipeRepository]
+        RCR[RecipeCollectionRepository]
+        CR[ConversionRegistry]
+    end
+
+    subgraph "Adapters (A3)"
+        JRR[JsonRecipeRepository]
+        JRCR[JsonRecipeCollectionRepository]
+    end
+
+    subgraph "Test Infrastructure"
+        MRR["Mock&lt;RecipeRepository&gt;"]
+        MRCR["Mock&lt;RecipeCollectionRepository&gt;"]
+    end
+
+    CLI --> RS
+    GUI --> RS
+    RS -.-> RSI
+
+    RSI --> RR
+    RSI --> RCR
+    RSI --> CR
+    RSI --> R
+
+    RR -.-> JRR
+    RR -.-> MRR
+    RCR -.-> JRCR
+    RCR -.-> MRCR
+
+    style RS fill:#fff3cd,stroke:#856404
+    style RSI fill:#d4edda,stroke:#28a745
+    style R fill:#d4edda,stroke:#28a745
+    style MRR fill:#cce5ff,stroke:#004085
+    style MRCR fill:#cce5ff,stroke:#004085
+```
+
+</Slide>
 
 {/* ============================================ */}
 {/* TITLE SLIDE */}
@@ -138,12 +234,13 @@ After this lecture, you will be able to:
 
 ## How Do We Organize Our Code?
 
-<p style={{fontSize: '0.85em'}}>
+<p style={{fontSize: '0.8em'}}>
 This is the question at the heart of every architectural decision — from your first class project to production systems serving millions of users. Every pattern and style we study today is an answer to this question.
 </p>
 
 <Img
     src="/img/lectures/web/l19-big-ball-of-mud.webp"
+    width={1200}
     prompt="A dramatic, slightly humorous educational illustration showing the 'Big Ball of Mud' anti-pattern. No title.
 
 A tangled, sprawling mess of buildings connected by spaghetti-like wires, pipes, and passages going in every direction. Buildings are labeled with things that shouldn't be together: 'Grading + User Auth + Email + Config Parsing', 'Controller + SQL + Scoring + Global State', 'Tests? What Tests?'. A developer stands in the middle looking overwhelmed, holding a single feature request card, with a speech bubble: 'Where does this go?' Red warning signs everywhere: 'Global State', 'Duplicated Logic', 'Circular Dependencies'. The whole structure feels precarious — one pull on any wire might bring everything down.
@@ -151,248 +248,84 @@ A tangled, sprawling mess of buildings connected by spaghetti-like wires, pipes,
 BOTTOM: A quote in an aged, scholarly style: 'A Big Ball of Mud is a haphazardly structured, sprawling, sloppy, duct-tape-and-baling-wire, spaghetti-code jungle.' — Foote & Yoder, 1997
 
 Style: Clean, modern educational illustration suitable for a university lecture. NOT pixel art — use a polished flat illustration style with soft shadows and clean lines, similar to editorial or textbook illustrations. Warm color palette with teals, purples, and orange warning accents. Humorous but professional."
-    alt="Big Ball of Mud — a tangled sprawl of buildings connected by spaghetti wires, labeled with mixed concerns like 'Grading + User Auth + Email'. A developer stands in the middle asking 'Where does this go?' Warning signs everywhere: Global State, Duplicated Logic, Circular Dependencies. Quote from Foote & Yoder 1997."
+    alt="Big Ball of Mud — a tangled sprawl of buildings connected by spaghetti wires, labeled with mixed concerns like 'Grading + User Auth + Email'. A developer stands in the middle asking 'Where does this go?' Warning signs everywhere: Global State, Duplicated Logic, Circular Dependencies. Quote from Foote & Yoder 1997:
+'A Big Ball of Mud is a haphazardly structured, sprawling, sloppy, duct-tape-and-baling-wire, spaghetti-code jungle.'"
   />
 
 <aside className="notes">
-→ **Transition:** Why "spaghetti"?
+→ **Transition:** Let's see some architectural styles
 </aside>
 </Slide>
 
 <Slide>
 
-## The Origin of Spaghetti Code: goto
-
-The most popular hobbyist language in the 1970s was
-BASIC.
-
-<div>
-```basic
-10 PRINT "Choose an option:"
-20 PRINT "1. Say Hello"
-30 PRINT "2. Say Goodbye"
-40 PRINT "3. Exit"
-50 INPUT CHOICE
-60 IF CHOICE = 1 THEN GOTO 100
-70 IF CHOICE = 2 THEN GOTO 110
-80 IF CHOICE = 3 THEN GOTO 120
-90 GOTO 10
-100 PRINT "Hello!"
-110 GOTO 10
-120 PRINT "Goodbye!"
-130 GOTO 10
-140 END
-```
-</div>
-
-<div className="fragment">
-How many paths lead to line 10?
-</div>
-
-<aside className="notes">
-* Let them think about number of paths and share answers.
-* The number of paths is infinite.
-* That makes it hard to reason about programs.
-→ **Transition:** Let's visualize this...
-</aside>
-
-</Slide>
-
-
-<Slide>
-
-## Spaghetti Code
-<svg xmlns="http://www.w3.org/2000/svg" width="700" height="380" viewBox="0 0 700 380" font-family="'Courier New', Courier, monospace">
-  <!-- Background -->
-  <rect width="700" height="380" fill="#1a1a2e"/>
-
-  <defs>
-    <marker id="arrow-white" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L8,3 z" fill="white"/>
-    </marker>
-  </defs>
-
-  <!-- Title -->
-  <text x="180" y="30" fill="white" font-size="13" font-weight="bold">GOTO MENU SYSTEM</text>
-
-  <!-- Code lines — shifted right to make room for arrows on left -->
-  <!-- Line numbers at x=180, code at x=215, line y spacing=26 starting at 55 -->
-
-  <text x="180" y="55"  fill="#aaa" font-size="13">10</text>
-  <text x="215" y="55"  fill="white" font-size="13">PRINT "Choose an option:"</text>
-
-  <text x="180" y="81"  fill="#aaa" font-size="13">20</text>
-  <text x="215" y="81"  fill="white" font-size="13">PRINT "1. Say Hello"</text>
-
-  <text x="180" y="107" fill="#aaa" font-size="13">30</text>
-  <text x="215" y="107" fill="white" font-size="13">PRINT "2. Say Goodbye"</text>
-
-  <text x="180" y="133" fill="#aaa" font-size="13">40</text>
-  <text x="215" y="133" fill="white" font-size="13">PRINT "3. Exit"</text>
-
-  <text x="180" y="159" fill="#aaa" font-size="13">50</text>
-  <text x="215" y="159" fill="white" font-size="13">INPUT CHOICE</text>
-
-  <text x="180" y="185" fill="#aaa" font-size="13">60</text>
-  <text x="215" y="185" fill="white" font-size="13">IF CHOICE = 1 THEN GOTO 100</text>
-
-  <text x="180" y="211" fill="#aaa" font-size="13">70</text>
-  <text x="215" y="211" fill="white" font-size="13">IF CHOICE = 2 THEN GOTO 110</text>
-
-  <text x="180" y="237" fill="#aaa" font-size="13">80</text>
-  <text x="215" y="237" fill="white" font-size="13">IF CHOICE = 3 THEN GOTO 120</text>
-
-  <text x="180" y="263" fill="#aaa" font-size="13">90</text>
-  <text x="215" y="263" fill="white" font-size="13">GOTO 10</text>
-
-  <text x="180" y="289" fill="#aaa" font-size="13">100</text>
-  <text x="215" y="289" fill="white" font-size="13">PRINT "Hello!"</text>
-
-  <text x="180" y="315" fill="#aaa" font-size="13">110</text>
-  <text x="215" y="315" fill="white" font-size="13">GOTO 10</text>
-
-  <text x="180" y="341" fill="#aaa" font-size="13">120</text>
-  <text x="215" y="341" fill="white" font-size="13">PRINT "Goodbye!"</text>
-
-  <text x="180" y="367" fill="#aaa" font-size="13">130</text>
-  <text x="215" y="367" fill="white" font-size="13">GOTO 10</text>
-
-  <!-- Arc arrows on the LEFT side -->
-  <!-- Rail x values: innermost=170, then stepping out by ~30 for wider arcs -->
-  <!-- All arrows point UP (backward) or DOWN (forward) to line 10 or beyond -->
-
-  <!-- FORWARD arcs (source below target): arc LEFT and DOWN -->
-
-  <!-- 60 → 100: from y=185 to y=289, rail at x=130 -->
-  <path d="M 175,181 C 130,181 130,285 175,285" fill="none" stroke="white" stroke-width="1.5" marker-end="url(#arrow-white)"/>
-
-  <!-- 70 → 110: from y=211 to y=315, rail at x=100 -->
-  <path d="M 175,207 C 95,207 95,311 175,311" fill="none" stroke="white" stroke-width="1.5" marker-end="url(#arrow-white)"/>
-
-  <!-- 80 → 120: from y=237 to y=341, rail at x=65 -->
-  <path d="M 175,233 C 55,233 55,337 175,337" fill="none" stroke="white" stroke-width="1.5" marker-end="url(#arrow-white)"/>
-
-  <!-- BACKWARD arcs (source below target, jumping back to line 10 y=55) -->
-
-  <!-- 90 → 10: from y=263 to y=55, rail at x=130 -->
-  <path d="M 175,259 C 130,259 130,51 175,51" fill="none" stroke="white" stroke-width="1.5" marker-end="url(#arrow-white)"/>
-
-  <!-- 110 → 10: from y=315 to y=55, rail at x=95 -->
-  <path d="M 175,311 C 90,311 90,51 175,51" fill="none" stroke="white" stroke-width="1.5" marker-end="url(#arrow-white)"/>
-
-  <!-- 130 → 10: from y=367 to y=55, rail at x=55 -->
-  <path d="M 175,363 C 45,363 45,51 175,51" fill="none" stroke="white" stroke-width="1.5" marker-end="url(#arrow-white)"/>
-
-</svg>
-
-</Slide>
-
-<Slide>
-## Dangers of Unstructured Programming
-
-<QuoteSlide
-  quote="It is practically impossible to teach good programming to students
-that have had a prior exposure to BASIC: as potential programmers
-they are mentally mutilated beyond hope of regeneration."
-  imageSrc="/img/lectures/l1-intro/Edsger_Wybe_Dijkstra-cc-by-sa-3-Hamilton-Richards.jpg"
-  author="Edsger Dijkstra"
-  credit="Photo: Hamilton Richards, CC BY-SA 3.0 ● Quote: EWD498 (1975)"
-/>
-</Slide>
-
-<Slide>
-## xkcd on goto
-
-<Img src="/img/lectures/web/l19-xkcd-goto-bad.png"
-  alt="XKCD cartoon 292: goto
-  [Sideways view of Cueball sitting at computer, thinking.]
-Cueball: I could restructure the program's flow
-Cueball: or use one little 'GOTO' instead.
-[Cueball starts typing.]
-Cueball: Eh, screw good practice. How bad can it be?
-Text on computer: goto main_sub3;
-*Compile*
-[We now have a view from behind Cueball. Cueball looks at the computer.]
-[A raptor jumps into the panel, pushing Cueball off his chair.]"
-/>
-
- <p style={{fontSize: '0.6em', color: '#999', marginTop: '0.5em'}}>
-  <a href="https://xkcd.com/292/">xkcd #292 "goto"</a> by Randall Munroe, CC BY-NC 2.5
-</p>
-
-</Slide>
-
-<Slide>
-
-## Software Size Large
-
-<Img src="/img/lectures/web/l19-millions-loc.png"
-  alt="Infographic showing codebases in the range of 50-100 million lines of code: Facebook, US Arm Future Combat System, Debian 5.0 codebase, Mac OS X Tiger, car software"
-/>
-
- <p style={{fontSize: '0.6em', color: '#999', marginTop: '0.5em'}}>
-  source: <a href="https://informationisbeautiful.net/visualizations/million-lines-of-code/">information is beautiful</a>
-</p>
-
-</Slide>
-
-<Slide>
-
-## From Hundreds to Millions of Lines
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.68em', marginTop: '1em'}}>
-
-<div className="fragment" style={{padding: '1em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
-
-**Languages & Paradigms**
-
-- structured programming
-- object-oriented programming
-- type systems and generics
-
-</div>
-
-<div className="fragment" style={{padding: '1em', border: '2px solid #2196F3', borderRadius: '8px'}}>
-
-**Tools & Infrastructure**
-
-- compilers, linkers, IDEs
-- version control software
-- package managers
-- static analysis
-
-</div>
-
-<div className="fragment" style={{padding: '1em', border: '2px solid #9C27B0', borderRadius: '8px'}}>
-
-**Patterns and Principles**
-- design patterns
-- SOLID principles
-- architecture styles and patterns
-
-</div>
-
-<div className="fragment" style={{padding: '1em', border: '2px solid #00BCD4', borderRadius: '8px'}}>
-
-**Quality Practices**
-
-- automated unit & integration testing
-- test-driven development (TDD)
-- code review
-- continuous integration
-
+## Architectural Styles
+
+<div style={{display: 'flex', gap: '2rem', marginTop: '0.6em', alignItems: 'flex-start'}}>
+
+<div style={{flex: 1}}>
+
+**Deployment Topology**
+<p style={{fontSize: '0.6em', fontStyle: 'italic', color: '#666', margin: '0.2em 0 0.6em'}}>Mutually exclusive — pick one</p>
+
+<div style={{fontSize: '0.75em', display: 'flex', flexDirection: 'column', gap: '0.4em'}}>
+  <div style={{border: '2px solid #6366F1', borderRadius: '6px', padding: '0.5em 0.8em', textAlign: 'left'}}>
+    <strong>Monolith</strong><br/>
+    <span style={{color: '#555'}}>Single deployment unit, shared memory &amp; database</span>
+  </div>
+  <div style={{border: '2px solid #6366F1', borderRadius: '6px', padding: '0.5em 0.8em', textAlign: 'left'}}>
+    <strong>Modular Monolith</strong><br/>
+    <span style={{color: '#555'}}>Single unit with enforced internal module boundaries</span>
+  </div>
+  <div style={{border: '2px solid #6366F1', borderRadius: '6px', padding: '0.5em 0.8em', textAlign: 'left'}}>
+    <strong>Microservices</strong><br/>
+    <span style={{color: '#555'}}>Multiple independent services, network communication</span>
+  </div>
 </div>
 
 </div>
 
-<div className="fragment">
-<div style={{padding: '0.75em 1em', border: '2px solid #FF9800', borderRadius: '8px', fontSize: '0.75em', marginTop: '1em', fontWeight: 'bold', color: '#FF9800'}}>
-🏛️ Architectural Patterns — today's topic: how do we structure entire systems?
+<div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', fontSize: '2em', color: '#aaa', padding: '0 0.5em', marginTop: '1.5em'}}>+</div>
+
+<div style={{flex: 1}}>
+
+**Internal Code Organization**
+<p style={{fontSize: '0.6em', fontStyle: 'italic', color: '#666', margin: '0.2em 0 0.6em'}}>Choose one, or combine</p>
+
+<div style={{fontSize: '0.75em', display: 'flex', flexDirection: 'column', gap: '0.4em'}}>
+  <div style={{border: '2px solid #0D9488', borderRadius: '6px', padding: '0.5em 0.8em', textAlign: 'left'}}>
+    <strong>Hexagonal</strong><br/>
+    <span style={{color: '#555'}}>Domain at center, ports &amp; adapters at edges</span>
+  </div>
+  <div style={{border: '2px solid #0D9488', borderRadius: '6px', padding: '0.5em 0.8em', textAlign: 'left'}}>
+    <strong>Layered</strong><br/>
+    <span style={{color: '#555'}}>Horizontal strata, dependencies flow downward</span>
+  </div>
+  <div style={{border: '2px solid #0D9488', borderRadius: '6px', padding: '0.5em 0.8em', textAlign: 'left'}}>
+    <strong>Pipelined</strong><br/>
+    <span style={{color: '#555'}}>Sequential, composable processing stages</span>
+  </div>
 </div>
+
+</div>
+
+</div>
+<br/>
+
+<p style={{fontSize: '0.65em', fontWeight: 'bold', textAlign: 'center', margin: '0.8em 0 0.4em'}}>Network Topology</p>
+<p style={{fontSize: '0.6em', fontStyle: 'italic', color: '#666', margin: '0.2em 0 0.6em', textAlign: 'center'}}>Mutually exclusive — pick one</p>
+<div style={{fontSize: '0.75em', display: 'flex', gap: '0.4em'}}>
+  <div style={{flex: 1, border: '2px solid #6366F1', borderRadius: '6px', padding: '0.5em 0.8em', textAlign: 'left'}}>
+    <strong>Local</strong><br/>
+    <span style={{color: '#555'}}>Single process, method calls</span>
+  </div>
+  <div style={{flex: 1, border: '2px solid #6366F1', borderRadius: '6px', padding: '0.5em 0.8em', textAlign: 'left'}}>
+    <strong>Distributed</strong><br/>
+    <span style={{color: '#555'}}>Multiple processes, HTTP / network</span>
+  </div>
 </div>
 
 </Slide>
-
 
 {/* ============================================ */}
 {/* ARC 2: MONOLITH DEEP DIVE */}
@@ -659,7 +592,6 @@ Explain merge conflicts
 
 - **Simplicity** ★★★ — One thing to build, test, deploy, monitor
 - **Responsiveness** ★★★ — In-process calls are orders of magnitude faster than network calls
-- **Testability** ★★☆ — One environment to set up, but may need full infrastructure
 - **Changeability** ★★☆ — IDE refactoring across entire codebase, but changes may ripple
 
 </div>
@@ -669,8 +601,6 @@ Explain merge conflicts
 **Where Monoliths Struggle**
 
 - **Scalability** ★☆☆ — Must scale the entire app; heavy work competes with everything else
-- **Deployability** ★☆☆ — Every deploy is all-or-nothing; a bug anywhere blocks everything
-- **Fault Tolerance** ★☆☆ — A crash in any component takes down the entire process
 - **Modularity** ★☆☆ — Boundaries are conventions, not enforcement (without discipline → Big Ball of Mud)
 
 </div>
@@ -684,14 +614,6 @@ Notice the modularity problem: without enforced boundaries, monoliths tend towar
 </div>
 
 <aside className="notes">
-**Walk through the ratings:**
-- Simplicity ★★★: One thing to build, deploy, monitor. The defining strength.
-- Responsiveness ★★★: Method calls in nanoseconds, database transactions, full stack traces.
-- Scalability ★☆☆: Vertical only — bigger hardware. Heavy work competes for shared resources.
-- Deployability ★☆☆: All-or-nothing. A broken test anywhere blocks everything.
-- Fault Tolerance ★☆☆: Bug in one module crashes everything — one process, one fate.
-- Modularity ★☆☆: Boundaries exist only as conventions. Without discipline → Big Ball of Mud.
-
 → **Transition:** A modular monolith gives us the best of both worlds...
 </aside>
 
@@ -706,47 +628,69 @@ Notice the modularity problem: without enforced boundaries, monoliths tend towar
 ## The Modular Monolith: Best of Both Worlds?
 
 <p style={{fontSize: '0.82em'}}>
-A <strong>modular monolith</strong> keeps the simplicity of a single deployment but adds <strong>enforced internal boundaries</strong>. All the operational simplicity of a monolith, with intentional structure to prevent the Big Ball of Mud.
+A <strong>modular monolith</strong> keeps the simplicity of a single deployment but adds <strong>enforced internal boundaries</strong>. 
 </p>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', alignItems: 'start'}}>
+<div style={{fontSize: '0.65em'}}>
 
-<div style={{fontSize: '0.75em', marginTop: '-0.5em'}}>
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px' }}}%%
-graph TD
-    subgraph MM["Modular Monolith"]
-        subgraph C["Courses Module"]
-            CD["Domain"]
-            CA["API"]
-        end
-        subgraph S["Submissions Module"]
-            SD["Domain"]
-            SA["API"]
-        end
-        subgraph G["Grading Module"]
-            GD["Domain"]
-            GA["API"]
-        end
+flowchart TB
+    subgraph "Driving Adapters (A5+)"
+        CLI[CLI Controller]
+        GUI[GUI Controller]
     end
-    SA -->|"via API"| GA
-    CA -->|"via API"| SA
-    DB[("Shared DB<br/>(separate schemas)")]
-    C --> DB
-    S --> DB
-    G --> DB
 
-    classDef modbox fill:#D4C4E8,stroke:#9370DB,stroke-width:2px
-    classDef db fill:#FFE0B2,stroke:#FF9800,stroke-width:2px
-    class C,S,G modbox
-    class DB db
+    subgraph "Application Services (A4)"
+        RS["RecipeService (facade — prescribed interface)"]
+        RSI["RecipeServiceImpl (YOUR design)"]
+    end
+
+    subgraph "Domain (A2+)"
+        R[Recipe]
+    end
+
+    subgraph "Ports (A2/A3)"
+        RR[RecipeRepository]
+        RCR[RecipeCollectionRepository]
+        CR[ConversionRegistry]
+    end
+
+    subgraph "Adapters (A3)"
+        JRR[JsonRecipeRepository]
+        JRCR[JsonRecipeCollectionRepository]
+    end
+
+    subgraph "Test Infrastructure"
+        MRR["Mock&lt;RecipeRepository&gt;"]
+        MRCR["Mock&lt;RecipeCollectionRepository&gt;"]
+    end
+
+    CLI --> RS
+    GUI --> RS
+    RS -.-> RSI
+
+    RSI --> RR
+    RSI --> RCR
+    RSI --> CR
+    RSI --> R
+
+    RR -.-> JRR
+    RR -.-> MRR
+    RCR -.-> JRCR
+    RCR -.-> MRCR
+
+    style RS fill:#fff3cd,stroke:#856404
+    style RSI fill:#d4edda,stroke:#28a745
+    style R fill:#d4edda,stroke:#28a745
+    style MRR fill:#cce5ff,stroke:#004085
+    style MRCR fill:#cce5ff,stroke:#004085
 ```
 
 </div>
 
-<div className="fragment" style={{fontSize: '0.65em'}}>
+<div className="fragment" style={{display: 'flex', gap: '1em', fontSize: '0.65em', marginTop: '0.5em'}}>
 
-<div style={{padding: '0.5em', border: '2px solid #4CAF50', borderRadius: '6px', textAlign: 'center', marginBottom: '0.5em'}}>
+<div style={{flex: 1, padding: '0.5em', border: '2px solid #4CAF50', borderRadius: '6px', textAlign: 'center'}}>
 
 **Simplicity** ★★★
 
@@ -754,29 +698,11 @@ Still one deploy, one build
 
 </div>
 
-<div style={{padding: '0.5em', border: '2px solid #4CAF50', borderRadius: '6px', textAlign: 'center', marginBottom: '0.5em'}}>
+<div style={{flex: 1, padding: '0.5em', border: '2px solid #4CAF50', borderRadius: '6px', textAlign: 'center'}}>
 
 **Modularity** ★★★
 
 Enforced internal boundaries
-
-</div>
-
-<div style={{padding: '0.5em', border: '2px solid #4A90A4', borderRadius: '6px', textAlign: 'center', marginBottom: '0.5em'}}>
-
-**Changeability** ★★☆
-
-Changes isolated to modules
-
-</div>
-
-<div style={{padding: '0.5em', border: '2px solid #FF9800', borderRadius: '6px', textAlign: 'center'}}>
-
-**Scalability** ★☆☆
-
-Still one process to scale
-
-</div>
 
 </div>
 
@@ -908,7 +834,7 @@ autograder/
 
 <Slide>
 
-## Discord is not a Monolithic System
+## Microservices Example: Discord
 
 <div style={{ fontSize: '.8em' }}>
 When you send a message on Discord, you're interacting with many independent systems (microservices), not a monolith.
@@ -996,13 +922,11 @@ Independent services across multiple servers.
 
 </div>
 
-<div className="fragment">
 <p style={{fontSize: '0.8em', marginTop: '1em'}}>
 Monolith vs. microservices is about <em>how code is divided</em>.
 
 Local vs. distributed is about <em>where it runs</em>.
 </p>
-</div>
 
 <aside className="notes">
 → **Transition:** Now let's look at how to evaluate architecture **quality**
@@ -1013,22 +937,6 @@ Local vs. distributed is about <em>where it runs</em>.
 {/* ARC 3: THE -ILITIES */}
 {/* ============================================ */}
 
-<Slide>
-## Quality
-
-<Img src='/img/lectures/web/l19-dilbert-quality.png'
-  alt="Dilbert cartoon by Scott Adams. Pointy-haired boss (PHB) is presenting to Alice, Dilbert, and Wally.
-  PHB (pointing at 'Quality' sign): 'Remember, quality is our top priority.'
-  Dilbert: 'Question: Is it more important than safety?'
-  PHB: 'Ooh...I forgot about that one.'
-  Wally: 'Question: Is quality more important than obeying the law?'
-  PHB: 'Well. Probably not.'
-  Alice: 'If we could maximize shareholder value by selling lower quality items, wouldn't we have a fiduciary responsibility to do it?'
-  PHB: 'Hmmm'
-  PHB (looking at 'Quality' sign): 'I'm sure it's in the top four.'
-  Off-screen voice: 'What if we had to lie to achieve quality?'"
-/>
-</Slide>
 
 <Slide>
 
@@ -1392,7 +1300,7 @@ How does the system handle growth in load, data, or users?
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.65em', marginTop: '0.75em'}}>
 
-<div style={{padding: '0.25em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+<div className='fragment' style={{padding: '0.25em', border: '2px solid #FF9800', borderRadius: '8px'}}>
 
 **Vertical Scaling**
 
@@ -1401,7 +1309,7 @@ How does the system handle growth in load, data, or users?
 />
 </div>
 
-<div style={{padding: '0.25em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+<div className='fragment' style={{padding: '0.25em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
 
 **Horizontal Scaling**
 
@@ -1413,44 +1321,13 @@ How does the system handle growth in load, data, or users?
 
 </div>
 
-<div className="fragment">
-<p style={{fontSize: '0.78em', marginTop: '0.75em', fontWeight: 'bold', color: '#9370DB'}}>
-Key insight: Scalability isn't just "can the system handle more load?" It's "does the <em>rest</em> of the system stay responsive while handling that load?" We'll return to this distinction in L20-21.
-</p>
-</div>
-
 <aside className="notes">
 **Scalability = handling growth:**
-
-**Vertical scaling:**
-- The intuitive approach: "slow? buy more hardware"
-- But there's a ceiling — you can only buy so big a server
-- More importantly: even with a huge server, in a monolith ALL work shares resources
-- Grading jobs compete with web requests for CPU, memory, DB connections
-- Adding more grading jobs just makes contention worse
-
-**Horizontal scaling:**
-- The distributed approach: "slow? add more workers"
-- Pawtograder naturally does this — GitHub Actions spins up N runners
-- The API never touches the heavy work — it just receives normalized feedback
-- So the API stays fast even during a near-deadline spike
-
-**The "rest of the system" insight:**
-- This connects back to our Scenario A (200 at once) from earlier
-- The question isn't just "can we grade 200 submissions?"
-- It's "does the web UI stay responsive WHILE we grade 200 submissions?"
-- Pawtograder: yes. Monolith: no (without architectural changes).
-
-**Foreshadow L20-21:**
-- We'll go much deeper into distributed architecture
-- Horizontal scaling requires infrastructure: queues, workers, coordination
-- There's no free lunch — distributed systems add complexity
 
 → **Transition:** Now that we've defined all attributes, let's talk tradeoffs...
 </aside>
 
 </Slide>
-
 <Slide>
 
 ## Poll: What attributes most conflict with simplicity?
@@ -1473,9 +1350,9 @@ Key insight: Scalability isn't just "can the system handle more load?" It's "doe
 Here's the uncomfortable truth: <strong>you can't maximize every quality attribute</strong>. They're in tension with each other.
 </p>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.58em', marginTop: '0.75em'}}>
+<div style={{display: 'flex', flexDirection: 'column', gap: '0.75em', fontSize: '0.58em', marginTop: '0.75em'}}>
 
-<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+<div className="fragment" style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
 
 **Simplicity vs. Modularity**
 
@@ -1485,7 +1362,7 @@ Adding interfaces and abstractions → more modular → less simple
 
 </div>
 
-<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+<div className="fragment" style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
 
 **Simplicity vs. Scalability**
 
@@ -1495,17 +1372,7 @@ Horizontal scaling requires workers, queues, coordination → more complexity
 
 </div>
 
-<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
-
-**Deployability vs. Responsiveness**
-
-Independent services → independent deploys → network calls → more latency
-
-*High deployability often means more service boundaries = more network overhead.*
-
-</div>
-
-<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+<div className="fragment" style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
 
 **Fault Tolerance vs. Simplicity**
 
@@ -1525,29 +1392,6 @@ Architecture is choosing which attributes matter most for <em>your</em> system. 
 
 <aside className="notes">
 **This is the KEY INSIGHT for the lecture:**
-
-**Every decision has costs:**
-- Adding modularity = adding abstractions = reducing simplicity
-- Adding scalability = adding workers = adding coordination complexity
-- Adding deployability = adding service boundaries = adding network latency
-- Adding fault isolation = adding boundaries = adding complexity
-
-**The role of the architect:**
-- NOT to find the "best" architecture (there isn't one)
-- TO understand the priorities for THIS system
-- TO make conscious tradeoffs based on those priorities
-- TO communicate those tradeoffs to the team
-
-**Connect to domain understanding (L12):**
-- Domain modeling tells you WHICH quality attributes matter most
-- A grading system needs scalability at deadline time
-- A banking system needs fault tolerance and consistency
-- A startup MVP might just need simplicity
-
-**The "selling something" callout:**
-- Vendors often promise architectures that do everything well
-- In practice, every architectural style makes tradeoffs
-- Understanding the tradeoffs is the skill — not finding the magic solution
 
 → **Transition:** Now we have the vocabulary. Let's clarify what "styles" and "patterns" mean...
 </aside>
@@ -1576,25 +1420,23 @@ Architects use two terms that sound similar but mean different things:
     </tr>
   </thead>
   <tbody>
-    <tr style={{borderBottom: '1px solid #333'}}>
-      <td style={{padding: '0.4em 0.6em', color: '#9370DB', fontWeight: 'bold'}}>Architecture</td>
-      <td style={{padding: '0.4em 0.6em'}}>Monolith, Microservices, Layered</td>
-      <td style={{padding: '0.4em 0.6em'}}>Repository, Service Locator</td>
-    </tr>
     <tr>
       <td style={{padding: '0.4em 0.6em', color: '#4CAF50', fontWeight: 'bold'}}>Design</td>
       <td style={{padding: '0.4em 0.6em'}}>Object-oriented, Functional</td>
       <td style={{padding: '0.4em 0.6em'}}>Strategy, Builder, Adapter</td>
     </tr>
+    <tr style={{borderBottom: '1px solid #333'}}>
+      <td style={{padding: '0.4em 0.6em', color: '#9370DB', fontWeight: 'bold'}}>Architecture</td>
+      <td style={{padding: '0.4em 0.6em'}}>Monolith, Microservices, Layered</td>
+      <td style={{padding: '0.4em 0.6em'}}>Repository, Service Locator</td>
+    </tr>
   </tbody>
 </table>
 </div>
 
-<div className="fragment">
 <p style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
 Styles describe the overall shape; patterns are reusable solutions you apply within that shape.
 </p>
-</div>
 
 <aside className="notes">
 **Why this distinction matters:**
@@ -1615,11 +1457,11 @@ Styles describe the overall shape; patterns are reusable solutions you apply wit
 
 <Slide>
 
-## Architectural Patterns and Styles
+## Architectural Patterns
 
 <div style={{fontSize: '0.75em', marginTop: '1em'}}>
 
-<p style={{marginBottom: '0.5em', color: '#9370DB'}}>**Architectural Pattern — how the system is deployed and divided**</p>
+<p style={{marginBottom: '0.5em', color: '#9370DB'}}>**How the system is deployed**</p>
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', marginBottom: '1em'}}>
 
@@ -1641,7 +1483,7 @@ Separate processes, network communication
 
 </div>
 
-<p style={{marginBottom: '0.5em', color: '#4CAF50'}}>**Architectural Style — how code is internally organized**</p>
+<p style={{marginBottom: '0.5em', color: '#4CAF50'}}>**How code is internally organized**</p>
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1em'}}>
 
@@ -1770,11 +1612,10 @@ graph TD
 
 </div>
 
-<div className="fragment">
 <p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
-<strong>The key rule:</strong> dependencies flow <strong>downward</strong>.
+<strong>The key rule:</strong> dependencies flow <strong>downward</strong>. In other words, each layer holds a reference only to the layer beneath it.
 </p>
-</div>
+
 
 <aside className="notes">
 **Define each layer clearly:**
@@ -2875,6 +2716,7 @@ We opened with "how do we organize our code?" — and now you have styles, quali
 
 <Img src='/img/lectures/web/l19-onion-architecture.jpg'
   alt="A photograph of an onion with overlaid text: 'Most software is written line an onion. The more layers you peel, the more you want to cry'"
+  width={1200}
 />
 </Slide>
 
