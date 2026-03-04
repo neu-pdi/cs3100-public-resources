@@ -52,6 +52,7 @@ By completing this assignment, you will demonstrate proficiency in:
 - **Designing a UI-agnostic service layer** — creating application services that can be consumed by multiple driving adapters (CLI now, GUI in Group Deliverable 1), informed by what you learned about bad service design in A4 and hexagonal architecture ([L16: Testability](/lecture-notes/l16-testing2), [L19: Architectural Qualities](/lecture-notes/l19-monoliths))
 - **Building a driving adapter** — implementing the CLI as a hexagonal driving adapter (it *drives* the application on behalf of the user) that consumes your services without leaking domain logic into the presentation layer; preparing for a second driving adapter (GUI) in the group project
 - **Designing a command architecture** — creating an extensible system for dispatching, parsing, and executing commands
+- **Calling a network API with graceful error handling** — integrating an external API (Google Gemini) as a driven adapter in the hexagonal architecture, with proper error classification and actionable error messages, applying the Fallacies of Distributed Computing from [L20: Distributed Architecture](/lecture-notes/l20-networks)
 - **End-to-end testing with JLine** — understanding how integration tests use dumb terminal mode to verify CLI behavior
 - **Interactive UX for terminals** — building rich interactions including step-by-step cooking mode, tab completion, and contextual help
 
@@ -117,6 +118,7 @@ Your CLI must support these commands. Click any command for detailed documentati
 | **Recipe** | [`show <recipe>`](#show-recipe--display-a-recipe) | Display a recipe's details |
 | | [`search <ingredient>`](#search-ingredient--search-recipes-by-ingredient) | Find recipes containing an ingredient |
 | | [`import json <file> <coll>`](#import-json-file-collection--import-recipe-from-json) | Import recipe from JSON file |
+| | [`import image <file> <coll>`](#import-image-file-collection--import-recipe-from-image) | Import recipe from image via Gemini OCR |
 | | [`delete <recipe>`](#delete-recipe--delete-a-recipe) | Delete a recipe |
 | **Tools** | [`scale <recipe> <servings>`](#scale-recipe-servings--scale-a-recipe) | Scale recipe to target servings |
 | | [`convert <recipe> <unit>`](#convert-recipe-unit--convert-recipe-units) | Convert recipe to different units |
@@ -156,7 +158,7 @@ CookYourBooks serves three distinct actors, each representing a different way pe
 
 | Actor | Goals | Key Commands |
 |---------|-------|--------------|
-| **The Librarian** | Organizes and curates their recipe collection. Imports new recipes, creates collections, searches for recipes, manages house conversion rules. | `collections`, `collection create`, `recipes`, `conversions`, `conversion add/remove`, `import json`, `search`, `delete` |
+| **The Librarian** | Organizes and curates their recipe collection. Imports new recipes (from JSON files or images), creates collections, searches for recipes, manages house conversion rules. | `collections`, `collection create`, `recipes`, `conversions`, `conversion add/remove`, `import json`, `import image`, `search`, `delete` |
 | **The Cook** | Follows recipes step-by-step while cooking. Needs hands-free navigation, clear ingredient lists. | `cook`, `show` |
 | **The Planner** | Plans meals and shopping trips. Aggregates ingredients across multiple recipes, generates shopping lists, scales and converts recipes, exports recipes to share. | `shopping-list`, `scale`, `convert`, `export` |
 
@@ -183,6 +185,83 @@ A monolithic "CookYourBooksService" that handles all functionality in one class 
 3. **Interface Segregation** — Each part of your CLI should depend only on the service capabilities it actually needs. For example, the code that implements `cook` mode needs recipe lookup — it doesn't need import or shopping list generation. The code that implements `shopping-list` needs ingredient aggregation and recipe lookup — it doesn't need cook mode session state. Avoid fat service interfaces that force callers to depend on methods they don't use.
 
 4. **Testability** — Things that need independent testing should be separable. Can you test your scaling logic without involving file I/O? Can you test your command dispatcher without a real terminal? Pure transformation logic (scaling, conversion) should be testable with just domain objects. Formatting logic should be testable with sample data and string assertions.
+
+#### The OCR Service: A Driven Adapter for Image Import
+
+The `import image` command introduces a new **driven adapter**: a service that calls the Google Gemini API to extract a recipe from an image. Like `RecipeRepository`, this is a dependency your application drives — it calls out to an external system on behalf of the user.
+
+You must implement a `RecipeOcrService` port interface and a `GeminiOcrAdapter` that implements it using the official Google GenAI SDK for Java (included in the handout Gradle configuration):
+
+```java
+public interface RecipeOcrService {
+    /**
+     * Extract a recipe from an image file.
+     * @param imagePath path to the image (JPEG, PNG, or WebP)
+     * @return the extracted Recipe
+     * @throws OcrException if extraction fails for any reason
+     */
+    Recipe extractRecipe(Path imagePath) throws OcrException;
+}
+```
+
+`GeminiOcrAdapter` should:
+1. Read and base64-encode the image file
+2. Send it to Gemini (`gemini-3-flash-preview`) using the provided prompt (see below)
+3. Parse the JSON response using the **existing Recipe JSON parser** from A3/A4 (inject it via the constructor)
+4. Wrap all errors in meaningful `OcrException` subtypes
+
+**Prompt for Gemini (provided in handout — do not modify):**
+
+```
+[INSTRUCTOR WILL PROVIDE THIS PROMPT BEFORE HANDOUT RELEASE]
+```
+
+**Implementing error handling — apply the Fallacies of Distributed Computing (L20):**
+
+The network is not reliable, latency is not zero, and the API can fail in many ways. Your adapter must handle each case and throw an `OcrException` with an actionable message:
+
+| Failure scenario | What to detect | `OcrException` message |
+|-----------------|----------------|------------------------|
+| Image file unreadable | `IOException` reading file | Include the file path |
+| Network timeout | SDK timeout exception | `"request timed out"` |
+| HTTP 401/403 | API error status | `"API key error"` |
+| HTTP 429 | Rate limit response | Suggest waiting and retrying |
+| HTTP 5xx | Server error | Include status code |
+| Response not parseable as Recipe | `ImportException` from parser | Indicate image may not be a recipe |
+
+**API key configuration:** The adapter reads the key from the environment variable `GOOGLE_API_KEY`. The handout provides a `GeminiOcrAdapter` skeleton showing how to initialize the SDK client.
+
+:::info What is an environment variable?
+
+An **environment variable** is a named value stored in your shell session — outside your code. Programs can read these values at runtime using `System.getenv("VAR_NAME")`. They are the standard way to pass secrets (like API keys) to applications without hardcoding them into source code.
+
+**Setting `GOOGLE_API_KEY` for your session:**
+
+On macOS/Linux, run this in your terminal before starting the app:
+```bash
+export GOOGLE_API_KEY=your-api-key-here
+```
+
+This sets the variable for the current terminal session. To make it permanent, add that line to your `~/.zshrc` (or `~/.bashrc`). In VS Code, you can also set environment variables in a `.env` file at the project root and configure your launch configuration to load it — see the [VS Code docs on environment variables](https://code.visualstudio.com/docs/editor/debugging#_launchjson-attributes).
+
+:::
+
+:::warning API Key Security
+
+Your `GOOGLE_API_KEY` must **not** be committed to version control — treat it like a password. Never put it directly in a `.java` file. The provided test suite uses a **mock `RecipeOcrService`** and does not require a real API key — you can run all tests without one.
+
+:::
+
+**Wiring in `CookYourBooksApp`:**
+
+```java
+// Provided in the handout skeleton — add your OCR service wiring:
+String apiKey = System.getenv("GOOGLE_API_KEY");
+RecipeOcrService ocrService = new GeminiOcrAdapter(apiKey, recipeJsonParser);
+// Pass ocrService to your Librarian service or CLI wiring
+```
+
+**The testability heuristic in action:** Because `RecipeOcrService` is a port interface, your E2E CLI tests can inject a mock implementation that returns a pre-built `Recipe` — no real network calls needed. This is the same principle as mocking `RecipeRepository` in A4.
 
 ### JLine: Rich Terminal Interaction
 
@@ -528,6 +607,29 @@ Imported 'Grandma's Apple Pie' into 'Holiday Favorites'.
 - File not found or unreadable: Display the error message from `ImportException`
 - Collection not found: Display a helpful message suggesting `collections` command
 - Parse/format errors: Display the error message from the exception
+
+#### `import image <file> <collection>` — Import Recipe from Image
+
+```text
+cyb> import image ~/recipes/cookies.jpg "Holiday Favorites"
+```
+
+Uses Google Gemini to extract a recipe from a photo and imports it into the specified collection. The image is analyzed using the provided `RecipeOcrService` (a driven adapter that calls the Gemini API). The extracted recipe is then added to the collection and persisted.
+
+**On success:**
+```text
+Analyzing image...
+Imported 'Chocolate Chip Cookies' into 'Holiday Favorites'.
+```
+
+**Error handling:**
+- File not found or unreadable: `Image file not found: '/path/to/file.jpg'`
+- Collection not found: Display a helpful message suggesting `collections` command
+- Image not a recipe / extraction failed: `Could not extract a recipe from the image. Is the image clear and does it contain a recipe?`
+- Network timeout: `Network error: request timed out. Check your connection and try again.`
+- API rate limit (HTTP 429): `API rate limit reached. Please wait a moment and try again.`
+- API authentication error (HTTP 401/403): `API key error. Check that GOOGLE_API_KEY is set correctly.`
+- Other API errors: Display a descriptive message including the HTTP status
 
 #### `delete <recipe>` — Delete a Recipe
 
@@ -966,7 +1068,7 @@ The handout includes tests for:
 - Basic command execution (help, collections, recipes, show, search)
 - Collection creation
 - House conversion management (conversions, conversion add/remove)
-- Recipe operations (import json, delete, scale, convert, export)
+- Recipe operations (import json, import image, delete, scale, convert, export)
 - Interactive cooking mode (navigation, ingredients)
 - Shopping list generation
 - Error handling and edge cases
@@ -997,6 +1099,7 @@ CookYourBooks Commands:
     show <recipe>                     Display a recipe
     search <ingredient>               Find recipes by ingredient
     import json <file> <collection>   Import recipe from JSON file
+    import image <file> <collection>  Import recipe from image via OCR
     delete <recipe>                   Delete a recipe
 
   Tools:
@@ -1110,7 +1213,9 @@ Update `REFLECTION.md` to address:
 
 5. **E2E Testing Experience:** This assignment used E2E tests with a dumb terminal instead of mocks. Compare this to A4's mock-based approach. Which bugs did E2E testing catch (or would catch) that mocks might miss? Were there situations where you wished you had finer-grained unit tests? What's your takeaway about when to use each approach?
 
-6. **AI Collaboration:** Which parts of the CLI did AI help you build most effectively? Where did you need to think independently about design? Did AI help or hinder your architectural thinking — for example, did it suggest designs that violated the boundary heuristics, or did it help you apply them?
+6. **Network API Integration:** The `import image` command calls an external API over the network. What error scenarios did you handle in your `GeminiOcrAdapter`? Which of the Fallacies of Distributed Computing from [L20](/lecture-notes/l20-networks) most directly influenced your design? Compare calling the Gemini API to calling a local method like `RecipeRepository.findById()` — what assumptions change, and how does that show up in your code?
+
+7. **AI Collaboration:** Which parts of the CLI did AI help you build most effectively? Where did you need to think independently about design? Did AI help or hinder your architectural thinking — for example, did it suggest designs that violated the boundary heuristics, or did it help you apply them?
 
 ## Quality Requirements
 
@@ -1141,13 +1246,15 @@ This rubric emphasizes design quality equally with implementation. Passing all t
 | `conversions` / `conversion add` / `conversion remove` | 3 |
 | Data persistence (`cyb-library.json` load/save) | 3 |
 | `recipes <collection>` (correct listing + error handling) | 3 |
-| `show <recipe>` (correct display + error handling) | 4 |
-| `search <ingredient>` (correct results + no results) | 4 |
-| `import json` (success + error cases) | 4 |
+| `show <recipe>` (correct display + error handling) | 3 |
+| `search <ingredient>` (correct results + no results) | 3 |
+| `import json` (success + error cases) | 3 |
+| `import image` (success: extracts and imports recipe) | 3 |
+| `import image` (error handling: timeout, API error, bad image) | 3 |
 | `delete <recipe>` (remove from repo) | 3 |
-| `scale` (comparison display, save prompt, error cases) | 4 |
-| `convert` (display, save prompt, error cases) | 4 |
-| `shopping-list` (correct aggregation display) | 4 |
+| `scale` (comparison display, save prompt, error cases) | 3 |
+| `convert` (display, save prompt, error cases) | 3 |
+| `shopping-list` (correct aggregation display) | 3 |
 | `cook` mode (navigation, ingredients, done/quit) | 3 |
 | `export` (correct Markdown output) | 2 |
 
@@ -1202,7 +1309,7 @@ Your ADRs are graded positively for quality and depth of architectural thinking:
 
 #### Reflection Questions (20 points)
 
-See [Reflection](#reflection) for the 6 questions. Answers should demonstrate genuine reflection on your design process, not just describe what you built.
+See [Reflection](#reflection) for the 7 questions. Answers should demonstrate genuine reflection on your design process, not just describe what you built.
 
 ## Submission
 

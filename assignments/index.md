@@ -130,9 +130,9 @@ Assignments are structured to provide a steady, manageable pace throughout the s
     - Graceful error handling with actionable error messages
     - Support for both interactive and scripted (non-interactive) modes
   - **Import/Export Workflows:**
-    - Import recipes from JSON files and images (via OCR) through CLI
+    - Import recipes from JSON files through CLI
+    - Import recipes from images using **Google Gemini API** (`gemini-3-flash-preview`) — implement a `RecipeOcrService` driven adapter with graceful error handling for network failures, API errors, and unrecognizable images
     - Export recipes and cookbooks to markdown
-    - Batch operations (import directory of images, export entire cookbook)
 - [**Lab 9: Serverless**](/labs/lab9-serverless)
   - Deploy recipe API to cloud platform
 
