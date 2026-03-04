@@ -6,24 +6,24 @@ image: /img/assignments/web/a5.png
 
 ## Overview
 
-In this assignment, you'll build an **interactive command-line interface (CLI)** for CookYourBooks — a rich, command-oriented terminal application that lets users manage their recipe library, import recipes, scale and convert ingredients, generate shopping lists, and follow recipes step-by-step while cooking.
+In this assignment, you'll build an **interactive command-line interface (CLI)** for CookYourBooks — a command-oriented terminal application that lets users manage their recipe library, import recipes, scale and convert ingredients, generate shopping lists, and follow recipes step-by-step while cooking.
 
 The CLI is your first **driving adapter** in the [hexagonal architecture](/lecture-notes/l16-testing2) — an adapter that *drives* the application by calling into your service layer on behalf of a user (as opposed to *driven* adapters like repositories, which the application calls out to). But here's the twist: you won't use the `RecipeService` from A4. Instead, you'll design your own service layer — one that's actually well-suited for *multiple* user interfaces. In A4, we told you `RecipeService` was not ideal design. Now you get to prove you understand *why* by building something better.
 
 Your assignment has two parts:
 1. **Design and implement CLI-oriented services** that coordinate the domain model and repositories for what your CLI needs
-2. **Build a rich interactive CLI** on top of those services — with command parsing, tab completion, interactive cooking mode, and interactive scaling
+2. **Build an interactive CLI** on top of those services — with command parsing, tab completion, and an interactive cooking mode
 
 This is a **design-heavy assignment.** We provide the commands your CLI must support at a high level, and we provide explicit guidance on service boundaries through the **actor heuristic** and other boundary heuristics from [L18: Thinking Architecturally](/lecture-notes/l18-architecture-design). But *how* you decompose the service layer — which specific methods each service exposes, how they coordinate, and where you draw the lines — requires you to apply those heuristics thoughtfully. You'll document your decisions using Architecture Decision Records (ADRs) from L18.
 
-:::danger Design Quality Is the Primary Learning Outcome
+:::danger Design Quality Is Equally Weighted with Implementation
 
 This assignment shifts emphasis from automated correctness testing to **design quality**. Unlike previous assignments:
 
 - **We provide the majority of the test suite** with the handout. You can run tests locally to verify functionality.
-- **Manual grading can deduct up to 45 points** for poor design, architecture, or code quality issues. This is a significant increase from past assignments.
-- **We strongly encourage the use of AI coding assistants to implement your design.** The key learning objectives are to apply architectural thinking to create a design that is well-suited for the requirements specified in this writeup. You have already had considerable practice implementing pre-designed Java classes in this course. Spend more time thinking about your design, and rely on AI to help you implement it quickly.
-- **Design documents are required** and graded, for a total of 20 points. You must capture your architectural decisions in ADRs using the techniques from L18-L19.
+- **Design documentation is worth 50% of your grade.** ADRs and reflection questions are worth 50 points total.
+- **Manual grading can deduct up to 30 points from your implementation score** for poor design, architecture, or code quality issues.
+- **We encourage the use of AI coding assistants to implement your design.** The key learning objectives are to apply architectural thinking. Spend more time thinking about your design, and rely on AI to help you implement it.
 
 The goal is to demonstrate that you can apply the architectural thinking from lectures — not just make tests pass. A submission that passes all tests but demonstrates poor service decomposition, tight coupling, or no separation of concerns will receive substantial deductions.
 
@@ -35,13 +35,13 @@ The goal is to demonstrate that you can apply the architectural thinking from le
 
 ### At a Glance
 
-**What you'll build:** A CLI-oriented service layer (your design) and a rich interactive CLI with command parsing, navigation, collection/recipe management (create, rename, delete, edit), and two interactive modes (cook mode and scaling mode).
+**What you'll build:** A CLI-oriented service layer (your design) and an interactive CLI with command parsing, collection browsing, recipe management, a shopping list generator, and an interactive cooking mode.
 
 **The main challenge:** Designing services that serve your CLI's needs *and* will be reusable for a GUI in Group Deliverable 1 (unlike the A4 `RecipeService`, which was a facade — a single interface bundling too many responsibilities), applying the four service boundary heuristics from L18, and documenting your decisions in ADRs.
 
-**What you'll test:** End-to-end CLI behavior using JLine's dumb terminal mode. The provided test suite covers core functionality; you'll add tests for your specific design choices.
+**What you'll test:** End-to-end CLI behavior using JLine's dumb terminal mode. The provided test suite covers all required functionality.
 
-**How you'll be graded:** 70 pts automated (command correctness via provided tests), 30 pts design documentation and reflection (ADRs, reflection questions), minus up to 45 pts for design quality issues. A submission passing all tests with excellent design earns 70/70; poor design can drop that significantly. See [Grading Rubric](#grading-rubric).
+**How you'll be graded:** 50 pts automated (command correctness via provided tests), 50 pts design documentation and reflection (ADRs, reflection questions), minus up to 30 pts for design quality issues. **Design quality is weighted equally with implementation.** See [Grading Rubric](#grading-rubric).
 
 ## Learning Outcomes
 
@@ -52,9 +52,8 @@ By completing this assignment, you will demonstrate proficiency in:
 - **Designing a UI-agnostic service layer** — creating application services that can be consumed by multiple driving adapters (CLI now, GUI in Group Deliverable 1), informed by what you learned about bad service design in A4 and hexagonal architecture ([L16: Testability](/lecture-notes/l16-testing2), [L19: Architectural Qualities](/lecture-notes/l19-monoliths))
 - **Building a driving adapter** — implementing the CLI as a hexagonal driving adapter (it *drives* the application on behalf of the user) that consumes your services without leaking domain logic into the presentation layer; preparing for a second driving adapter (GUI) in the group project
 - **Designing a command architecture** — creating an extensible system for dispatching, parsing, and executing commands
-- **Designing a completer architecture** — applying the same boundary heuristics to tab completion, separating argument type declarations from value suppliers and presentation logic
-- **End-to-end testing with JLine** — writing integration tests using dumb terminal mode to verify CLI behavior
-- **Interactive UX for terminals** — building rich interactions including step-by-step cooking mode, interactive scaling, tab completion, and contextual help
+- **End-to-end testing with JLine** — understanding how integration tests use dumb terminal mode to verify CLI behavior
+- **Interactive UX for terminals** — building rich interactions including step-by-step cooking mode, tab completion, and contextual help
 
 ## AI Policy for This Assignment
 
@@ -64,7 +63,7 @@ By completing this assignment, you will demonstrate proficiency in:
 
 One valuable use of AI is **visualizing your own ideas** to help you think through them. Instead of asking "How should I design my service layer?", try:
 
-> "I'm thinking of having three services: a RecipeLibraryService that manages the recipe library (browsing, importing, organizing collections), a TransformService for scaling and conversion, and a CookingSessionService that manages state during cook mode. Generate a Mermaid diagram showing these services and their dependencies on the repositories."
+> "I'm thinking of having three services: a LibrarianService that manages the recipe library (browsing, importing, collections), a PlannerService for shopping lists, scaling, and conversion, and a CookingSessionService that manages state during cook mode. Generate a Mermaid diagram showing these services and their dependencies on the repositories."
 
 Seeing your ideas as a diagram helps you spot issues: Does this service have too many responsibilities? Are there circular dependencies? Does this boundary align with the rate-of-change heuristic? Use this to think through your design, and as you evaluate the artifacts, ask the AI chat agent to refine the design until you are satisfied
 
@@ -111,23 +110,15 @@ Your CLI must support these commands. Click any command for detailed documentati
 |----------|---------|-------------|
 | **Library** | [`collections`](#collections--list-collections) | List all recipe collections |
 | | [`collection create <name>`](#collection-create-name--create-a-personal-collection) | Create a new personal collection |
-| | [`collection create cookbook <name>`](#collection-create-cookbook-name--create-a-cookbook-collection) | Create a cookbook collection (with author, publisher) |
-| | [`collection create web <name> <url>`](#collection-create-web-name-url--create-a-web-collection) | Create a web collection from a URL |
-| | [`collection rename <old> <new>`](#collection-rename-old-new--rename-a-collection) | Rename a collection |
-| | [`collection delete <name>`](#collection-delete-name--delete-a-collection) | Delete a collection |
-| | [`collection add <coll> <recipe>`](#collection-add-collection-recipe--add-recipe-to-collection) | Add a recipe to a collection |
-| | [`collection remove <coll> <recipe>`](#collection-remove-collection-recipe--remove-recipe-from-collection) | Remove a recipe from a collection |
 | | [`recipes <collection>`](#recipes-collection--list-recipes-in-a-collection) | List recipes in a collection |
-| **Conversions** | [`conversions`](#conversions--list-house-conversions) | List all house conversion rules |
+| | [`conversions`](#conversions--list-house-conversions) | List all house conversion rules |
 | | [`conversion add`](#conversion-add--add-a-house-conversion) | Add a house conversion rule (interactive) |
 | | [`conversion remove <rule>`](#conversion-remove-rule--remove-a-house-conversion) | Remove a house conversion rule |
 | **Recipe** | [`show <recipe>`](#show-recipe--display-a-recipe) | Display a recipe's details |
 | | [`search <ingredient>`](#search-ingredient--search-recipes-by-ingredient) | Find recipes containing an ingredient |
 | | [`import json <file> <coll>`](#import-json-file-collection--import-recipe-from-json) | Import recipe from JSON file |
-| | [`import text <collection>`](#import-text-collection--import-recipe-from-text) | Import recipe from text (multi-line input) |
-| | [`edit <recipe>`](#edit-recipe--edit-a-recipe) | Edit a recipe (multi-line input) |
 | | [`delete <recipe>`](#delete-recipe--delete-a-recipe) | Delete a recipe |
-| **Tools** | [`scale <recipe>`](#scale-recipe--interactive-scaling-mode) | Interactive scaling mode |
+| **Tools** | [`scale <recipe> <servings>`](#scale-recipe-servings--scale-a-recipe) | Scale recipe to target servings |
 | | [`convert <recipe> <unit>`](#convert-recipe-unit--convert-recipe-units) | Convert recipe to different units |
 | | [`shopping-list <r1> [r2] ...`](#shopping-list-recipe1-recipe2---generate-shopping-list) | Generate shopping list from recipes |
 | | [`cook <recipe>`](#cook-recipe--interactive-cooking-mode) | Step-by-step cooking mode |
@@ -137,11 +128,10 @@ Your CLI must support these commands. Click any command for detailed documentati
 
 ### Data Persistence
 
-The CLI automatically persists all data to a JSON file named `cyb-library.json` in the current working directory:
+The provided `CybLibrary` class handles all data persistence automatically, storing everything in a JSON file named `cyb-library.json` in the current working directory:
 
-- **On startup:** If the file exists, load all collections, recipes, and house conversion rules
-- **On changes:** `CybLibrary` automatically persists all changes — every mutation (recipe import/edit/delete, collection changes, conversion rule changes) is written to the file immediately. You do not need to call save explicitly. If the save fails, log the error using SLF4J at `ERROR` level with the message `"Failed to save library: {}"` (passing the exception as the final argument so the stack trace is captured), and print a warning to the terminal: `Warning: Failed to save changes to cyb-library.json: <error message>. Your changes may be lost.`
-- **File not found:** Start with an empty library (no error)
+- **On startup:** If the file exists, `CybLibrary.load()` loads all collections, recipes, and house conversion rules. If the file doesn't exist, it starts with an empty library (no error).
+- **On changes:** `CybLibrary` automatically persists all changes — every mutation (recipe import/delete, collection changes, conversion rule changes) is written to the file immediately. You do not need to call save explicitly. If the save fails, log the error using SLF4J at `ERROR` level with the message `"Failed to save library: {}"` (passing the exception as the final argument so the stack trace is captured), and print a warning to the terminal: `Warning: Failed to save changes to cyb-library.json: <error message>. Your changes may be lost.`
 
 **File contents include:**
 - All recipe collections (with their type: personal, cookbook, or web)
@@ -166,17 +156,17 @@ CookYourBooks serves three distinct actors, each representing a different way pe
 
 | Actor | Goals | Key Commands |
 |---------|-------|--------------|
-| **The Librarian** | Organizes and curates their recipe collection. Imports new recipes, creates collections, searches for recipes, manages metadata. | `collections`, `collection *`, `recipes`, `import *`, `search`, `edit`, `delete` |
-| **The Cook** | Follows recipes step-by-step while cooking. Needs hands-free navigation, on-the-fly scaling for different serving sizes, clear ingredient lists. | `cook`, `show`, `scale` (within cook mode) |
-| **The Planner** | Plans meals and shopping trips. Aggregates ingredients across multiple recipes, generates shopping lists, exports recipes to share. | `shopping-list`, `export`, `scale`, `convert` |
+| **The Librarian** | Organizes and curates their recipe collection. Imports new recipes, creates collections, searches for recipes, manages house conversion rules. | `collections`, `collection create`, `recipes`, `conversions`, `conversion add/remove`, `import json`, `search`, `delete` |
+| **The Cook** | Follows recipes step-by-step while cooking. Needs hands-free navigation, clear ingredient lists. | `cook`, `show` |
+| **The Planner** | Plans meals and shopping trips. Aggregates ingredients across multiple recipes, generates shopping lists, scales and converts recipes, exports recipes to share. | `shopping-list`, `scale`, `convert`, `export` |
 
-**The Converter** (scaling and unit conversion) is a **cross-cutting capability** that serves both the Cook (scaling mid-recipe) and the Planner (converting units for shopping or dietary calculations). This suggests it may warrant its own service boundary.
+**The Transformer** (scaling and unit conversion) is a **shared capability** — it primarily serves the Planner today (scaling for different group sizes, converting units for shopping), but the Cook or Librarian could benefit from it in the future (e.g., displaying a recipe in metric while cooking, or converting units on import). Extracting it into its own service boundary keeps this logic reusable and testable independent of any single actor.
 
 Your architecture should support cohesive feature sets for each actor that can evolve together. This matters for your group project: your four-member team will divide the GUI work by actor — one teammate builds the Cook's step-by-step interface, another builds the Librarian's collection management views, etc. If your service boundaries align with actors, teammates can work in parallel without stepping on each other's code. This is Conway's Law in action — the structure of your code mirrors the structure of your team. A change to how the Cook experiences step navigation shouldn't require touching the Librarian's import logic.
 
 :::warning Actor-Aligned Services Required
 
-Your service layer **must** have separate services aligned with the three actors, plus a cross-cutting Converter capability. This is not optional — it's the core design constraint of the assignment, and a direct application of the L18 actor heuristic.
+Your service layer **must** have separate services aligned with the three actors, plus a separate Transformer capability (scaling and conversion) that can be shared across actors. This is not optional — it's the core design constraint of the assignment, and a direct application of the L18 actor heuristic.
 
 A monolithic "CookYourBooksService" that handles all functionality in one class will receive significant design quality deductions, regardless of how well it's documented in ADRs. The architectural learning outcome is practicing decomposition along actor boundaries.
 
@@ -190,7 +180,7 @@ A monolithic "CookYourBooksService" that handles all functionality in one class 
 
 2. **Actor** — Different actors should inform different service boundaries (just as we saw in L18 where the Student, Instructor, and Sysadmin each got their own slice of Pawtograder). The Librarian's workflows (managing recipes and collections, searching, organizing) have different stability characteristics than the Cook's workflows (step-by-step navigation, session state).
 
-3. **Interface Segregation** — Each part of your CLI should depend only on the service capabilities it actually needs. For example, the code that implements `cook` mode needs recipe lookup and scaling — it doesn't need import/export or shopping list generation. The code that implements `shopping-list` needs ingredient aggregation and recipe lookup — it doesn't need scaling or cook mode session state. Avoid fat service interfaces that force callers to depend on methods they don't use.
+3. **Interface Segregation** — Each part of your CLI should depend only on the service capabilities it actually needs. For example, the code that implements `cook` mode needs recipe lookup — it doesn't need import or shopping list generation. The code that implements `shopping-list` needs ingredient aggregation and recipe lookup — it doesn't need cook mode session state. Avoid fat service interfaces that force callers to depend on methods they don't use.
 
 4. **Testability** — Things that need independent testing should be separable. Can you test your scaling logic without involving file I/O? Can you test your command dispatcher without a real terminal? Pure transformation logic (scaling, conversion) should be testable with just domain objects. Formatting logic should be testable with sample data and string assertions.
 
@@ -210,25 +200,24 @@ When a user types a command like `show "Chocolate Chip Cookies"` and presses Ent
 The fundamental challenge is that **spaces are used both to separate arguments and within argument values.** Consider:
 
 ```
-collection add Holiday Favorites Grandma's Apple Pie
+shopping-list Classic Pancakes Chocolate Chip Cookies
 ```
 
-Is `Holiday` one argument and `Favorites` another? Or is `Holiday Favorites` a single collection name? The CLI has no way to tell. This is why shells use **quoting** to group words into a single argument:
+Is `Classic` one argument and `Pancakes` another? Or is `Classic Pancakes` a single recipe name? The CLI has no way to tell. This is why shells use **quoting** to group words into a single argument:
 
 ```
-collection add "Holiday Favorites" "Grandma's Apple Pie"
+shopping-list "Classic Pancakes" "Chocolate Chip Cookies"
 ```
 
 With quoting, the tokenization is unambiguous:
 
 | Token # | Value |
 |---------|-------|
-| 0 | `collection` |
-| 1 | `add` |
-| 2 | `Holiday Favorites` |
-| 3 | `Grandma's Apple Pie` |
+| 0 | `shopping-list` |
+| 1 | `Classic Pancakes` |
+| 2 | `Chocolate Chip Cookies` |
 
-**Your CLI must support quoted arguments.** JLine does not do this for you automatically — when you call `reader.readLine()`, you get the raw string and must parse it yourself. However, JLine's `DefaultParser` can handle this. You can configure the `LineReader` to use it, and it will tokenize the input line respecting quotes:
+**Your CLI must support quoted arguments.** JLine's `readLine()` returns the raw input as a single `String`, but you don't need to write your own tokenizer — JLine's `DefaultParser` handles quote-aware tokenization for you. Configure the `LineReader` with a `DefaultParser`, and you can retrieve pre-tokenized arguments from the `ParsedLine`:
 
 ```java
 DefaultParser parser = new DefaultParser();
@@ -245,8 +234,8 @@ With this configuration, you can retrieve the parsed tokens from the `ParsedLine
 while (true) {
     String line = reader.readLine("cyb> ");
     ParsedLine parsed = reader.getParsedLine();
-    List<String> words = parsed.words();  // ["collection", "add", "Holiday Favorites", "Grandma's Apple Pie"]
-    String command = words.get(0);        // "collection"
+    List<String> words = parsed.words();  // ["shopping-list", "Classic Pancakes", "Chocolate Chip Cookies"]
+    String command = words.get(0);        // "shopping-list"
     // Dispatch based on command...
 }
 ```
@@ -308,17 +297,17 @@ public class CookYourBooksApp {
         Path libraryPath = Path.of("cyb-library.json");
         CybLibrary library = CybLibrary.load(libraryPath); // loads or creates empty
         
-        // Repositories backed by the unified library
+        // Repositories and registries backed by the unified library
         RecipeRepository recipeRepo = library.getRecipeRepository();
         RecipeCollectionRepository collRepo = library.getCollectionRepository();
-        ConversionRegistry registry = library.getConversionRegistry();
+        ConversionRegistry conversionRegistry = library.getConversionRegistry();
 
         // YOUR services — design and wire these yourself
         // Your services should align with the three actors (L18 actor heuristic):
-        // - Librarian: collection/recipe management, import, search, organization
-        // - Cook: step-by-step navigation, session state, on-the-fly scaling
-        // - Planner: shopping lists, export, batch operations
-        // Plus a cross-cutting Converter capability for scaling/unit conversion
+        // - Librarian: collection/recipe management, import, search
+        // - Cook: step-by-step navigation, session state
+        // - Planner: shopping lists, export
+        // Plus a shared Transformer capability (scaling + conversion)
 
         // Launch CLI (you implement this)
         CookYourBooksCli cli = new CookYourBooksCli(/* your services */);
@@ -329,7 +318,7 @@ public class CookYourBooksApp {
 
 ### Command Reference
 
-Your CLI must support the following commands. Each command has a required syntax, behavior, and output format. Where output format is specified, your CLI must match it closely enough for automated testing (exact whitespace is not tested, but structure and content are).
+Your CLI must support the following commands. Each command has a required syntax, behavior, and output format. Where output format is specified, your CLI must match it closely enough for automated testing (exact whitespace is not tested, but structure and content are). Decorative formatting like box-drawing characters (`═══`, `───`) and bullet styles (`•`) does not need to match exactly — the tests check for content keywords, not visual decoration.
 
 #### `help` — Contextual Help
 
@@ -344,7 +333,7 @@ cyb> help scale
 ```
 
 **Requirements:**
-- `help` with no arguments lists all commands grouped by category (Library, Recipe, Tools, General)
+- `help` with no arguments lists all commands grouped by category (Library, Recipe, Tools, General) as shown in the [Example Session](#example-session)
 - `help <command>` shows detailed usage for a specific command
 - Unknown command names produce a helpful message: `Unknown command: '<name>'. Type 'help' for a list of commands.`
 
@@ -376,100 +365,6 @@ Creates a new personal collection with the given title and saves it to the repos
 
 **Error handling:**
 - Blank or empty name: Display a helpful message
-
-#### `collection create cookbook <name>` — Create a Cookbook Collection
-
-```text
-cyb> collection create cookbook "Joy of Cooking"
-```
-
-Enters an **interactive prompt** to gather cookbook metadata, then creates and saves the collection.
-
-**Example interaction:**
-```text
-cyb> collection create cookbook "Joy of Cooking"
-Author: Irma S. Rombauer
-Publisher (optional): Scribner
-ISBN (optional): 978-1501169717
-
-Created cookbook collection 'Joy of Cooking' by Irma S. Rombauer.
-```
-
-**Requirements:**
-- Author is required
-- Publisher and ISBN are optional (press Enter to skip)
-
-#### `collection create web <name> <url>` — Create a Web Collection
-
-```text
-cyb> collection create web "Budget Bytes" "https://www.budgetbytes.com"
-```
-
-Creates a new web collection with the given title and source URL.
-
-**On success:** `Created web collection 'Budget Bytes' from https://www.budgetbytes.com.`
-
-**Error handling:**
-- Missing URL: `Usage: collection create web <name> <url>`
-- Invalid URL format: Display a helpful message
-
-#### `collection rename <old> <new>` — Rename a Collection
-
-```text
-cyb> collection rename "Holiday Favorites" "Holiday Recipes"
-```
-
-Renames the specified collection. Collection is identified by title (case-insensitive).
-
-**On success:** `Renamed 'Holiday Favorites' to 'Holiday Recipes'.`
-
-**Error handling:**
-- Collection not found: `Collection not found: 'Unknown Collection'. Use 'collections' to see available collections.`
-- Multiple matches: Display using the standard [ambiguous match format](#ambiguous-match-format)
-
-#### `collection delete <name>` — Delete a Collection
-
-```text
-cyb> collection delete "Holiday Favorites"
-```
-
-Deletes the specified collection from the repository. The recipes in the collection remain in the recipe repository; only the collection grouping is removed.
-
-**Confirmation required:** `Delete collection 'Holiday Favorites'? (y/n):`
-
-**On success:** `Deleted collection 'Holiday Favorites'.`
-
-**Error handling:**
-- Collection not found: `Collection not found: 'Unknown Collection'. Use 'collections' to see available collections.`
-
-#### `collection add <collection> <recipe>` — Add Recipe to Collection
-
-```text
-cyb> collection add "Holiday Favorites" "Grandma's Apple Pie"
-```
-
-Adds an existing recipe to the specified collection. The recipe must already exist in the recipe repository.
-
-**On success:** `Added 'Grandma's Apple Pie' to 'Holiday Favorites'.`
-
-**Error handling:**
-- Collection not found: `Collection not found: 'Unknown Collection'. Use 'collections' to see available collections.`
-- Recipe not found: `Recipe not found: 'Unknown Recipe'. Use 'search' to find recipes.`
-- Recipe already in collection: `'Grandma's Apple Pie' is already in 'Holiday Favorites'.`
-
-#### `collection remove <collection> <recipe>` — Remove Recipe from Collection
-
-```text
-cyb> collection remove "Holiday Favorites" "Grandma's Apple Pie"
-```
-
-Removes a recipe from the specified collection. The recipe remains in the recipe repository; only the collection membership is removed.
-
-**On success:** `Removed 'Grandma's Apple Pie' from 'Holiday Favorites'.`
-
-**Error handling:**
-- Collection not found: `Collection not found: 'Unknown Collection'. Use 'collections' to see available collections.`
-- Recipe not in collection: `'Grandma's Apple Pie' is not in 'Holiday Favorites'.`
 
 #### `recipes <collection>` — List Recipes in a Collection
 
@@ -634,68 +529,6 @@ Imported 'Grandma's Apple Pie' into 'Holiday Favorites'.
 - Collection not found: Display a helpful message suggesting `collections` command
 - Parse/format errors: Display the error message from the exception
 
-#### `import text <collection>` — Import Recipe from Text
-
-```text
-cyb> import text "Holiday Favorites"
-```
-
-Enters a **multi-line input mode** where the user types or pastes a recipe in plain text. The input ends when the user types `END` on a line by itself (case-sensitive, no leading/trailing whitespace). The text is passed to your service layer for parsing.
-
-**Example interaction:**
-```text
-cyb> import text "Holiday Favorites"
-Enter recipe text (end with END on its own line):
-> Simple Salad
->
-> Serves 2
->
-> Ingredients:
-> 1 head lettuce
-> 2 cups cherry tomatoes
-> 1/4 cup olive oil
->
-> Instructions:
-> 1. Wash and chop lettuce
-> 2. Halve tomatoes
-> 3. Toss with olive oil
-> END
-Imported 'Simple Salad' into 'Holiday Favorites'.
-```
-
-**Error handling:**
-- Collection not found: Display message *before* prompting for text input
-- Parse errors: Display the error message from `ParseException`
-
-#### `edit <recipe>` — Edit a Recipe
-
-```text
-cyb> edit "Chocolate Chip Cookies"
-```
-
-Enters a **multi-line input mode** where the user types or pastes the updated recipe in plain text. The input ends when the user types `END` on a line by itself (case-sensitive, no leading/trailing whitespace). The text is parsed and replaces the existing recipe, preserving its ID so that collections that contain it remain valid.
-
-**Example interaction:**
-```text
-cyb> edit "Chocolate Chip Cookies"
-Enter updated recipe text (end with END on its own line):
-> Chocolate Chip Cookies
->
-> Serves 24 cookies
->
-> Ingredients:
-> 2 cups flour
-> 1 cup brown sugar
-> ...
-> END
-Updated 'Chocolate Chip Cookies'.
-```
-
-**Error handling:**
-- Recipe not found: `Recipe not found: 'Unknown Recipe'. Use 'search' to find recipes by ingredient.` — display *before* prompting for text input
-- Multiple matches: Display using the standard [ambiguous match format](#ambiguous-match-format) *before* prompting for text input
-- Parse errors: Display the error message from `ParseException`
-
 #### `delete <recipe>` — Delete a Recipe
 
 ```text
@@ -712,23 +545,19 @@ Deletes the specified recipe from the repository and removes it from all collect
 - Recipe not found: `Recipe not found: 'Unknown Recipe'. Use 'search' to find recipes by ingredient.`
 - Multiple matches: Display using the standard [ambiguous match format](#ambiguous-match-format)
 
-#### `scale <recipe>` — Interactive Scaling Mode
+#### `scale <recipe> <servings>` — Scale a Recipe
 
 ```text
-cyb> scale "Chocolate Chip Cookies"
+cyb> scale "Chocolate Chip Cookies" 48
 ```
 
-Enters **interactive scaling mode** for the specified recipe. This mode shows the current recipe with its servings, prompts the user for a target serving size, and displays a side-by-side comparison of original and scaled quantities before asking whether to save.
+Scales the specified recipe to the target serving size. Displays a side-by-side comparison of original and scaled quantities, then asks whether to save.
 
 **Example interaction:**
 ```text
-cyb> scale "Chocolate Chip Cookies"
+cyb> scale "Chocolate Chip Cookies" 48
 
-Scaling: Chocolate Chip Cookies (currently serves 24 cookies)
-
-Enter target servings (or 'cancel'): 48
-
-Scaled to 48 servings (2.0x):
+Scaled 'Chocolate Chip Cookies' to 48 servings (2.0x):
   Ingredient                Original        Scaled
   ─────────────────────────────────────────────────
   flour                     2 cups       →  4 cups
@@ -740,28 +569,24 @@ Scaled to 48 servings (2.0x):
 
 Save scaled recipe? (y/n): y
 Saved scaled recipe 'Chocolate Chip Cookies (scaled to 48)'.
-
-Scale again or 'done': done
 ```
 
-If the user declines to save, the scaled recipe is discarded and the loop continues:
-
+If the user declines to save:
 ```text
 Save scaled recipe? (y/n): n
-
-Scale again or 'done': done
+Scaling discarded.
 ```
 
-If the user enters `cancel` at the target servings prompt, scaling mode exits immediately and returns to the main prompt with no output.
-
 **Requirements:**
-- Show original recipe with current servings
-- Prompt for target servings (accept positive integers, or `cancel` to exit immediately)
 - Display side-by-side comparison of original and scaled ingredients
 - VagueIngredients display unchanged (e.g., "to taste")
-- Ask whether to save (y: persists the scaled recipe as a new recipe; n: discards the result silently)
-- After either saving or discarding, prompt `Scale again or 'done':` — allow scaling again with a different target, or `done` to exit
-- If the recipe has no servings information, display an error and exit: `Cannot scale 'Recipe Name': no serving information available.`
+- Ask whether to save (y: persists the scaled recipe as a new recipe in the same collection as the original; n: discards)
+- If the recipe has no servings information: `Cannot scale 'Recipe Name': no serving information available.`
+
+**Error handling:**
+- Recipe not found: `Recipe not found: 'Unknown Recipe'. Use 'search' to find recipes.`
+- Invalid servings: `Invalid servings. Please provide a positive number.`
+- Multiple matches: Display using the standard [ambiguous match format](#ambiguous-match-format)
 
 #### `convert <recipe> <unit>` — Convert Recipe Units
 
@@ -769,7 +594,7 @@ If the user enters `cancel` at the target servings prompt, scaling mode exits im
 cyb> convert "Beef Stew" gram
 ```
 
-Converts all measured ingredients to the specified unit. Displays the converted recipe and asks whether to save. The conversion should happen through your service layer — the CLI sees the result and decides whether to persist it.
+Converts all measured ingredients to the specified unit using the provided `ConversionRegistry` (which includes house conversion rules). Displays the converted recipe and asks whether to save as a new recipe in the same collection as the original. The conversion should happen through your service layer — the CLI sees the result and decides whether to persist it.
 
 **Example interaction:**
 ```text
@@ -786,12 +611,13 @@ Save converted recipe? (y/n): y
 Saved converted recipe 'Beef Stew (converted to GRAM)'.
 ```
 
-**Valid unit names:** Any string accepted by `Unit.parse(String s)`. This includes unit names like `gram`, `cup`, `tsp`, `oz`, etc. Invalid unit names throw `IllegalArgumentException`.
+**Valid unit names:** Any string accepted by `Unit.parse(String s)`. This includes unit names like `gram`, `cup`, `tsp`, `tbsp`, `oz`, `lb`, `ml`, `l`, etc. Invalid unit names throw `IllegalArgumentException`.
 
 **Error handling:**
-- Recipe not found: Display helpful error
+- Recipe not found: `Recipe not found: 'Unknown Recipe'. Use 'search' to find recipes.`
 - Invalid unit: `Unknown unit: 'foo'. Valid units include: gram, cup, tsp, tbsp, oz, lb, ml, l.`
-- Unsupported conversion: Display the error from `UnsupportedConversionException` — e.g., `Cannot convert 'eggs' (WHOLE) to GRAM: no conversion rule available. Tip: use 'conversion add' to define a house conversion.`
+- Unsupported conversion: Display the error from `UnsupportedConversionException` — e.g., `Cannot convert 'eggs' (WHOLE) to GRAM: no conversion rule available.`
+- Multiple matches: Display using the standard [ambiguous match format](#ambiguous-match-format)
 
 #### `shopping-list <recipe1> [recipe2] ...` — Generate Shopping List
 
@@ -829,14 +655,14 @@ Total: 7 measured items, 2 vague items
 cyb> cook "Chocolate Chip Cookies"
 ```
 
-Enters **interactive cooking mode** — a step-by-step walkthrough designed for use while actually cooking. This is the signature feature of your CLI. The mode shows one instruction at a time, with the relevant ingredients visible, and supports navigation and on-the-fly scaling.
+Enters **interactive cooking mode** — a step-by-step walkthrough designed for use while actually cooking. This is the signature feature of your CLI. The mode shows one instruction at a time, with the relevant ingredients visible, and supports navigation.
 
 **Example interaction:**
 ```text
 cyb> cook "Chocolate Chip Cookies"
 
 ══════════════════════════════════════════
-  🍳 COOKING: Chocolate Chip Cookies
+  COOKING: Chocolate Chip Cookies
   Serves 24 cookies
 ══════════════════════════════════════════
 
@@ -851,7 +677,7 @@ Ingredients:
   Preheat oven to 350°F
 
 
-[next] [prev] [ingredients] [scale] [quit]
+[next] [prev] [ingredients] [quit]
 cook> next
 
 ──────────────────────────────────────────
@@ -860,23 +686,15 @@ cook> next
   Mix dry ingredients
 
 
-[next] [prev] [ingredients] [scale] [quit]
-cook> scale
-Enter target servings: 48
-
-  ✓ Scaled to 48 servings. Ingredients updated:
-  • 4 cups flour              • 4 eggs
-  • 2 cups sugar              • 2 tsp vanilla extract
-  • 1 cup butter, softened    • chocolate chips to taste
-
+[next] [prev] [ingredients] [quit]
 cook> ingredients
 
-Ingredients (scaled to 48 servings):
-  • 4 cups flour
-  • 2 cups sugar
-  • 1 cup butter, softened
-  • 4 eggs
-  • 2 tsp vanilla extract
+Ingredients:
+  • 2 cups flour
+  • 1 cup sugar
+  • 1/2 cup butter, softened
+  • 2 eggs
+  • 1 tsp vanilla extract
   • chocolate chips to taste
 
 cook> next
@@ -888,7 +706,7 @@ cook> next
   Bake for 12 minutes
 
 
-[next] [prev] [ingredients] [scale] [quit]
+[next] [prev] [ingredients] [quit]
 cook> next
 
   Finished cooking Chocolate Chip Cookies! Enjoy!
@@ -900,18 +718,16 @@ cook> next
 |---------|--------|
 | `next` or `n` | Advance to the next step (on the last step, displays the completion message and exits cook mode) |
 | `prev` or `p` | Go back to the previous step |
-| `ingredients` or `i` | Show the full ingredient list (reflects any scaling) |
-| `scale <servings>` or `scale` | Scale the recipe to new servings for this session only |
+| `ingredients` or `i` | Show the full ingredient list |
 | `quit` or `q` | Exit cooking mode (returns to main prompt) |
 
 **Requirements:**
 - Display one instruction at a time with step number and total count
 - Show ingredients at the start and on demand
-- `scale` within cook mode is **session-only** — it adjusts displayed quantities for the remainder of the cooking session but does **not** offer to save. This is different from the top-level `scale` command which offers to persist the scaled recipe.
 - Pressing `next` on the last step displays a completion message and exits cook mode
 - Pressing `prev` on the first step shows a message that you're already at the beginning
 - The prompt changes to `cook>` to indicate cooking mode
-- Display available commands as hints at the bottom of each step (`[next] [prev] [ingredients] [scale] [quit]`)
+- Display available commands as hints at the bottom of each step (`[next] [prev] [ingredients] [quit]`)
 
 #### `export <recipe> <file>` — Export Recipe to Markdown
 
@@ -919,10 +735,14 @@ cook> next
 cyb> export "Chocolate Chip Cookies" ~/cookies.md
 ```
 
-Uses the `MarkdownExporter` to export a recipe to a Markdown file.
+Uses the provided `MarkdownExporter` to export a recipe to a Markdown file.
 
 **On success:** `Exported 'Chocolate Chip Cookies' to /Users/you/cookies.md`
-**On error:** Display the file I/O error message.
+
+**Error handling:**
+- Recipe not found: `Recipe not found: 'Unknown Recipe'. Use 'search' to find recipes.`
+- File I/O error: Display the error message from the exception
+- Multiple matches: Display using the standard [ambiguous match format](#ambiguous-match-format)
 
 #### `quit` / `exit` — Exit the Application
 
@@ -937,45 +757,32 @@ Exits the application gracefully.
 
 Your CLI must provide tab completion for:
 
-1. **Command names** — For example, typing `sc` + Tab should suggest `scale`, `search`; `col` should suggest `collection`, `collections`; `con` should suggest `conversion`, `conversions`, `convert`
-2. **Collection subcommands** — after `collection`, Tab should suggest `create`, `rename`, `delete`, `add`, `remove`; after `collection create`, Tab should suggest `cookbook`, `web`
-3. **Conversion subcommands** — after `conversion`, Tab should suggest `add`, `remove`
-4. **Collection names** — any command that takes a collection parameter must offer tab completion for available collection titles:
-   - `recipes <collection>`
-   - `collection rename <old>` (first argument)
-   - `collection delete <name>`
-   - `collection add <collection>` (first argument)
-   - `collection remove <collection>` (first argument)
-   - `import json <file> <collection>` (second argument)
-   - `import text <collection>`
-5. **Recipe titles** — any command that takes a recipe parameter must offer tab completion for available recipe titles:
+1. **Command names** — typing `sc` + Tab should suggest `scale`, `search`; `col` should suggest `collection`, `collections`; `sh` should suggest `shopping-list`, `show`; `co` should suggest `convert`, `cook`, `collection`, `collections`
+2. **Recipe titles** — any command that takes a recipe parameter must offer tab completion for available recipe titles:
    - `show <recipe>`
-   - `edit <recipe>`
    - `delete <recipe>`
    - `scale <recipe>`
    - `convert <recipe>`
    - `cook <recipe>`
    - `export <recipe>`
    - `shopping-list <recipe1> [recipe2] ...` (all recipe arguments)
-   - `collection add <collection> <recipe>` (second argument)
-   - `collection remove <collection> <recipe>` (second argument)
-6. **Unit names** — after `convert <recipe>`, Tab should suggest valid unit names (the names accepted by `Unit.parse()`: `gram`, `cup`, `tsp`, `tbsp`, `oz`, `lb`, `ml`, `l`, etc.)
+3. **Unit names** — after `convert <recipe>`, Tab should suggest valid unit names (the names accepted by `Unit.parse()`: `gram`, `cup`, `tsp`, `tbsp`, `oz`, `lb`, `ml`, `l`, etc.)
 
-Use JLine's [`Completer` interface](https://jline.org/docs/tab-completion#custom-completers) to implement this. You may find a combination of the built-in completers to be helpful (e.g. `AggregateCompleter`, `FileNameCompleter`, `StringsCompleter`).
+Use JLine's [`Completer` interface](https://jline.org/docs/tab-completion#custom-completers) to implement this. You may find a combination of the built-in completers to be helpful (e.g. `AggregateCompleter`, `StringsCompleter`).
 
 #### Designing Your Completer Architecture
 
-Just like command dispatch, tab completion requires thoughtful design. **A giant if-else chain in a single completer class is the same anti-pattern as a giant switch in command dispatch** — it violates the rate-of-change and actor heuristics and makes the system brittle.
+Tab completion requires thoughtful design. **A giant if-else chain in a single completer class is the same anti-pattern as a giant switch in command dispatch** — it violates the rate-of-change heuristic and makes the system brittle.
 
-Tab completion involves three distinct concerns with different rates of change and different owners:
+Tab completion involves distinct concerns with different rates of change:
 
 | Concern | Question | Example |
 |---------|----------|---------|
-| **What arguments does a command need?** | Which argument positions expect which types? | `scale` needs a recipe at position 1; `collection add` needs a collection at position 1 and a recipe at position 2 |
-| **What values are available?** | Where do the actual collection names, recipe titles, unit names come from? | Collection titles from services, recipe titles from the repository |
-| **How to format completions?** | How are candidates presented? Quoted strings? Descriptions? Grouping? | Names with spaces need quotes; candidates can have tooltips |
+| **What arguments does a command need?** | Which argument positions expect which types? | `convert` needs a recipe at position 1 and a unit at position 2 |
+| **What values are available?** | Where do the actual recipe titles, unit names come from? | Recipe titles from the repository via services; unit names from `Unit` enum |
+| **How to format completions?** | How are candidates presented? Quoted strings? | Names with spaces need quotes |
 
-**Apply the L18 heuristics to decide where each concern belongs.** Which heuristic tells you who should own argument type declarations? Who should provide available values? Who should handle presentation formatting? Document your reasoning in the required tab completion ADR.
+**Apply the L18 heuristics to decide where each concern belongs.** Which heuristic tells you who should own argument type declarations? Who should provide available values? Document your reasoning in the required tab completion ADR.
 
 ### Error Handling
 
@@ -1031,7 +838,7 @@ Create exactly **4 ADRs** in a `docs/adr/` folder. Each ADR documents a signific
 
 **Required ADR topics** (exactly 4 ADRs required):
 
-1. **Service boundary decomposition** — How did you decompose your service layer to align with the three actors (Librarian, Cook, Planner)? Which L18 heuristics drove your boundary decisions? How did you handle the Converter as a cross-cutting capability?
+1. **Service boundary decomposition** — How did you decompose your service layer to align with the three actors (Librarian, Cook, Planner)? Which L18 heuristics drove your boundary decisions? How did you handle the Transformer as a shared capability?
 2. **Transformation vs. persistence separation** — How does your design handle "preview before save" workflows? How is this different from A4's `RecipeService`?
 3. **Command architecture** — How did you design your command dispatch system? What responsibilities does each component have? Which heuristics informed these assignments?
 4. **Tab completion architecture** — How did you design your completer? What concerns did you identify, and how did you assign responsibility for each? Which heuristics drove those assignments?
@@ -1157,29 +964,14 @@ E2E tests with a dumb terminal are **simpler and catch more bugs**. The provided
 
 The handout includes tests for:
 - Basic command execution (help, collections, recipes, show, search)
-- Collection management operations (create, rename, delete)
-- Recipe operations (import, edit, delete, scale, convert)
-- Interactive modes (cook mode navigation, scale mode workflow)
+- Collection creation
+- House conversion management (conversions, conversion add/remove)
+- Recipe operations (import json, delete, scale, convert, export)
+- Interactive cooking mode (navigation, ingredients)
 - Shopping list generation
 - Error handling and edge cases
 
-Run the tests locally with `./gradlew test`. **Passing these tests is necessary but not sufficient** — the manual grading evaluates your design quality independently.
-
-#### Your Additional Tests
-
-You should add tests for:
-- Edge cases specific to your implementation
-- Your service layer's internal behavior (if you want to verify specific design choices)
-- Any additional commands or features you implement
-
-#### Test Organization
-
-```text
-src/test/java/app/cookyourbooks/
-├── cli/
-│   └── CookYourBooksCliTest.java   (provided E2E tests)
-└── ... (your additional tests — organize as you prefer)
-```
+Run the tests locally with `./gradlew test`. **Passing these tests is necessary but not sufficient** — the manual grading evaluates your design quality independently. You do not need to write additional tests for this assignment — the provided suite covers all required functionality.
 
 ### Example Session
 
@@ -1196,35 +988,27 @@ CookYourBooks Commands:
   Library:
     collections                       List all recipe collections
     collection create <name>          Create a personal collection
-    collection create cookbook <name> Create a cookbook (prompts for author)
-    collection create web <name> <url> Create a web collection
-    collection rename <old> <new>     Rename a collection
-    collection delete <name>          Delete a collection
-    collection add <coll> <recipe>    Add a recipe to a collection
-    collection remove <coll> <recipe> Remove a recipe from a collection
     recipes <collection>              List recipes in a collection
     conversions                       List house conversion rules
-    conversion add                    Add a house conversion (interactive)
-    conversion remove <rule>          Remove a house conversion
+    conversion add                    Add a house conversion rule
+    conversion remove <rule>          Remove a house conversion rule
+
+  Recipe:
     show <recipe>                     Display a recipe
     search <ingredient>               Find recipes by ingredient
-    edit <recipe>                     Edit a recipe (multi-line input)
+    import json <file> <collection>   Import recipe from JSON file
     delete <recipe>                   Delete a recipe
 
-  Import/Export:
-    import json <file> <collection>   Import recipe from JSON file
-    import text <collection>          Import recipe from text input
+  Tools:
+    scale <recipe> <servings>         Scale a recipe
+    convert <recipe> <unit>           Convert recipe units
+    shopping-list <r1> [r2] ...       Generate aggregated shopping list
+    cook <recipe>                     Step-by-step cooking mode
     export <recipe> <file>            Export recipe to Markdown
 
-  Tools:
-    scale <recipe>           Interactively scale a recipe
-    convert <recipe> <unit>  Convert recipe to different units
-    shopping-list <r1> [r2]  Generate aggregated shopping list
-    cook <recipe>            Step-by-step cooking mode
-
   General:
-    help [command]           Show help (or help for a specific command)
-    quit                     Exit CookYourBooks
+    help [command]                    Show help (or help for a specific command)
+    quit / exit                       Exit CookYourBooks
 
 cyb> collections
 
@@ -1258,15 +1042,7 @@ Ingredients:
 ──────────────────────────────────────────
   Whisk together flour, sugar, and baking powder in a large bowl.
 
-[next] [prev] [ingredients] [scale] [quit]
-cook> scale
-Enter target servings: 8
-
-  Scaled to 8 servings. Ingredients updated:
-  • 3 cups flour               • 2 eggs
-  • 2 cups milk                • 4 tbsp butter, melted
-  • 2 tbsp sugar               • 2 tsp baking powder
-
+[next] [prev] [ingredients] [quit]
 cook> next
 
 ──────────────────────────────────────────
@@ -1274,7 +1050,7 @@ cook> next
 ──────────────────────────────────────────
   In a separate bowl, whisk egg, milk, and melted butter.
 
-[next] [prev] [ingredients] [scale] [quit]
+[next] [prev] [ingredients] [quit]
 cook> next
 
 ──────────────────────────────────────────
@@ -1283,7 +1059,7 @@ cook> next
   Pour wet ingredients into dry and stir until just combined.
   Do not overmix.
 
-[next] [prev] [ingredients] [scale] [quit]
+[next] [prev] [ingredients] [quit]
 cook> next
 
 ──────────────────────────────────────────
@@ -1292,7 +1068,7 @@ cook> next
   Cook on a griddle over medium heat until bubbles form,
   then flip. Cook until golden brown.
 
-[next] [prev] [ingredients] [scale] [quit]
+[next] [prev] [ingredients] [quit]
 cook> next
 
   Finished cooking Classic Pancakes! Enjoy!
@@ -1303,17 +1079,18 @@ Shopping List (2 recipes):
 ═══════════════════════════
   Measured Items:
     • 5 cups flour
-    • 17 tbsp sugar
-    • 1 cup milk
-    • 4 eggs
-    • 1 tsp vanilla extract
+    • 2 cups sugar
     • 10 tbsp butter
+    • 4 eggs
+    • 2 tsp vanilla extract
+    • 2 cups milk
     • 1 tsp baking powder
 
   Also needed:
+    • salt
     • chocolate chips
 
-Total: 7 measured items, 1 vague item
+Total: 7 measured items, 2 vague items
 
 cyb> quit
 Goodbye!
@@ -1329,7 +1106,7 @@ Update `REFLECTION.md` to address:
 
 3. **Transformation vs. Persistence:** A4's `RecipeService.scaleRecipe()` always saved. Your design needed to support "preview before save." Describe concretely how your service layer handles this differently. What methods exist? How does the CLI compose them? What would break if you tried to bolt this capability onto A4's interface?
 
-4. **Cook Mode State Management:** Interactive cooking mode tracks state (current step, scaled ingredients, original recipe). Where does this state live in your architecture — in the CLI controller, in a service, in a dedicated session object? What tradeoffs did you consider? The Cook actor has different needs than the Librarian — how did this influence where you placed cook mode state? Could the same state management approach work for a future "meal planning session" for the Planner actor?
+4. **Cook Mode State Management:** Interactive cooking mode tracks state (current step, original recipe). Where does this state live in your architecture — in the CLI controller, in a service, in a dedicated session object? What tradeoffs did you consider? The Cook actor has different needs than the Librarian — how did this influence where you placed cook mode state? Could the same state management approach work for a future "meal planning session" for the Planner actor?
 
 5. **E2E Testing Experience:** This assignment used E2E tests with a dumb terminal instead of mocks. Compare this to A4's mock-based approach. Which bugs did E2E testing catch (or would catch) that mocks might miss? Were there situations where you wished you had finer-grained unit tests? What's your takeaway about when to use each approach?
 
@@ -1341,95 +1118,89 @@ Your submission should demonstrate:
 
 - **Architectural Thinking:** Service boundaries informed by the L18 heuristics and actor analysis (Librarian, Cook, Planner); ADRs that show you considered tradeoffs, not just picked the first option
 - **Service Design:** Well-decomposed service layer that separates transformation from persistence; clear alignment with actor-driven workflows; UI-agnostic (ready for GUI reuse in Group Deliverable 1); a clear improvement over A4's `RecipeService`
-- **Correctness:** All provided tests pass; interactive modes behave correctly
+- **Correctness:** All provided tests pass; cooking mode behaves correctly
 - **Separation of Concerns:** Clean boundaries between services, controllers, and formatters; no domain logic in CLI layer; UI formatting separated from domain operations (rate of change heuristic)
 - **Testability:** Design supports E2E testing with dumb terminal; piped input/output works correctly
 - **Code Quality:** Clear naming; Javadoc on public classes; no dead code
 
 ## Grading Rubric
 
-**Total: 100 points** (70 automated + 30 design documentation & reflection), minus design quality deductions (up to -45).
+**Total: 100 points** (50 automated + 50 design documentation & reflection), minus design quality deductions (up to -30).
 
-This rubric emphasizes design quality. Passing all tests is necessary but not sufficient — the manual review can significantly impact your score if your design doesn't demonstrate the architectural thinking from L18-L19.
+This rubric emphasizes design quality equally with implementation. Passing all tests is necessary but not sufficient — the manual review evaluates whether your design demonstrates the architectural thinking from L18-L19.
 
-### Automated Testing (70 points)
+### Automated Testing (50 points)
 
 **We provide the test suite.** Run `./gradlew test` locally to verify functionality before submitting.
 
 | Component | Points |
 |-----------|--------|
-| `help` (list and per-command) | 2 |
-| `collections` (correct listing) | 2 |
-| `collection create/rename/delete` (correct behavior + error handling) | 5 |
-| `collection add/remove` (correct behavior + error handling) | 3 |
-| `conversions` / `conversion add/remove` (correct behavior) | 2 |
-| Data persistence (`cyb-library.json` load/save) | 2 |
-| `recipes <collection>` (correct listing + error handling) | 2 |
-| `show <recipe>` (correct display + error handling) | 5 |
+| `help` (list and per-command) | 3 |
+| `collections` (correct listing) | 3 |
+| `collection create` (correct behavior + error handling) | 3 |
+| `conversions` / `conversion add` / `conversion remove` | 3 |
+| Data persistence (`cyb-library.json` load/save) | 3 |
+| `recipes <collection>` (correct listing + error handling) | 3 |
+| `show <recipe>` (correct display + error handling) | 4 |
 | `search <ingredient>` (correct results + no results) | 4 |
-| `import json` (success + error cases) | 2 |
-| `import text` (success + error cases) | 2 |
-| `edit <recipe>` (multi-line input, replace, preserve ID) | 2 |
-| `delete <recipe>` (remove from repo + all collections) | 2 |
-| `export <recipe>` (correct Markdown output) | 2 |
-| `scale` interactive mode (comparison display, save, cancel) | 8 |
-| `convert` (display + save + error cases) | 5 |
+| `import json` (success + error cases) | 4 |
+| `delete <recipe>` (remove from repo) | 3 |
+| `scale` (comparison display, save prompt, error cases) | 4 |
+| `convert` (display, save prompt, error cases) | 4 |
 | `shopping-list` (correct aggregation display) | 4 |
-| `cook` mode (navigation, scale, ingredients, done/quit) | 8 |
-| Tab completion (commands, collections, recipes, units) | 8 |
+| `cook` mode (navigation, ingredients, done/quit) | 3 |
+| `export` (correct Markdown output) | 2 |
 
-### Manual Grading — Design Quality (up to -45 points)
+### Manual Grading — Design Quality (up to -30 points)
 
-:::danger Design Is the Primary Focus
+:::danger Design Is Equally Weighted
 
-Unlike previous assignments, manual grading can significantly impact your score. A submission that passes all automated tests but demonstrates poor design can lose up to **45 points**. The deductions below are cumulative.
+Design quality deductions can significantly impact your score. A submission that passes all automated tests but demonstrates poor design can lose up to **30 points**. The deductions below are cumulative.
 
 :::
 
-#### Service Layer Design (up to -20)
+#### Service Layer Design (up to -15)
 
 | Issue | Max Deduction | Description |
 |-------|---------------|-------------|
-| **Just wrapping A4 `RecipeService`** | -12 | Thin wrapper around `RecipeService` instead of a redesigned service layer |
-| **Bundled transformation + persistence** | -10 | Service methods that always save results (same problem as A4) — no "preview before save" capability |
-| **No dependency injection** | -6 | Services construct their own dependencies instead of receiving them |
-| **Tight coupling to adapters** | -4 | Services depend on concrete classes (`JsonRecipeRepository`) instead of port interfaces |
-| **Monolithic service** | -6 | All functionality in one class with no coherent decomposition rationale; no alignment with actors or rate-of-change boundaries |
+| **Just wrapping A4 `RecipeService`** | -8 | Thin wrapper around `RecipeService` instead of a redesigned service layer |
+| **Bundled transformation + persistence** | -6 | Service methods that always save results (same problem as A4) — no "preview before save" capability |
+| **No dependency injection** | -4 | Services construct their own dependencies instead of receiving them |
+| **Tight coupling to adapters** | -3 | Services depend on concrete classes (`JsonRecipeRepository`) instead of port interfaces |
+| **Monolithic service** | -4 | All functionality in one class with no coherent decomposition rationale; no alignment with actors or rate-of-change boundaries |
 
-#### CLI Architecture (up to -15)
-
-| Issue | Max Deduction | Description |
-|-------|---------------|-------------|
-| **Giant switch/if-else dispatcher** | -8 | All commands in one method instead of a principled command architecture |
-| **Giant if-else completer** | -6 | All completion logic in one method with hardcoded command patterns instead of command-driven completion |
-| **Domain logic in CLI layer** | -8 | CLI code creates domain objects, does arithmetic, parses ingredients, etc. |
-| **No separation of formatting** | -4 | Output formatting mixed into command logic instead of dedicated formatters/views |
-| **Copy-paste code** | -4 | Same formatting or error handling logic duplicated across commands |
-
-#### Code Quality (up to -10)
+#### CLI Architecture (up to -10)
 
 | Issue | Max Deduction | Description |
 |-------|---------------|-------------|
-| **No tab completion** | -4 | Missing or non-functional tab completion |
-| **Poor error messages** | -3 | Generic errors without actionable guidance |
-| **Missing Javadoc** | -3 | Public classes and methods lack documentation |
-| **Poor naming/style** | -2 | Unclear variable names; inconsistent formatting |
+| **Giant switch/if-else dispatcher** | -5 | All commands in one method instead of a principled command architecture |
+| **Domain logic in CLI layer** | -5 | CLI code creates domain objects, does arithmetic, parses ingredients, etc. |
+| **No separation of formatting** | -3 | Output formatting mixed into command logic instead of dedicated formatters/views |
+| **Copy-paste code** | -3 | Same formatting or error handling logic duplicated across commands |
 
-### Reflection (30 points)
+#### Code Quality (up to -5)
 
-#### Design Documentation (20 points)
+| Issue | Max Deduction | Description |
+|-------|---------------|-------------|
+| **Poor error messages** | -2 | Generic errors without actionable guidance |
+| **Missing Javadoc** | -2 | Public classes and methods lack documentation |
+| **Poor naming/style** | -1 | Unclear variable names; inconsistent formatting |
+
+### Reflection (50 points)
+
+#### Design Documentation (30 points)
 
 Your ADRs are graded positively for quality and depth of architectural thinking:
 
 | Criterion | Points | Description |
 |-----------|--------|-------------|
-| **ADR Coverage** | 5 | Exactly 4 ADRs covering service boundaries, transformation/persistence separation, command architecture, and tab completion |
-| **Heuristic application** | 6 | ADRs explicitly reference and apply the L18 heuristics (rate of change, actor, ISP, testability) to justify decisions |
-| **Tradeoff analysis** | 5 | "Consequences" sections thoughtfully discuss both benefits and drawbacks of each decision |
+| **ADR Coverage** | 8 | Exactly 4 ADRs covering service boundaries, transformation/persistence separation, command architecture, and tab completion |
+| **Heuristic application** | 10 | ADRs explicitly reference and apply the L18 heuristics (rate of change, actor, ISP, testability) to justify decisions |
+| **Tradeoff analysis** | 8 | "Consequences" sections thoughtfully discuss both benefits and drawbacks of each decision |
 | **Concern identification** | 2 | ADRs clearly identify the relevant concerns at stake for each decision |
 | **ADRs match implementation** | 2 | What's documented reflects what was actually built |
 
-#### Reflection Questions (10 points)
+#### Reflection Questions (20 points)
 
 See [Reflection](#reflection) for the 6 questions. Answers should demonstrate genuine reflection on your design process, not just describe what you built.
 
@@ -1448,7 +1219,7 @@ Submit via Gradescope. The autograder will run the provided test suite against y
 │       └── ADR-004-tab-completion.md
 ├── src/
 │   ├── main/java/app/cookyourbooks/...
-│   └── test/java/app/cookyourbooks/...
+│   └── test/java/app/cookyourbooks/...  (provided — do not modify)
 └── REFLECTION.md
 ```
 
