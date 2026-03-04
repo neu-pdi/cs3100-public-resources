@@ -1,41 +1,55 @@
 ---
 sidebar_position: 9
 image: /img/labs/web/lab9.png
-title: "Lab 9: Network Fault Tolerance"
+title: 'Lab 9: Network Fault Tolerance'
 ---
 
 # Lab 9: Network Fault Tolerance
 
 ![Lo-fi pixel art showing two students at a workbench covered in small IoT devices—cameras, thermostats, motion sensors—each connected by glowing lines to a central hub labeled 'SceneItAll'. Some lines are flickering red or orange, representing unreliable connections. One student stares at a frozen terminal showing a blinking cursor next to the text 'waiting for device...', while the other sketches a flowchart on paper with labels like 'timeout', 'retry', 'backoff'. On the whiteboard behind them: a list of the Eight Fallacies of Distributed Computing, with 'The network is reliable' crossed out in red. A stack of sticky notes on the table reads 'partial failure?'. Warm evening lighting, cozy collaborative workspace atmosphere. Title: 'Lab 9: Network Fault Tolerance'.](/img/labs/web/lab9.png)
 
-In this lab, you'll feel the pain of network failures firsthand—and then fix them. You'll work with SceneItAll's IoT device ecosystem, where a hub communicates with physical devices over a simulated network that fails in realistic ways: timeouts, dropped connections, partial failures. The handout gives you a working CLI and a `DeviceGateway` that assumes the network is perfectly reliable. Your job is to make it resilient.
+In this lab, you'll feel the pain of network failures firsthand—and then fix them. You'll work with
+SceneItAll's IoT device ecosystem, where a hub communicates with physical devices over a simulated
+network that fails in realistic ways: timeouts, dropped connections, partial failures. The handout
+gives you a working CLI and a `DeviceGateway` that assumes the network is perfectly reliable. Your
+job is to make it resilient.
 
-**The twist:** partway through today's lab, we're going to change the requirements on you. This is intentional. Pay attention to how you feel when that happens—it's one of the most valuable things you'll practice today.
+**The twist:** partway through today's lab, we're going to change the requirements on you. This is
+intentional. Pay attention to how you feel when that happens—it's one of the most valuable things
+you'll practice today.
 
 :::info Grading: What You Need to Submit
 
-**Due:** At the end of your scheduled lab section. This is automatically enforced with a 10-minute grace period, but **push your work regularly**—don't wait until the end!
+**Due:** At the end of your scheduled lab section. This is automatically enforced with a 10-minute
+grace period, but **push your work regularly**—don't wait until the end!
 
 **Option 1: Complete entire lab**
+
 - Complete Parts 1–3 of the lab
 - Complete the reflection in `REFLECTION.md`
 - Push your completed work to GitHub
 - You may leave the lab after confirming with a TA that you're done
 
-**Option 2: Complete what you are able and ask for help**
-If you're unable to complete everything:
+**Option 2: Complete what you are able and ask for help** If you're unable to complete everything:
+
 - Submit a `REFLECTION.md` documenting what you completed, where you got stuck, and what you tried
 - A TA will review your submission and award credit for your good-faith effort
 
-The **Optional Extensions** are not required for full credit but are excellent practice if you finish early.
+The **Optional Extensions** are not required for full credit but are excellent practice if you
+finish early.
 
 :::
 
 :::warning Attendance Matters
 
-If lab leaders observe that you are **not working on the lab** during the section, or you **leave early** AND do not successfully complete the lab, you will receive **no marks**. However: if you finish the required parts of the lab and want to work on something else, just show the lab leader that you're done, and you'll be all set!
+If lab leaders observe that you are **not working on the lab** during the section, or you **leave
+early** AND do not successfully complete the lab, you will receive **no marks**. However: if you
+finish the required parts of the lab and want to work on something else, just show the lab leader
+that you're done, and you'll be all set!
 
-**Struggling? That's okay!** We are here to support you. If you're putting in effort and engaging with the material, we will give you credit. Ask questions, work with your neighbors, and flag down a lab leader if you're stuck.
+**Struggling? That's okay!** We are here to support you. If you're putting in effort and engaging
+with the material, we will give you credit. Ask questions, work with your neighbors, and flag down a
+lab leader if you're stuck.
 
 :::
 
@@ -48,7 +62,9 @@ If lab leaders observe that you are **not working on the lab** during the sectio
 **Attendance:** Take attendance using the roster in Pawtograder.
 
 **Brief Technical Intro (2 minutes):**
-- "Today you'll work with a CLI for SceneItAll's IoT hub. The hub sends commands to physical devices over a network—but our simulated network fails in realistic ways."
+
+- "Today you'll work with a CLI for SceneItAll's IoT hub. The hub sends commands to physical devices
+  over a network—but our simulated network fails in realistic ways."
 - "The starter code assumes the network always works. You'll fix that."
 - "You'll work individually for the first 15 minutes, then pair up for the rest."
 
@@ -56,9 +72,15 @@ If lab leaders observe that you are **not working on the lab** during the sectio
 
 Read this to students:
 
-> "Today we're practicing *adaptability*—responding professionally when things don't go as planned. In real systems, networks fail in ways you didn't anticipate. Your design will encounter failure modes it wasn't built for. The question isn't whether to expect the unexpected, but how to respond when it happens.
+> "Today we're practicing _adaptability_—responding professionally when things don't go as planned.
+> In real systems, networks fail in ways you didn't anticipate. Your design will encounter failure
+> modes it wasn't built for. The question isn't whether to expect the unexpected, but how to respond
+> when it happens.
 >
-> Partway through today's lab, we're going to change the requirements on you. This is intentional—we'll announce it explicitly. We want you to experience what it's like to adapt when reality doesn't match your initial assumptions. Pay attention to how you feel when that happens. That self-awareness is part of the learning."
+> Partway through today's lab, we're going to change the requirements on you. This is
+> intentional—we'll announce it explicitly. We want you to experience what it's like to adapt when
+> reality doesn't match your initial assumptions. Pay attention to how you feel when that happens.
+> That self-awareness is part of the learning."
 
 :::
 
@@ -68,43 +90,55 @@ After Sync Point 1, facilitate pair formation:
 
 - Have students pair up with someone they haven't worked with recently
 - If odd number, form one group of three
-- **Step 1:** Introduce yourself to your partner. Each person shares: *"The most frustrating failure mode I saw was [X], because [Y]."*
+- **Step 1:** Introduce yourself to your partner. Each person shares: _"The most frustrating failure
+  mode I saw was [X], because [Y]."_
 - Remind students to note their partner's name in `REFLECTION.md`
 
 :::
 
 :::tip For TAs: Sync Point 2 — The Requirements Change (5 minutes)
 
-This is the **Adaptability exercise**. After most pairs have finished Exercise 2.2, make this announcement:
+This is the **Adaptability exercise**. After most pairs have finished Exercise 2.2, make this
+announcement:
 
-> "The network team just informed us that some devices are experiencing *partial failures*—they respond to health checks but silently fail when you actually try to control them. Your current retry logic retries *all* failures the same way. That assumption no longer holds."
+> "The network team just informed us that some devices are experiencing _partial failures_—they
+> respond to health checks but silently fail when you actually try to control them. Your current
+> retry logic retries _all_ failures the same way. That assumption no longer holds."
 
 Then ask the class:
+
 - "What assumption did you make that this breaks?"
 - "Will you throw out your current code, modify it, or build on top of it?"
 
 Give pairs 5 minutes to adapt. Then continue to Part 3.
 
-**Key insight to surface:** Good software design anticipates *categories* of failure even when you don't know the specifics. A flat "retry everything" strategy has a hidden assumption embedded in it.
+**Key insight to surface:** Good software design anticipates _categories_ of failure even when you
+don't know the specifics. A flat "retry everything" strategy has a hidden assumption embedded in it.
 
 :::
 
 :::tip For TAs: Final Debrief (10 minutes)
 
 **Technical debrief:**
+
 - "What was the trickiest failure mode to handle? Why?"
 - "How did your retry logic change after the requirements change?"
 - "What tradeoff did you make between 'giving up too soon' and 'waiting too long'?"
 
 **Adaptability debrief:**
+
 - "How did it feel when we changed the requirements mid-lab?"
 - "What helped you adapt—did you throw out your old code, modify it, or build on top of it?"
 - "In a real job, requirements change constantly. What strategies will you use to stay flexible?"
 
 **Communication debrief:**
+
 - "What did you decide to tell users vs. hide in logs? How did you make that decision?"
 
-**Key insight:** Adaptability isn't about being unaffected by change—it's about recovering quickly and applying what you already know to the new situation. The students who adapted fastest likely had cleaner abstractions (a focused `DeviceGateway` class, retry logic separated from command logic). Good design *enables* adaptability.
+**Key insight:** Adaptability isn't about being unaffected by change—it's about recovering quickly
+and applying what you already know to the new situation. The students who adapted fastest likely had
+cleaner abstractions (a focused `DeviceGateway` class, retry logic separated from command logic).
+Good design _enables_ adaptability.
 
 :::
 
@@ -114,15 +148,20 @@ Give pairs 5 minutes to adapt. Then continue to Part 3.
 
 By the end of this lab, you will be able to:
 
-- Identify which of the **Fallacies of Distributed Computing** you experienced firsthand, and give concrete examples
+- Identify which of the **Fallacies of Distributed Computing** you experienced firsthand, and give
+  concrete examples
 - Implement **timeout and retry with exponential backoff** in Java to handle unresponsive devices
 - Apply **graceful degradation** so the CLI remains usable even when some devices are unreachable
 - Implement a **CLI command** using JLine3 that clearly communicates device status to users
-- **Adapt your implementation** when requirements change mid-task—and reflect on what made adaptation easier or harder
+- **Adapt your implementation** when requirements change mid-task—and reflect on what made
+  adaptation easier or harder
 
 ## Before You Begin
 
-**Prerequisites:** Complete [L20 (Distributed Architecture)](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l20-networks). You should be familiar with:
+**Prerequisites:** Complete
+[L20 (Distributed Architecture)](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l20-networks).
+You should be familiar with:
+
 - The Eight Fallacies of Distributed Computing
 - Timeout, retry, and exponential backoff patterns
 - Graceful degradation and circuit breakers
@@ -130,15 +169,18 @@ By the end of this lab, you will be able to:
 **Clone the Lab Repository:** Clone your lab9 repository from Pawtograder.
 
 The repository includes:
+
 - `src/` — starter Java code with a working CLI and an unreliable device gateway
 - `REFLECTION.md` — where all your written responses go
 - `config/` — simulation configuration files for different failure modes
 
 :::tip JLine3 Reference
 
-JLine3 is the library powering SceneItAll's interactive CLI. The provided `ListCommand` and `OnOffCommand` are fully working examples of the command pattern used in this lab.
+JLine3 is the library powering SceneItAll's interactive CLI. The provided `ListCommand` and
+`OnOffCommand` are fully working examples of the command pattern used in this lab.
 
 Key JLine3 APIs you'll encounter:
+
 ```java
 // Reading a line from the user
 String line = reader.readLine("sceneitall> ");
@@ -151,42 +193,47 @@ terminal.writer().flush();
 completer.addCompletion("porch-camera");
 ```
 
-You don't need to understand JLine3 deeply—follow the patterns in `ListCommand.java`.
-:::
+You don't need to understand JLine3 deeply—follow the patterns in `ListCommand.java`. :::
 
 ---
 
 ## The Scenario: SceneItAll's IoT Hub
 
-SceneItAll has expanded: homes now have dozens of IoT devices spread across the property. Each device—cameras, thermostats, door locks, motion sensors—communicates with a central hub over your home's network. The hub runs a local server that you interact with via the provided CLI.
+SceneItAll has expanded: homes now have dozens of IoT devices spread across the property. Each
+device—cameras, thermostats, door locks, motion sensors—communicates with a central hub over your
+home's network. The hub runs a local server that you interact with via the provided CLI.
 
-In production, devices go offline. Routers reboot. Signals fade. The `DeviceGateway` class handles all communication between the hub and devices—but right now, it assumes the network is perfectly reliable. When a device doesn't respond, the CLI hangs. When a device fails mid-command, the CLI crashes.
+In production, devices go offline. Routers reboot. Signals fade. The `DeviceGateway` class handles
+all communication between the hub and devices—but right now, it assumes the network is perfectly
+reliable. When a device doesn't respond, the CLI hangs. When a device fails mid-command, the CLI
+crashes.
 
-Your job today: experience what that looks like, understand *why*, and fix it.
+Your job today: experience what that looks like, understand _why_, and fix it.
 
 The CLI is already running and supports these commands:
 
-| Command | Description | Provided? |
-|---------|-------------|-----------|
-| `list` | List all registered devices | ✅ |
-| `on <device>` | Turn a device on | ✅ (uses broken gateway) |
-| `off <device>` | Turn a device off | ✅ (uses broken gateway) |
-| `help` | Show available commands | ✅ |
-| `status` | Show all devices with connection status | ❌ **You implement** |
-| `quit` / `exit` | Exit the CLI | ✅ |
+| Command         | Description                             | Provided?                |
+| --------------- | --------------------------------------- | ------------------------ |
+| `list`          | List all registered devices             | ✅                       |
+| `on <device>`   | Turn a device on                        | ✅ (uses broken gateway) |
+| `off <device>`  | Turn a device off                       | ✅ (uses broken gateway) |
+| `help`          | Show available commands                 | ✅                       |
+| `status`        | Show all devices with connection status | ❌ **You implement**     |
+| `quit` / `exit` | Exit the CLI                            | ✅                       |
 
 ---
 
 ## Part 1: Experience the Fallacies (15 minutes — Individual)
 
-Before writing any code, you need to *feel* the problem. Work through this part on your own.
+Before writing any code, you need to _feel_ the problem. Work through this part on your own.
 
 ### Exercise 1.1: Run the CLI Against Unreliable Devices
 
-Your repository includes several simulation configurations in the `config/` folder. Start the CLI with the first failure scenario:
+Your repository includes several simulation configurations in the `config/` folder. Start the CLI
+with the first failure scenario:
 
 ```bash
-./gradlew run --args="--config config/scenario-timeout.json"
+./gradlew runTimeout
 ```
 
 Once the CLI starts, try these commands:
@@ -197,11 +244,14 @@ sceneitall> on porch-camera
 sceneitall> off living-room-thermostat
 ```
 
-**Observe:** What happens? Does the CLI respond immediately? Does it hang? Does it print an error, or does it fail silently?
+**Observe:** What happens? Does the CLI respond immediately? Does it hang? Does it print an error,
+or does it fail silently?
 
 :::note What to look for
 
-The `scenario-timeout.json` configuration makes `porch-camera` unresponsive—it accepts the connection but never sends a reply. Your CLI will hang indefinitely on the `on porch-camera` command because `DeviceGateway.sendCommand()` has no timeout.
+The `scenario-timeout.json` configuration makes `porch-camera` unresponsive—it accepts the
+connection but never sends a reply. Your CLI will hang indefinitely on the `on porch-camera` command
+because `DeviceGateway.sendCommand()` has no timeout.
 
 You may need to press `Ctrl+C` to kill the CLI.
 
@@ -212,25 +262,29 @@ You may need to press `Ctrl+C` to kill the CLI.
 Try the other scenarios:
 
 ```bash
-./gradlew run --args="--config config/scenario-intermittent.json"
+./gradlew runIntermittent
 ```
 
-Run the same commands several times. Notice that the same command succeeds sometimes and fails other times.
+Run the same commands several times. Notice that the same command succeeds sometimes and fails other
+times.
 
 ```bash
-./gradlew run --args="--config config/scenario-mixed.json"
+./gradlew runMixed
 ```
 
-This scenario includes multiple devices with different failure modes. Run `list` to see all devices, then try to control each one.
+This scenario includes multiple devices with different failure modes. Run `list` to see all devices,
+then try to control each one.
 
 **For each scenario, take notes in `REFLECTION.md`:**
+
 - What did the CLI do when a device was unresponsive?
 - Which of the Eight Fallacies from L20 did this violate?
 - What would a user think if they saw this behavior?
 
 ### Exercise 1.3: Read the Broken Code
 
-Open `src/main/java/net/sceneitall/iot/lab9/gateway/DeviceGateway.java`. Find the `sendCommand` method:
+Open `src/main/java/net/sceneitall/iot/lab9/gateway/DeviceGateway.java`. Find the `sendCommand`
+method:
 
 ```java
 public CommandResult sendCommand(String deviceId, DeviceCommand command) {
@@ -249,6 +303,7 @@ public DeviceState readState(String deviceId) {
 ```
 
 Record in `REFLECTION.md` (Question 1):
+
 - Which specific fallacy does this code violate?
 - What happens at the JVM level when `networkClient.send()` blocks forever?
 - If you were a user, what would you want the CLI to do instead?
@@ -256,15 +311,17 @@ Record in `REFLECTION.md` (Question 1):
 ### 🔄 Sync Point 1 — Pair Formation (3 minutes)
 
 **Lab leaders will facilitate pairing:**
+
 - Find a partner you haven't worked with recently
-- Share one sentence: *"The most frustrating failure mode I saw was [X], because [Y]."*
+- Share one sentence: _"The most frustrating failure mode I saw was [X], because [Y]."_
 - Record your partner's name in `REFLECTION.md`
 
 ---
 
 ## Part 2: Implement Timeout and Retry (25 minutes — Paired)
 
-Now you'll fix `DeviceGateway`. Work with your partner. Read through the full exercise before writing any code.
+Now you'll fix `DeviceGateway`. Work with your partner. Read through the full exercise before
+writing any code.
 
 ### Exercise 2.1: Add a Timeout (8 minutes)
 
@@ -278,28 +335,35 @@ networkClient.send(request)
 networkClient.send(request, Duration.ofSeconds(5))
 ```
 
-**Your task:** Update `sendCommand` and `readState` to use a timeout. Choose a reasonable timeout value for an IoT home network. (Hint: a device that takes more than a few seconds to respond is probably unresponsive—but a timeout that's too short will falsely report healthy devices as down.)
+**Your task:** Update `sendCommand` and `readState` to use a timeout. Choose a reasonable timeout
+value for an IoT home network. (Hint: a device that takes more than a few seconds to respond is
+probably unresponsive—but a timeout that's too short will falsely report healthy devices as down.)
 
 After your change, test it:
 
 ```bash
-./gradlew run --args="--config config/scenario-timeout.json"
+./gradlew runTimeout
 sceneitall> on porch-camera
 ```
 
-The CLI should now fail within your timeout window rather than hanging forever. Record your timeout choice and reasoning in `REFLECTION.md` (Question 2).
+The CLI should now fail within your timeout window rather than hanging forever. Record your timeout
+choice and reasoning in `REFLECTION.md` (Question 2).
 
 :::note What to catch
 
-`networkClient.send()` throws `TimeoutException` when the timeout expires, and `DeviceUnreachableException` when the network can't reach the device at all. Handle both.
+`networkClient.send()` throws `TimeoutException` when the timeout expires, and
+`DeviceUnreachableException` when the network can't reach the device at all. Handle both.
 
 :::
 
 ### Exercise 2.2: Add Retry with Exponential Backoff (12 minutes)
 
-A single timeout is better than hanging forever, but many real failures are *transient*—the device was briefly busy, the network had a momentary hiccup. Retrying after a short wait often succeeds.
+A single timeout is better than hanging forever, but many real failures are _transient_—the device
+was briefly busy, the network had a momentary hiccup. Retrying after a short wait often succeeds.
 
-From [L20](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l20-networks#designing-for-an-unreliable-world), the pattern is:
+From
+[L20](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l20-networks#designing-for-an-unreliable-world),
+the pattern is:
 
 ```java
 int attempts = 0;
@@ -316,10 +380,16 @@ while (attempts < MAX_ATTEMPTS) {
 ```
 
 **Your task:** Implement retry with exponential backoff in `DeviceGateway`. Decide:
-- How many retry attempts? (Consider: each attempt takes up to your timeout. 3 attempts × 5 second timeout = up to 15 seconds before giving up. Is that acceptable for a home automation CLI?)
-- Should retrying be the same for `readState` and `sendCommand`? Or should a command that *might have already executed* be retried differently?
 
-Discuss the second question with your partner before writing code. There's no single right answer—but there is an important difference: `readState` is **idempotent** (reading device state has no side effects), but `sendCommand` may not be. What happens if you retry `on porch-camera` and the first attempt actually succeeded?
+- How many retry attempts? (Consider: each attempt takes up to your timeout. 3 attempts × 5 second
+  timeout = up to 15 seconds before giving up. Is that acceptable for a home automation CLI?)
+- Should retrying be the same for `readState` and `sendCommand`? Or should a command that _might
+  have already executed_ be retried differently?
+
+Discuss the second question with your partner before writing code. There's no single right
+answer—but there is an important difference: `readState` is **idempotent** (reading device state has
+no side effects), but `sendCommand` may not be. What happens if you retry `on porch-camera` and the
+first attempt actually succeeded?
 
 Record your design decisions and tradeoffs in `REFLECTION.md` (Question 2).
 
@@ -328,7 +398,7 @@ Record your design decisions and tradeoffs in `REFLECTION.md` (Question 2).
 The `scenario-intermittent.json` config makes `porch-camera` fail roughly 60% of the time. Run:
 
 ```bash
-./gradlew run --args="--config config/scenario-intermittent.json"
+./gradlew runIntermittent
 ```
 
 Try `on porch-camera` several times. With retry logic, most attempts should eventually succeed.
@@ -340,13 +410,19 @@ Try `on porch-camera` several times. With retry logic, most attempts should even
 **Lab leader will make an announcement.**
 
 After the announcement, discuss with your partner:
+
 - "What assumption does our current code make that this breaks?"
 - "Will we throw out our retry logic, modify it, or build on top of it?"
 
-**Exercise 2.3 (post-announcement):** Adapt your `DeviceGateway` to handle partial failures. The `networkClient.send()` method may now return a `CommandResult` with `result.isPartialFailure() == true` even when no exception is thrown—the device responded but reported that the command could not be executed.
+**Exercise 2.3 (post-announcement):** Adapt your `DeviceGateway` to handle partial failures. The
+`networkClient.send()` method may now return a `CommandResult` with
+`result.isPartialFailure() == true` even when no exception is thrown—the device responded but
+reported that the command could not be executed.
 
 Decide:
-- Should partial failures be retried? (Unlike transient failures, partial failures may indicate a device-level problem, not a network problem.)
+
+- Should partial failures be retried? (Unlike transient failures, partial failures may indicate a
+  device-level problem, not a network problem.)
 - How should `sendCommand` communicate this distinction to callers?
 
 Record what you changed and what drove your decision in `REFLECTION.md` (Question 3).
@@ -355,11 +431,13 @@ Record what you changed and what drove your decision in `REFLECTION.md` (Questio
 
 ## Part 3: Implement the `status` Command (15 minutes — Paired)
 
-With a resilient gateway in place, you can now implement a useful CLI command. The `status` command shows the connection status of every registered device.
+With a resilient gateway in place, you can now implement a useful CLI command. The `status` command
+shows the connection status of every registered device.
 
 ### 🔄 Code Walkthrough: The Command Pattern (5 minutes — Lab Leader Led)
 
-Before implementing your own command, the lab leader will walk through the provided code to explain how the CLI is structured.
+Before implementing your own command, the lab leader will walk through the provided code to explain
+how the CLI is structured.
 
 :::tip For TAs: Command Pattern Walkthrough (5 minutes)
 
@@ -374,7 +452,8 @@ public interface Command {
 }
 ```
 
-Point out: `execute` receives the full argument array and the JLine3 `Terminal`. The terminal is the connection to the user's screen — you write output to it, never to `System.out`.
+Point out: `execute` receives the full argument array and the JLine3 `Terminal`. The terminal is the
+connection to the user's screen — you write output to it, never to `System.out`.
 
 **Step 2: Show `ListCommand.java` (a working example)**
 
@@ -405,9 +484,11 @@ public class ListCommand implements Command {
 ```
 
 Points to make:
+
 - Dependencies are injected via constructor — `ListCommand` doesn't reach for globals
 - `terminal.writer().println(...)` followed by `flush()` is the output pattern
-- The `String[] args` is the full tokenized input — `args[0]` is the command name, `args[1]` onward are arguments (same convention as `main`)
+- The `String[] args` is the full tokenized input — `args[0]` is the command name, `args[1]` onward
+  are arguments (same convention as `main`)
 
 **Step 3: Show `SceneItAllCLI.java` (the dispatch loop)**
 
@@ -431,9 +512,13 @@ while (true) {
 }
 ```
 
-Point out: adding a new command requires (1) implementing `Command`, and (2) registering it in this map. That's it. Students add `StatusCommand` here once it's implemented.
+Point out: adding a new command requires (1) implementing `Command`, and (2) registering it in this
+map. That's it. Students add `StatusCommand` here once it's implemented.
 
-**Key insight to leave students with:** The Command pattern makes the CLI extensible — adding a new command never touches existing commands. This is the Open/Closed Principle from [L8](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l8-design-for-change-2) in action.
+**Key insight to leave students with:** The Command pattern makes the CLI extensible — adding a new
+command never touches existing commands. This is the Open/Closed Principle from
+[L8](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l8-design-for-change-2) in
+action.
 
 :::
 
@@ -483,17 +568,21 @@ public void execute(String[] args, Terminal terminal) {
 }
 ```
 
-Implement `StatusCommand.execute()`. For each device, call `gateway.readState()`. When it throws `DeviceGatewayException`, display the device as unreachable rather than propagating the exception.
+Implement `StatusCommand.execute()`. For each device, call `gateway.readState()`. When it throws
+`DeviceGatewayException`, display the device as unreachable rather than propagating the exception.
 
 ### Exercise 3.2: Design Your Output Format
 
 Before writing the output, discuss with your partner:
 
-> "Imagine a homeowner using this CLI at 11pm because their front door lock seems unresponsive. They run `status`. What information do they actually need? What would be confusing or alarming? What would be helpful?"
+> "Imagine a homeowner using this CLI at 11pm because their front door lock seems unresponsive. They
+> run `status`. What information do they actually need? What would be confusing or alarming? What
+> would be helpful?"
 
 Two example approaches:
 
 **Option A — Minimal:**
+
 ```
 porch-camera      [camera]       REACHABLE  — on
 front-door-lock   [lock]         UNREACHABLE
@@ -502,6 +591,7 @@ thermostat-main   [thermostat]   PARTIAL    — state unknown
 ```
 
 **Option B — Verbose:**
+
 ```
 porch-camera (camera)
   Status: REACHABLE
@@ -513,22 +603,25 @@ front-door-lock (lock)
   ⚠ Could not contact device after 3 attempts. Check device power and network.
 ```
 
-Neither is universally better—it depends on the user and context. Discuss and choose one (or invent your own), documenting your reasoning in `REFLECTION.md` (Question 4).
+Neither is universally better—it depends on the user and context. Discuss and choose one (or invent
+your own), documenting your reasoning in `REFLECTION.md` (Question 4).
 
 **Test your command:**
 
 ```bash
-./gradlew run --args="--config config/scenario-mixed.json"
+./gradlew runMixed
 sceneitall> status
 ```
 
-All reachable devices should show their current state. Unreachable devices should appear in the output as unreachable—the CLI should not crash, hang, or silently skip them.
+All reachable devices should show their current state. Unreachable devices should appear in the
+output as unreachable—the CLI should not crash, hang, or silently skip them.
 
 ---
 
 ## Part 4: Reflection (10 minutes — Individual and Debrief)
 
-Complete the reflection questions below in `REFLECTION.md` while the lab leaders facilitate the final debrief.
+Complete the reflection questions below in `REFLECTION.md` while the lab leaders facilitate the
+final debrief.
 
 ### 🔄 Sync Point 3 — Final Debrief (facilitated by lab leaders)
 
@@ -538,11 +631,12 @@ Complete the reflection questions below in `REFLECTION.md` while the lab leaders
 
 Complete all questions in `REFLECTION.md` before submitting.
 
-**Partner's Name:** _______________
+**Partner's Name:** ******\_\_\_******
 
 **1. The Command Pattern**
 
-The CLI dispatch loop in `SceneItAllCLI.java` uses the Command pattern. An alternative implementation would use a chain of `if/else` statements:
+The CLI dispatch loop in `SceneItAllCLI.java` uses the Command pattern. An alternative
+implementation would use a chain of `if/else` statements:
 
 ```java
 // Alternative: if/else chain
@@ -556,14 +650,18 @@ if (parts[0].equals("list")) {
 ```
 
 Compare the two approaches:
+
 - What would it take to add a new command in each approach? How many files would you need to touch?
-- What would it take to *test* a single command in isolation in each approach?
-- Which coupling type from [L7](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l7-design-for-change) does the if/else chain exhibit? What about the Command pattern?
+- What would it take to _test_ a single command in isolation in each approach?
+- Which coupling type from
+  [L7](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l7-design-for-change) does
+  the if/else chain exhibit? What about the Command pattern?
 - Is there any situation where you'd prefer the if/else approach?
 
 **2. Timeout and Retry Design**
 
 Describe your final implementation of timeout and retry:
+
 - What timeout value did you choose, and why?
 - How many retry attempts, and why?
 - What is the maximum time a user might wait before getting an answer? Is that acceptable?
@@ -572,6 +670,7 @@ Describe your final implementation of timeout and retry:
 **3. Adapting to Partial Failures**
 
 When the requirements changed to include partial failures:
+
 - What assumption did your original retry logic make that turned out to be wrong?
 - What did you change in your implementation?
 - Did you modify your existing code, build on top of it, or start over? What drove that decision?
@@ -579,15 +678,22 @@ When the requirements changed to include partial failures:
 **4. User Communication**
 
 In your `status` command:
+
 - What output format did you choose? Paste a sample output.
 - What information did you include? What did you leave out?
 - How did you decide what a homeowner user actually needs to see vs. what belongs in a log file?
 
 **5. Meta (pick one)**
 
-- *Connections:* How does one pattern you implemented (timeout, retry, exponential backoff, graceful degradation) connect to a specific concept from [L20](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l20-networks)? Be specific—quote or reference the lecture material.
-- *Adaptability:* The requirements change was intentional. How did it feel when we announced it? What made it easier or harder to adapt? What would you do differently next time requirements change on you?
-- *Real-world parallel:* Describe a situation outside of programming where you had to adapt when something didn't go as planned. What's similar to what you did today?
+- _Connections:_ How does one pattern you implemented (timeout, retry, exponential backoff, graceful
+  degradation) connect to a specific concept from
+  [L20](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l20-networks)? Be
+  specific—quote or reference the lecture material.
+- _Adaptability:_ The requirements change was intentional. How did it feel when we announced it?
+  What made it easier or harder to adapt? What would you do differently next time requirements
+  change on you?
+- _Real-world parallel:_ Describe a situation outside of programming where you had to adapt when
+  something didn't go as planned. What's similar to what you did today?
 
 ---
 
@@ -595,13 +701,17 @@ In your `status` command:
 
 ### Extension 1: Circuit Breaker Pattern
 
-The retry approach you implemented still tries every command, even when a device has been continuously failing for minutes. This wastes time and could overwhelm a struggling device.
+The retry approach you implemented still tries every command, even when a device has been
+continuously failing for minutes. This wastes time and could overwhelm a struggling device.
 
-The **circuit breaker** pattern (introduced briefly in [L20](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l20-networks#reliability-fault-tolerance-availability-and-recoverability)) addresses this:
+The **circuit breaker** pattern (introduced briefly in
+[L20](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l20-networks#reliability-fault-tolerance-availability-and-recoverability))
+addresses this:
 
 - **Closed** (normal): requests pass through, failures are counted
 - **Open** (tripped): requests fail immediately, no network calls made
-- **Half-open** (recovery probe): one request is allowed through; if it succeeds, circuit closes again
+- **Half-open** (recovery probe): one request is allowed through; if it succeeds, circuit closes
+  again
 
 Implement a `CircuitBreaker` class and integrate it into `DeviceGateway`:
 
@@ -645,14 +755,19 @@ terminal.writer().println(colored.toAnsi());
 
 ### Extension 3: Idempotency Design Challenge
 
-Consider this scenario: you run `on front-door-lock`. The command reaches the device and executes successfully, but the acknowledgment is lost on the network. Your retry logic fires. You send the same command again. The lock was already on.
+Consider this scenario: you run `on front-door-lock`. The command reaches the device and executes
+successfully, but the acknowledgment is lost on the network. Your retry logic fires. You send the
+same command again. The lock was already on.
 
-For a light, this is harmless—turning on a light that's already on has no effect. For a security system that toggles state on each command, it's a bug.
+For a light, this is harmless—turning on a light that's already on has no effect. For a security
+system that toggles state on each command, it's a bug.
 
 Explore this question in `REFLECTION.md` (no implementation required):
+
 - Which of SceneItAll's device types have idempotent commands? Which don't?
 - How would you redesign `DeviceCommand` or the gateway API to make the distinction explicit?
-- L20 mentions Pawtograder uses submission IDs to ensure idempotency. What would an equivalent look like for device commands?
+- L20 mentions Pawtograder uses submission IDs to ensure idempotency. What would an equivalent look
+  like for device commands?
 
 ---
 
@@ -662,8 +777,10 @@ Explore this question in `REFLECTION.md` (no implementation required):
 
 Before your final submission, ensure:
 
-- [ ] Part 1: You observed and documented specific failure modes, identified fallacies in `REFLECTION.md`
-- [ ] Part 2: `DeviceGateway` implements timeout and retry with exponential backoff; handles partial failures
+- [ ] Part 1: You observed and documented specific failure modes, identified fallacies in
+      `REFLECTION.md`
+- [ ] Part 2: `DeviceGateway` implements timeout and retry with exponential backoff; handles partial
+      failures
 - [ ] Part 3: `StatusCommand` is implemented and shows reachable/unreachable status without crashing
 - [ ] `REFLECTION.md` is complete with all 5 questions answered
 - [ ] All changes compile: `./gradlew build`
