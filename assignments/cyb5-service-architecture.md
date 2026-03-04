@@ -541,7 +541,7 @@ Removed conversion: 1 stick butter = 113 g
 cyb> show "Chocolate Chip Cookies"
 ```
 
-Displays the full recipe details: title, servings, all ingredients with quantities, and all instructions. Recipe is looked up by title (case-insensitive) across all collections in the repository.
+Displays the full recipe details: title, servings, all ingredients with quantities, and all instructions. Recipe is looked up by short ID or title (case-insensitive) across all collections in the repository. See [ambiguous match format](#ambiguous-match-format) for lookup details.
 
 **Example output:**
 ```text
@@ -778,6 +778,7 @@ Ingredients:
 ──────────────────────────────────────────
   Preheat oven to 350°F
 
+  (no ingredients used in this step)
 
 [next] [prev] [ingredients] [quit]
 cook> next
@@ -787,6 +788,7 @@ cook> next
 ──────────────────────────────────────────
   Mix dry ingredients
 
+  Uses: 2 cups flour, 1 cup sugar
 
 [next] [prev] [ingredients] [quit]
 cook> ingredients
@@ -807,6 +809,7 @@ cook> next
 ──────────────────────────────────────────
   Bake for 12 minutes
 
+  Uses: chocolate chips to taste
 
 [next] [prev] [ingredients] [quit]
 cook> next
@@ -825,7 +828,8 @@ cook> next
 
 **Requirements:**
 - Display one instruction at a time with step number and total count
-- Show ingredients at the start and on demand
+- Show the **consumed ingredients** for each step — the ingredients referenced by that step's `Instruction.ingredientRefs` (with quantities when applicable). If a step has no ingredient refs, show a note such as "(no ingredients used in this step)"
+- Show the full ingredient list at the start and on demand via `ingredients`
 - Pressing `next` on the last step displays a completion message and exits cook mode
 - Pressing `prev` on the first step shows a message that you're already at the beginning
 - The prompt changes to `cook>` to indicate cooking mode
@@ -860,7 +864,7 @@ Exits the application gracefully.
 Your CLI must provide tab completion for:
 
 1. **Command names** — typing `sc` + Tab should suggest `scale`, `search`; `col` should suggest `collection`, `collections`; `sh` should suggest `shopping-list`, `show`; `co` should suggest `convert`, `cook`, `collection`, `collections`
-2. **Recipe titles** — any command that takes a recipe parameter must offer tab completion for available recipe titles:
+2. **Recipe titles and short IDs** — any command that takes a recipe parameter must offer tab completion for available recipe titles *and* short IDs (first 8 characters of the recipe's internal ID). This lets users tab-complete even when disambiguating by ID after an ambiguous match:
    - `show <recipe>`
    - `delete <recipe>`
    - `scale <recipe>`
@@ -869,6 +873,7 @@ Your CLI must provide tab completion for:
    - `export <recipe>`
    - `shopping-list <recipe1> [recipe2] ...` (all recipe arguments)
 3. **Unit names** — after `convert <recipe>`, Tab should suggest valid unit names (the names accepted by `Unit.parse()`: `gram`, `cup`, `tsp`, `tbsp`, `oz`, `lb`, `ml`, `l`, etc.)
+4. **Cook mode commands** — while in cook mode, Tab should suggest the available sub-commands: `next`, `prev`, `ingredients`, `quit`
 
 Use JLine's [`Completer` interface](https://jline.org/docs/tab-completion#custom-completers) to implement this. You may find a combination of the built-in completers to be helpful (e.g. `AggregateCompleter`, `StringsCompleter`).
 
@@ -892,15 +897,23 @@ The exact error messages for each command are specified in the [Command Referenc
 
 #### Ambiguous Match Format
 
-When a user-provided name matches multiple items (collections or recipes), display the matches and prompt the user to be more specific. Use this exact format:
+When a user-provided name matches multiple items (collections or recipes), display the matches and prompt the user to be more specific. Each recipe match includes a **short ID** — the first 8 characters of the recipe's internal ID — so the user can target a specific recipe even when titles are identical.
 
-**For recipes:**
+**For recipes (different titles):**
 ```text
 Multiple recipes match 'Cookies':
-  1. Chocolate Chip Cookies       (Holiday Favorites)
-  2. Oatmeal Raisin Cookies       (Joy of Cooking)
-  3. Sugar Cookies                (Holiday Favorites)
-Please specify the full recipe name.
+  1. Chocolate Chip Cookies  [ab3fc891]  (Holiday Favorites)
+  2. Oatmeal Raisin Cookies  [7c2e04d6]  (Joy of Cooking)
+  3. Sugar Cookies            [e19b33a0]  (Holiday Favorites)
+Please specify the full recipe name, or use a short ID (e.g. 'show ab3fc891').
+```
+
+**For recipes (duplicate titles across collections):**
+```text
+Multiple recipes match 'Chocolate Chip Cookies':
+  1. Chocolate Chip Cookies  [ab3fc891]  (Holiday Favorites)
+  2. Chocolate Chip Cookies  [d4f7a21c]  (Joy of Cooking)
+Please specify a short ID (e.g. 'show ab3fc891').
 ```
 
 **For collections:**
@@ -911,7 +924,9 @@ Multiple collections match 'Favorites':
 Please specify the full collection name.
 ```
 
-The command is **not re-prompted** — the user must re-enter the entire command with a more specific name. This keeps the CLI stateless and simplifies testing.
+The command is **not re-prompted** — the user must re-enter the entire command with a more specific name or short ID. This keeps the CLI stateless and simplifies testing.
+
+**Recipe lookup order:** Any command that accepts a `<recipe>` argument should first try to match the argument as a short ID prefix (case-insensitive). If no ID match is found, fall back to title matching (case-insensitive substring). This means `show ab3fc891` targets a specific recipe by ID, while `show "Chocolate Chip Cookies"` searches by title.
 
 ### Design Requirements
 
@@ -1145,6 +1160,8 @@ Ingredients:
 ──────────────────────────────────────────
   Whisk together flour, sugar, and baking powder in a large bowl.
 
+  Uses: 1 1/2 cups flour, 1 tbsp sugar, 1 tsp baking powder
+
 [next] [prev] [ingredients] [quit]
 cook> next
 
@@ -1152,6 +1169,8 @@ cook> next
   Step 2 of 4
 ──────────────────────────────────────────
   In a separate bowl, whisk egg, milk, and melted butter.
+
+  Uses: 1 egg, 1 cup milk, 2 tbsp butter
 
 [next] [prev] [ingredients] [quit]
 cook> next
@@ -1162,6 +1181,8 @@ cook> next
   Pour wet ingredients into dry and stir until just combined.
   Do not overmix.
 
+  (no ingredients used in this step)
+
 [next] [prev] [ingredients] [quit]
 cook> next
 
@@ -1170,6 +1191,8 @@ cook> next
 ──────────────────────────────────────────
   Cook on a griddle over medium heat until bubbles form,
   then flip. Cook until golden brown.
+
+  (no ingredients used in this step)
 
 [next] [prev] [ingredients] [quit]
 cook> next
