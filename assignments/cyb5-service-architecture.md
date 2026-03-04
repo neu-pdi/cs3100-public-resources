@@ -140,7 +140,7 @@ Your CLI must support these commands. Click any command for detailed documentati
 The CLI automatically persists all data to a JSON file named `cyb-library.json` in the current working directory:
 
 - **On startup:** If the file exists, load all collections, recipes, and house conversion rules
-- **On changes:** Save automatically after any modification (recipe import/edit/delete, collection changes, conversion rule changes)
+- **On changes:** `CybLibrary` automatically persists all changes — every mutation (recipe import/edit/delete, collection changes, conversion rule changes) is written to the file immediately. You do not need to call save explicitly. If the save fails, log the error using SLF4J at `ERROR` level with the message `"Failed to save library: {}"` (passing the exception as the final argument so the stack trace is captured), and print a warning to the terminal: `Warning: Failed to save changes to cyb-library.json: <error message>. Your changes may be lost.`
 - **File not found:** Start with an empty library (no error)
 
 **File contents include:**
@@ -172,7 +172,7 @@ CookYourBooks serves three distinct actors, each representing a different way pe
 
 **The Converter** (scaling and unit conversion) is a **cross-cutting capability** that serves both the Cook (scaling mid-recipe) and the Planner (converting units for shopping or dietary calculations). This suggests it may warrant its own service boundary.
 
-Your architecture should support cohesive feature sets for each actor that can evolve together. This matters for your group project: your four-member team will divide the GUI work by actor — one teammate builds the Cook's step-by-step interface, another builds the Librarian's collection management views, etc. If your service boundaries align with actors, teammates can work in parallel without stepping on each other's code. This is Conway's Law in action ([L22](/lecture-notes/l22-teams)) — the structure of your code mirrors the structure of your team. A change to how the Cook experiences step navigation shouldn't require touching the Librarian's import logic.
+Your architecture should support cohesive feature sets for each actor that can evolve together. This matters for your group project: your four-member team will divide the GUI work by actor — one teammate builds the Cook's step-by-step interface, another builds the Librarian's collection management views, etc. If your service boundaries align with actors, teammates can work in parallel without stepping on each other's code. This is Conway's Law in action — the structure of your code mirrors the structure of your team. A change to how the Cook experiences step navigation shouldn't require touching the Librarian's import logic.
 
 :::warning Actor-Aligned Services Required
 
@@ -323,9 +323,6 @@ public class CookYourBooksApp {
         // Launch CLI (you implement this)
         CookYourBooksCli cli = new CookYourBooksCli(/* your services */);
         cli.run();
-        
-        // Save on exit
-        library.save();
     }
 }
 ```
@@ -605,7 +602,7 @@ Instructions:
 cyb> search chicken
 ```
 
-Finds all recipes containing the specified ingredient (case-insensitive substring matching). Displays matching recipe titles with their collection. Your service layer should provide this search capability.
+Finds all recipes containing the specified ingredient (case-insensitive substring matching). Search operates on the `RecipeRepository` only — it does not separately iterate `RecipeCollectionRepository`. Displays matching recipe titles with their collection membership. Your service layer should provide this search capability.
 
 **Example output:**
 ```text
@@ -747,13 +744,23 @@ Saved scaled recipe 'Chocolate Chip Cookies (scaled to 48)'.
 Scale again or 'done': done
 ```
 
+If the user declines to save, the scaled recipe is discarded and the loop continues:
+
+```text
+Save scaled recipe? (y/n): n
+
+Scale again or 'done': done
+```
+
+If the user enters `cancel` at the target servings prompt, scaling mode exits immediately and returns to the main prompt with no output.
+
 **Requirements:**
 - Show original recipe with current servings
-- Prompt for target servings (accept positive integers, or `cancel` to exit)
+- Prompt for target servings (accept positive integers, or `cancel` to exit immediately)
 - Display side-by-side comparison of original and scaled ingredients
 - VagueIngredients display unchanged (e.g., "to taste")
-- Ask whether to save (persists the scaled recipe as a new recipe via your service layer)
-- Allow scaling again with a different target, or `done` to exit
+- Ask whether to save (y: persists the scaled recipe as a new recipe; n: discards the result silently)
+- After either saving or discarding, prompt `Scale again or 'done':` — allow scaling again with a different target, or `done` to exit
 - If the recipe has no servings information, display an error and exit: `Cannot scale 'Recipe Name': no serving information available.`
 
 #### `convert <recipe> <unit>` — Convert Recipe Units
@@ -881,8 +888,8 @@ cook> next
   Bake for 12 minutes
 
 
-[done] [prev] [ingredients] [scale] [quit]
-cook> done
+[next] [prev] [ingredients] [scale] [quit]
+cook> next
 
   Finished cooking Chocolate Chip Cookies! Enjoy!
 ```
@@ -891,22 +898,20 @@ cook> done
 
 | Command | Action |
 |---------|--------|
-| `next` or `n` | Advance to the next step |
+| `next` or `n` | Advance to the next step (on the last step, displays the completion message and exits cook mode) |
 | `prev` or `p` | Go back to the previous step |
 | `ingredients` or `i` | Show the full ingredient list (reflects any scaling) |
 | `scale <servings>` or `scale` | Scale the recipe to new servings for this session only |
-| `goto <step>` | Jump to a specific step number |
 | `quit` or `q` | Exit cooking mode (returns to main prompt) |
-| `done` | Complete cooking (shown on last step) |
 
 **Requirements:**
 - Display one instruction at a time with step number and total count
 - Show ingredients at the start and on demand
 - `scale` within cook mode is **session-only** — it adjusts displayed quantities for the remainder of the cooking session but does **not** offer to save. This is different from the top-level `scale` command which offers to persist the scaled recipe.
-- Pressing `next` on the last step shows a completion message
+- Pressing `next` on the last step displays a completion message and exits cook mode
 - Pressing `prev` on the first step shows a message that you're already at the beginning
 - The prompt changes to `cook>` to indicate cooking mode
-- Display available commands as hints at the bottom of each step
+- Display available commands as hints at the bottom of each step (`[next] [prev] [ingredients] [scale] [quit]`)
 
 #### `export <recipe> <file>` — Export Recipe to Markdown
 
@@ -1287,8 +1292,8 @@ cook> next
   Cook on a griddle over medium heat until bubbles form,
   then flip. Cook until golden brown.
 
-[done] [prev] [ingredients] [scale] [quit]
-cook> done
+[next] [prev] [ingredients] [scale] [quit]
+cook> next
 
   Finished cooking Classic Pancakes! Enjoy!
 
@@ -1421,7 +1426,7 @@ Your ADRs are graded positively for quality and depth of architectural thinking:
 | **ADR Coverage** | 5 | Exactly 4 ADRs covering service boundaries, transformation/persistence separation, command architecture, and tab completion |
 | **Heuristic application** | 6 | ADRs explicitly reference and apply the L18 heuristics (rate of change, actor, ISP, testability) to justify decisions |
 | **Tradeoff analysis** | 5 | "Consequences" sections thoughtfully discuss both benefits and drawbacks of each decision |
-| **Concern identification** | 2 | ADRs identify the relevant concerns and alternatives considered |
+| **Concern identification** | 2 | ADRs clearly identify the relevant concerns at stake for each decision |
 | **ADRs match implementation** | 2 | What's documented reflects what was actually built |
 
 #### Reflection Questions (10 points)
