@@ -319,11 +319,14 @@ export default function RevealJS({
     const configuredHeight = (config as any).height || 700;
     const configuredWidth = (config as any).width || 960;
     
-    // Get all sections and check for overflow
-    const sections = revealRef.current?.querySelectorAll('.slides > section');
+    // Get all sections and check for overflow (use instance DOM for fullscreen support)
+    const slidesElement = safeRevealCall(() => revealInstance.getSlidesElement());
+    const sections = slidesElement?.querySelectorAll(':scope > section');
     sections?.forEach((section) => {
       const sectionEl = section as HTMLElement;
       // Reset any previous scaling
+      sectionEl.style.removeProperty('--slide-content-scale');
+      sectionEl.style.fontSize = '';
       sectionEl.style.transform = '';
       sectionEl.style.transformOrigin = '';
       
@@ -331,15 +334,15 @@ export default function RevealJS({
       const scrollHeight = sectionEl.scrollHeight;
       const scrollWidth = sectionEl.scrollWidth;
       
-      // Calculate scale needed to fit content
+      // Calculate scale needed to fit content (uniform scale preserves aspect ratio)
       const scaleY = scrollHeight > configuredHeight ? configuredHeight / scrollHeight : 1;
       const scaleX = scrollWidth > configuredWidth ? configuredWidth / scrollWidth : 1;
       const contentScale = Math.min(scaleX, scaleY);
       
-      // Apply scale if content overflows
+      // Apply flow-based scale if content overflows (reflows to full width)
       if (contentScale < 1) {
-        sectionEl.style.transform = `scale(${contentScale})`;
-        sectionEl.style.transformOrigin = 'top left';
+        sectionEl.style.setProperty('--slide-content-scale', String(contentScale));
+        sectionEl.style.fontSize = `${contentScale * 100}%`;
       }
     });
   };
@@ -446,6 +449,7 @@ export default function RevealJS({
         minScale: 0.2,
         maxScale: 2.0,
         margin: 0.04,  // Margin around slides
+        slideNumber: 'c/t',
         plugins: [RevealNotes],
       } as any);
 
@@ -526,6 +530,7 @@ export default function RevealJS({
         // For fullscreen mode, just call layout() - Reveal will scale the fixed 20:13 dimensions
         // to fit the viewport while maintaining aspect ratio and centering
         safeRevealCall(() => fullscreenRevealInstanceRef.current!.layout());
+        scaleOverflowingContent(fullscreenRevealInstanceRef.current);
       }
     };
 
@@ -620,12 +625,16 @@ export default function RevealJS({
         minScale: 0.1,
         maxScale: 1.5,
         margin: 0.04,  // Margin around slides for dead space
+        slideNumber: 'c/t',
         plugins: [RevealNotes],
       } as any);
 
       reveal.initialize().then(() => {
         fullscreenRevealInstanceRef.current = reveal;
         setIsFullscreenInitialized(true);
+        
+        // Scale overflowing content after layout (allow time for async content like code blocks)
+        setTimeout(() => scaleOverflowingContent(reveal), 50);
         
         // Ensure viewport gets correct background based on theme
         // Reveal.js creates .reveal-viewport as a sibling/ancestor, find it via document
@@ -664,6 +673,7 @@ export default function RevealJS({
         // Sync TOC when slide changes
         reveal.on('slidechanged', () => {
           syncTOCWithSlide(reveal);
+          scaleOverflowingContent(reveal);
           // Re-initialize Mermaid when slide changes
           initializeMermaid(fullscreenRevealRef.current, false, reveal);
         });

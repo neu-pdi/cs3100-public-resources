@@ -1,0 +1,230 @@
+cards:
+  - title: "What is Testability?"
+    prompt: |
+      What does it mean for code to be testable, and why does design matter?
+    answer: |
+      Code is testable when it's **easy to write automated tests** that verify its behavior. Testability is determined by two properties:
+
+      1. **Observability**: Can we see what happened?
+      2. **Controllability**: Can we set up the test scenario?
+
+      Some systems are inherently easier to test because of **how they were designed** — testability should be a design goal from the start.
+
+  - title: "Observability"
+    prompt: |
+      What is observability in the context of testability?
+    answer: |
+      How easily we can **inspect the results** of executing some code. If we can't observe the output, we can't verify correctness.
+
+      **Low observability**: Method returns `void` and outputs to `System.out` — capturing stdout is awkward.
+
+      **High observability**: Method stores results in a list accessible via `getLogEntries()` — internal state is accessible in a controlled way.
+
+  - title: "Controllability"
+    prompt: |
+      What is controllability in the context of testability?
+    answer: |
+      How easily we can **put the system into a specific state** for testing.
+
+      **Low controllability**:
+      - Method creates its own `HttpClient` internally — can't substitute a test version
+      - Method uses `LocalTime.now()` — can't test 3 AM behavior at 2 PM
+
+      **High controllability**: Dependencies injected via constructor (e.g., `EnergyPriceApi priceApi, Clock clock`) — can inject stubs/fakes for any scenario.
+
+  - title: "Separating Infrastructure from Domain Code"
+    prompt: |
+      Why is separating infrastructure from domain code the most important principle for testability?
+    answer: |
+      - **Domain code**: Core business logic (rules, calculations, decisions)
+      - **Infrastructure code**: Everything that talks to the outside world (databases, APIs, hardware)
+
+      When mixed together, testing requires real infrastructure. When separated:
+      - Domain logic is **trivially testable** with simple unit tests
+      - Infrastructure becomes a thin layer that can be tested separately
+      - This is **information hiding** applied at the architectural level
+
+  - title: "Example: Mixed vs. Separated Concerns"
+    prompt: |
+      How does separating domain from infrastructure improve testability? (Thermostat example)
+    answer: |
+      **Mixed** (hard to test): `SmartThermostat.adjustForComfort()` contains SQL queries, business logic, AND HTTP calls in one method. Needs a real database and web service to test.
+
+      **Separated** (easy to test):
+      - `ComfortCalculator.calculateAction(currentTemp, targetTemp)` → Pure business logic, no dependencies
+      - `SmartThermostat` → Thin orchestration layer using injected dependencies
+
+      `ComfortCalculator` can be tested with simple assertions — no mocks needed.
+
+  - title: "Hexagonal Architecture (Ports and Adapters)"
+    prompt: |
+      What is Hexagonal Architecture, and what are its three layers?
+    answer: |
+      An architectural pattern (by Alistair Cockburn) that formalizes the separation of infrastructure from domain code.
+
+      **Three layers:**
+      1. **Application Core (the hexagon)**: All business logic. Knows nothing about databases, web services, or hardware.
+      2. **Ports**: Interfaces defining what the core needs from the outside world. Technology-agnostic.
+      3. **Adapters**: Implementations of ports that talk to specific external systems (database adapter, API adapter, etc.).
+
+  - title: "Ports and Adapters in Practice"
+    prompt: |
+      How do ports and adapters work in practice?
+    answer: |
+      **Port** (interface defined by domain):
+      ```java
+      public interface EnergyPricePort {
+          double getCurrentPricePerKWh();
+      }
+      ```
+
+      **Adapter** (implements for specific technology):
+      ```java
+      public class GridPriceApiAdapter implements EnergyPricePort {
+          // HTTP calls to real pricing API
+      }
+      ```
+
+      **For testing**: Substitute a simple stub:
+      ```java
+      EnergyPricePort stubPrices = () -> 0.35; // Lambda!
+      ```
+
+      The core business logic remains the same across all test types.
+
+  - title: "Hexagonal Architecture and Coupling"
+    prompt: |
+      How does Hexagonal Architecture reduce coupling?
+    answer: |
+      | Coupling Type | How Hex Arch Addresses It |
+      |---|---|
+      | **Data** | Ports pass only needed data (e.g., `double`, not `GridApiResponse`) |
+      | **Stamp** | Domain types defined by domain, not dictated by external APIs |
+      | **Control** | Adapters don't pass flags that control domain logic |
+      | **Common** | No shared global state between domain and infrastructure |
+      | **Content** | Impossible — adapters can't access domain internals |
+
+      Low coupling + high cohesion = easier to change **and** easier to test.
+
+  - title: "Good Test Suites Should Be Fast"
+    prompt: |
+      Why should test suites be fast?
+    answer: |
+      If tests take **30 minutes**, developers won't run them often. If they take **30 seconds**, developers run them after every change.
+
+      Fast feedback catches bugs earlier, when they're **cheaper to fix**.
+
+      The separation of domain and infrastructure enables this: domain tests (the majority) run in **milliseconds**, only a few integration tests touch real infrastructure.
+
+  - title: "Good Test Suites Should Be Deterministic"
+    prompt: |
+      What is a flaky test, and what causes flakiness?
+    answer: |
+      A **flaky test** sometimes passes and sometimes fails without code changes. Flaky tests erode trust in the test suite.
+
+      **Common causes:**
+      - Relying on **system time** (use injectable `Clock`)
+      - Relying on **random values** (use fixed seeds)
+      - Relying on **execution order** (each test should set up its own state)
+      - Relying on **external services** (use test doubles)
+
+  - title: "Good Test Suites Should Be Independent"
+    prompt: |
+      Why should each test be independent?
+    answer: |
+      Each test should run **in isolation**. If Test B only passes after Test A runs, you have a coupling problem.
+
+      **Bad**: Tests share `static` state:
+      ```java
+      private static DeviceRegistry registry = new DeviceRegistry();
+      ```
+
+      **Good**: Each test gets fresh state via `@BeforeEach`:
+      ```java
+      @BeforeEach void setUp() { registry = new DeviceRegistry(); }
+      ```
+
+  - title: "Good Test Suites Should Be Readable"
+    prompt: |
+      What makes tests readable?
+    answer: |
+      Tests serve as **documentation** of how code should behave. Structure them as:
+
+      - **Given** (Arrange): Set up the scenario
+      - **When** (Act): Execute the code under test
+      - **Then** (Assert): Verify the expected outcome
+
+      Test method names should describe the expected behavior:
+      `sendsAlertWhenTemperatureExceedsSafetyThreshold()`
+
+  - title: "Dependency Injection Enables Testability"
+    prompt: |
+      Why is dependency injection fundamental to testability?
+    answer: |
+      **Dependency injection** = passing dependencies into constructors rather than creating them internally.
+
+      When code depends on **interfaces** (abstractions), you can provide test implementations. When it creates **concrete classes** internally, you're stuck with whatever those classes do.
+
+      This is the Dependency Inversion Principle from Lecture 8 applied to testing: **Depend on abstractions, not concretions.**
+
+  - title: "Anti-Pattern: Static Methods and Singletons"
+    prompt: |
+      Why are static methods and singletons problematic for testability?
+    answer: |
+      They are **globally accessible**, so you can't substitute test implementations.
+
+      ```java
+      // Hard to test:
+      if (TimeUtils.isBusinessHours()) { ... } // Can't stub!
+      ```
+
+      **Fix**: Inject the dependency:
+      ```java
+      public ScheduledTask(BusinessHoursChecker hoursChecker) { ... }
+      ```
+
+      If you must use static methods (like `LocalDateTime.now()`), wrap them in an **abstraction** you control (e.g., `TimeProvider` interface).
+
+  - title: "Anti-Pattern: Private Methods That Want Testing"
+    prompt: |
+      What should you do if you feel the need to test a private method?
+    answer: |
+      It's a sign the private method is doing **complex work that deserves its own class**.
+
+      **Before**: Private `assessHealth()` method with complex logic inside `DeviceHealthChecker`
+
+      **After**: Extract to public class `DeviceHealthAssessor.assess(batteryPercent, signalStrength, minutesSinceContact)` — now easily testable with no mocks needed.
+
+      Don't test private methods directly — **extract them** into their own testable units.
+
+  - title: "Anti-Pattern: Tight Coupling Between Classes"
+    prompt: |
+      How does tight coupling hurt testability?
+    answer: |
+      If a class requires **many dependencies** just to test one behavior, it's probably doing too much.
+
+      ```java
+      // Requires 5 dependencies just to test notification formatting
+      new SubmissionProcessor(tests, linter, grader, repo, notifier);
+      ```
+
+      **Signs of the problem**: You test class A, but when it fails, the bug is in class B — coupling leaked implementation details across boundaries.
+
+  - title: "Anti-Pattern: Complex Boolean Conditions"
+    prompt: |
+      How do complex boolean conditions hurt testability, and how do you fix them?
+    answer: |
+      Complex conditions require **many test cases** to cover all branches:
+      ```java
+      if ((device.isOnline() && device.batteryLevel() > 20) ||
+          (device.isPowered() && !device.isInSleepMode()) || ...)
+      ```
+
+      **Fix**: Break into named methods:
+      ```java
+      boolean deviceCanReceiveCommands(IoTDevice device) {
+          return hasSufficientBattery(device) || hasReliablePower(device) || ...;
+      }
+      ```
+
+      Each predicate can now be **tested individually**, spreading out the testing burden.

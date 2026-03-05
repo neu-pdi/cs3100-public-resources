@@ -1,0 +1,149 @@
+cards:
+  - title: "AI Amplifies, Not Replaces, Human Capabilities"
+    prompt: |
+      Why can't AI programming agents fully replace human developers?
+    answer: |
+      - Software exists in a **complex socio-technical system** — humans struggle to define that context fully, and AI has limited context windows
+      - Software development is **creative**; AI assists but can't replace human creativity and intuition
+      - There will always be a need for **human judgment, creativity, and oversight**
+      - AI tools are constantly improving but augment rather than replace developer expertise
+
+  - title: "What Are AI Coding Agents?"
+    prompt: |
+      What are AI coding agents, and what are their two primary interaction modes?
+    answer: |
+      Specialized tools that integrate LLMs into the development environment. Examples: Cursor, GitHub Copilot, Codeium.
+
+      **Two modes:**
+      1. **Smart Tab-Complete (Autocomplete)**: Inline suggestions as you type — single lines, function bodies, or entire blocks
+      2. **Chat-Based Interfaces**: Interactive conversations for code generation, debugging, refactoring, and explanation
+
+  - title: "Coding Agents vs. Direct Model Interaction"
+    prompt: |
+      How do coding agents differ from directly chatting with an LLM (e.g., on claude.ai)?
+    answer: |
+      **Coding agents provide:**
+      - **Codebase awareness**: Automatic access to files, structure, recent edits
+      - **Language-specific context**: Understanding of file types and project configuration
+      - **Seamless integration**: Suggestions appear in-editor, applied with one keystroke
+      - **Multi-file context**: Understands relationships across files
+      - **IDE tooling integration**: Feedback loops with linters, compilers, and test runners
+
+      Direct interaction requires manually copying/pasting code and managing context.
+
+  - title: "IDE Tooling Creates Powerful Feedback Loops"
+    prompt: |
+      How does IDE integration make AI coding agents more productive?
+    answer: |
+      **Linter/Build Error Feedback:**
+      Agent generates code → IDE flags errors → agent reads errors → agent regenerates corrected code → cycle continues until it compiles
+
+      **Test-Driven Iteration:**
+      You write tests → agent generates implementation → agent runs tests → sees failures → fixes implementation → re-runs tests
+
+      This creates **rapid self-correction** based on concrete feedback, not just pattern matching.
+
+  - title: "Strengths of AI Programming Agents"
+    prompt: |
+      What are the key strengths of AI coding agents?
+    answer: |
+      - **Pattern recognition**: Recognizing and reproducing common coding patterns
+      - **Syntax knowledge**: Extensive knowledge of language syntax and libraries
+      - **Cross-domain transfer**: Applying patterns from one domain to another
+      - **Natural language understanding**: Translating requirements into code
+      - **Contextual awareness**: Generating code that fits existing patterns
+      - **Rapid prototyping**: Quick generation of boilerplate, tests, and common implementations
+
+  - title: "Limitations of AI Programming Agents"
+    prompt: |
+      What are the key limitations of AI coding agents?
+    answer: |
+      - **Context window constraints**: Can only process limited information at once
+      - **No runtime verification**: Cannot execute code without external tools
+      - **Training data cutoff**: May not know about recent APIs or language features
+      - **Limited project-specific context**: Don't automatically know team conventions or business rules
+      - **Hallucination risk**: May generate plausible-looking but incorrect code
+      - **Lack of deep understanding**: Work on surface-level patterns, not true architectural understanding
+
+  - title: "6-Step Human-AI Collaboration Workflow"
+    prompt: |
+      What is the 6-step workflow for using AI programming agents (from Google research)?
+    answer: |
+      1. **Identify**: Recognize what information AI needs (requires domain knowledge)
+      2. **Engage**: Craft effective prompts with context and desired outcomes
+      3. **Evaluate**: Critically assess AI outputs against expected results
+      4. **Calibrate**: Steer AI toward desired outcomes through feedback
+      5. **Tweak**: Refine AI-generated artifacts based on standards
+      6. **Finalize**: Document decisions and rationale
+
+  - title: "Task Familiarity Determines AI Appropriateness"
+    prompt: |
+      How does task familiarity determine when to use AI coding agents?
+    answer: |
+      - **Use AI when**: You have sufficient domain knowledge to **evaluate** outputs
+      - **Avoid AI when**: You lack the expertise to **assess correctness and quality**
+      - **Learning consideration**: Using AI without foundational knowledge leads to **deskilling**
+
+      **When to STOP using AI:**
+      - You can't evaluate the output → stop, learn the domain first
+      - You can evaluate but can't calibrate the AI after repeated attempts → change approach
+
+  - title: "The 'Vibe Coding' Trap"
+    prompt: |
+      What is "vibe coding," and why does it lead to productivity collapse?
+    answer: |
+      **Vibe coding**: Using AI where you never evaluate the *code* — only the *execution*. Ask AI → run app → describe observed behavior → repeat.
+
+      **Why it collapses:**
+      - **No troubleshooting capability**: Can't diagnose issues yourself
+      - **Inability to provide effective feedback**: Can't guide the AI to better solutions
+      - **Brittle development process**: Small changes cause cascading failures
+      - **Dependency spiral**: Increasing reliance with decreasing understanding
+
+      You must be able to evaluate the **code itself**, not just its execution.
+
+  - title: "Learning Debt and the Learning Tax"
+    prompt: |
+      What is "learning debt," and how does the "learning tax" combat it?
+    answer: |
+      **Learning debt**: Gaps in fundamental understanding masked by functional AI-generated code, leading to long-term productivity collapse.
+
+      **Learning tax**: Deliberately choosing to implement certain components **manually**, even when AI could generate them instantly. This builds the expertise that makes you effective at evaluating and guiding AI.
+
+      Example: When implementing serialization for many classes, do the first few manually, then use AI for the rest.
+
+  - title: "Context Management for AI Coding Agents"
+    prompt: |
+      Why is context management important when using AI coding agents?
+    answer: |
+      - **Automatic context discovery** (file search, imports, tests) handles *implementation-level* tasks well
+      - **Big-picture context** (architecture, design rationale, requirements priorities) requires **human management**
+      - Design decisions aren't in the code — the code shows *what*, not *why*
+      - Context windows are limited — you must **curate** what matters most
+
+      Maintain design artifacts (PLAN.md, DESIGN.md, REQUIREMENTS.md) to capture the context AI can't discover automatically.
+
+  - title: "Common Design Artifacts to Maintain"
+    prompt: |
+      What design artifacts should you maintain when working with AI coding agents?
+    answer: |
+      1. **PLAN.md**: High-level project plan, requirements, user stories, implementation phases
+      2. **DESIGN.md / MODEL.md**: Data models, architecture decisions, design patterns, alternatives considered
+      3. **REQUIREMENTS.md**: Detailed functional/non-functional requirements and acceptance criteria
+      4. **DECISIONS.md**: Key architectural and design decisions with rationale
+
+      These capture **big-picture context** that code search can't find, enabling effective AI collaboration.
+
+  - title: "Long-Term Considerations for AI-Generated Code"
+    prompt: |
+      What long-term maintenance concerns arise from AI-generated code?
+    answer: |
+      **Training data as technical debt:**
+      - AI suggestions may embed deprecated patterns or security vulnerabilities
+      - Homogenized code styles may hide widespread bugs
+
+      **Maintainability:**
+      - Future developers may not understand *why* patterns were chosen
+      - AI code that doesn't follow team conventions increases maintenance burden
+
+      **Best practice:** Treat AI-generated code with the same scrutiny as code from an **unfamiliar contributor**. Review for maintainability, not just correctness.

@@ -69,9 +69,11 @@ Detailed rubrics will be published with each assignment.
 
 | Assignment | Points |
 |------------|--------|
-| GA1: GUI | 60 |
-| GA2: OCR Integration | 70 |
-| GA3: Final Integration | 70 |
+| Team Charter | 20 |
+| GA0: Design Sprint | 30 |
+| GA1: Core Features | 50 |
+| GA2: Feature Buffet | 50 |
+| GA3: Final Submission | 50 |
 
 **Group Assignment Grading:** Group assignments are graded as a team, but each team member must demonstrate minimum weekly contributions to receive the team's full score. Each week during a group assignment, you are expected to:
 
@@ -255,8 +257,8 @@ When AI generates a snippet of code, someone still has to decide whether it solv
 - **Design for change** ([Lecture 7](/lecture-notes/l7-design-for-change)): Understanding coupling, cohesion, and information hiding—the principles that determine whether code can evolve gracefully or becomes brittle
 - **Requirements and stakeholder analysis** ([Lecture 9](/lecture-notes/l9-requirements)): Learning to discover what people actually need, navigate conflicting interests, and recognize hidden assumptions
 - **Testing and validation** ([Lecture 15](/lecture-notes/l15-testing)): Developing the judgment to know what to test and why, not just how to write test syntax
-- **Teamwork and collaboration** ([Lecture 17](/lecture-notes/l17-teams)): Practicing code review, documentation, and communication—skills that become more important, not less, as code generation accelerates
-- **Architecture and quality attributes** ([Lecture 19](/lecture-notes/l19-architecture-design)): Reasoning about tradeoffs among testability, performance, scalability, security, and maintainability
+- **Teamwork and collaboration** ([Lecture 22](/lecture-notes/l22-teams)): Practicing code review, documentation, and communication—skills that become more important, not less, as code generation accelerates
+- **Architecture and quality attributes** ([Lecture 18](/lecture-notes/l18-architecture-design)): Reasoning about tradeoffs among testability, performance, scalability, security, and maintainability
 - **Sustainability** ([Lecture 36](/lecture-notes/l36-sustainability)): Understanding the long-term impacts of design decisions on the environment, economy, and society
 
 When code can be produced faster, the bottleneck shifts to integration, validation, and maintenance. Evaluating whether generated code is correct, secure, performant, and aligned with your design goals requires deep understanding of what good code looks like—understanding that only comes from practice. Leveraging these insights, we introduce AI coding assistants mid-way through the course, providing you with the ability to quickly generate larger codebases, forcing you to face the challenges of integration, validation, and maintenance over the course of a single semester.

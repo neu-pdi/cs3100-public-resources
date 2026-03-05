@@ -8,4 +8,7 @@ These are the lecture slides for Prof. Spertus' sections. Lecture slides complem
 
 ![xckd 1755](xkcd-old-days1-excerpt.png)
 
-See also: [Lecture Slides](/lecture-slides) for the general lecture slides.
+See also:
+
+* [Lecture Slides](/lecture-slides) for the general lecture slides
+* [The Git Parable](https://docs.google.com/presentation/d/1gBgHyxhMDAxe7JY9paasJ84Y723rgQnwEOLZ7KhOpk0/edit?usp=sharing), which Ellen hopes to present in class
