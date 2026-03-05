@@ -19,7 +19,7 @@ interface PollSlideProps {
  *
  * @param choices - Array of answer choices (auto-labeled A, B, C, etc.)
  * @param image - Optional image path (relative to static folder)
- * @param imageAlt - Alt text for the optional image
+ * @param imageAlt - Optional alt text for image (default: "Poll image")
  * @param code - Optional code snippet to display
  * @param language - Language for code syntax highlighting (default: "java")
  * @param username - Poll Everywhere username (e.g., "espertus"); If omitted, logo is shown
