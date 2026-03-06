@@ -1,0 +1,293 @@
+cards:
+# Generics
+  - title: "Generic Type Declaration"
+    prompt: |
+      How do you declare a generic interface or class in Java?
+    answer: |
+      Use angle brackets with a type parameter:
+
+      ```
+      public interface List<ElementType> {
+          void add(ElementType o);
+          ElementType get(int index);
+      }
+      ```
+
+      - `<ElementType>` is called a *type parameter*
+      - When using the type, specify the actual type: `List<Light>`
+      - This provides compile-time type safety
+
+  - title: "Using Generic Types"
+    prompt: |
+      How do you create an instance of a generic type like `ArrayList`?
+    answer: |
+      Specify the type parameter in angle brackets:
+
+      ```
+      List<Light> lights = new ArrayList<Light>();
+      lights.add(new TunableWhiteLight(2700));
+      lights.add(new Fan()); // Compile-time error!
+      ```
+
+      - The compiler enforces type safety
+      - Errors are caught at compile time, not runtime
+
+  - title: "Raw Types"
+    prompt: |
+      What is a raw type in Java, and why should you avoid it?
+    answer: |
+      A raw type is using a generic class without specifying a type parameter:
+
+      ```
+      List list = new ArrayList();  // Raw type - avoid!
+      list.add(new TunableWhiteLight(2700));
+      list.add(new Fan());  // No compile error, but dangerous
+      ```
+
+      - Raw types bypass type safety
+      - Can cause `ClassCastException` at runtime
+      - **Always specify the type parameter**
+
+  - title: "Type Erasure"
+    prompt: |
+      What is type erasure in Java generics?
+    answer: |
+      Generic type information is **erased at runtime**:
+
+      ```
+      List<Light> list = new ArrayList<Light>();
+      System.out.println(list instanceof List<Light>); // Won't compile
+      ```
+
+      - At runtime, `List<Light>` becomes just `List`
+      - Cannot use `instanceof` with parameterized types
+      - This is for backwards compatibility with pre-Java 5 code
+
+# Collections API
+  - title: "Collection Interface"
+    prompt: |
+      What are the core methods defined by the `Collection` interface?
+    answer: |
+      ```
+      public interface Collection<E> extends Iterable<E> {
+          boolean add(E e);
+          boolean remove(Object o);
+          int size();
+          boolean isEmpty();
+          boolean contains(Object o);
+      }
+      ```
+
+      - `Collection` extends `Iterable`, so any collection works with for-each loops
+      - Common subtypes: `List`, `Set`
+
+  - title: "List Interface"
+    prompt: |
+      What distinguishes a `List` from other collections in Java?
+    answer: |
+      A `List` is an **ordered** collection:
+
+      - Elements have a defined order (by index)
+      - Can have **duplicate** elements
+      - Provides index-based access: `get(int index)`
+
+      ```
+      List<String> names = new ArrayList<>();
+      names.add("Alice");  // Index 0
+      names.add("Bob");    // Index 1
+      names.add("Alice");  // Index 2 - duplicates allowed
+      String first = names.get(0);  // "Alice"
+      ```
+
+
+  - title: "Set Interface"
+    prompt: |
+      What distinguishes a `Set` from a `List` in Java?
+    answer: |
+      A `Set` is an **unordered** collection of **unique** elements:
+
+      - No defined order
+      - **No duplicates** - adding an existing element has no effect
+
+      ```
+      Set<String> names = new HashSet<>();
+      names.add("Alice");
+      names.add("Bob");
+      names.add("Alice");  // No effect - already in set
+      System.out.println(names.size());  // 2
+      ```
+
+      Most common implementation: `HashSet`
+
+  - title: "Map Interface"
+    prompt: |
+      What is a `Map` in Java and how do you use it?
+    answer: |
+      A `Map` stores **key-value pairs** (like Python dictionaries):
+
+      ```
+      Map<String, Light> devices = new HashMap<>();
+      devices.put("living-room", new TunableWhiteLight(2700));
+      devices.put("bedroom", new DimmableLight(100));
+
+      Light light = devices.get("living-room");
+      ```
+
+      - Keys must be unique
+      - Each key maps to exactly one value
+      - Most common implementation: `HashMap`
+
+# Primitive Wrapper Types
+  - title: "Primitive Wrapper Types"
+    prompt: |
+      What are primitive wrapper types and why do they exist?
+    answer: |
+      Wrapper types are **objects** for primitive types:
+
+      | Primitive | Wrapper |
+      |-----------|---------|
+      | `int` | `Integer` |
+      | `double` | `Double` |
+      | `boolean` | `Boolean` |
+      | `char` | `Character` |
+
+      Needed because generics only work with reference types:
+      ```
+      List<int> nums;      // Won't compile!
+      List<Integer> nums;  // Works
+      ```
+
+      **Prefer primitives** when possible - they're faster.
+
+  - title: "Autoboxing and Unboxing"
+    prompt: |
+      What is autoboxing and unboxing in Java?
+    answer: |
+      Java automatically converts between primitives and wrappers:
+
+      ```
+      List<Integer> list = new ArrayList<>();
+      list.add(1);           // Autoboxing: int -> Integer
+      int x = list.get(0);   // Unboxing: Integer -> int
+      ```
+
+      **Warning**: The `==` operator behaves differently:
+      ```
+      int a = 1000, b = 1000;
+      System.out.println(a == b);  // true
+
+      Integer x = 1000, y = 1000;
+      System.out.println(x == y);  // false! (different objects)
+      ```
+
+# I/O Streams
+  - title: "Standard Streams"
+    prompt: |
+      What are the three standard streams in Java?
+    answer: |
+      - `System.in` - Standard input (keyboard by default)
+      - `System.out` - Standard output (console)
+      - `System.err` - Standard error (console, for errors)
+
+      ```
+      System.out.println("Normal output");
+      System.err.println("Error message");
+      ```
+
+      These are inherited from Unix conventions.
+
+  - title: "InputStream and OutputStream"
+    prompt: |
+      What do `InputStream` and `OutputStream` represent?
+    answer: |
+      Abstract classes for reading/writing **bytes**:
+
+      ```
+      // InputStream methods
+      int read();              // Read one byte
+      int read(byte[] b);      // Read into array
+
+      // OutputStream methods
+      void write(int b);       // Write one byte
+      void write(byte[] b);    // Write from array
+      ```
+
+      Both implement `Closeable` - always close when done!
+
+      Concrete implementations: `FileInputStream`, `FileOutputStream`
+
+  - title: "PrintStream"
+    prompt: |
+      What is `PrintStream` and how is it used?
+    answer: |
+      `PrintStream` adds formatted output methods to `OutputStream`:
+
+      ```
+      PrintStream out = new PrintStream("output.txt");
+      out.print("Hello");
+      out.println(" World");
+      out.close();
+      ```
+
+      - `System.out` and `System.err` are `PrintStream` instances
+      - Can wrap any `OutputStream`
+      - Provides `print()` and `println()` for various types
+
+  - title: "Scanner Class"
+    prompt: |
+      How do you use `Scanner` to read input in Java?
+    answer: |
+      `Scanner` parses structured input from various sources:
+
+      ```
+      Scanner scanner = new Scanner(System.in);  // From keyboard
+      Scanner scanner = new Scanner(new File("input.txt"));  // From file
+
+      while (scanner.hasNext()) {
+          String line = scanner.nextLine();
+          int num = scanner.nextInt();
+      }
+      scanner.close();
+      ```
+
+      Key methods: `hasNext()`, `next()`, `nextLine()`, `nextInt()`, `nextDouble()`
+
+  - title: "Try-With-Resources"
+    prompt: |
+      What is try-with-resources and why use it?
+    answer: |
+      Automatically closes resources when done:
+
+      ```
+      try (Scanner scanner = new Scanner(new File("input.txt"))) {
+          while (scanner.hasNext()) {
+              System.out.println(scanner.nextLine());
+          }
+      } catch (FileNotFoundException e) {
+          System.err.println("Error: " + e.getMessage());
+      }
+      // scanner.close() called automatically!
+      ```
+
+      - Resource must implement `Closeable` or `AutoCloseable`
+      - Ensures cleanup even if an exception occurs
+      - Much cleaner than manual `try-finally`
+
+# Method Overloading
+  - title: "Method Overloading"
+    prompt: |
+      What is method overloading in Java?
+    answer: |
+      Multiple methods with the **same name** but **different parameters**:
+
+      ```
+      public class InputStream {
+          int read();                          // No args
+          int read(byte[] b);                  // byte array
+          int read(byte[] b, int off, int len); // array + range
+      }
+      ```
+
+      - Methods distinguished by parameter types/count
+      - Compiler chooses which to call at **compile time**
+      - Return type alone doesn't distinguish overloads

@@ -1,0 +1,312 @@
+cards:
+# Specification Principles
+  - title: "Purpose of Method Specifications"
+    prompt: |
+      Why are method specifications important for program modularity?
+    answer: |
+      Specifications enable **modularity** by letting developers understand behavior without reading implementation.
+
+      - Humans can only hold ~7 items in short-term memory (Miller's Law)
+      - Good specs let us treat methods as "chunks" we can reason about
+      - A developer should quickly understand what a method does from its spec alone
+
+  - title: "Three Criteria for Good Specifications"
+    prompt: |
+      What are the three criteria for evaluating a specification?
+    answer: |
+      1. **Restrictiveness** - Rules out incorrect implementations
+      2. **Generality** - Doesn't rule out correct implementations
+      3. **Clarity** - Easy to understand correctly
+
+      A good spec balances all three: restrictive enough to prevent bugs, general enough to allow flexibility, clear enough to avoid misunderstanding.
+
+# Restrictiveness
+  - title: "Restrictiveness in Specifications"
+    prompt: |
+      What does it mean for a specification to be restrictive?
+    answer: |
+      A restrictive spec **rules out unacceptable implementations** by considering all possible inputs.
+
+      **Bad (not restrictive):**
+      ```
+      /** Returns the sum of elements in arr. */
+      public int sum(int[] arr)
+      ```
+      What if `arr` is null? Behavior is undefined!
+
+      **Better (restrictive):**
+      ```
+      /** Returns the sum of elements in arr.
+       * @throws NullPointerException if arr is null
+       */
+      public int sum(int[] arr)
+      ```
+
+  - title: "Undefined Behavior Problem"
+    prompt: |
+      Why is undefined behavior in specifications dangerous?
+    answer: |
+      When behavior is undefined, the method could do **anything**:
+      - Throw an exception
+      - Return a wrong answer
+      - Crash the program
+      - Corrupt data silently
+
+      All of these "satisfy" the spec because the spec is silent!
+
+      **Fix:** Explicitly specify behavior for all edge cases.
+
+# Generality
+  - title: "Generality in Specifications"
+    prompt: |
+      What does it mean for a specification to be general?
+    answer: |
+      A general spec **doesn't rule out correct implementations**.
+
+      **Too specific (operational):**
+      ```
+      /** Examines each element in order.
+       * Returns index of first match. */
+      public int search(int[] arr, int target)
+      ```
+
+      **More general (definitional):**
+      ```
+      /** Returns an index containing target.
+       * @throws NoSuchElementException if not found */
+      public int search(int[] arr, int target)
+      ```
+
+      The second allows binary search, parallel search, etc.
+
+  - title: "Definitional vs Operational Specs"
+    prompt: |
+      What's the difference between definitional and operational specifications?
+    answer: |
+      **Operational** - Describes *how* to implement:
+      > "Examine each element in order, return first match"
+
+      **Definitional** - Describes *what* the result should be:
+      > "Returns an index containing the target"
+
+      **Prefer definitional specs** - they're more general and allow implementation flexibility.
+
+# Clarity
+  - title: "Clarity in Specifications"
+    prompt: |
+      What makes a specification clear?
+    answer: |
+      Clear specs are:
+      - **Concise** - Not unnecessarily long
+      - **Non-redundant** - Don't repeat the obvious
+      - **Unambiguous** - Can't be misinterpreted
+
+      **Too redundant:**
+      ```
+      /** Returns the sum of elements.
+       * The sum is computed by adding each element.
+       * It is the total of all elements. */
+      ```
+
+      **Appropriate redundancy** (when helpful):
+      ```
+      /** Computes present value of an income stream.
+       * Present value is the amount that, if invested
+       * at the interest rate, would grow to the total. */
+      ```
+
+  - title: "Specification Debt"
+    prompt: |
+      What is "specification debt" and why does it matter?
+    answer: |
+      **Specification debt** occurs when ambiguous specs delegate decisions to implementers who don't realize they're making consequential choices.
+
+      Example: "Process submissions promptly"
+      - One dev implements alphabetical order
+      - Students named "Zhang" wait longer than "Adams"
+
+      **Cost to fix ambiguity:**
+      - Spec phase: $100
+      - Dev phase: $1,000
+      - Production: $100,000
+
+      Ask: "Could different interpretations lead to different outcomes for different groups?"
+
+# Type Annotations
+  - title: "Type Annotations for Nullness"
+    prompt: |
+      How do type annotations help with null safety in Java?
+    answer: |
+      Type annotations express invariants that the compiler enforces:
+
+      ```
+      public int sum(@NonNull int[] arr) {
+          // Compiler ensures arr is never null
+      }
+      ```
+
+      - Errors caught at **compile time**, not runtime
+      - More reliable than documentation comments
+      - JSpecify provides standard annotations: `@NonNull`, `@Nullable`
+
+  - title: "@NullMarked Package Annotation"
+    prompt: |
+      What does `@NullMarked` do and how do you use it?
+    answer: |
+      `@NullMarked` makes all types **non-null by default** in a package.
+
+      In `package-info.java`:
+      ```
+      @NullMarked
+      package edu.neu.cs3100.myproject;
+
+      import org.jspecify.annotations.NullMarked;
+      ```
+
+      Then only annotate what *can* be null:
+      ```
+      // arr assumed non-null (default)
+      public int sum(int[] arr) { ... }
+
+      // prefix explicitly nullable
+      public String format(@Nullable String prefix, String value)
+      ```
+
+  - title: "Objects.requireNonNull"
+    prompt: |
+      When and why should you use `Objects.requireNonNull`?
+    answer: |
+      Use when you **know** a value is non-null but the checker can't verify it:
+
+      ```
+      // List.of() never returns null, but isn't annotated
+      List<String> names = Objects.requireNonNull(List.of(name));
+      ```
+
+      **Two purposes:**
+      1. Tells nullness checker "I guarantee this is non-null"
+      2. Fails fast with clear `NullPointerException` if wrong
+
+      **Don't use** to silence warnings you don't understand or for methods that genuinely return null (like `Map.get()`).
+
+# Object Methods
+  - title: "toString Method"
+    prompt: |
+      What is the contract for `toString` and why override it?
+    answer: |
+      **Contract:** Return a concise, informative, human-readable representation.
+
+      **Default:** `ClassName@hashcode` (e.g., `DimmableLight@abdfd`)
+
+      **Override it!** Called automatically by `println`, `printf`, `assert`.
+
+      ```
+      @Override
+      public String toString() {
+          return "DimmableLight(color=" + color + "K, brightness="
+              + brightness + ", on=" + on + ")";
+      }
+      ```
+
+      Output can change over time - stability not required.
+
+  - title: "equals Method Contract"
+    prompt: |
+      What are the requirements for implementing `equals`?
+    answer: |
+      `equals` must be an **equivalence relation**:
+
+      - **Reflexive:** `x.equals(x)` is true
+      - **Symmetric:** `x.equals(y)` iff `y.equals(x)`
+      - **Transitive:** if `x.equals(y)` and `y.equals(z)`, then `x.equals(z)`
+      - **Consistent:** same result if objects unchanged
+      - **Null-safe:** `x.equals(null)` returns false (not exception)
+
+  - title: "equals Implementation Recipe"
+    prompt: |
+      How do you properly implement `equals` in Java?
+    answer: |
+      ```
+      @Override
+      public boolean equals(@Nullable Object obj) {
+          // 1. Same reference? (optimization)
+          if (this == obj) return true;
+
+          // 2. Correct type? (includes null check)
+          if (!(obj instanceof DimmableLight other)) return false;
+
+          // 3. Compare significant fields
+          return this.color == other.color
+              && this.brightness == other.brightness
+              && this.on == other.on;
+      }
+      ```
+
+      Note: Parameter must be `@Nullable` because `equals(null)` must return false.
+
+  - title: "hashCode Contract"
+    prompt: |
+      What is the contract for `hashCode` and why must you override it with `equals`?
+    answer: |
+      **Contract:**
+      - Consistent during execution (same object → same hash)
+      - **If `equals` returns true, `hashCode` must be equal**
+      - Unequal objects *may* have same hash (but shouldn't for performance)
+
+      **Why override both?** `HashMap` and `HashSet` use `hashCode` to find the bucket, then `equals` to find the exact match.
+
+      If equal objects have different hashes, one "disappears" - the search looks in the wrong bucket!
+
+  - title: "hashCode Implementation"
+    prompt: |
+      How do you implement `hashCode`?
+    answer: |
+      Recipe:
+      1. Start with hash of first significant field
+      2. Combine hashes of all fields used in `equals`
+      3. Use bitwise operations to combine
+
+      ```
+      @Override
+      public int hashCode() {
+          int result = Integer.hashCode(color);
+          result = 31 * result + Integer.hashCode(brightness);
+          result = 31 * result + Boolean.hashCode(on);
+          return result;
+      }
+      ```
+
+      Or use: `Objects.hash(color, brightness, on)`
+
+  - title: "Comparable Interface"
+    prompt: |
+      What does `Comparable` do and when should you implement it?
+    answer: |
+      `Comparable<T>` defines natural ordering for a type.
+
+      ```
+      public int compareTo(T other)
+      ```
+
+      Returns:
+      - **Negative** if `this < other`
+      - **Zero** if `this == other`
+      - **Positive** if `this > other`
+
+      **Implement when** your type has an obvious natural ordering.
+
+      Enables use with `Collections.sort()`, `TreeSet`, `TreeMap`, etc.
+
+  - title: "compareTo Contract"
+    prompt: |
+      What are the requirements for implementing `compareTo`?
+    answer: |
+      - **Reversible:** `sgn(x.compareTo(y)) == -sgn(y.compareTo(x))`
+      - **Transitive:** if `x > y` and `y > z`, then `x > z`
+      - **Consistent with equals:** if `x.equals(y)`, then `x.compareTo(y) == 0`
+
+      **Exception behavior:**
+      - `null` → throws `NullPointerException`
+      - Wrong type → throws `ClassCastException`
+
+      Unlike `equals`, `compareTo` throws on null rather than returning false.

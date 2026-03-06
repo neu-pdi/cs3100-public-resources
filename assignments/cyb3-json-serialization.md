@@ -5,6 +5,8 @@ image: /img/assignments/web/a3.png
 ---
 
 ## Update log
+- 2/11/2026: 24 hour extension on due date due to large number of students who did not activate GitHub Student Pack before Monday
+- 2/10/2026: Removed the line "You only receive implementation points if you also have tests that detect bugs in that component" - we relaxed this after HW1/HW2
 - 2/8/2026: Note error in handout test `MarkdownExporterTest.java` line 57: `assertTrue(markdown.contains("- 2 cup flour"));` should be `assertTrue(markdown.contains("- 2 cups flour"));`
 
 ## Overview
@@ -23,7 +25,7 @@ system that's easier to test, maintain, and extend.
 serialization work includes plenty of design decisions and boilerplate code—perfect for practicing
 effective AI collaboration.
 
-**Due:** Thursday, February 12, 2026 at 11:59 PM Boston Time
+**Due:** Thursday, February 13, 2026 at 11:59 PM Boston Time
 
 **Prerequisites:** This assignment builds on the A2 sample implementation (provided). You should be
 familiar with `Recipe`, `Quantity`, `Ingredient`, and the conversion system from Assignments 1
@@ -567,35 +569,35 @@ classDiagram
     %% Provided interface hierarchy for collections
     class RecipeCollection {
         <<interface, provided>>
-        +getId() String
-        +getTitle() String
-        +getSourceType() SourceType
-        +getRecipes() List~Recipe~
-        +findRecipeById(String) Optional~Recipe~
-        +containsRecipe(String) boolean
-        +addRecipe(Recipe) RecipeCollection
-        +removeRecipe(String) RecipeCollection
+        +getId() String*
+        +getTitle() String*
+        +getSourceType() SourceType*
+        +getRecipes() List~Recipe~*
+        +findRecipeById(String) Optional~Recipe~*
+        +containsRecipe(String) boolean*
+        +addRecipe(Recipe) RecipeCollection*
+        +removeRecipe(String) RecipeCollection*
     }
 
     class Cookbook {
         <<interface, provided>>
-        +getAuthor() Optional~String~
-        +getIsbn() Optional~String~
-        +getPublisher() Optional~String~
-        +getPublicationYear() OptionalInt
+        +getAuthor() Optional~String~*
+        +getIsbn() Optional~String~*
+        +getPublisher() Optional~String~*
+        +getPublicationYear() OptionalInt*
     }
 
     class PersonalCollection {
         <<interface, provided>>
-        +getDescription() Optional~String~
-        +getNotes() Optional~String~
+        +getDescription() Optional~String~*
+        +getNotes() Optional~String~*
     }
 
     class WebCollection {
         <<interface, provided>>
-        +getSourceUrl() URI
-        +getDateAccessed() Optional~LocalDate~
-        +getSiteName() Optional~String~
+        +getSourceUrl() URI*
+        +getDateAccessed() Optional~LocalDate~*
+        +getSiteName() Optional~String~*
     }
 
     class SourceType {
@@ -621,14 +623,14 @@ classDiagram
 
     class UserLibrary {
         <<interface, provided>>
-        +getCollections() List~RecipeCollection~
-        +addCollection(RecipeCollection) UserLibrary
-        +removeCollection(String) UserLibrary
-        +findRecipesByTitle(String) List~Recipe~
-        +findCollectionById(String) Optional~RecipeCollection~
-        +findCollectionByTitle(String) Optional~RecipeCollection~
-        +findAllCollectionsByTitle(String) List~RecipeCollection~
-        +findRecipeById(String) Optional~Recipe~
+        +getCollections() List~RecipeCollection~*
+        +addCollection(RecipeCollection) UserLibrary*
+        +removeCollection(String) UserLibrary*
+        +findRecipesByTitle(String) List~Recipe~*
+        +findCollectionById(String) Optional~RecipeCollection~*
+        +findCollectionByTitle(String) Optional~RecipeCollection~*
+        +findAllCollectionsByTitle(String) List~RecipeCollection~*
+        +findRecipeById(String) Optional~Recipe~*
     }
 
     class UserLibraryImpl {
@@ -638,20 +640,20 @@ classDiagram
     %% Provided repository interfaces
     class RecipeRepository {
         <<interface, provided>>
-        +save(Recipe recipe) void
-        +findById(String id) Optional~Recipe~
-        +findByTitle(String title) Optional~Recipe~
-        +findAll() List~Recipe~
-        +delete(String id) void
+        +save(Recipe recipe) void*
+        +findById(String id) Optional~Recipe~*
+        +findByTitle(String title) Optional~Recipe~*
+        +findAll() List~Recipe~*
+        +delete(String id) void*
     }
 
     class RecipeCollectionRepository {
         <<interface, provided>>
-        +save(RecipeCollection collection) void
-        +findById(String id) Optional~RecipeCollection~
-        +findByTitle(String title) Optional~RecipeCollection~
-        +findAll() List~RecipeCollection~
-        +delete(String id) void
+        +save(RecipeCollection collection) void*
+        +findById(String id) Optional~RecipeCollection~*
+        +findByTitle(String title) Optional~RecipeCollection~*
+        +findAll() List~RecipeCollection~*
+        +delete(String id) void*
     }
 
     %% Student implementations
@@ -700,14 +702,14 @@ classDiagram
     style Ingredient fill:#e0e0e0,stroke:#999
     style Quantity fill:#e0e0e0,stroke:#999
 
-    style RecipeCollection fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
-    style Cookbook fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
-    style PersonalCollection fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
-    style WebCollection fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
-    style RecipeRepository fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
-    style RecipeCollectionRepository fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
-    style SourceType fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
-    style UserLibrary fill:#2d4a5a,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style RecipeCollection fill:#90D5FF,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style Cookbook fill:#90D5FF,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style PersonalCollection fill:#90D5FF,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style WebCollection fill:#90D5FF,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style RecipeRepository fill:#90D5FF,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style RecipeCollectionRepository fill:#90D5FF,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style SourceType fill:#90D5FF,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
+    style UserLibrary fill:#90D5FF,stroke:#4ac,stroke-width:2px,stroke-dasharray: 5 5
 
     style CookbookImpl fill:#d4edda,stroke:#28a745
     style PersonalCollectionImpl fill:#fff3cd,stroke:#856404
@@ -1112,7 +1114,7 @@ _Serves: 8 whole_
 
 ## Ingredients
 
-- 2 cup flour
+- 2 cups flour
 - 1 cup sugar
 
 ## Instructions
@@ -1353,8 +1355,6 @@ Your submission should demonstrate:
 
 ## Grading Rubric
 
-_[To be finalized after API review]_
-
 ### Automated Grading (76 points)
 
 #### Implementation Correctness (40 points)
@@ -1386,7 +1386,6 @@ Your tests are evaluated using mutation testing as in the previous assignments:
 
 **Notes:**
 
-- You only receive implementation points if you also have tests that detect bugs in that component.
 - `MarkdownExporterTest.java` is an excellent task for AI assistance—the format is precisely
   specified. See the AI Workflow Guide for suggested prompts.
 
