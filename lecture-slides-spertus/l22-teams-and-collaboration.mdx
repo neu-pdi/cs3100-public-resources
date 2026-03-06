@@ -173,6 +173,7 @@ Share my experiences
 * Now it's your turn. Your confession doesn't have to be true.
 </div>
 
+<br/><br/><br/>
 <div style={{ fontSize: '.8em' }}>
 Credit for exercise: Prof. Judy Goldsmith, University of Kentucky
 </div>
@@ -322,7 +323,7 @@ Autonomous Vehicles require:
 
 <Slide>
 
-## Estimated Employee Counts for Single Products
+## Estimated Employee Counts for Single Product Families
 
 | Product/Company | Employees |
 |----------------|-----------|
@@ -336,7 +337,7 @@ Autonomous Vehicles require:
 <aside className="notes">
 - Even companies/divisions known for a single product have thousands of employees.
 - About a third are engineers.
-- Of course, companies are divided into teams.
+→ Of course, companies are divided into teams, which leads us to...
 </aside>
 
 </Slide>
@@ -352,10 +353,11 @@ Autonomous Vehicles require:
     />
   Fred Brooks managed the development of IBM's System/360 computers and
   wrote <em>The Mythical Man-Month</em> to share how hard it is to manage
-  large software projects. He later won the Turing Award.
+  large software projects.
 
 <aside className="notes">
-- Next slide will ask students to guess why Brooks' Law holds.
+- Brooks later won the Turing Award.
+→ What do you think is the reason behind the law?
 </aside>
 
 </Slide>
@@ -384,12 +386,7 @@ Poll: Why do you think adding staff to a late software project makes it later?
   width={800}
   />
 </div>
-<div className="fragment">
-<Img src="/img/lectures/web/l22-dilbert-man-days.jpg"
-  alt="Dilbert comic strip: Boss asks 'How long will your project take if I add two people?' Engineer responds 'Add one month for training, one month for extra complexity, and one month to deal with their drama.' Boss says 'But after all that...' Engineer finishes 'They'll be as useful as this meeting.'"
-  width={800}
-    />
-</div>
+
 </Slide>
 
 <Slide>
@@ -416,7 +413,7 @@ two large pizzas.
 - This is why Brooks' Law holds: new team members need to be brought up to speed
 - Everyone spends more time coordinating and less time coding
 - Important to plan upfront how to structure a team
-- Transition: This is why we need communication mechanisms that scale better
+→ This is why we need communication mechanisms that scale better
 </aside>
 
 </Slide>
@@ -425,26 +422,31 @@ two large pizzas.
 
 ## Scalable Knowledge Sharing
 
+<div className='fragment'>
 **One-to-one** (doesn't scale):
 - Mentorship sessions
 - Hallway conversations
 - Pair programming
 - Direct messages
+</div>
 
+<div className='fragment'>
 **One-to-many** (scales better):
 - Code review (synchronous, but knowledge spreads)
 - Q&A forums and mailing lists (asynchronous, searchable)
+</div>
 
+<div className='fragment'>
 **One-to-many, persistent** (scales best):
 - Documentation and wikis
 - Recorded tech talks
 - Blog posts and tutorials
 - Well-commented code
-
+</div>
 <aside className="notes">
 - The key is choosing communication methods that don't grow quadratically with team size
 - Persistent methods are best because they can be referenced repeatedly
-- Transition: So how do we apply this principle?
+→ So how do we apply this principle?
 </aside>
 
 </Slide>
@@ -452,7 +454,6 @@ two large pizzas.
 <Slide>
 
 ## Write It Down
-
 
 Developers see approximately a **50% productivity boost** when documentation is up-to-date, detailed, and available in multiple formats.
 
@@ -476,6 +477,36 @@ Good documentation isn't just nice to have—it's a force multiplier for the ent
 {/* ============================================ */}
 
 <Slide>
+
+## The Hard Part
+
+<QuoteSlide
+ quote="Engineering is easy. People are hard."
+ author="Bill Coughran, former SVP of Engineering at Google"
+ credit="Quote source: Debugging Teams (Introduction)"
+ imageSrc="/img/lectures/web/l22-debugging-teams.jpg"
+ imageAlt="Cover of the book 'Debugging Teams: Better Production Through Collaboration' by Brian Fitzpatrick and Ben Collins-Sussman"
+/>
+
+</Slide>
+
+<Slide>
+
+## Poll: What characteristics would you like groupmates to have?
+
+<PollSlide />
+
+Answers should be one or two words for a word cloud.
+
+<aside className="notes">
+Let students know when groups will be announced.
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Tuckman's Stages of Team Formation
 <Img
   src="/img/lectures/web/l22-team-formation.jpg"
   prompt="Concept: 'Tuckman's Stages of Team Formation'
@@ -504,7 +535,6 @@ VISUAL FLOW:
 
 Bottom text:
 'Conflict isn't failure - it's the path to high performance'
-Or: 'Every great team starts as strangers'
 
 Style: Retro 8-bit pixel art with clean lines and vibrant colors. Similar aesthetic to classic educational games or early computer graphics. Clear emotional progression through color and body language."
   alt="Four-panel pixel art illustration showing Tuckman's stages of team formation. Stage 1 - Forming (blue-gray tones): Four diverse developers standing apart awkwardly with 'Welcome Project Kickoff' sign, speech bubbles saying '?', 'Nice to meet you...', 'Hello', 'I wonder if...', Day 1 indicator. Stage 2 - Storming (red-orange tones): Same developers in conflict under storm clouds with lightning, 'Storm Clouds = Growth' banner, clashing symbols (early bird vs night owl clocks, planner vs iteration icons), Week 2 indicator, speech bubbles: 'We should do it THIS way!', 'But that won't work!', 'I prefer...', 'That's not how I...'.
@@ -512,34 +542,10 @@ Style: Retro 8-bit pixel art with clean lines and vibrant colors. Similar aesthe
 />
 </Slide>
 
-<Slide>
-
-## The Hard Part
-
-<QuoteSlide
- quote="Engineering is easy. People are hard."
- author="Bill Coughran, former SVP of Engineering at Google"
- credit="Quote source: Debugging Teams (Introduction)"
- imageSrc="/img/lectures/web/l22-debugging-teams.jpg"
- imageAlt="Cover of the book 'Debugging Teams: Better Production Through Collaboration' by Brian Fitzpatrick and Ben Collins-Sussman"
-/>
-
-</Slide>
-
-<Slide>
-
-## Poll: What characteristics would you like groupmates to have?
-
-<PollSlide />
-
-Answers should be one or two words for a word cloud.
-
 <aside className="notes">
-We will be forming groups for the last part of the semester.
+- Discuss here, as there isn't a subsequent slide.
+→ For your team, you should create a contract...
 </aside>
-{/* TODO: Find out how groups will be formed. Students want to know. */}
-
-</Slide>
 
 <Slide>
 
@@ -716,7 +722,8 @@ Choose 3.
 
 </div>
 
-<div className="fragment">
+<br/><br/><br/>
+<div style={{ fontSize: '.8em' }}>
 Source: [*Team Geek*](https://learning.oreilly.com/library/view/team-geek/9781449329839/) (later [*Debugging Teams*](https://www.debuggingteams.com/)) by Brian Fitzpatrick and Ben Collins-Sussman,
 former Google engineers.
 </div>
