@@ -64,55 +64,14 @@ lab leader if you're stuck.
 - "The starter code assumes the network always works. You'll fix that."
 - "You'll work individually for the first 15 minutes, then pair up for the rest."
 
-:::
+**Soft Skill Focus — Adaptability (3 minutes):**
 
-:::tip For TAs: After Part 1 — Pair Formation (3 minutes)
+Read this to students:
 
-After Sync Point 1, facilitate pair formation:
-
-- Have students pair up with someone they haven't worked with recently
-- If odd number, form one group of three
-- **Step 1:** Introduce yourself to your partner. Each person shares: _"The most frustrating failure
-  mode I saw was [X], because [Y]."_
-- Remind students to note their partner's name in `REFLECTION.md`
-
-:::
-
-:::tip For TAs: Sync Point 2 — Partial Failures (5 minutes)
-
-After most pairs have finished Exercise 2.2, make this announcement:
-
-> "We've just identified a new failure mode in the field: some devices are experiencing _partial
-> failures_—they respond to health checks but silently fail when you try to control them. Your retry
-> logic needs to handle this too."
-
-Then ask the class:
-
-- "What assumption does your current code make that this breaks?"
-- "Will you throw out your retry logic, modify it, or build on top of it?"
-
-Give pairs 5 minutes to work through Exercise 2.3, then continue to Part 3.
-
-**Key insight to surface:** A flat "retry everything" strategy has a hidden assumption embedded in
-it. Good design anticipates *categories* of failure even without knowing the specifics in advance.
-
-:::
-
-:::tip For TAs: Final Debrief (10 minutes)
-
-**Technical debrief:**
-
-- "What was the trickiest failure mode to handle? Why?"
-- "How did your retry logic change after the requirements change?"
-- "What tradeoff did you make between 'giving up too soon' and 'waiting too long'?"
-
-**Communication debrief:**
-
-- "What did you decide to tell users vs. hide in logs? How did you make that decision?"
-
-**Key insight:** The students who adapted to partial failures fastest likely had cleaner abstractions
-— retry logic isolated in `DeviceGateway`, separated from command logic. Good design enables
-adaptation; tangled code makes every change harder.
+> "Today we're practicing _adaptability_—responding professionally when things don't go as planned.
+> In real systems, networks fail in ways you didn't anticipate. Your design will encounter failure
+> modes it wasn't built for. The question isn't whether to expect the unexpected, but how to respond
+> when it happens.
 
 :::
 
@@ -125,9 +84,10 @@ By the end of this lab, you will be able to:
 - Identify which of the **Fallacies of Distributed Computing** you experienced firsthand, and give
   concrete examples
 - Implement **timeout and retry with exponential backoff** in Java to handle unresponsive devices
-- Apply **graceful degradation** so the CLI remains usable even when some devices are unreachable
+- Apply **graceful degradation** so that an application remains usable even when some devices are
+  unreachable
 - Implement a **CLI command** using JLine3 that clearly communicates device status to users
-- Extend your implementation to handle a new failure mode discovered mid-task
+- **Adapt your implementation** when requirements change mid-task
 
 ## Before You Begin
 
@@ -161,9 +121,29 @@ String line = reader.readLine("sceneitall> ");
 // Writing output to the terminal
 terminal.writer().println("Device 'porch-camera' is unreachable.");
 terminal.writer().flush();
+```
 
-// Tab completion: return candidate completions for a word
-completer.addCompletion("porch-camera");
+**Tab completion and history** are built into the CLI. Press Tab to auto-complete command names and
+device IDs. Use Up/Down arrows to navigate command history (persisted across sessions in
+`~/.sceneitall_history`).
+
+The Command interface includes a `getCompleter()` method that each command can override to provide
+argument-aware completion:
+
+```java
+// Default: completes just the command name
+default Completer getCompleter() {
+    return new StringsCompleter(getName());
+}
+
+// Override for commands that take device IDs as arguments
+@Override
+public Completer getCompleter() {
+    return new ArgumentCompleter(
+        new StringsCompleter(getName()),
+        new StringsCompleter(() -> registry.getAllDevices().stream()
+            .map(IoTDevice::getId).toList()));
+}
 ```
 
 You don't need to understand JLine3 deeply—follow the patterns in `ListCommand.java`. :::
@@ -206,19 +186,27 @@ Your repository includes several simulation configurations in the `config/` fold
 with the first failure scenario:
 
 ```bash
-./gradlew runTimeout
+./run-timeout
 ```
 
-Once the CLI starts, try these commands:
+Once the CLI starts, first try a **working** device to see normal behavior:
 
 ```
 sceneitall> list
-sceneitall> on porch-camera
+sceneitall> on living-room-thermostat
 sceneitall> off living-room-thermostat
+```
+
+The thermostat responds immediately. Now try an **unreliable** device:
+
+```
+sceneitall> on porch-camera
 ```
 
 **Observe:** What happens? Does the CLI respond immediately? Does it hang? Does it print an error,
 or does it fail silently?
+
+**Tip:** When the CLI hangs, press `Ctrl+C` to terminate it, then restart with `./run-timeout`.
 
 :::note What to look for
 
@@ -226,7 +214,7 @@ The `scenario-timeout.json` configuration makes `porch-camera` unresponsive—it
 connection but never sends a reply. Your CLI will hang indefinitely on the `on porch-camera` command
 because `DeviceGateway.sendCommand()` has no timeout.
 
-You may need to press `Ctrl+C` to kill the CLI.
+When it hangs, press `Ctrl+C` to terminate the process, then restart the CLI.
 
 :::
 
@@ -235,14 +223,14 @@ You may need to press `Ctrl+C` to kill the CLI.
 Try the other scenarios:
 
 ```bash
-./gradlew runIntermittent
+./run-intermittent
 ```
 
 Run the same commands several times. Notice that the same command succeeds sometimes and fails other
 times.
 
 ```bash
-./gradlew runMixed
+./run-mixed
 ```
 
 This scenario includes multiple devices with different failure modes. Run `list` to see all devices,
@@ -315,7 +303,7 @@ probably unresponsive—but a timeout that's too short will falsely report healt
 After your change, test it:
 
 ```bash
-./gradlew runTimeout
+./run-timeout
 sceneitall> on porch-camera
 ```
 
@@ -371,26 +359,23 @@ Record your design decisions and tradeoffs in `REFLECTION.md` (Question 2).
 The `scenario-intermittent.json` config makes `porch-camera` fail roughly 60% of the time. Run:
 
 ```bash
-./gradlew runIntermittent
+./run-intermittent
 ```
 
 Try `on porch-camera` several times. With retry logic, most attempts should eventually succeed.
 
 :::
 
-### 🔄 Sync Point 2 (5 minutes)
+### 🔄 Sync Point 2 — Requirements Change (5 minutes)
 
-### Exercise 2.3: Handle Partial Failures
+**Lab leader will make an announcement.**
 
-The network team has identified a new failure mode: some devices experience *partial failures*—they
-respond to health checks but silently fail when you try to control them.
+After the announcement, discuss with your partner:
 
-Discuss with your partner before touching your code:
+- "What assumption does our current code make that this breaks?"
+- "Will we throw out our retry logic, modify it, or build on top of it?"
 
-- "What assumption does our current retry logic make that this breaks?"
-- "Should we throw out our retry logic, modify it, or build on top of it?"
-
-Now update your `DeviceGateway` to handle partial failures. The
+**Exercise 2.3 (post-announcement):** Adapt your `DeviceGateway` to handle partial failures. The
 `networkClient.send()` method may now return a `CommandResult` with
 `result.isPartialFailure() == true` even when no exception is thrown—the device responded but
 reported that the command could not be executed.
@@ -401,23 +386,43 @@ Decide:
   device-level problem, not a network problem.)
 - How should `sendCommand` communicate this distinction to callers?
 
+:::tip Testing partial failures
+
+The `scenario-mixed.json` config includes `thermostat-main` with partial failure mode. Run:
+
+```bash
+./run-mixed
+```
+
+Try `on thermostat-main`. The device responds (no timeout), but reports `isPartialFailure() == true`.
+Compare this to `on living-room-thermostat` which succeeds normally.
+
+:::
+
 Record what you changed and what drove your decision in `REFLECTION.md` (Question 3).
 
 ---
 
-## Part 3: Implement the `status` Command (15 minutes — Paired)
+## Part 3: Implement the `status` Command (20 minutes — Paired)
 
 With a resilient gateway in place, you can now implement a useful CLI command. The `status` command
 shows the connection status of every registered device.
 
-### 🔄 Code Walkthrough: The Command Pattern (5 minutes — Lab Leader Led)
+### 🔄 Code Walkthrough: The Command Pattern (10 minutes — Lab Leader Led)
+
+:::warning Pay Attention — You'll Need This for HW5
+
+The Command pattern you're about to learn is exactly what you'll want to use for Homework 5. This
+walkthrough shows you a clean, extensible way to structure CLI applications. Take notes!
+
+:::
 
 Before implementing your own command, the lab leader will walk through the provided code to explain
 how the CLI is structured.
 
-:::tip For TAs: Command Pattern Walkthrough (5 minutes)
+:::tip For TAs: Command Pattern Walkthrough (10 minutes)
 
-Walk students through these three files. Keep it brief — the goal is orientation, not a lecture.
+Walk students through these four files. Take time to explain each step clearly.
 
 **Step 1: Show `Command.java` (the interface)**
 
@@ -425,11 +430,13 @@ Walk students through these three files. Keep it brief — the goal is orientati
 public interface Command {
     String getName();          // The word the user types, e.g. "list"
     void execute(String[] args, Terminal terminal);  // Called when user runs the command
+    default Completer getCompleter() { ... }  // For tab-completion (covered in Step 4)
 }
 ```
 
 Point out: `execute` receives the full argument array and the JLine3 `Terminal`. The terminal is the
-connection to the user's screen — you write output to it, never to `System.out`.
+connection to the user's screen — you write output to it, never to `System.out`. The `getCompleter()`
+method is covered in Step 4.
 
 **Step 2: Show `ListCommand.java` (a working example)**
 
@@ -491,8 +498,37 @@ while (true) {
 Point out: adding a new command requires (1) implementing `Command`, and (2) registering it in this
 map. That's it. Students add `StatusCommand` here once it's implemented.
 
+**Step 4: Show `Command.getCompleter()` (extending the pattern)**
+
+The Command interface also includes a `getCompleter()` method for tab-completion:
+
+```java
+// Default implementation in Command.java — completes just the command name
+default Completer getCompleter() {
+    return new StringsCompleter(getName());
+}
+```
+
+Commands that take arguments can override this. For example, `OnOffCommand` provides device ID
+completion:
+
+```java
+@Override
+public Completer getCompleter() {
+    return new ArgumentCompleter(
+        new StringsCompleter(getName()),
+        new StringsCompleter(() -> registry.getAllDevices().stream()
+            .map(IoTDevice::getId).toList()));
+}
+```
+
+The CLI aggregates all command completers and also includes command history (Up/Down arrows,
+persisted to `~/.sceneitall_history`). This follows the same extensibility principle: each command
+owns both its _execution_ logic and its _completion_ logic.
+
 **Key insight to leave students with:** The Command pattern makes the CLI extensible — adding a new
-command never touches existing commands. This is the Open/Closed Principle from
+command never touches existing commands. Just as `execute()` lets each command define its behavior,
+`getCompleter()` lets each command define its tab-completion. This is the Open/Closed Principle from
 [L8](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l8-design-for-change-2) in
 action.
 
@@ -585,7 +621,7 @@ your own), documenting your reasoning in `REFLECTION.md` (Question 4).
 **Test your command:**
 
 ```bash
-./gradlew runMixed
+./run-mixed
 sceneitall> status
 ```
 
@@ -665,8 +701,6 @@ In your `status` command:
   degradation) connect to a specific concept from
   [L20](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l20-networks)? Be
   specific—quote or reference the lecture material.
-- _Adaptability:_ When the partial failure requirement came in mid-lab, what did you do first? What
-  made it easier or harder to adapt your implementation? What would you do differently next time?
 - _Real-world parallel:_ Describe a situation outside of programming where you had to adapt when
   something didn't go as planned. What's similar to what you did today?
 
