@@ -32,16 +32,16 @@ import QuoteSlide from '@site/src/components/QuoteSlide';
 - Arc 1: Why Teams? (~6 min) — motivation, Brooks' Law, Conway's Law
 - Arc 2: The Foundation - HRT (~8 min) — Humility, Respect, Trust as the mindset for everything
 - Arc 3: GitHub in Practice (~15 min) — CI, PRs, code review with HRT applied, issues, asking questions
-- Arc 4: Forming Your Team (~6 min) — Tuckman stages, team contracts
+- Arc 4: Forming Your Team (~6 min) — Tuckman stages, team charters
 - Arc 5: When Things Go Wrong (~8 min) — conflict resolution, accountability, feedback
 - Arc 6: Scalable Knowledge (~5 min) — making communication scale sub-linearly
 - Key takeaways (~2 min)
 
-**Narrative spine:** Every team project fails for the same reasons—not technical skill, but collaboration. This lecture gives students the principles (HRT), practices (GitHub workflows), and agreements (team contracts) that separate teams that ship from teams that implode.
+**Narrative spine:** Every team project fails for the same reasons—not technical skill, but collaboration. This lecture gives students the principles (HRT), practices (GitHub workflows), and agreements (team charters) that separate teams that ship from teams that implode.
 
 **Important timing context:**
 - **Teams are formed:** Students already know their teams
-- **Team contract is live:** First deliverable, due soon
+- **Team charter is live:** First deliverable, due March 13
 - **After spring break:** Group project coding begins
 - This lecture is intentionally placed NOW so students apply these principles immediately
 
@@ -70,7 +70,7 @@ import QuoteSlide from '@site/src/components/QuoteSlide';
 **Context:**
 - Students have been working individually on assignments
 - **Teams are formed:** You already know who you're working with
-- **Team contract is live:** Your first team deliverable, due soon
+- **Team charter is live:** Your first team deliverable, due March 13
 - **Today's goal:** Apply these principles immediately with your new team
 
 **You've already been practicing:** In labs, you've been building these skills:
@@ -109,7 +109,7 @@ After this lecture, you will be able to:
 **Time allocation (reorganized for clearer flow):**
 - Arc 1: Why Teams? (~6 min) — motivation and the communication challenge
 - Arc 2: How Professional Teams Work (~10 min) — CI, PRs, code review basics
-- Arc 3: Forming Your Team (~6 min) — Tuckman stages and team contracts
+- Arc 3: Forming Your Team (~6 min) — Tuckman stages and team charters
 - Arc 4: Working Together (~12 min) — HRT, conflict resolution, accountability, feedback
 - Arc 5: Effective Written Communication (~10 min) — scalable knowledge, detailed how-tos
 
@@ -118,6 +118,71 @@ After this lecture, you will be able to:
 **Why this matters:** Most career success (and failure) comes down to collaboration skills, not technical brilliance alone.
 
 > **Transition:** Before we dive in, let's recognize that you've already been building these skills...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* TEAM PROJECT PREVIEW                        */}
+{/* ============================================ */}
+
+<Slide>
+
+## Your Team Project: CookYourBooks GUI
+
+<p style={{fontSize: '0.85em'}}>
+You've met your team. Here's what you'll build together:
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.7em', marginTop: '0.5em'}}>
+
+<div style={{backgroundColor: 'rgba(100,150,255,0.1)', padding: '0.5em', borderRadius: '8px'}}>
+
+**What you're building:**
+- Full JavaFX GUI for CookYourBooks
+- Each team member owns one **core feature**:
+  - Library View (browse cookbooks)
+  - Recipe Details/Editor
+  - Import Interface (OCR integration)
+  - Search & Filter
+- Plus shared infrastructure and "Feature Buffet" extras
+
+</div>
+
+<div style={{backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.5em', borderRadius: '8px'}}>
+
+**The timeline:**
+- **Now:** Team Charter (due Mar 13), final individual assignment (due Mar 19)
+- **Mar 26:** Design Sprint (wireframes, personas)
+- **Apr 9:** Checkpoint 1 (core features)
+- **Apr 16:** Checkpoint 2 (Feature Buffet)
+- **Apr 20:** Final submission
+
+**The structure:**
+- One spec, released upfront
+- Incremental delivery required
+- Code review on all PRs
+
+</div>
+
+</div>
+
+<div className="fragment" style={{backgroundColor: 'rgba(255, 200, 100, 0.2)', padding: '0.5em', borderRadius: '8px', fontSize: '0.8em', marginTop: '0.5em', border: '2px solid rgba(255, 180, 0, 0.5)'}}>
+
+**This lecture:** The principles, practices, and agreements you need to succeed. We'll return to the **team charter** at the end with specific guidance.
+
+</div>
+
+<aside className="notes">
+**Set expectations:**
+- This is a real team project, not a group assignment where you divide and conquer
+- Each person owns one core feature (individual accountability via ViewModel tests)
+- But you collaborate on shared infrastructure, integration, and Feature Buffet
+- You cannot wait until the end—checkpoints require working features
+
+**The goal of this lecture:** Give them the tools they need to succeed in the team project, then end with concrete guidance on the team charter.
+
+> **Transition:** Let's start with why this matters—what separates teams that ship from teams that implode...
 </aside>
 
 </Slide>
@@ -141,7 +206,7 @@ Today you'll learn:
 <ul style={{fontSize: '0.85em'}}>
   <li><strong>The principles</strong> that make collaboration work (HRT, scalable knowledge)</li>
   <li><strong>The practices</strong> that professional teams use (CI, PRs, code review, issues)</li>
-  <li><strong>The agreements</strong> that prevent conflicts (team contracts, shared expectations)</li>
+  <li><strong>The agreements</strong> that prevent conflicts (team charters, shared expectations)</li>
 </ul>
 
 <p className="fragment" style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
@@ -155,7 +220,7 @@ Frame everything that follows as answering: "How do we avoid the common failure 
 
 - **Principles** = HRT (Arc 2), scalable knowledge sharing
 - **Practices** = GitHub workflow (CI, PRs, code review, issues)
-- **Agreements** = team contracts, explicit expectations
+- **Agreements** = team charters, explicit expectations
 
 **The promise:** By the end of this lecture, you'll know what separates functional teams from dysfunctional ones—and you'll have practiced most of it already in labs.
 
@@ -352,18 +417,29 @@ Below all panels, show the formula n(n-1)/2 and a quote bubble from Fred Brooks:
 
 </div>
 
+<div className="fragment" style={{backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.4em', borderRadius: '6px', fontSize: '0.7em', marginTop: '0.5em'}}>
+
+📘 **CookYourBooks in action:** We structured your team around the architecture—one person owns each ViewModel (Library, Recipe, Import, Search). Remember the responsibility heuristics from L18? Each feature is a cohesive responsibility with a defined interface. Team boundaries = module boundaries.
+
+</div>
+
 <aside className="notes">
 **Connection to earlier lectures:**
-- Remember our architecture discussions? This is why team structure matters for design
-- Interfaces between modules often match boundaries between teams
-- If two teams don't communicate well, their code won't integrate well either
+- Remember L18's responsibility heuristics? "Actor," "Sequence," "Information Expert"
+- Each team member's feature aligns with a distinct user workflow (actor)
+- The ViewModel interfaces define the boundaries—just like we discussed for module interfaces
 
-**Conway's Law in practice:**
+**Conway's Law in your project:**
+- 4 team members → 4 core ViewModels (Library, Recipe, Import, Search)
+- Each ViewModel has a defined interface = clear responsibility boundary
+- Shared infrastructure (navigation, theming) requires coordination across the team
+- This is *intentional*—we designed the project structure to match the team structure
+
+**Conway's Law in industry:**
 - Microsoft's Windows team structure → Windows architecture (famously criticized)
 - Amazon's "two-pizza teams" → microservices architecture
-- Your group project: how you divide work will shape your system's modules
 
-**Inverse Conway Maneuver:** Some companies deliberately restructure teams to get the architecture they want.
+**Inverse Conway Maneuver:** Some companies deliberately restructure teams to get the architecture they want. We did this for you.
 
 > **Transition:** Brooks' Law tells us communication doesn't scale—so we need practices that do. But before we learn the practices, we need to understand the mindset that makes them work...
 </aside>
@@ -1097,7 +1173,7 @@ The code shows <em>what</em> changed. The description should explain <em>why</em
 
 {/* ============================================ */}
 {/* ARC 4: FORMING YOUR TEAM (~6 min)           */}
-{/* Tuckman stages and team contracts           */}
+{/* Tuckman stages and team charters           */}
 {/* ============================================ */}
 
 <Slide>
@@ -1134,7 +1210,7 @@ STAGE 4 - PERFORMING (visual cues: green, sunny): The team works smoothly as a u
 
 <Slide>
 
-## Team Contracts Accelerate Norming
+## Team Charters Accelerate Norming
 
 <p style={{fontSize: '0.85em'}}>
 Explicitly discuss and document expectations <strong>before</strong> conflicts arise:
@@ -1168,21 +1244,21 @@ Explicitly discuss and document expectations <strong>before</strong> conflicts a
 
 <div className="fragment" style={{backgroundColor: 'rgba(255, 200, 100, 0.2)', padding: '0.5em', borderRadius: '8px', fontSize: '0.8em', marginTop: '0.5em', border: '2px solid rgba(255, 180, 0, 0.5)'}}>
 
-**For this class:** Your team contract is <strong>live now</strong>—it's your first team deliverable. We'll cover the details at the end of this lecture.
+**For this class:** Your team charter is <strong>live now</strong>—it's your first team deliverable. We'll cover the details at the end of this lecture.
 
 </div>
 
 <aside className="notes">
-**Team contracts:**
+**Team charters:**
 - Surface potential conflicts before they become problems
 - Create a reference document to return to during disagreements
 - Not a legal document—a shared understanding
 
 **This is why we polled you:** We asked about working hours, communication styles, and availability to help form compatible teams.
 
-**Your first deliverable is live:** The team contract is graded and sets the foundation for everything. Teams that skip this step or do it carelessly struggle later. Take it seriously—it's due soon.
+**Your first deliverable is live:** The team charter is graded and sets the foundation for everything. Teams that skip this step or do it carelessly struggle later. Take it seriously—it's due **March 13**.
 
-> **Transition:** Team contracts establish shared expectations. But even with good agreements, conflicts happen. Here's how to handle them...
+> **Transition:** Team charters establish shared expectations. But even with good agreements, conflicts happen. Here's how to handle them...
 </aside>
 
 </Slide>
@@ -1444,22 +1520,24 @@ Rule of thumb: If you've explained something to more than two people, write it d
 
 </div>
 
-<div style={{backgroundColor: 'rgba(255,200,100,0.15)', padding: '0.5em', borderRadius: '8px'}}>
+<div style={{backgroundColor: 'rgba(100,255,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
 
-**One-to-many** (scales better)
+**One-to-many** (scales)
 
 - Code review
 - Q&A forums
+- Documentation & wikis
+- Recorded tech talks
 
 </div>
 
-<div style={{backgroundColor: 'rgba(100,255,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
+<div style={{backgroundColor: 'rgba(255,200,100,0.15)', padding: '0.5em', borderRadius: '8px', border: '1px dashed rgba(255,150,0,0.5)'}}>
 
-**One-to-many, persistent** (scales best)
+**⚠️ Beware:** Discord, Slack, WhatsApp
 
-- Documentation & wikis
-- Recorded tech talks
-- Well-commented code
+- Messages persist but are hard to find
+- Knowledge gets buried in chat history
+- Great for quick coordination, poor for reference
 
 </div>
 
@@ -1629,7 +1707,7 @@ Team projects rarely fail because of technical skill—they fail because of coll
 
 **Agreements**
 
-- Team contracts accelerate norming
+- Team charters accelerate norming
 - Your first deliverable isn't code—it's alignment
 - Fight forward, not back
 
@@ -1639,19 +1717,20 @@ Team projects rarely fail because of technical skill—they fail because of coll
 
 <div className="fragment" style={{backgroundColor: 'rgba(255, 200, 100, 0.2)', padding: '0.5em', borderRadius: '8px', fontSize: '0.75em', marginTop: '0.5em', border: '2px solid rgba(255, 180, 0, 0.5)'}}>
 
-**Your first deliverable:** The team contract is live. Apply these principles *today* with your new team.
+**Your first deliverable:** The team charter is due **March 13**. Apply these principles *this week* with your new team.
 
 </div>
 
 <aside className="notes">
-**Callback to the opening:** We started with the question of what separates teams that ship from teams that implode. The answer: principles (HRT), practices (GitHub workflows), and agreements (team contracts).
+**Callback to the opening:** We started with the question of what separates teams that ship from teams that implode. The answer: principles (HRT), practices (GitHub workflows), and agreements (team charters).
 
 **Looking ahead:**
-- **Now:** Team contract is your first deliverable — apply everything from today immediately
-- **After spring break:** Group project coding begins — you'll build on the foundation you establish now
+- **Now:** Team charter due March 13 — apply everything from today immediately
+- **Mar 26:** Design Sprint (wireframes, personas, architecture)
+- **After spring break:** Checkpoint 1 (Apr 9) — core features must be working
 
 **For your group projects:**
-- Establish team contracts early—it's your first deliverable
+- Establish team charters early—it's your first deliverable
 - Use GitHub Issues and Projects to track work
 - Apply HRT in every PR comment, every issue, every Slack message
 - Seek and give honest feedback
@@ -1668,10 +1747,10 @@ Team projects rarely fail because of technical skill—they fail because of coll
 
 <Slide>
 
-## Your First Team Deliverable: The Team Contract
+## Your First Team Deliverable: The Team Charter
 
 <p style={{fontSize: '0.9em', fontWeight: 'bold', color: '#9370DB'}}>
-Your team contract is live now. This is not a formality—it's the foundation for everything that follows.
+Your team charter is live now, due **March 13**. This is not a formality—it's the foundation for everything that follows.
 </p>
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em', marginTop: '0.5em'}}>
@@ -1703,7 +1782,7 @@ Your team contract is live now. This is not a formality—it's the foundation fo
 </div>
 
 <aside className="notes">
-**This is graded.** Take it seriously. Teams that rush through the contract often struggle later when conflicts arise and they have no shared expectations to fall back on.
+**This is graded.** Take it seriously. Teams that rush through the charter often struggle later when conflicts arise and they have no shared expectations to fall back on.
 
 **The goal:** Have the hard conversations now, while stakes are low and everyone is fresh.
 
@@ -1714,7 +1793,7 @@ Your team contract is live now. This is not a formality—it's the foundation fo
 
 <Slide>
 
-## Completing Your Team Contract
+## Completing Your Team Charter
 
 <div style={{fontSize: '0.8em'}}>
 
@@ -1729,7 +1808,7 @@ Your team contract is live now. This is not a formality—it's the foundation fo
 
 **Step 3: Be specific, not aspirational**
 - ❌ "We'll communicate regularly"
-- ✓ "We'll post daily standups in Discord by 9 PM"
+- ✓ "We'll post daily updates in Discord by 9 PM"
 
 </div>
 
@@ -1740,7 +1819,7 @@ Your team contract is live now. This is not a formality—it's the foundation fo
 </div>
 
 <aside className="notes">
-**Emphasize:** The contract is a *living document*. You can update it as you learn what works. But having an initial agreement is critical.
+**Emphasize:** The charter is a *living document*. You can update it as you learn what works. But having an initial agreement is critical.
 
 **Common failure modes:**
 - One person writes it, others sign without reading
@@ -1748,7 +1827,7 @@ Your team contract is live now. This is not a formality—it's the foundation fo
 - Assuming everyone has the same working style
 - Not discussing what happens when things go wrong
 
-**The test:** If a conflict arises in week 3, can you point to a specific line in your contract that addresses it?
+**The test:** If a conflict arises in week 3, can you point to a specific line in your charter that addresses it?
 </aside>
 
 </Slide>
