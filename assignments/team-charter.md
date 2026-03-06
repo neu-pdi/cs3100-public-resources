@@ -3,12 +3,6 @@ title: "Team Charter"
 sidebar_position: 8
 ---
 
-:::warning Preliminary Content
-
-This assignment is preliminary content and is subject to change until the release date of the assignment.
-
-:::
-
 ## Overview
 
 Your team has been formed. Your first task is to hold your **first official team meeting** where you'll collaboratively create a **Team Charter**—a short document capturing how you'll work together.
@@ -32,7 +26,7 @@ By completing this assignment, you will:
 
 Schedule and hold your first team meeting. **All team members must be present.** During this meeting, discuss and agree on each section of the charter together.
 
-Create `TEAM_CHARTER.md` in your repository root with the following sections:
+Update `README.md` in your repository root with the following sections:
 
 ### 1. Team Info & Expectations
 
@@ -72,7 +66,7 @@ Document your first team meeting:
 
 ## Grading Rubric
 
-This assignment is graded on completeness and evidence of genuine discussion. We're not judging whether your agreements are "right"—we're checking that you actually had the conversations.
+This assignment is graded on completeness and evidence of genuine discussion. We're not judging whether your agreements are "right"—we're checking that you actually had the conversations. The goal isn't a perfect document—it's the conversations you have while creating it.
 
 | Component | Points | Criteria |
 |-----------|--------|----------|
@@ -83,17 +77,3 @@ This assignment is graded on completeness and evidence of genuine discussion. We
 
 **Total: 20 points**
 
-## Submission
-
-1. Accept the GitHub Classroom assignment to create your team repository
-2. Add `TEAM_CHARTER.md` to the repository root
-3. Submit the repository link on Canvas
-
-### Submission Checklist
-
-- [ ] `TEAM_CHARTER.md` with all 4 sections complete
-- [ ] Meeting summary with all team members listed as present
-
----
-
-The goal isn't a perfect document—it's the conversations you have while creating it.
