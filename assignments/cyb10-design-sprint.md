@@ -13,7 +13,7 @@ This assignment is preliminary content and is subject to change until the releas
 
 With your Team Charter established, it's time to design your group project. In this Design Sprint, your team will apply User-Centered Design principles to create the design artifacts that will guide your implementation in GA1 and GA2.
 
-Each team member will create personas, wireframes, and accessibility considerations for their assigned core feature. You'll also select your **Feature Buffet** items for GA2 and design **"Our Feature"**—a custom feature concept that you'll present (but not implement) in your final presentation.
+Each team member will create personas, wireframes, and accessibility considerations for their assigned core feature. You'll also select your **Feature Buffet** items for GA2 and design **"Our Feature"**—a custom feature concept that you'll include (but not implement) in your final report.
 
 **Due:** Thursday, March 26, 2026 at 11:59 PM Boston Time
 
@@ -45,7 +45,7 @@ Before starting individual work, your team must assign ownership of the four cor
 
 - **Library View** (Owner: _____): Browse and manage recipe collections
 - **Recipe Editor** (Owner: _____): View and edit recipe content
-- **Import Interface** (Owner: _____): Import recipes from images via OCR
+- **Import Interface** (Owner: _____): Import recipes from images using the Gemini API
 - **Search & Filter** (Owner: _____): Find recipes across collections
 
 Each team member owns **one** feature and is responsible for the individual deliverables for that feature.
@@ -56,6 +56,8 @@ Each team member creates the following for **their assigned core feature**:
 
 ### 1. User Persona
 
+A **persona** is a fictional but realistic representation of a target user. Rather than designing for "everyone," personas help you focus on specific user needs, behaviors, and goals. See [L27: User-Centered Design](/lecture-notes/l27-ucd) for examples and templates.
+
 Create a realistic persona (1 page) for a user who primarily uses your feature. Include:
 - Name, background, technical comfort level
 - Goals: What are they trying to accomplish with CookYourBooks?
@@ -63,6 +65,8 @@ Create a realistic persona (1 page) for a user who primarily uses your feature. 
 - Context: When/where/how do they use the app?
 
 ### 2. Low-Fidelity Wireframes
+
+A **wireframe** is a simple sketch of a user interface that shows layout and functionality without visual design details. See [L27: User-Centered Design](/lecture-notes/l27-ucd) for wireframe examples and best practices.
 
 Create hand-drawn or simple digital wireframes (3-5 screens) showing:
 - The main view for your feature
@@ -120,7 +124,7 @@ Select **2-3 features** from the Feature Buffet that your team will implement in
 - Keyboard shortcuts and accessibility polish
 - Dark mode / theme customization
 - Cooking timer integration for recipe steps
-- OCR backend selection (Tesseract vs. Claude API) with Strategy pattern
+- Multi-page recipe import (multiple files at once, multi-page PDF, recipe continuation detection)
 
 For each selected feature, briefly explain (2-3 sentences):
 - Why your team chose this feature
@@ -129,7 +133,7 @@ For each selected feature, briefly explain (2-3 sentences):
 
 ### 5. "Our Feature" Concept
 
-Design a **custom feature** that is NOT on the Feature Buffet—something your team thinks would genuinely improve CookYourBooks. This feature will be **designed but not implemented**; you'll present it as a design concept in your final presentation.
+Design a **custom feature** that is NOT on the Feature Buffet—something your team thinks would genuinely improve CookYourBooks. This feature will be **designed but not implemented**; you'll include it as a design concept in your final report.
 
 This is your chance to exercise full UCD creativity without implementation constraints!
 

@@ -11,7 +11,7 @@ This assignment is preliminary content and is subject to change until the releas
 
 ## Overview
 
-In this final implementation assignment, your team selects and implements 2-3 features from a provided menu (or proposes a custom feature with instructor approval). Unlike GA1, this assignment is graded primarily on **process rather than product**—demonstrating thoughtful design iteration, quality code review, and professional documentation matters more than feature completeness.
+In this final implementation assignment, your team selects and implements 2-3 features from a provided menu. Unlike GA1, this assignment is graded primarily on **process rather than product**—demonstrating thoughtful design iteration, quality code review, and professional documentation matters more than feature completeness.
 
 This approach reflects real-world software development: a well-documented, well-tested partial feature is more valuable than a hastily-implemented complete feature with no documentation or tests.
 
@@ -38,9 +38,20 @@ AI tools are **encouraged**, but remember: we're grading process, not just produ
 
 Use AI as a tool, but ensure the *thinking* is yours.
 
+## TA Mentor Meetings
+
+Throughout GA2, your team will have **weekly 30-minute meetings** with your assigned TA mentor. These meetings serve multiple purposes:
+
+- **Code walks:** Each team member explains what they worked on and their design choices
+- **Progress check-ins:** Are you on track? Stuck anywhere?
+- **Collaboration verification:** Is the team working well together?
+- **Debugging support:** Your TA can help unblock technical issues
+
+These meetings are also an opportunity to demonstrate your understanding of your code. If you used AI tools to help with implementation, you should still be able to explain how the code works and why you made certain design decisions.
+
 ## The Feature Buffet
 
-Choose **2-3 features** from the buffet below. Teams may also propose a custom feature (see below).
+Choose **2-3 features** from the buffet below.
 
 ### Standard Features
 
@@ -58,17 +69,11 @@ Choose **2-3 features** from the buffet below. Teams may also propose a custom f
 
 | Feature | Description | Complexity |
 |---------|-------------|------------|
-| **OCR Backend Selection** | Strategy pattern for Tesseract vs. Claude API | High |
+| **Multi-Page Import** | Import multiple files at once, multi-page PDF support, detect recipe continuation across pages | Medium-High |
+| **Recipe Chatbot** | "What should I make?" meal suggestion assistant using Gemini API | Medium-High |
 | **Meal Planning** | Calendar-based meal planning with recipe scheduling | High |
 | **Nutritional Info** | API integration for nutritional data | High |
 | **Voice Control** | Hands-free recipe navigation while cooking | High |
-
-### Custom Feature
-
-Teams may propose their own feature. Requirements:
-- Submit proposal within 3 days of GA2 start
-- Include: user need, scope estimate, integration plan
-- Await instructor approval before beginning implementation
 
 ## Process Portfolio
 
@@ -140,36 +145,17 @@ Document your implementation process:
 - **20% Individual:** Each member's contribution evidenced in commits, PRs, reviews
 - **80% Team:** Overall quality of process portfolios and feature integration
 
-### Peer Evaluation Adjustment
+### Individual Accountability
 
-After submission, each team member completes a peer evaluation survey. This adjusts individual grades by **±10%** based on:
-- Contribution relative to other team members
-- Quality of code review feedback provided
-- Collaboration and communication effectiveness
+Your individual grade may be adjusted based on multiple factors that demonstrate your contribution and engagement:
 
-## Custom Feature Proposal
+- **Commit history and PR activity:** Regular, meaningful commits (not one giant commit at the end)
+- **Code review quality:** Substantive feedback on teammates' PRs, not just "LGTM"
+- **TA meeting observations:** Can you explain your code and design decisions?
+- **Weekly collaboration surveys:** Brief check-ins on team dynamics
+- **Peer evaluation:** After submission, each team member rates their teammates
 
-If proposing a custom feature, submit within 3 days of GA2 start:
-
-```markdown
-# Custom Feature Proposal: [Feature Name]
-
-## User Need
-What problem does this solve? Who benefits?
-
-## Scope Estimate
-- Estimated complexity: Low / Medium / High
-- Key technical challenges:
-- Dependencies on existing features:
-
-## Integration Plan
-How does this connect to existing ViewModels and services?
-
-## Success Criteria
-How will you know this feature is "done"?
-```
-
-Instructors will respond within 48 hours with: Approved / Approved with modifications / Please choose from menu.
+These factors can adjust individual grades by **±20 points on the final grade**. If a team member cannot explain their code in TA meetings while the rest of the team succeeds, their grade may be reduced accordingly.
 
 ## Submission
 
@@ -191,7 +177,7 @@ Instructors will respond within 48 hours with: Approved / Approved with modifica
 
 ### Checklist
 
-- [ ] 2-3 features selected (or custom approved)
+- [ ] 2-3 features selected from the buffet
 - [ ] Process portfolio complete for each feature
 - [ ] Demo videos recorded and linked
 - [ ] All features integrated into main application

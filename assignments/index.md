@@ -165,7 +165,7 @@ Group assignments are structured around **individual accountability with team co
   - Practice UCD techniques and user research methods
 
 ### **Week 12-15: Group Project**
-- [**Group Project: CookYourBooks GUI**](/assignments/cyb11-gui-advanced) (Released 2026-03-23)
+- [**Group Project: CookYourBooks GUI**](/assignments/cyb11-core-features) (Released 2026-03-23)
   
   This is a **single project** with two accountability checkpoints. The full specification is available from day one—plan your work accordingly. **Checkpoints require working, tested features**; later checkpoints build on earlier ones, so it is impossible to leave everything until the final week. You will receive automated test feedback at each checkpoint, but comprehensive instructor feedback comes only at the final submission.
 
