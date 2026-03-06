@@ -14,10 +14,6 @@ network that fails in realistic ways: timeouts, dropped connections, partial fai
 gives you a working CLI and a `DeviceGateway` that assumes the network is perfectly reliable. Your
 job is to make it resilient.
 
-**The twist:** partway through today's lab, we're going to change the requirements on you. This is
-intentional. Pay attention to how you feel when that happens—it's one of the most valuable things
-you'll practice today.
-
 :::info Grading: What You Need to Submit
 
 **Due:** At the end of your scheduled lab section. This is automatically enforced with a 10-minute
@@ -68,20 +64,6 @@ lab leader if you're stuck.
 - "The starter code assumes the network always works. You'll fix that."
 - "You'll work individually for the first 15 minutes, then pair up for the rest."
 
-**Soft Skill Focus — Adaptability (3 minutes):**
-
-Read this to students:
-
-> "Today we're practicing _adaptability_—responding professionally when things don't go as planned.
-> In real systems, networks fail in ways you didn't anticipate. Your design will encounter failure
-> modes it wasn't built for. The question isn't whether to expect the unexpected, but how to respond
-> when it happens.
->
-> Partway through today's lab, we're going to change the requirements on you. This is
-> intentional—we'll announce it explicitly. We want you to experience what it's like to adapt when
-> reality doesn't match your initial assumptions. Pay attention to how you feel when that happens.
-> That self-awareness is part of the learning."
-
 :::
 
 :::tip For TAs: After Part 1 — Pair Formation (3 minutes)
@@ -96,24 +78,23 @@ After Sync Point 1, facilitate pair formation:
 
 :::
 
-:::tip For TAs: Sync Point 2 — The Requirements Change (5 minutes)
+:::tip For TAs: Sync Point 2 — Partial Failures (5 minutes)
 
-This is the **Adaptability exercise**. After most pairs have finished Exercise 2.2, make this
-announcement:
+After most pairs have finished Exercise 2.2, make this announcement:
 
-> "The network team just informed us that some devices are experiencing _partial failures_—they
-> respond to health checks but silently fail when you actually try to control them. Your current
-> retry logic retries _all_ failures the same way. That assumption no longer holds."
+> "We've just identified a new failure mode in the field: some devices are experiencing _partial
+> failures_—they respond to health checks but silently fail when you try to control them. Your retry
+> logic needs to handle this too."
 
 Then ask the class:
 
-- "What assumption did you make that this breaks?"
-- "Will you throw out your current code, modify it, or build on top of it?"
+- "What assumption does your current code make that this breaks?"
+- "Will you throw out your retry logic, modify it, or build on top of it?"
 
-Give pairs 5 minutes to adapt. Then continue to Part 3.
+Give pairs 5 minutes to work through Exercise 2.3, then continue to Part 3.
 
-**Key insight to surface:** Good software design anticipates _categories_ of failure even when you
-don't know the specifics. A flat "retry everything" strategy has a hidden assumption embedded in it.
+**Key insight to surface:** A flat "retry everything" strategy has a hidden assumption embedded in
+it. Good design anticipates *categories* of failure even without knowing the specifics in advance.
 
 :::
 
@@ -125,20 +106,13 @@ don't know the specifics. A flat "retry everything" strategy has a hidden assump
 - "How did your retry logic change after the requirements change?"
 - "What tradeoff did you make between 'giving up too soon' and 'waiting too long'?"
 
-**Adaptability debrief:**
-
-- "How did it feel when we changed the requirements mid-lab?"
-- "What helped you adapt—did you throw out your old code, modify it, or build on top of it?"
-- "In a real job, requirements change constantly. What strategies will you use to stay flexible?"
-
 **Communication debrief:**
 
 - "What did you decide to tell users vs. hide in logs? How did you make that decision?"
 
-**Key insight:** Adaptability isn't about being unaffected by change—it's about recovering quickly
-and applying what you already know to the new situation. The students who adapted fastest likely had
-cleaner abstractions (a focused `DeviceGateway` class, retry logic separated from command logic).
-Good design _enables_ adaptability.
+**Key insight:** The students who adapted to partial failures fastest likely had cleaner abstractions
+— retry logic isolated in `DeviceGateway`, separated from command logic. Good design enables
+adaptation; tangled code makes every change harder.
 
 :::
 
@@ -153,8 +127,7 @@ By the end of this lab, you will be able to:
 - Implement **timeout and retry with exponential backoff** in Java to handle unresponsive devices
 - Apply **graceful degradation** so the CLI remains usable even when some devices are unreachable
 - Implement a **CLI command** using JLine3 that clearly communicates device status to users
-- **Adapt your implementation** when requirements change mid-task—and reflect on what made
-  adaptation easier or harder
+- Extend your implementation to handle a new failure mode discovered mid-task
 
 ## Before You Begin
 
@@ -405,16 +378,19 @@ Try `on porch-camera` several times. With retry logic, most attempts should even
 
 :::
 
-### 🔄 Sync Point 2 — Requirements Change (5 minutes)
+### 🔄 Sync Point 2 (5 minutes)
 
-**Lab leader will make an announcement.**
+### Exercise 2.3: Handle Partial Failures
 
-After the announcement, discuss with your partner:
+The network team has identified a new failure mode: some devices experience *partial failures*—they
+respond to health checks but silently fail when you try to control them.
 
-- "What assumption does our current code make that this breaks?"
-- "Will we throw out our retry logic, modify it, or build on top of it?"
+Discuss with your partner before touching your code:
 
-**Exercise 2.3 (post-announcement):** Adapt your `DeviceGateway` to handle partial failures. The
+- "What assumption does our current retry logic make that this breaks?"
+- "Should we throw out our retry logic, modify it, or build on top of it?"
+
+Now update your `DeviceGateway` to handle partial failures. The
 `networkClient.send()` method may now return a `CommandResult` with
 `result.isPartialFailure() == true` even when no exception is thrown—the device responded but
 reported that the command could not be executed.
@@ -689,9 +665,8 @@ In your `status` command:
   degradation) connect to a specific concept from
   [L20](https://neu-pdi.github.io/cs3100-public-resources/lecture-notes/l20-networks)? Be
   specific—quote or reference the lecture material.
-- _Adaptability:_ The requirements change was intentional. How did it feel when we announced it?
-  What made it easier or harder to adapt? What would you do differently next time requirements
-  change on you?
+- _Adaptability:_ When the partial failure requirement came in mid-lab, what did you do first? What
+  made it easier or harder to adapt your implementation? What would you do differently next time?
 - _Real-world parallel:_ Describe a situation outside of programming where you had to adapt when
   something didn't go as planned. What's similar to what you did today?
 
