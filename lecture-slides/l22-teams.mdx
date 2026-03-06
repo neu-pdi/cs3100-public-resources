@@ -28,18 +28,22 @@ import QuoteSlide from '@site/src/components/QuoteSlide';
 - **Prerequisites:** Students have experience with group assignments
 - **Connects to:** Design Sprint (CYB10), upcoming group projects
 
-**Structure (Collaboration Lifecycle):**
-- Arc 1: Why Teams? (~6 min) — motivation and the communication challenge
-- Arc 2: How Professional Teams Work (~10 min) — CI, PRs, code review basics
-- Arc 3: Forming Your Team (~6 min) — Tuckman stages and team contracts
-- Arc 4: Working Together (~12 min) — HRT, conflict resolution, accountability, feedback
-- Arc 5: Effective Written Communication (~10 min) — scalable knowledge, detailed how-tos
+**Structure (Principles → Practices → Agreements):**
+- Arc 1: Why Teams? (~6 min) — motivation, Brooks' Law, Conway's Law
+- Arc 2: The Foundation - HRT (~8 min) — Humility, Respect, Trust as the mindset for everything
+- Arc 3: GitHub in Practice (~15 min) — CI, PRs, code review with HRT applied, issues, asking questions
+- Arc 4: Forming Your Team (~6 min) — Tuckman stages, team contracts
+- Arc 5: When Things Go Wrong (~8 min) — conflict resolution, accountability, feedback
+- Arc 6: Scalable Knowledge (~5 min) — making communication scale sub-linearly
 - Key takeaways (~2 min)
 
+**Narrative spine:** Every team project fails for the same reasons—not technical skill, but collaboration. This lecture gives students the principles (HRT), practices (GitHub workflows), and agreements (team contracts) that separate teams that ship from teams that implode.
+
 **Important timing context:**
-- **Next week:** Students will form teams for the group project
-- **After spring break:** Group project actually begins
-- This lecture is intentionally placed NOW so students think about these principles when deciding who to work with
+- **Teams are formed:** Students already know their teams
+- **Team contract is live:** First deliverable, due soon
+- **After spring break:** Group project coding begins
+- This lecture is intentionally placed NOW so students apply these principles immediately
 
 **Key theme:** Professional software is built by teams, not heroes. The skills you need to collaborate effectively are as important as your technical skills.
 
@@ -65,14 +69,14 @@ import QuoteSlide from '@site/src/components/QuoteSlide';
 <aside className="notes">
 **Context:**
 - Students have been working individually on assignments
-- **Next week:** You'll form teams for the group project
-- **After spring break:** The group project begins
-- **Today's goal:** Think about these principles as you consider who you want to work with
+- **Teams are formed:** You already know who you're working with
+- **Team contract is live:** Your first team deliverable, due soon
+- **Today's goal:** Apply these principles immediately with your new team
 
 **You've already been practicing:** In labs, you've been building these skills:
-- Lab 2: Pair discussions about design decisions
-- Lab 3: Asking effective questions on the forum, using the help queue
 - Lab 4: Respectful disagreement, reaching joint decisions with a partner
+- Lab 6: Explaining bugs to partners, giving constructive feedback on unclear explanations
+- Lab 8: Structured decision communication—"I chose X because Y. I considered Z, but..."
 
 **Key theme:** Nobody builds real software alone. The skills in this lecture are what make the difference between teams that ship and teams that implode.
 
@@ -109,11 +113,53 @@ After this lecture, you will be able to:
 - Arc 4: Working Together (~12 min) — HRT, conflict resolution, accountability, feedback
 - Arc 5: Effective Written Communication (~10 min) — scalable knowledge, detailed how-tos
 
-**Lab connections:** Today formalizes skills you've been practicing informally. Lab 4's "respectful disagreement" exercise? That's HRT. Lab 3's forum posts? That's scalable knowledge sharing.
+**Lab connections:** Today formalizes skills you've been practicing informally. Lab 4's "respectful disagreement" exercise? That's HRT. Lab 6's "explain then ask clarifying questions"? That's code review. Lab 8's "I chose X because Y"? That's how you defend PRs.
 
 **Why this matters:** Most career success (and failure) comes down to collaboration skills, not technical brilliance alone.
 
 > **Transition:** Before we dive in, let's recognize that you've already been building these skills...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* SPINE STATEMENT - The Central Question      */}
+{/* ============================================ */}
+
+<Slide>
+
+## The Question This Lecture Answers
+
+<p style={{fontSize: '1.1em', marginTop: '1em'}}>
+Team projects rarely fail because of technical skill. They fail because of collaboration.
+</p>
+
+<p style={{fontSize: '0.9em', marginTop: '1em'}}>
+Today you'll learn:
+</p>
+
+<ul style={{fontSize: '0.85em'}}>
+  <li><strong>The principles</strong> that make collaboration work (HRT, scalable knowledge)</li>
+  <li><strong>The practices</strong> that professional teams use (CI, PRs, code review, issues)</li>
+  <li><strong>The agreements</strong> that prevent conflicts (team contracts, shared expectations)</li>
+</ul>
+
+<p className="fragment" style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
+These separate teams that ship from teams that implode.
+</p>
+
+<aside className="notes">
+**This is the central question of the lecture.**
+
+Frame everything that follows as answering: "How do we avoid the common failure modes?"
+
+- **Principles** = HRT (Arc 2), scalable knowledge sharing
+- **Practices** = GitHub workflow (CI, PRs, code review, issues)
+- **Agreements** = team contracts, explicit expectations
+
+**The promise:** By the end of this lecture, you'll know what separates functional teams from dysfunctional ones—and you'll have practiced most of it already in labs.
+
+> **Transition:** In fact, you've already been building these skills...
 </aside>
 
 </Slide>
@@ -130,18 +176,6 @@ Today's lecture formalizes skills you've already been building in labs:
 
 <div style={{backgroundColor: 'rgba(100,150,255,0.1)', padding: '0.5em', borderRadius: '8px'}}>
 
-**Lab 2:** Pair discussions about design
-- "Why is `Light` abstract?"
-- "Did you and your neighbor disagree?"
-
-**Lab 3:** Asking effective questions
-- Forum posts with context
-- Using the help queue
-
-</div>
-
-<div style={{backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.5em', borderRadius: '8px'}}>
-
 **Lab 4:** Respectful disagreement
 - "I think X because Y"
 - "What's driving your preference?"
@@ -149,8 +183,20 @@ Today's lecture formalizes skills you've already been building in labs:
 
 **Lab 5:** Building shared understanding
 - Listen to understand, not to argue
-- Identify where interpretations differ
 - Create a merged understanding
+
+</div>
+
+<div style={{backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.5em', borderRadius: '8px'}}>
+
+**Lab 6:** Giving and receiving explanations
+- Explain bugs without reading notes
+- Partner asks clarifying questions
+- Share what was clear vs. confusing
+
+**Lab 8:** Communicating technical decisions
+- "I chose X because Y. I considered Z, but..."
+- Partner asks: "Why did you prioritize that?"
 
 </div>
 
@@ -160,19 +206,13 @@ Today's lecture formalizes skills you've already been building in labs:
 Today we put names to these practices and explain why they matter at scale.
 </p>
 
-<div className="fragment" style={{backgroundColor: 'rgba(255, 200, 100, 0.2)', padding: '0.5em', borderRadius: '8px', fontSize: '0.7em', marginTop: '0.5em', border: '2px solid rgba(255, 180, 0, 0.5)'}}>
-
-**Future labs will continue building these skills:** Lab 8+ will add pair programming, code review practice, and team coordination exercises.
-
-</div>
-
 <aside className="notes">
 **Frame the lecture:**
 - This isn't new material—it's formalizing what they've been doing
-- Lab 5's "building shared understanding" = exactly what teams need
 - Lab 4's "respectful disagreement" = HRT principles
-- Lab 3's forum posts = scalable knowledge sharing
-- Lab 2's pair discussions = cognitive diversity in action
+- Lab 5's "building shared understanding" = exactly what teams need
+- Lab 6's "explain then get feedback" = how code review works
+- Lab 8's "I chose X because Y" = professional decision communication
 
 **The difference:** In labs, it's 2-4 people for 1-2 hours. In group projects and careers, it's 4-10 people for weeks or months. The principles scale up, but so do the consequences of getting them wrong.
 
@@ -230,7 +270,7 @@ The discomfort of having your assumptions challenged is the feeling of blind spo
 
 <div className="fragment" style={{backgroundColor: 'rgba(100,150,255,0.15)', padding: '0.4em', borderRadius: '6px', fontSize: '0.7em', marginTop: '0.5em'}}>
 
-📘 **Lab 2:** You discussed design questions with a neighbor and reflected: "Did you and your neighbor have different approaches? What did you learn?" That's cognitive diversity in action.
+📘 **Lab 2 in action:** When you discussed "Why is Light abstract?" with a neighbor, you probably discovered different approaches. That reflection prompt—"What did you learn from someone who thought differently?"—was cognitive diversity in action.
 
 </div>
 
@@ -325,14 +365,330 @@ Below all panels, show the formula n(n-1)/2 and a quote bubble from Fred Brooks:
 
 **Inverse Conway Maneuver:** Some companies deliberately restructure teams to get the architecture they want.
 
-> **Transition:** Before we talk about team dynamics, let's understand how modern software teams actually work day-to-day...
+> **Transition:** Brooks' Law tells us communication doesn't scale—so we need practices that do. But before we learn the practices, we need to understand the mindset that makes them work...
 </aside>
 
 </Slide>
 
 {/* ============================================ */}
-{/* ARC 2: HOW PROFESSIONAL TEAMS WORK (~10 min)*/}
-{/* CI, Pull Requests, Code Review basics       */}
+{/* ARC 2: THE FOUNDATION - HRT (~8 min)        */}
+{/* The mindset that enables all team practices */}
+{/* ============================================ */}
+
+<Slide>
+
+## The Three Pillars of Team Interaction: HRT
+
+<Img
+  src="/img/lectures/web/l22-hrt-shield.webp"
+  prompt="An illustration showing HRT (Humility, Respect, Trust) as a protective shield for teams. The image is divided into two halves:
+
+LEFT SIDE - 'WITHOUT HRT' (darker, chaotic): A team in disarray. Show three toxic patterns attacking them like dark clouds or monsters, each with TWO example behaviors:
+
+EGO monster (lack of humility):
+- Scene 1: Someone with arms crossed, refusing to admit mistakes, speech bubble: 'I'm never wrong'
+- Scene 2: Someone struggling alone at their desk, refusing to ask for help, thought bubble: 'I should be able to figure this out myself'
+
+DISMISSIVENESS creature (lack of respect):
+- Scene 1: Someone with headphones ignoring a teammate trying to speak, speech bubble: 'Whatever...'
+- Scene 2: Someone taking credit for another's idea, speech bubble: 'I came up with this'
+
+MICROMANAGEMENT specter (lack of trust):
+- Scene 1: Someone hovering over another's shoulder, watching every keystroke, speech bubble: 'Let me see that'
+- Scene 2: Someone rewriting a teammate's code without discussing it first, deleting their work
+
+The team members look stressed, isolated, and frustrated.
+
+RIGHT SIDE - 'WITH HRT' (bright, harmonious): The same team, now protected by a glowing heart-shaped shield divided into three sections. Each section shows TWO small example scenes:
+
+HUMILITY (visual cues: blue glow):
+- Scene 1: Person looking at their own code, finding a bug, saying 'My mistake—let me fix it'
+- Scene 2: Someone raising their hand saying 'I don't know, but I'll learn'
+
+RESPECT (visual cues: green glow):
+- Scene 1: Two people in conversation, one actively listening (ear icon) while the other speaks
+- Scene 2: Someone giving credit: 'Great idea, Sarah!' with a thumbs up
+
+TRUST (visual cues: purple glow):
+- Scene 1: One person handing off a task to another and walking away calmly (not hovering)
+- Scene 2: Someone asking for help openly: 'Can you help me with this?' without shame
+
+The shield has 'HRT' emblazoned on it with a small note '(pronounced: heart)'. Arrows show the toxic patterns bouncing off the shield.
+
+Style: Clean, modern illustration with clear contrast between the two sides. The right side should feel warm and collaborative."
+  alt="HRT as a protective shield: Left side shows a team attacked by Ego, Dismissiveness, and Micromanagement monsters. Right side shows the same team protected by a heart-shaped HRT shield with three sections, each with two example behaviors. Humility (blue): admitting mistakes, asking to learn. Respect (green): active listening, giving credit. Trust (purple): delegating calmly, asking for help openly."
+/>
+
+<p style={{fontSize: '0.75em', marginTop: '0.5em'}}>
+From <em>Team Geek</em> / <em>Debugging Teams</em> by Fitzpatrick & Collins-Sussman.
+</p>
+
+<aside className="notes">
+**HRT (pronounced "heart"):**
+- **Humility:** You're not omniscient or infallible
+- **Respect:** You genuinely care about your teammates
+- **Trust:** You believe others are competent
+
+**Why HRT comes first:** Every team practice we'll discuss—PRs, code review, conflict resolution—depends on these pillars. Without HRT, the best processes break down. With HRT, even imperfect processes work.
+
+**These are pillars we will hold you accountable to in group work in this course.**
+
+> **Transition:** Let's see what each pillar means in practice...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Pillar 1: Humility
+
+<p style={{fontSize: '0.85em'}}>
+<strong>You are not the center of the universe</strong> (nor is your code!). You're neither omniscient nor infallible. You're open to self-improvement.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em', marginTop: '0.5em'}}>
+
+<div style={{backgroundColor: 'rgba(255,100,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
+
+**Without Humility:**
+
+- "I'm never wrong about code."
+- "I don't need to ask—I'll figure it out myself."
+- Refusing to acknowledge bugs you introduced
+- Taking criticism of code as personal attacks
+
+</div>
+
+<div style={{backgroundColor: 'rgba(100,150,255,0.1)', padding: '0.5em', borderRadius: '8px'}}>
+
+**With Humility:**
+
+- "My mistake—let me fix it."
+- "I don't know, but I'll learn."
+- Accepting that your code can be improved
+- Being willing to change your mind
+
+</div>
+
+</div>
+
+<p className="fragment" style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#6495ED'}}>
+Humility isn't self-deprecation—it's honest self-assessment and openness to growth.
+</p>
+
+<div className="fragment" style={{backgroundColor: 'rgba(100,150,255,0.15)', padding: '0.4em', borderRadius: '6px', fontSize: '0.7em', marginTop: '0.5em'}}>
+
+📘 **Labs 4 & 6 in action:** In Lab 4, you practiced "I think X because Y"—sharing reasoning, not declaring the One True Answer. In Lab 6, you learned to reject AI suggestions you don't understand: "Rejecting a suggestion is not failure—it's critical thinking." Both require humility to question yourself.
+
+</div>
+
+<aside className="notes">
+**Core insight:** Humility is about accurate self-perception, not false modesty.
+
+**Why it matters for teams:**
+- A teammate who can't admit mistakes creates a culture where bugs get hidden
+- Someone who won't ask questions stays stuck longer than necessary
+- Defending bad code wastes everyone's time in code review
+
+**Lab connections:**
+- Lab 4's "I think X because Y" = stating positions without demanding
+- Lab 6's "reject suggestions you don't understand" = humility to question even "smart" sources
+
+**The paradox:** The best engineers are often the most humble because they've seen enough to know how much they don't know.
+
+> **Transition:** The second pillar is about how you treat others...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Pillar 2: Respect
+
+<p style={{fontSize: '0.85em'}}>
+<strong>You genuinely care about others you work with.</strong> You treat them kindly and appreciate their abilities and accomplishments.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em', marginTop: '0.5em'}}>
+
+<div style={{backgroundColor: 'rgba(255,100,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
+
+**Without Respect:**
+
+- Ignoring teammates when they speak
+- Taking credit for others' ideas
+- Dismissing suggestions without consideration
+- "Whatever..." or "That's a dumb idea."
+
+</div>
+
+<div style={{backgroundColor: 'rgba(100,255,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
+
+**With Respect:**
+
+- Listening to understand, not just to respond
+- "Great idea, Sarah!" — giving credit
+- Assuming competence and good intentions
+- Valuing contributions different from yours
+
+</div>
+
+</div>
+
+<p className="fragment" style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#32CD32'}}>
+Respect isn't just politeness—it's genuine care for your teammates as people and professionals.
+</p>
+
+<div className="fragment" style={{backgroundColor: 'rgba(100,255,100,0.15)', padding: '0.4em', borderRadius: '6px', fontSize: '0.7em', marginTop: '0.5em'}}>
+
+📘 **Lab 5 in action:** You practiced "listen to understand, not to argue"—treating your partner's interpretation as worth understanding, even when different from yours. That's respect.
+
+</div>
+
+<aside className="notes">
+**Core insight:** Respect means treating teammates as capable colleagues, not obstacles to work around.
+
+**Why it matters for teams:**
+- People who feel respected contribute more ideas
+- Disrespect creates psychological unsafety—people stop speaking up
+- Credit-hogging destroys collaboration faster than almost anything
+
+**The test:** When a junior teammate suggests something, do you genuinely consider it? Or do you dismiss it because of who said it?
+
+**Respect also means:** Direct, honest feedback. "You're doing great!" when they're not isn't respect—it's condescension.
+
+> **Transition:** The third pillar enables everything else...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Pillar 3: Trust
+
+<p style={{fontSize: '0.85em'}}>
+<strong>You believe others are competent</strong> and will do the right thing. You're OK with letting them drive when appropriate.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em', marginTop: '0.5em'}}>
+
+<div style={{backgroundColor: 'rgba(255,100,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
+
+**Without Trust:**
+
+- Hovering over teammates, checking every keystroke
+- Rewriting others' code without discussing it
+- Requiring approval for every small decision
+- "Let me just do it myself—it'll be faster."
+
+</div>
+
+<div style={{backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.5em', borderRadius: '8px'}}>
+
+**With Trust:**
+
+- Delegating without micromanaging
+- Giving space to make (and learn from) mistakes
+- Discussing before rewriting someone's work
+- Trusting teammates to ask for help when needed
+
+</div>
+
+</div>
+
+<p className="fragment" style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
+Trust isn't blind faith—it's giving people the benefit of the doubt and room to grow.
+</p>
+
+<div className="fragment" style={{backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.4em', borderRadius: '6px', fontSize: '0.7em', marginTop: '0.5em'}}>
+
+📘 **Labs 4 & 8 in action:** Lab 4's "be willing to be persuaded" meant trusting your partner's reasoning might reveal something you missed. In Lab 8, you reviewed another pair's interfaces without rewriting them—discussing before suggesting changes. That's trust.
+
+</div>
+
+<aside className="notes">
+**Core insight:** Trust is what allows teams to work in parallel. Without it, everything becomes sequential bottlenecks.
+
+**Why it matters for teams:**
+- Micromanagement destroys morale and slows everything down
+- People can't grow if they're never allowed to make mistakes
+- Rewriting code without discussion signals "I don't respect your work"
+
+**Trust is built, not given:** Start with reasonable trust, then adjust based on evidence. Someone who consistently delivers earns more autonomy. Someone who consistently misses deadlines needs more check-ins—but delivered respectfully.
+
+**The flip side:** Trust also means trusting yourself to ask for help. Struggling silently because you're afraid to look incompetent isn't heroic—it's a trust failure.
+
+> **Transition:** Let's see all three pillars working together...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## HRT in Practice: All Three Together
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5em', fontSize: '0.65em'}}>
+
+<div style={{backgroundColor: 'rgba(100,150,255,0.1)', padding: '0.5em', borderRadius: '8px'}}>
+
+**Humility**
+
+- Admit when you don't know something
+- Accept that your code can be improved
+- Be willing to change your mind
+- Recognize others' valuable perspectives
+
+</div>
+
+<div style={{backgroundColor: 'rgba(100,255,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
+
+**Respect**
+
+- Give credit where it's due
+- Listen to understand, not just to respond
+- Assume competence and good intentions
+- Value contributions different from yours
+
+</div>
+
+<div style={{backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.5em', borderRadius: '8px'}}>
+
+**Trust**
+
+- Delegate without micromanaging
+- Give space to make and learn from mistakes
+- Don't rewrite others' code without discussion
+- Trust teammates to ask for help when needed
+
+</div>
+
+</div>
+
+<p className="fragment" style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
+The pillars reinforce each other: humility enables respect, respect builds trust, and trust requires humility.
+</p>
+
+<aside className="notes">
+**The three pillars are interconnected:**
+- Without humility, you can't truly respect others (you think you're better)
+- Without respect, trust can't develop (why would you trust someone who dismisses you?)
+- Without trust, humility feels risky (admitting weakness to someone who might exploit it)
+
+**You've practiced this across labs:**
+- Lab 4: "I think X because Y" (Humility), "What's driving your preference?" (Respect), "Be willing to be persuaded" (Trust)
+- Lab 6: Explaining bugs, receiving "what was clear vs. confusing" feedback (all three pillars)
+- Lab 8: "I chose X because Y. I considered Z, but..." (Humility—defending without demanding)
+
+**The test:** Think about your best team experience. Which pillars were present? Think about your worst. Which were missing?
+
+> **Transition:** HRT is the mindset. Now let's see how professional teams put these principles into practice with specific tools and workflows...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 3: HOW PROFESSIONAL TEAMS WORK (~15 min)*/}
+{/* CI, PRs, Code Review with HRT applied       */}
 {/* ============================================ */}
 
 <Slide>
@@ -503,7 +859,7 @@ Before your PR is merged, teammates read your changes and leave comments.
 </div>
 
 <p className="fragment" style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
-Code review is where technical skills meet collaboration skills. We'll return to this later.
+Code review is where HRT is tested every day. Let's see what that looks like in practice.
 </p>
 
 <aside className="notes">
@@ -511,15 +867,236 @@ Code review is where technical skills meet collaboration skills. We'll return to
 - Code review is standard practice in professional teams
 - You'll do this in your group projects
 - It can feel uncomfortable at first to have others critique your code
-- Later in this lecture, we'll discuss HOW to do code review well (HRT principles)
 
-> **Transition:** Now that you understand how teams work day-to-day, let's talk about how teams form...
+**Key point:** Code review is where HRT principles become concrete. The next slide shows the difference between reviews that build teams and reviews that erode them.
+
+> **Transition:** Let's see HRT applied to code review...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Applying HRT to Code Review
+
+<div style={{display: 'flex', flexDirection: 'column', gap: '0.5em', fontSize: '0.75em'}}>
+
+<div style={{backgroundColor: 'rgba(255,100,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
+
+**Without HRT**
+
+> "This is wrong. Use a HashMap instead."
+
+> "Why would you do it this way?"
+
+> "This whole function needs to be rewritten."
+
+</div>
+
+<div style={{backgroundColor: 'rgba(100,255,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
+
+**With HRT**
+
+> "Have you considered using a HashMap here? It would give us O(1) lookups instead of O(n)."
+
+> "I'm curious about this approach—what led you to this design?"
+
+> "I'm having trouble following the logic in this function. Could we pair on simplifying it?"
+
+</div>
+
+</div>
+
+<p className="fragment" style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
+Same technical goals. The HRT version treats the author as a capable colleague, not a subordinate to be corrected.
+</p>
+
+<div className="fragment" style={{backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.4em', borderRadius: '6px', fontSize: '0.7em', marginTop: '0.5em'}}>
+
+📘 **Lab 8 in action:** When defending your design choices in code review, use the format you practiced: "I chose X because Y. I considered Z, but X is better here because..." When asking questions, use "Why did you prioritize that?"—drawing out reasoning, not challenging.
+
+</div>
+
+<aside className="notes">
+**Key patterns for HRT code review:**
+- Ask questions rather than making demands
+- Explain your reasoning—help the author learn
+- Acknowledge good work, not just problems
+- Critique the code, not the person
+
+**Both versions achieve the same technical outcome—but one builds the team, the other erodes it.**
+
+**Lab 8's structured format:** "I chose X because Y. I considered Z, but X is better because..." This isn't just for architecture discussions—it's how you explain any design decision in a PR.
+
+**This is the WHY for how you write:** Every code review comment, every GitHub issue, every question you ask—HRT should guide how you phrase it.
+
+> **Transition:** Let's look at how to write effective GitHub issues and PRs with these principles...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Anatomy of a Good GitHub Issue
+
+<div style={{display: 'flex', flexDirection: 'column', gap: '0.5em', fontSize: '0.7em'}}>
+
+<div style={{backgroundColor: 'rgba(255,100,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
+
+**Bad issue** — **Title:** "Unable to login" — **Body:** "It doesn't work. Please fix."
+
+</div>
+
+<div style={{backgroundColor: 'rgba(255,100,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
+
+**Bad issue** — **Title:** "Login fails silently when password contains special characters" — **Body:** "It doesn't work. Please fix."
+
+</div>
+
+<div style={{backgroundColor: 'rgba(100,255,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
+
+**Good issue** — **Title:** "Login fails silently when password contains special characters"
+
+**Body:**
+1. Go to login page
+2. Enter username "testuser"
+3. Enter password "p@ss#word!"
+4. Click "Sign In"
+5. Nothing happens, no error displayed
+
+**Expected:** Error message or successful login — **Environment:** Chrome 120, macOS 14.2
+
+</div>
+
+</div>
+
+<aside className="notes">
+**A good issue includes:**
+- Clear, specific title
+- Context: what you were trying to do
+- Reproduction steps (for bugs)
+- Expected vs. actual behavior
+- Environment details
+- Screenshots (for UI issues)
+
+**This is HRT in action:** A well-written issue respects your teammates' time. It shows you've done the work to help them help you.
+
+**Caveat:** If you're not certain about the root cause, don't assume—"Unable to login" may be better than guessing wrong.
+
+> **Transition:** Similar principles apply to pull requests...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Pull Request Best Practices
+
+<div style={{fontSize: '0.8em'}}>
+
+**Link to the issue:**
+
+```markdown
+Fixes #42
+
+This PR adds input validation for special characters in passwords.
+```
+
+</div>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.7em', marginTop: '0.5em'}}>
+
+<div>
+
+**Keep changes small and focused**
+- One logical change per PR
+- Reviewable in 15-30 minutes
+- Easier to review, easier to revert
+
+</div>
+
+<div>
+
+**Meaningful commit messages**
+- &#10007; "fix bug"
+- &#10007; "WIP"
+- &#10003; "Add regex validation for password special characters"
+- &#10003; "Display error toast when login validation fails"
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
+The code shows <em>what</em> changed. The description should explain <em>why</em>.
+</p>
+
+<aside className="notes">
+**PR as knowledge sharing:**
+- Reviewers learn about parts of the codebase they didn't write
+- Team members align on style and patterns
+- Junior devs learn from feedback; senior devs articulate reasoning
+
+**Small PRs = Trust:** When you send small, focused PRs, you're trusting your teammates to review quickly. When you send a 2000-line PR, you're saying "my time is more valuable than yours."
+
+> **Transition:** What about asking questions outside of code?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Making It Easy for Others to Help You
+
+<div style={{backgroundColor: 'rgba(147, 112, 219, 0.1)', padding: '0.5em', borderRadius: '8px', fontSize: '0.75em'}}>
+
+> **I am trying to** [goal] **so that I can** [context/motivation].
+>
+> **I am running into** [specific problem—error message, unexpected behavior].
+>
+> **I have looked at** [resources consulted] **and tried** [approaches attempted].
+>
+> **My tech stack is:** [relevant versions and configuration].
+>
+> **I think the problem could be** [your hypothesis, if you have one].
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.8em', marginTop: '0.5em'}}>
+
+**Before asking, search first:**
+- Stack Overflow, team Slack/Discord history, project docs, closed GitHub issues
+
+**After solving, document the solution:**
+- Update the original thread, add to wiki, write a blog post
+
+</div>
+
+<div className="fragment" style={{backgroundColor: 'rgba(100,150,255,0.15)', padding: '0.4em', borderRadius: '6px', fontSize: '0.7em', marginTop: '0.5em'}}>
+
+📘 **Labs 3 & 6 in action:** When you posted on the forum (Lab 3), you included context, expected behavior, and what you tried. In Lab 6, you learned the "3-Question Test" before using AI code: Can I explain this? Can I modify this? Can I debug this? Both are about respecting others' time—including your future self.
+
+</div>
+
+<aside className="notes">
+**Why this template works:**
+- Goal and context help others understand what you actually need
+- Specific problem lets people diagnose without guessing
+- Resources consulted shows you've done your homework
+- Your hypothesis gives experts a starting point
+
+**This connects back to HRT:**
+- **Humility:** "I've tried X and Y but I'm stuck"
+- **Respect:** "Here's everything you need to help me"
+- **Trust:** "I believe you can help me figure this out"
+
+> **Transition:** Now that you know HOW to communicate on GitHub, let's talk about how teams form...
 </aside>
 
 </Slide>
 
 {/* ============================================ */}
-{/* ARC 3: FORMING YOUR TEAM (~8 min)           */}
+{/* ARC 4: FORMING YOUR TEAM (~6 min)           */}
 {/* Tuckman stages and team contracts           */}
 {/* ============================================ */}
 
@@ -591,7 +1168,7 @@ Explicitly discuss and document expectations <strong>before</strong> conflicts a
 
 <div className="fragment" style={{backgroundColor: 'rgba(255, 200, 100, 0.2)', padding: '0.5em', borderRadius: '8px', fontSize: '0.8em', marginTop: '0.5em', border: '2px solid rgba(255, 180, 0, 0.5)'}}>
 
-**For this class:** Your team contract will be your <strong>first team deliverable</strong>. Take it seriously—it's the foundation for everything that follows.
+**For this class:** Your team contract is <strong>live now</strong>—it's your first team deliverable. We'll cover the details at the end of this lecture.
 
 </div>
 
@@ -601,331 +1178,20 @@ Explicitly discuss and document expectations <strong>before</strong> conflicts a
 - Create a reference document to return to during disagreements
 - Not a legal document—a shared understanding
 
-**This is why we poll you:** When forming groups next week, we'll ask about your preferred working hours, communication styles, and availability. This isn't busywork—it's so we can help form teams with compatible expectations from the start.
+**This is why we polled you:** We asked about working hours, communication styles, and availability to help form compatible teams.
 
-**First deliverable:** Emphasize that this isn't optional or a formality. The team contract is graded and sets the foundation for how they'll work together. Teams that skip this step or do it carelessly often struggle later.
+**Your first deliverable is live:** The team contract is graded and sets the foundation for everything. Teams that skip this step or do it carelessly struggle later. Take it seriously—it's due soon.
 
-> **Transition:** Now that we've covered how teams form, let's talk about how to work together effectively day-to-day...
+> **Transition:** Team contracts establish shared expectations. But even with good agreements, conflicts happen. Here's how to handle them...
 </aside>
 
 </Slide>
 
 {/* ============================================ */}
-{/* ARC 4: WORKING TOGETHER (~12 min)           */}
-{/* HRT, conflict resolution, accountability,   */}
+{/* ARC 5: WHEN THINGS GO WRONG (~8 min)        */}
+{/* Conflict resolution, accountability,        */}
 {/* and feedback                                */}
 {/* ============================================ */}
-
-<Slide>
-
-## The Three Pillars of Team Interaction: HRT
-
-<Img
-  src="/img/lectures/web/l22-hrt-shield.webp"
-  prompt="An illustration showing HRT (Humility, Respect, Trust) as a protective shield for teams. The image is divided into two halves:
-
-LEFT SIDE - 'WITHOUT HRT' (darker, chaotic): A team in disarray. Show three toxic patterns attacking them like dark clouds or monsters, each with TWO example behaviors:
-
-EGO monster (lack of humility):
-- Scene 1: Someone with arms crossed, refusing to admit mistakes, speech bubble: 'I'm never wrong'
-- Scene 2: Someone struggling alone at their desk, refusing to ask for help, thought bubble: 'I should be able to figure this out myself'
-
-DISMISSIVENESS creature (lack of respect):
-- Scene 1: Someone with headphones ignoring a teammate trying to speak, speech bubble: 'Whatever...'
-- Scene 2: Someone taking credit for another's idea, speech bubble: 'I came up with this'
-
-MICROMANAGEMENT specter (lack of trust):
-- Scene 1: Someone hovering over another's shoulder, watching every keystroke, speech bubble: 'Let me see that'
-- Scene 2: Someone rewriting a teammate's code without discussing it first, deleting their work
-
-The team members look stressed, isolated, and frustrated.
-
-RIGHT SIDE - 'WITH HRT' (bright, harmonious): The same team, now protected by a glowing heart-shaped shield divided into three sections. Each section shows TWO small example scenes:
-
-HUMILITY (visual cues: blue glow):
-- Scene 1: Person looking at their own code, finding a bug, saying 'My mistake—let me fix it'
-- Scene 2: Someone raising their hand saying 'I don't know, but I'll learn'
-
-RESPECT (visual cues: green glow):
-- Scene 1: Two people in conversation, one actively listening (ear icon) while the other speaks
-- Scene 2: Someone giving credit: 'Great idea, Sarah!' with a thumbs up
-
-TRUST (visual cues: purple glow):
-- Scene 1: One person handing off a task to another and walking away calmly (not hovering)
-- Scene 2: Someone asking for help openly: 'Can you help me with this?' without shame
-
-The shield has 'HRT' emblazoned on it with a small note '(pronounced: heart)'. Arrows show the toxic patterns bouncing off the shield.
-
-Style: Clean, modern illustration with clear contrast between the two sides. The right side should feel warm and collaborative."
-  alt="HRT as a protective shield: Left side shows a team attacked by Ego, Dismissiveness, and Micromanagement monsters. Right side shows the same team protected by a heart-shaped HRT shield with three sections, each with two example behaviors. Humility (blue): admitting mistakes, asking to learn. Respect (green): active listening, giving credit. Trust (purple): delegating calmly, asking for help openly."
-/>
-
-<p style={{fontSize: '0.75em', marginTop: '0.5em'}}>
-From <em>Team Geek</em> / <em>Debugging Teams</em> by Fitzpatrick & Collins-Sussman.
-</p>
-
-<aside className="notes">
-**HRT (pronounced "heart"):**
-- **Humility:** You're not omniscient or infallible
-- **Respect:** You genuinely care about your teammates
-- **Trust:** You believe others are competent
-
-**These are pillars we will hold you accountable to in group work in this course.**
-
-> **Transition:** Let's see what each pillar means in practice...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Pillar 1: Humility
-
-<p style={{fontSize: '0.85em'}}>
-<strong>You are not the center of the universe</strong> (nor is your code!). You're neither omniscient nor infallible. You're open to self-improvement.
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em', marginTop: '0.5em'}}>
-
-<div style={{backgroundColor: 'rgba(255,100,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
-
-**Without Humility:**
-
-- "I'm never wrong about code."
-- "I don't need to ask—I'll figure it out myself."
-- Refusing to acknowledge bugs you introduced
-- Taking criticism of code as personal attacks
-
-</div>
-
-<div style={{backgroundColor: 'rgba(100,150,255,0.1)', padding: '0.5em', borderRadius: '8px'}}>
-
-**With Humility:**
-
-- "My mistake—let me fix it."
-- "I don't know, but I'll learn."
-- Accepting that your code can be improved
-- Being willing to change your mind
-
-</div>
-
-</div>
-
-<p className="fragment" style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#6495ED'}}>
-Humility isn't self-deprecation—it's honest self-assessment and openness to growth.
-</p>
-
-<div className="fragment" style={{backgroundColor: 'rgba(100,150,255,0.15)', padding: '0.4em', borderRadius: '6px', fontSize: '0.7em', marginTop: '0.5em'}}>
-
-📘 **Lab 4:** You practiced stating your position without demanding: "I think X because Y"—sharing your reasoning, not declaring the One True Answer.
-
-</div>
-
-<aside className="notes">
-**Core insight:** Humility is about accurate self-perception, not false modesty.
-
-**Why it matters for teams:**
-- A teammate who can't admit mistakes creates a culture where bugs get hidden
-- Someone who won't ask questions stays stuck longer than necessary
-- Defending bad code wastes everyone's time in code review
-
-**Lab connection:** In Lab 4, you practiced stating your position without demanding: "I think X because Y" — that's humility. You're sharing your reasoning, not declaring the One True Answer.
-
-**The paradox:** The best engineers are often the most humble because they've seen enough to know how much they don't know.
-
-> **Transition:** The second pillar is about how you treat others...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Pillar 2: Respect
-
-<p style={{fontSize: '0.85em'}}>
-<strong>You genuinely care about others you work with.</strong> You treat them kindly and appreciate their abilities and accomplishments.
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em', marginTop: '0.5em'}}>
-
-<div style={{backgroundColor: 'rgba(255,100,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
-
-**Without Respect:**
-
-- Ignoring teammates when they speak
-- Taking credit for others' ideas
-- Dismissing suggestions without consideration
-- "Whatever..." or "That's a dumb idea."
-
-</div>
-
-<div style={{backgroundColor: 'rgba(100,255,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
-
-**With Respect:**
-
-- Listening to understand, not just to respond
-- "Great idea, Sarah!" — giving credit
-- Assuming competence and good intentions
-- Valuing contributions different from yours
-
-</div>
-
-</div>
-
-<p className="fragment" style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#32CD32'}}>
-Respect isn't just politeness—it's genuine care for your teammates as people and professionals.
-</p>
-
-<div className="fragment" style={{backgroundColor: 'rgba(100,255,100,0.15)', padding: '0.4em', borderRadius: '6px', fontSize: '0.7em', marginTop: '0.5em'}}>
-
-📘 **Lab 5:** You practiced "listen to understand, not to argue"—treating your partner's perspective as worth understanding, even when you disagree.
-
-</div>
-
-<aside className="notes">
-**Core insight:** Respect means treating teammates as capable colleagues, not obstacles to work around.
-
-**Why it matters for teams:**
-- People who feel respected contribute more ideas
-- Disrespect creates psychological unsafety—people stop speaking up
-- Credit-hogging destroys collaboration faster than almost anything
-
-**Lab connection:** In Lab 5, you practiced "listen to understand, not to argue" — that's respect in action. You're treating your partner's perspective as worth understanding, even if you disagree.
-
-**The test:** When a junior teammate suggests something, do you genuinely consider it? Or do you dismiss it because of who said it?
-
-**Respect also means:** Direct, honest feedback. "You're doing great!" when they're not isn't respect—it's condescension.
-
-> **Transition:** The third pillar enables everything else...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Pillar 3: Trust
-
-<p style={{fontSize: '0.85em'}}>
-<strong>You believe others are competent</strong> and will do the right thing. You're OK with letting them drive when appropriate.
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em', marginTop: '0.5em'}}>
-
-<div style={{backgroundColor: 'rgba(255,100,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
-
-**Without Trust:**
-
-- Hovering over teammates, checking every keystroke
-- Rewriting others' code without discussing it
-- Requiring approval for every small decision
-- "Let me just do it myself—it'll be faster."
-
-</div>
-
-<div style={{backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.5em', borderRadius: '8px'}}>
-
-**With Trust:**
-
-- Delegating without micromanaging
-- Giving space to make (and learn from) mistakes
-- Discussing before rewriting someone's work
-- Trusting teammates to ask for help when needed
-
-</div>
-
-</div>
-
-<p className="fragment" style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
-Trust isn't blind faith—it's giving people the benefit of the doubt and room to grow.
-</p>
-
-<div className="fragment" style={{backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.4em', borderRadius: '6px', fontSize: '0.7em', marginTop: '0.5em'}}>
-
-📘 **Lab 4:** "Be willing to be persuaded"—you trusted that your partner had valid points worth considering, even when you initially disagreed.
-
-</div>
-
-<aside className="notes">
-**Core insight:** Trust is what allows teams to work in parallel. Without it, everything becomes sequential bottlenecks.
-
-**Why it matters for teams:**
-- Micromanagement destroys morale and slows everything down
-- People can't grow if they're never allowed to make mistakes
-- Rewriting code without discussion signals "I don't respect your work"
-
-**Lab connection:** In Lab 4, "be willing to be persuaded" demonstrated trust—you trusted that your partner had valid points worth considering, even if you initially disagreed.
-
-**Trust is built, not given:** Start with reasonable trust, then adjust based on evidence. Someone who consistently delivers earns more autonomy. Someone who consistently misses deadlines needs more check-ins—but delivered respectfully.
-
-**The flip side:** Trust also means trusting yourself to ask for help. Struggling silently because you're afraid to look incompetent isn't heroic—it's a trust failure.
-
-> **Transition:** Let's see all three pillars working together...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## HRT in Practice: All Three Together
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5em', fontSize: '0.65em'}}>
-
-<div style={{backgroundColor: 'rgba(100,150,255,0.1)', padding: '0.5em', borderRadius: '8px'}}>
-
-**Humility**
-
-- Admit when you don't know something
-- Accept that your code can be improved
-- Be willing to change your mind
-- Recognize others' valuable perspectives
-
-</div>
-
-<div style={{backgroundColor: 'rgba(100,255,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
-
-**Respect**
-
-- Give credit where it's due
-- Listen to understand, not just to respond
-- Assume competence and good intentions
-- Value contributions different from yours
-
-</div>
-
-<div style={{backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.5em', borderRadius: '8px'}}>
-
-**Trust**
-
-- Delegate without micromanaging
-- Give space to make and learn from mistakes
-- Don't rewrite others' code without discussion
-- Trust teammates to ask for help when needed
-
-</div>
-
-</div>
-
-<p className="fragment" style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
-The pillars reinforce each other: humility enables respect, respect builds trust, and trust requires humility.
-</p>
-
-<aside className="notes">
-**The three pillars are interconnected:**
-- Without humility, you can't truly respect others (you think you're better)
-- Without respect, trust can't develop (why would you trust someone who dismisses you?)
-- Without trust, humility feels risky (admitting weakness to someone who might exploit it)
-
-**You've practiced this:** Remember Lab 4's "respectful disagreement" exercise? That was HRT in action:
-- "I think X because Y" (Humility—stating position, not demanding)
-- "What's driving your preference?" (Respect—genuine curiosity)
-- "Be willing to be persuaded" (Trust—believing your partner has valid points)
-
-**The test:** Think about your best team experience. Which pillars were present? Think about your worst. Which were missing?
-
-> **Transition:** Even with HRT, conflicts still happen. Let's talk about how to handle them...
-</aside>
-
-</Slide>
 
 <Slide>
 
@@ -996,7 +1262,7 @@ The goal isn't to win—it's to fix the problem and prevent it from happening ag
 
 <div className="fragment" style={{backgroundColor: 'rgba(100,150,255,0.15)', padding: '0.4em', borderRadius: '6px', fontSize: '0.7em', marginTop: '0.5em'}}>
 
-📘 **Lab 4:** You had to reach a *joint decision* with your partner—not "agree to disagree." Phrases like "What's driving your preference?" and "I hadn't considered that" helped bridge differences.
+📘 **Lab 4 in action:** When you and your partner disagreed, you didn't just "agree to disagree"—you had to reach a *joint decision*. Phrases like "What's driving your preference?" and "I hadn't considered that" helped bridge differences. That's conflict resolution.
 
 </div>
 
@@ -1104,60 +1370,59 @@ Your instinct may be to explain, defend, or minimize. Resist.
 The discomfort is the point. If all feedback feels good, you're only hearing from people who tell you what you want to hear.
 </p>
 
+<div className="fragment" style={{backgroundColor: 'rgba(100,150,255,0.15)', padding: '0.4em', borderRadius: '6px', fontSize: '0.7em', marginTop: '0.5em'}}>
+
+📘 **Lab 6 in action:** In the Partner Check, you explained a bug without notes. Your partner's job was to ask one clarifying question, then share what was clear vs. confusing. That's how feedback should work—specific, constructive, and focused on improving understanding.
+
+</div>
+
 <aside className="notes">
 **The feedback paradox:**
 - The most useful feedback is the most uncomfortable
 - It reveals blind spots you didn't know you had
 - Seek out people who will challenge you
 
-> **Transition:** Everything we've discussed—HRT, feedback, conflict resolution—comes alive when you communicate in writing. Written communication is where teams succeed or fail at scale...
+**Lab 6's feedback model:** Partner asks a clarifying question, then shares "what was clear vs. confusing"—not "you're wrong," but specific, constructive observations.
+
+> **Transition:** Conflicts and feedback are important—but they're one-time events. Knowledge sharing is ongoing. And remember Brooks' Law: as teams grow, you need communication that scales better than O(n²). Let's talk about how to make that happen...
 </aside>
 
 </Slide>
 
 {/* ============================================ */}
-{/* ARC 5: EFFECTIVE WRITTEN COMMUNICATION      */}
-{/* Scalable knowledge, detailed how-tos        */}
-{/* Scalable knowledge sharing, issues, PRs,    */}
-{/* code review, and asking questions           */}
+{/* ARC 6: SCALABLE KNOWLEDGE SHARING (~5 min)  */}
+{/* Making communication scale sub-linearly     */}
 {/* ============================================ */}
 
 <Slide>
 
-## Written Communication Is a Force Multiplier
+## The Answer to Brooks' Law: Scalable Communication
 
 <p style={{fontSize: '0.85em'}}>
-Everything we've discussed comes together when you communicate in writing:
+Brooks' Law says communication overhead grows as n(n-1)/2. The answer isn't fewer teammates—it's <strong>communication that scales sub-linearly</strong>.
 </p>
 
 <ul style={{fontSize: '0.8em'}}>
-  <li><strong>HRT:</strong> Written words lack tone — extra care needed to show respect and assume good intent</li>
-  <li><strong>Scalable knowledge sharing:</strong> Written communication persists, gets searched, gets reused</li>
-  <li><strong>Feedback:</strong> Clear writing makes it easier for others to help you</li>
-  <li><strong>Conway's Law:</strong> How teams communicate shapes the software — written artifacts are the connective tissue</li>
+  <li><strong>Written communication persists:</strong> Gets searched, gets reused, doesn't require everyone in the same room</li>
+  <li><strong>HRT applies extra here:</strong> Written words lack tone—extra care needed to show respect and assume good intent</li>
+  <li><strong>Conway's Law reminder:</strong> How you communicate shapes your software—written artifacts are the connective tissue</li>
 </ul>
 
 <p className="fragment" style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
-These skills apply everywhere: GitHub, Slack, email, documentation, Stack Overflow, AI prompts, and beyond.
+Rule of thumb: If you've explained something to more than two people, write it down.
 </p>
 
 <aside className="notes">
-**Why this matters:**
-- In async/remote work, writing IS your communication
-- A well-written issue saves hours of back-and-forth
-- A poorly-written message can damage relationships (missing tone cues)
+**The key insight—connecting back to Arc 1:**
+- Brooks' Law means we need communication that scales sub-linearly
+- One-to-one conversations are valuable but don't scale
+- Persistent, searchable documentation is the best investment
 
-**The broader application:**
-- We'll use GitHub as our examples, but these principles apply to:
-  - Slack messages and Discord posts
-  - Emails to teammates, TAs, and professors
-  - Documentation you write
-  - Questions you ask on Stack Overflow or forums
-  - Even prompts you write for AI assistants
+**You've already been doing this:** Your GitHub issues, PR descriptions, code review comments, and forum posts are all scalable knowledge sharing.
 
-**Key insight:** The time you invest in clear writing pays dividends — your future self and teammates will thank you.
+**The third explanation should be a link:** If you've answered the same question three times, create documentation instead.
 
-> **Transition:** Not all written communication scales equally. Let's look at the spectrum...
+> **Transition:** Let's see the spectrum of scalability...
 </aside>
 
 </Slide>
@@ -1210,7 +1475,7 @@ Research shows developers see ~50% productivity boost when documentation is up-t
 
 <div className="fragment" style={{backgroundColor: 'rgba(100,150,255,0.15)', padding: '0.4em', borderRadius: '6px', fontSize: '0.7em', marginTop: '0.5em'}}>
 
-📘 **Lab 3:** Your forum posts are one-to-many, persistent knowledge sharing. When you answer someone's question well, everyone benefits—not just the asker.
+📘 **Labs 3 & 6 in action:** Forum posts (Lab 3) are one-to-many, persistent knowledge sharing—everyone benefits. Lab 6 emphasized "after solving, document the solution." Both turn one-time help into scalable knowledge.
 
 </div>
 
@@ -1258,280 +1523,6 @@ Regular check-ins (standups, weekly syncs) help surface blockers early.
 - PRs: connect code changes to issues with "Fixes #123"
 
 **Research on student teams:** Weekly surveys effectively identify struggling teams before problems become critical.
-
-> **Transition:** Let's look at how to write effective issues...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Anatomy of a Good GitHub Issue
-
-<div style={{display: 'flex', flexDirection: 'column', gap: '0.5em', fontSize: '0.7em'}}>
-
-<div style={{backgroundColor: 'rgba(255,100,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
-
-**Bad issue** — **Title:** "Unable to login" — **Body:** "It doesn't work. Please fix."
-
-</div>
-
-<div style={{backgroundColor: 'rgba(255,100,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
-
-**Bad issue** — **Title:** "Login fails silently when password contains special characters" — **Body:** "It doesn't work. Please fix."
-
-</div>
-
-<div style={{backgroundColor: 'rgba(100,255,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
-
-**Good issue** — **Title:** "Login fails silently when password contains special characters"
-
-**Body:**
-1. Go to login page
-2. Enter username "testuser"
-3. Enter password "p@ss#word!"
-4. Click "Sign In"
-5. Nothing happens, no error displayed
-
-**Expected:** Error message or successful login — **Environment:** Chrome 120, macOS 14.2
-
-</div>
-
-</div>
-
-<aside className="notes">
-**A good issue includes:**
-- Clear, specific title
-- Context: what you were trying to do
-- Reproduction steps (for bugs)
-- Expected vs. actual behavior
-- Environment details
-- Screenshots (for UI issues)
-
-**Caveat:** If you're not certain about the root cause, don't assume—"Unable to login" may be better than guessing wrong.
-
-> **Transition:** Similar principles apply to pull requests...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Pull Request Best Practices
-
-<div style={{fontSize: '0.8em'}}>
-
-**Link to the issue:**
-
-```markdown
-Fixes #42
-
-This PR adds input validation for special characters in passwords.
-```
-
-</div>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.7em', marginTop: '0.5em'}}>
-
-<div>
-
-**Keep changes small and focused**
-- One logical change per PR
-- Reviewable in 15-30 minutes
-- Easier to review, easier to revert
-
-</div>
-
-<div>
-
-**Meaningful commit messages**
-- &#10007; "fix bug"
-- &#10007; "WIP"
-- &#10003; "Add regex validation for password special characters"
-- &#10003; "Display error toast when login validation fails"
-
-</div>
-
-</div>
-
-<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
-The code shows <em>what</em> changed. The description should explain <em>why</em>.
-</p>
-
-<aside className="notes">
-**PR as knowledge sharing:**
-- Reviewers learn about parts of the codebase they didn't write
-- Team members align on style and patterns
-- Junior devs learn from feedback; senior devs articulate reasoning
-
-**Apply HRT in reviews:** Ask questions, explain reasoning, acknowledge good work, critique code not people.
-
-> **Transition:** What about asking questions outside of code review?
-</aside>
-
-</Slide>
-
-<Slide>
-
-## The Anatomy of a Bad Question
-
-A real <a href="https://stackoverflow.com/questions/31279359/new-to-coding-can-anyone-assist-me" target="_blank" rel="noopener noreferrer">Stack Overflow question</a> from 2015:
-<div style={{backgroundColor: 'rgba(255,100,100,0.1)', padding: '0.5em', borderRadius: '8px', fontSize: '0.8em'}}>
-
-> **New To Coding. Can anyone assist me?**
->
-> I am trying to make a word counter and I just can't seem to get it. Can anyone help?
-
-</div>
-
-<p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
-This question received downvotes and no helpful answers. Why?
-</p>
-
-<ul style={{fontSize: '0.75em'}}>
-  <li>Vague title that doesn't describe the problem</li>
-  <li>"Can't seem to get it" — what's going wrong?</li>
-  <li>No error message or unexpected behavior described</li>
-  <li>No indication of what was already tried</li>
-</ul>
-
-<aside className="notes">
-**This is a real Stack Overflow question.**
-- It wastes everyone's time, including the asker's
-- People want to help, but they need information to do so
-
-> **Transition:** Here's a template that works...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Make It Easy for People to Help You
-
-<div style={{backgroundColor: 'rgba(147, 112, 219, 0.1)', padding: '0.5em', borderRadius: '8px', fontSize: '0.75em'}}>
-
-> **I am trying to** [goal] **so that I can** [context/motivation].
->
-> **I am running into** [specific problem—error message, unexpected behavior].
->
-> **I have looked at** [resources consulted] **and tried** [approaches attempted].
->
-> **My tech stack is:** [relevant versions and configuration].
->
-> **I think the problem could be** [your hypothesis, if you have one].
-
-</div>
-
-<div className="fragment" style={{fontSize: '0.8em', marginTop: '0.5em'}}>
-
-**Before asking, search first:**
-- Stack Overflow, team Slack/Discord history, project docs, closed GitHub issues
-
-**After solving, document the solution:**
-- Update the original thread, add to wiki, write a blog post
-
-</div>
-
-<div className="fragment" style={{backgroundColor: 'rgba(100,150,255,0.15)', padding: '0.4em', borderRadius: '6px', fontSize: '0.7em', marginTop: '0.5em'}}>
-
-📘 **Lab 3:** You practiced asking effective questions on the forum—including what you're trying to do, what you expected, what happened, and what you tried.
-
-</div>
-
-<aside className="notes">
-**Why this template works:**
-- Goal and context help others understand what you actually need
-- Specific problem lets people diagnose without guessing
-- Resources consulted shows you've done your homework
-- Your hypothesis gives experts a starting point
-
-**You practiced this in Lab 3:** The forum post exercise asked you to either ask a good question OR answer someone else's. Good questions included: what you're trying to do, what you expected, what actually happened, and what you tried.
-
-**This connects back to scalable knowledge sharing:** Every documented solution is one less interruption for your teammates.
-
-> **Transition:** Remember code review from earlier? Let's go deeper on how it connects to everything we've discussed...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Code Review as Knowledge Sharing
-
-<Img
-  src="/img/lectures/web/l22-code-review-knowledge.webp"
-  prompt="An illustration showing code review as a knowledge-sharing mechanism with three benefits radiating outward from a central code review scene. In the center, two developers sit side-by-side looking at code on a screen with comment bubbles and green checkmarks.
-
-Radiating outward like spokes:
-
-1. KNOWLEDGE TRANSFER (top): An arrow from the reviewer to a brain icon, with the text 'Reviewers learn parts of the codebase they didn't write.' Show the reviewer's brain lighting up with new understanding.
-
-2. CONSISTENCY (left): Multiple code files all formatted the same way, with a style guide icon. Text: 'Team aligns on style and patterns.'
-
-3. MENTORSHIP (right): A junior developer (smaller figure with a learning cap) receiving feedback from a senior developer (taller figure with experience badge), with a growth arrow showing the junior growing. Text: 'Junior devs learn from feedback; senior devs articulate reasoning.'
-
-The overall message: code review isn't just about catching bugs—it's the team's primary learning mechanism."
-  alt="Code review as knowledge-sharing hub: center shows two developers reviewing code. Three spokes: Knowledge Transfer (reviewer's brain lighting up learning new code), Consistency (files aligned to style guide), Mentorship (junior developer growing from senior feedback). Message: code review is the team's primary learning mechanism."
-/>
-
-<aside className="notes">
-**Three functions of code review:**
-1. **Knowledge transfer:** Reviewers learn code they didn't write
-2. **Consistency:** Team aligns on style and patterns
-3. **Mentorship:** Feedback is a two-way learning opportunity
-
-**This is scalable knowledge sharing in action:** Every review spreads knowledge to at least one other person, and the comments persist for future reference.
-
-> **Transition:** Code review is where HRT is tested every day. Let's see what that looks like...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Applying HRT to Code Review
-
-<div style={{display: 'flex', flexDirection: 'column', gap: '0.5em', fontSize: '0.75em'}}>
-
-<div style={{backgroundColor: 'rgba(255,100,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
-
-**Without HRT**
-
-> "This is wrong. Use a HashMap instead."
-
-> "Why would you do it this way?"
-
-> "This whole function needs to be rewritten."
-
-</div>
-
-<div style={{backgroundColor: 'rgba(100,255,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
-
-**With HRT**
-
-> "Have you considered using a HashMap here? It would give us O(1) lookups instead of O(n)."
-
-> "I'm curious about this approach—what led you to this design?"
-
-> "I'm having trouble following the logic in this function. Could we pair on simplifying it?"
-
-</div>
-
-</div>
-
-<p className="fragment" style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
-Same technical goals. The HRT version treats the author as a capable colleague, not a subordinate to be corrected.
-</p>
-
-<aside className="notes">
-**Key pattern:**
-- Ask questions rather than making demands
-- Explain your reasoning
-- Acknowledge good work
-- Critique the code, not the person
-
-**Both versions achieve the same technical outcome—but one builds the team, the other erodes it.**
 
 > **Transition:** Here's a creative example of scalable knowledge sharing that really works...
 </aside>
@@ -1605,36 +1596,159 @@ Murphy-Hill et al., <a href="https://research.google/pubs/do-developers-discover
 
 <Slide>
 
-## Key Takeaways
+## Key Takeaways: What Separates Teams That Ship
 
-<ul style={{fontSize: '0.8em'}}>
-  <li><strong>Teams beat individuals</strong> because nobody is an expert in everything. Cognitive diversity produces better software.</li>
-  <li><strong>Communication overhead</strong> grows quadratically—invest in scalable knowledge sharing (documentation, code review).</li>
-  <li><strong>Storming is normal.</strong> Team contracts and explicit agreements accelerate norming.</li>
-  <li><strong>HRT (Humility, Respect, Trust)</strong> is the foundation of effective collaboration. We hold you accountable to these.</li>
-  <li><strong>Seek feedback proactively</strong>—the discomfort is the point.</li>
-  <li><strong>Write clearly:</strong> good issues, focused PRs, specific questions. Make it easy for others to help you.</li>
-</ul>
+<p style={{fontSize: '0.85em', fontStyle: 'italic', color: '#666', marginBottom: '0.5em'}}>
+Team projects rarely fail because of technical skill—they fail because of collaboration. Here's what makes the difference:
+</p>
 
-<div className="fragment" style={{backgroundColor: 'rgba(147, 112, 219, 0.15)', padding: '0.5em', borderRadius: '8px', fontSize: '0.75em', marginTop: '0.5em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5em', fontSize: '0.7em'}}>
 
-📘 **You've been building these skills:** Labs 2-5 practiced pair discussions, asking good questions, respectful disagreement, and building shared understanding. Future labs will add code review and team coordination.
+<div style={{backgroundColor: 'rgba(100,150,255,0.1)', padding: '0.5em', borderRadius: '8px'}}>
+
+**Principles**
+
+- HRT: Humility, Respect, Trust
+- The discomfort of feedback is the point
+- We hold you accountable to these
+
+</div>
+
+<div style={{backgroundColor: 'rgba(100,255,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
+
+**Practices**
+
+- CI catches bugs before they spread
+- PRs create review checkpoints
+- Issues and code review share knowledge
+- Scalable communication beats O(n²)
+
+</div>
+
+<div style={{backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.5em', borderRadius: '8px'}}>
+
+**Agreements**
+
+- Team contracts accelerate norming
+- Your first deliverable isn't code—it's alignment
+- Fight forward, not back
+
+</div>
+
+</div>
+
+<div className="fragment" style={{backgroundColor: 'rgba(255, 200, 100, 0.2)', padding: '0.5em', borderRadius: '8px', fontSize: '0.75em', marginTop: '0.5em', border: '2px solid rgba(255, 180, 0, 0.5)'}}>
+
+**Your first deliverable:** The team contract is live. Apply these principles *today* with your new team.
 
 </div>
 
 <aside className="notes">
+**Callback to the opening:** We started with the question of what separates teams that ship from teams that implode. The answer: principles (HRT), practices (GitHub workflows), and agreements (team contracts).
+
 **Looking ahead:**
-- **Next week:** Team formation — think about who you want to work with and why
-- **After spring break:** Group project begins — you'll apply everything from today
+- **Now:** Team contract is your first deliverable — apply everything from today immediately
+- **After spring break:** Group project coding begins — you'll build on the foundation you establish now
 
 **For your group projects:**
-- Establish team contracts early
+- Establish team contracts early—it's your first deliverable
 - Use GitHub Issues and Projects to track work
-- Apply HRT in every interaction
+- Apply HRT in every PR comment, every issue, every Slack message
 - Seek and give honest feedback
-- Write clear issues, PRs, and questions
+- When conflict happens (it will), fight forward, not back
 
-**The skills in this lecture are career skills.** Technical ability gets you hired. Collaboration skills determine your trajectory.
+**Final thought:** Technical ability gets you hired. Collaboration skills determine your trajectory. The best engineers aren't the ones who write the most code—they're the ones who make their whole team more effective.
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* YOUR FIRST TEAM DELIVERABLE                 */}
+{/* ============================================ */}
+
+<Slide>
+
+## Your First Team Deliverable: The Team Contract
+
+<p style={{fontSize: '0.9em', fontWeight: 'bold', color: '#9370DB'}}>
+Your team contract is live now. This is not a formality—it's the foundation for everything that follows.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em', marginTop: '0.5em'}}>
+
+<div style={{backgroundColor: 'rgba(100,150,255,0.1)', padding: '0.5em', borderRadius: '8px'}}>
+
+**What you'll establish:**
+
+- Communication norms (when, where, how)
+- Working hours and availability
+- How you'll divide work
+- How you'll make decisions
+- What "done" means for your team
+- How you'll handle missed deadlines
+
+</div>
+
+<div style={{backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.5em', borderRadius: '8px'}}>
+
+**Why it matters:**
+
+- Surfaces conflicts *before* they happen
+- Creates shared expectations to reference
+- Accelerates your team through "storming"
+- Gives you something to point to when things go wrong
+
+</div>
+
+</div>
+
+<aside className="notes">
+**This is graded.** Take it seriously. Teams that rush through the contract often struggle later when conflicts arise and they have no shared expectations to fall back on.
+
+**The goal:** Have the hard conversations now, while stakes are low and everyone is fresh.
+
+> **Transition:** Here's how to approach it...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Completing Your Team Contract
+
+<div style={{fontSize: '0.8em'}}>
+
+**Step 1: Schedule a team meeting this week**
+- Everyone should be present for this conversation
+- Don't just divide up sections and merge—discuss together
+
+**Step 2: Have the awkward conversations**
+- "What hours do you actually work?" (not what sounds good)
+- "What happens if someone misses a deadline?"
+- "How do we decide when we disagree?"
+
+**Step 3: Be specific, not aspirational**
+- ❌ "We'll communicate regularly"
+- ✓ "We'll post daily standups in Discord by 9 PM"
+
+</div>
+
+<div className="fragment" style={{backgroundColor: 'rgba(255, 200, 100, 0.2)', padding: '0.5em', borderRadius: '8px', fontSize: '0.8em', marginTop: '0.5em', border: '2px solid rgba(255, 180, 0, 0.5)'}}>
+
+**HRT in action:** Approach this with humility ("my preferences aren't the only valid ones"), respect ("everyone's constraints matter"), and trust ("we'll all follow what we agree to").
+
+</div>
+
+<aside className="notes">
+**Emphasize:** The contract is a *living document*. You can update it as you learn what works. But having an initial agreement is critical.
+
+**Common failure modes:**
+- One person writes it, others sign without reading
+- Vague commitments that can't be enforced
+- Assuming everyone has the same working style
+- Not discussing what happens when things go wrong
+
+**The test:** If a conflict arises in week 3, can you point to a specific line in your contract that addresses it?
 </aside>
 
 </Slide>
