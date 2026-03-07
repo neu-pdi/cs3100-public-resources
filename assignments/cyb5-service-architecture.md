@@ -327,6 +327,15 @@ public class CookYourBooksApp {
 # Run the application (interactive)
 java -jar build/libs/cookyourbooks-all.jar
 ```
+**Run from VS Code:**
+
+The project includes a launch configuration that runs the CLI in VS Code's integrated terminal, so tab completion and line editing work correctly.
+
+1. Open the Run and Debug view (sidebar or `Cmd+Shift+D` / `Ctrl+Shift+D`)
+2. Select **"Run CookYourBooks CLI (Interactive)"**
+3. Press the green play button, or use `F5` (debug) / `Ctrl+F5` (run without debug)
+
+The app runs in the integrated terminal with full interactive support.
 
 ### Command Reference
 
@@ -346,7 +355,7 @@ cyb> help scale
 
 **Requirements:**
 - `help` with no arguments lists all commands grouped by category (Library, Recipe, Tools, General) as shown in the [Example Session](#example-session)
-- `help <command>` shows detailed usage for a specific command
+- `help <command>` shows detailed usage for a specific command. The `<command>` argument is the **top-level command word only** (e.g., `help scale`, `help collection`, `help import`) — you do not need to handle multi-word subcommand lookups like `help collection create`.
 - Unknown command names produce a helpful message: `Unknown command: '<name>'. Type 'help' for a list of commands.`
 
 #### `collections` — List Collections
@@ -529,7 +538,7 @@ Found 3 recipes.
 cyb> import json /path/to/recipe.json "Holiday Favorites"
 ```
 
-Imports a recipe from a JSON file and adds it to the specified collection. Your service layer should handle JSON deserialization, saving the recipe, and updating the collection.
+Imports a recipe from a JSON file and adds it to the specified collection. Your service layer should handle JSON deserialization, saving the recipe, and updating the collection. The JSON format is the same format used in A4 (the handout provides the deserializer).
 
 **On success:** Displays a confirmation with the imported recipe's title.
 ```text
@@ -592,7 +601,7 @@ Scaling discarded.
 **Requirements:**
 - Display side-by-side comparison of original and scaled ingredients
 - VagueIngredients display unchanged (e.g., "to taste")
-- Ask whether to save (y: persists the scaled recipe as a new recipe in the same collection as the original; n: discards)
+- Ask whether to save (y: persists the scaled recipe as a new recipe in the **first collection** that contains the original recipe; n: discards)
 - If the recipe has no servings information: `Cannot scale 'Recipe Name': no serving information available.`
 
 **Error handling:**
@@ -606,7 +615,7 @@ Scaling discarded.
 cyb> convert "Beef Stew" gram
 ```
 
-Converts all measured ingredients to the specified unit using the provided `ConversionRegistry` (which includes house conversion rules). Displays the converted recipe and asks whether to save as a new recipe in the same collection as the original. The conversion should happen through your service layer — the CLI sees the result and decides whether to persist it.
+Converts all measured ingredients to the specified unit using the provided `ConversionRegistry` (which includes house conversion rules). Displays the converted recipe and asks whether to save as a new recipe in the **first collection** that contains the original recipe. The conversion should happen through your service layer — the CLI sees the result and decides whether to persist it.
 
 **Example interaction:**
 ```text
@@ -836,7 +845,7 @@ Please specify the full collection name.
 
 The command is **not re-prompted** — the user must re-enter the entire command with a more specific name or short ID. This keeps the CLI stateless and simplifies testing.
 
-**Recipe lookup order:** Any command that accepts a `<recipe>` argument should first try to match the argument as a short ID prefix (case-insensitive). If no ID match is found, fall back to title matching (case-insensitive substring). This means `show ab3fc891` targets a specific recipe by ID, while `show "Chocolate Chip Cookies"` searches by title.
+**Recipe lookup order:** Any command that accepts a `<recipe>` argument should first try to match the argument as a short ID prefix (case-insensitive, no minimum length — even a single character is a valid prefix). If no ID match is found, fall back to title matching (case-insensitive substring). This means `show ab3fc891` targets a specific recipe by ID, while `show "Chocolate Chip Cookies"` searches by title.
 
 ### Design Requirements
 
@@ -1162,7 +1171,7 @@ Your submission should demonstrate:
 
 ## Grading Rubric
 
-**Total: 100 points** (50 implementation [38 automated + 6 manual demo] + 50 design documentation & reflection), minus design quality deductions (up to -30).
+**Total: 100 points** (50 implementation [38 automated + 12 manual grading] + 50 design documentation & reflection), minus design quality deductions (up to -30, floor of 0).
 
 This rubric emphasizes design quality equally with implementation. Passing all tests is necessary but not sufficient — the manual review evaluates whether your design demonstrates the architectural thinking from L18-L19.
 
@@ -1188,11 +1197,11 @@ This rubric emphasizes design quality equally with implementation. Passing all t
 | `cook` mode (navigation, ingredients, done/quit) | 2 |
 | `export` (correct Markdown output) | 1 |
 
-### Manual Demo Tests (6 points)
+### Instructor-Run Formatting Tests (12 points)
 
-These tests exercise formatting paths that automated keyword-based tests cannot fully verify.
+These tests exercise formatting and visual layout paths that keyword-based automated tests cannot fully verify. **`ManualDemoTest` is provided in the handout** — it is not something you write. It drives your CLI through three scripted workflows and writes the output to files that graders review manually.
 
-**To run the manual demo tests:**
+**To run these tests:**
 
 ```bash
 ./gradlew test --tests ManualDemoTest -Djunit.jupiter.conditions.deactivate=org.junit.jupiter.api.condition.DisabledCondition
@@ -1205,19 +1214,19 @@ Output files are written to `build/manual-demo-output/`:
 - `cook-mode-demo.txt`
 - `library-lists-demo.txt`
 
-These tests are disabled by default (skipped during `./gradlew test`). The command above runs them explicitly to generate the output files for grading.
+The command above generates these files; graders inspect them against the criteria below.
 
 | Test | Output File | Points | Grading Criteria |
 |------|-------------|--------|------------------|
-| Recipe Display & Transform | `recipe-transform-demo.txt` | 2 | Recipe box uses decorative borders (═══); ingredients use bullet points (•); scale/convert comparison tables show column headers, arrows (→), and correct alignment; vague ingredients display "to taste" |
-| Cook Mode Walkthrough | `cook-mode-demo.txt` | 2 | Cook header shows "COOKING:" prefix with decorative border; ingredients display in two-column layout; each step shows separators (───), step counter "Step N of M", consumed ingredients with "Uses:" prefix or "(no ingredients)" message; hints bar shows all four commands |
-| Library & Shopping List | `library-lists-demo.txt` | 2 | Collections list shows numbered items with [Personal]/[Cookbook]/[Web] badges and recipe counts; recipe listing shows servings; search results include collection names; ambiguous match shows short IDs in brackets and context-appropriate hint; shopping list separates measured/vague items with section headers and shows totals |
+| Recipe Display & Transform | `recipe-transform-demo.txt` | 4 | Recipe box uses decorative borders (═══); ingredients use bullet points (•); scale/convert comparison tables show column headers, arrows (→), and correct alignment; vague ingredients display "to taste" |
+| Cook Mode Walkthrough | `cook-mode-demo.txt` | 4 | Cook header shows "COOKING:" prefix with decorative border; ingredients display in two-column layout; each step shows separators (───), step counter "Step N of M", consumed ingredients with "Uses:" prefix or "(no ingredients)" message; hints bar shows all four commands |
+| Library & Shopping List | `library-lists-demo.txt` | 4 | Collections list shows numbered items with [Personal]/[Cookbook]/[Web] badges and recipe counts; recipe listing shows servings; search results include collection names; ambiguous match shows short IDs in brackets and context-appropriate hint; shopping list separates measured/vague items with section headers and shows totals |
 
 ### Manual Grading — Design Quality (up to -30 points)
 
 :::danger Design Is Equally Weighted
 
-Design quality deductions can significantly impact your score. A submission that passes all automated tests but demonstrates poor design can lose up to **30 points**. The deductions below are cumulative.
+Design quality deductions can significantly impact your score. A submission that passes all automated tests but demonstrates poor design can lose up to **30 points**. The deductions below are cumulative. Deductions cannot reduce your score below 0 — they will not carry over to penalize the design documentation or reflection sections.
 
 :::
 
