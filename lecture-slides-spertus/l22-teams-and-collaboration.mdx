@@ -77,7 +77,7 @@ Retro 8-bit pixel art with cohesive color palette. Progression from isolated coo
 
 <Slide>
 
-## Announcements
+### Announcements
 
 <aside className="notes">
 
@@ -91,7 +91,7 @@ Retro 8-bit pixel art with cohesive color palette. Progression from isolated coo
 
 <Slide>
 
-## How are you feeling about CS 3100?
+### How are you feeling about CS 3100?
 
 <Img src='/img/lectures/web/l22-survey-q1.png'
   alt="Bar chart showing responses to 'Q1: How are you feeling about CS 3100?' (select all that apply), from 295 respondents. The most common response was 'Like I'm keeping up but not sure I understand everything deeply' (174), followed by 'Worried I'm falling behind' (113), 'Engaged and challenged in a good way' (100), 'Overwhelmed' (96), 'Frustrated with the difficulty' (70), 'Like I'm learning a lot' (61), 'Confident in my understanding' (52), and 'Bored / under-challenged' (22)."
@@ -106,7 +106,7 @@ Retro 8-bit pixel art with cohesive color palette. Progression from isolated coo
 
 <Slide>
 
-## Why not office hours?
+### Why not office hours?
 
 <Img src='/img/lectures/web/l22-survey-q7.png'
   alt="Bar chart showing responses to 'Q7: Why not office hours?' among those who rarely or never attend (select all that apply). The most common reason was 'I used AI tools instead and they were sufficient' (109), followed by 'I didn't need help' (81), 'The times didn't work for my schedule' (80), 'I felt intimidated or uncomfortable asking for help' (75), 'By the time I realized I needed help, it felt too late' (74), 'I wasn't sure if my question was worth asking' (73), 'I tried once and it wasn't helpful' (37), 'Other' (17), and 'I didn't know office hours were available / didn't know how to join' (7)."/>
@@ -119,7 +119,7 @@ Retro 8-bit pixel art with cohesive color palette. Progression from isolated coo
 
 <Slide>
 
-## Asking for help is an important skill and being wrong is okay
+### Asking for help is an important skill and being wrong is okay
 
 * It's natural to feel reluctant to ask questions, but...
 <div className='fragment'>
@@ -143,9 +143,9 @@ Share my experiences
 
 <Slide>
 
-## One of my (many) recent mistakes
+### One of my (many) recent mistakes
 
-<Img src='/img/lectures/web/l22-everyone-makes-mistakes.png'
+<Img src='/img/lectures/web/l22-ellen-mistake.png'
   alt="Screenshot of a Discord conversation. Ellen Spertus posts at 6:54 PM on 2/22/2026: 'I'm not able to get Copilot working in VSCode, even though I can see on GitHub that I have Copilot Pro.
   I verified that I'm logged into that GitHub account in VSCode. I see GitHub Copilot Chat in my output pane, and I've installed the GitHub Copilot Chat extension. I see 'GitHub Copilot Chat' as
   an option in the Output pane, but when I try chatting, the LLM choices do not include Copilot.' A nested thread labeled 'Copilot in VSCode, 5 Messages' is shown. Amit Shesh replies at 7:01 PM:
@@ -161,7 +161,7 @@ Share my experiences
 
 <Slide>
 
-## Exercise: Tell someone you don't understand something
+### Exercise: Tell someone you don't understand something
 
 <div className='fragment'>
 * "I have no idea what Prof. Spertus is talking about half the time."
@@ -187,7 +187,7 @@ Credit for exercise: Prof. Judy Goldsmith, University of Kentucky
 
 <Slide>
 
-## Concerning responses
+### Concerning responses
 
 <div className='fragment' style={{marginLeft: '0em'}}>
 * Two Boston students said this class sometimes makes them want to die.
@@ -245,12 +245,14 @@ Professional software development is almost always done on teams.
 
 
 {/* ============================================ */}
-{/* ARC 1: DIVERSITY OF SKILLS AND BACKGROUNDS */}
+{/* ARC 1: TEAM COMPOSITION */}
 {/* ============================================ */}
 
 <Slide>
 
-## Poll: Who do you think would make the best software development team?
+## Team Composition
+
+Who do you think would make the best software development team?
 
 <PollSlide
   choices={[
@@ -272,33 +274,7 @@ not just coding.
 
 <Slide>
 
-## Contributions to CS from Other Fields
-
-<div className="fragment">
-* Grace Hopper used her experience playing women's basketball
-  (which required forward passes rather than dribbling ) to design.
-  a single-pass compiler for UNIVAC I.
-</div>
-
-<div className="fragment">
-* Neural networks came from a collaboration between neuropsychiatrist Warren McCulloch and Logician Walter
-  Pitts.
-</div>
-
-<div className="fragment">
-* John Henry Holland, a professor of both psychology and computer science, drew on his knowledge of
-  evolutionary biology to develop genetic algorithms, an important optimization technique.
-</div>
-
-<aside className="notes">
-* Transition: Many projects require cross-displinary teams
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Cross-Disciplinary Teamwork
+### Cross-Disciplinary Teamwork
 
 Autonomous Vehicles require:
 
@@ -317,13 +293,9 @@ Autonomous Vehicles require:
 </aside>
 </Slide>
 
-{/* ============================================ */}
-{/* ARC 2: TEAM SIZE AND BROOKS' LAW */}
-{/* ============================================ */}
-
 <Slide>
 
-## Estimated Employee Counts for Single Product Families
+### Estimated Employee Counts for Single Product Families
 
 | Product/Company | Employees |
 |----------------|-----------|
@@ -344,7 +316,7 @@ Autonomous Vehicles require:
 
 <Slide>
 
-## Brooks' Law
+## Scaling Teams: Brooks' Law
 
 <QuoteSlide quote="Adding manpower to a late software project makes it later."
   author="Fred Brooks"
@@ -364,7 +336,7 @@ Autonomous Vehicles require:
 
 <Slide>
 
-Poll: Why do you think adding staff to a late software project makes it later?
+### Poll: Why do you think adding staff to a late software project makes it later?
 <PollSlide
   image="/img/lectures/web/l22-mythical-man-month.jpg"
   imageAlt="Cover of The Mythical Man-Month by Frederick P. Brooks, Jr."
@@ -379,7 +351,7 @@ Poll: Why do you think adding staff to a late software project makes it later?
 
 <Slide>
 
-## Why Man-Months are Mythical
+### Why Man-Months are Mythical
 <div className="fragment">
 <Img src="/img/lectures/web/l22-dilbert-add-to-team.webp"
   alt="Dilbert comic strip: Boss asks 'How long will your project take if I add two people?' Engineer responds 'Add one month for training, one month for extra complexity, and one month to deal with their drama.' Boss says 'But after all that...' Engineer finishes 'They'll be as useful as this meeting.'"
@@ -391,7 +363,7 @@ Poll: Why do you think adding staff to a late software project makes it later?
 
 <Slide>
 
-## Communication Overhead Grows Quadratically
+### Communication Overhead Grows Quadratically
 
 In a team of *n* people, the number of communication paths is:
 
@@ -420,7 +392,7 @@ two large pizzas.
 
 <Slide>
 
-## Scalable Knowledge Sharing
+### Scalable Knowledge Sharing
 
 <div className='fragment'>
 **One-to-one** (doesn't scale):
@@ -453,7 +425,7 @@ two large pizzas.
 
 <Slide>
 
-## Write It Down
+### Write It Down
 
 Developers see approximately a **50% productivity boost** when documentation is up-to-date, detailed, and available in multiple formats.
 
@@ -472,9 +444,45 @@ Good documentation isn't just nice to have—it's a force multiplier for the ent
 
 </Slide>
 
-{/* ============================================ */}
-{/* ARC 3: TEAM FORMATION AND STRATEGIES */}
-{/* ============================================ */}
+<Slide>
+
+### Team Contracts
+
+When forming a new team, explicitly discuss and document expectations:
+
+<div className="fragment">
+
+**Availability & Communication:**
+- When are we available to work together?
+- How do we prefer to communicate? (Text, video call, in-person?)
+
+</div>
+
+<div className="fragment">
+
+**Work Style:**
+- How do we handle deadlines? (Head start vs. last-minute?)
+- What does "done" mean for our work?
+
+</div>
+
+<div className="fragment">
+
+**Process & Support:**
+- How will we divide work and make decisions?
+- What do we do when someone is blocked or struggling?
+- What tools should we use to organize information?
+
+</div>
+
+<aside className="notes">
+- These conversations surface potential conflicts BEFORE they become problems
+- Example: Early starter vs deadline worker can negotiate upfront
+- Better to discover mismatches at week 1 than mid-project
+- Transition: GitHub provides tools to track this work
+</aside>
+
+</Slide>
 
 <Slide>
 
@@ -492,7 +500,7 @@ Good documentation isn't just nice to have—it's a force multiplier for the ent
 
 <Slide>
 
-## Poll: What characteristics would you like groupmates to have?
+### Poll: What characteristics would you like groupmates to have?
 
 <PollSlide />
 
@@ -506,7 +514,7 @@ Let students know when groups will be announced.
 
 <Slide>
 
-## Tuckman's Stages of Team Formation
+### Tuckman's Stages of Team Formation
 <Img
   src="/img/lectures/web/l22-team-formation.jpg"
   prompt="Concept: 'Tuckman's Stages of Team Formation'
@@ -549,130 +557,7 @@ Style: Retro 8-bit pixel art with clean lines and vibrant colors. Similar aesthe
 
 <Slide>
 
-## Team Contracts
-
-When forming a new team, explicitly discuss and document expectations:
-
-<div className="fragment">
-
-**Availability & Communication:**
-- When are we available to work together?
-- How do we prefer to communicate? (Text, video call, in-person?)
-
-</div>
-
-<div className="fragment">
-
-**Work Style:**
-- How do we handle deadlines? (Head start vs. last-minute?)
-- What does "done" mean for our work?
-
-</div>
-
-<div className="fragment">
-
-**Process & Support:**
-- How will we divide work and make decisions?
-- What do we do when someone is blocked or struggling?
-- What tools should we use to organize information?
-
-</div>
-
-<aside className="notes">
-- These conversations surface potential conflicts BEFORE they become problems
-- Example: Early starter vs deadline worker can negotiate upfront
-- Better to discover mismatches at week 1 than mid-project
-- Transition: GitHub provides tools to track this work
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Tracking Progress: GitHub Issues
-
-**Issues** are the fundamental unit of work tracking:
-
-- Each issue represents a bug, feature, or task
-- Issues can be assigned to team members
-- Labels help categorize and filter (bug, enhancement, documentation, etc.)
-- Milestones group issues into releases or sprints
-
-Let's look at [Pawtograder issues](https://github.com/pawtograder/platform/issues)...
-
-<aside className="notes">
-- Issues make work visible and trackable
-- Good for: knowing what needs to be done, who's working on what
-- Transition: Projects help visualize workflow
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Tracking Progress: GitHub Projects
-
-**Projects** provide kanban-style boards:
-
-- Columns represent workflow stages (To Do, In Progress, In Review, Done)
-- Cards can be linked to issues and pull requests
-- Automation can move cards as issues progress
-
-Let's look at [Kubernetes projects](https://github.com/orgs/kubernetes/projects)...
-
-<aside className="notes">
-- Visual representation of team's work
-- Easy to see bottlenecks (too many things in "In Review")
-- Transition: Pull requests connect code changes to issues
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Tracking Progress: Pull Requests
-
-**Pull Requests** are proposals to copy changes from one repo or branch
-into another (usually the main branch of the parent repository).
-
-They can connect code (or documentation) changes to issues:
-
-- Reference issues with "Fixes #123" or "Closes #456"
-- Request reviews from specific team members
-- Discussion threads capture design decisions
-
-Regular check-ins (daily standups, weekly syncs) help surface blockers early.
-
-Let's look at [Pawtograder PRs](https://github.com/pawtograder/platform/pulls)...
-
-<aside className="notes">
-- PRs are where knowledge sharing happens through code review
-- Research shows weekly surveys effectively identify struggling teams before problems become critical
-- Transition: Even with good structure, conflicts happen. How do we handle them?
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Poll: What traits do you think are the pillars of social interaction and teamwork?
-
-<PollSlide
-  choices={["Confidence", "Expertise", "Humility", "Independence", "Perfectionism", "Respect", "Trust" ]}
-/>
-
-Choose 3.
-
-<aside className="notes">
-- You can ask what other traits they think are important.
-- Transition: The book "Team Geek" identifies three key pillars
-</aside>
-</Slide>
-
-
-<Slide>
-
-## What People Learn From Group Projects
+### What People Learn From Group Projects
 
 <Img src="/img/lectures/web/l22-group-projects-side-by-side.png"
 
@@ -700,7 +585,7 @@ Choose 3.
 
 <Slide>
 
-## The HRT Framework
+### The HRT Framework
 
 **HRT** (pronounced "heart") are the three pillars of effective team collaboration:
 
@@ -737,7 +622,7 @@ former Google engineers.
 
 <Slide>
 
-## Humility in Practice
+### Humility in Practice
 
 You are not the center of the universe (nor is your code!). You're neither omniscient nor infallible. You're open to self-improvement.
 
@@ -759,7 +644,7 @@ It does not mean being a doormat.
 
 <Slide>
 
-## Respect in Practice
+### Respect in Practice
 
 You genuinely care about others you work with. You treat them kindly and appreciate their abilities and accomplishments.
 
@@ -778,7 +663,7 @@ You genuinely care about others you work with. You treat them kindly and appreci
 
 <Slide>
 
-## Trust in Practice
+### Trust in Practice
 
 You believe others are competent and will do the right thing, and you're OK with letting them drive when appropriate.
 
@@ -798,7 +683,7 @@ You believe others are competent and will do the right thing, and you're OK with
 
 <Slide>
 
-## HRT in Code Review
+### HRT in Code Review
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.7em'}}>
 
@@ -837,7 +722,7 @@ You believe others are competent and will do the right thing, and you're OK with
 </Slide>
 <Slide>
 
-## When Conflicts Arise
+### When Conflicts Arise
 
 Even with HRT, conflicts happen. When they do:
 
@@ -858,11 +743,9 @@ Even with HRT, conflicts happen. When they do:
 
 </Slide>
 
-{/* TODO: Add CMC to lecture notes if we decide to keep it.*/}
-
 <Slide>
 
-## Computer-Mediated Communication
+### Computer-Mediated Communication
 
 <Img
   src="/img/lectures/web/l22-cmc-prediction-reality.jpg"
@@ -907,43 +790,28 @@ Style: Retro 8-bit pixel art. Stark contrast between utopian left (bright, conne
 
 <Slide>
 
-## Accountability: Being Someone Your Team Can Rely On
+## Seeking and Receiving Feedback
 
-Accountability isn't about blame—it's about being dependable.
+What do you want to hear from someone who reviews your code?
 
-**Owning your commitments:**
-- If you say you'll do something, do it—or communicate early if you can't
-- Don't wait until the deadline to reveal you're stuck
+A. This code is perfect!<br/>
+B. You should make all these changes...
 
-**Taking responsibility for outcomes:**
-- "I worked hard" ≠ "it's done and working"
-- Ask for help when you need it—struggling silently isn't heroic
-
-**Supporting team outcomes:**
-- If a teammate is struggling, offer help before being asked
-- The team succeeds or fails together
-
-<aside className="notes">
-- Accountability builds trust
-- When teammates can count on you, team moves faster
-- No need to constantly check in or build redundancy
-</aside>
-
-</Slide>
-
-{/* ============================================ */}
-{/* ARC 4: SEEKING AND RECEIVING FEEDBACK */}
-{/* ============================================ */}
-
-<Slide>
-
-## Poll: What do you want to hear from someone who reviews your code?
-
-<PollSlide
-choices={["This code is perfect!", "You should make all these changes..."]}
+<div className='fragment'>
+<Img src='/img/lectures/web/l22-code-review-fantasy.png'
+  alt="A three-panel webcomic titled 'Hackles' by Drake Emko and Jen Brodzik. In the first panel, a
+  brown anthropomorphic dog sits at a computer thinking about finally finishing some code, imagining
+  it will earn appreciation for being a masterful example of recursion and elegance. In the second
+  panel, the dog is surrounded by admiring anthropomorphic coworkers — a fox, a rabbit, and a large
+  grey dog — who call the coder a genius, a hero, and award a medal for exemplary coding skills. In
+  the third panel, the fantasy ends as a pink pig leans over and sarcastically asks if the coder is
+  done yet, saying it is about time the stupid code was finished. The brown dog thinks 'Back to reality...' "
+  width={1100}
 />
+</div>
 
 <aside className="notes">
+- Don't actually give poll
 - It's human nature to want to hear the first.
 - More often, it will be the second.
 - It's good to learn from feedback, but it's hard.
@@ -953,11 +821,12 @@ choices={["This code is perfect!", "You should make all these changes..."]}
 
 <Slide>
 
-## What Criticism Feels Like
+### What Criticism Can Feel Like
 
 <Img src="/img/lectures/web/l22-peer-code-review-process.png"
   alt="ASCIIVille by Todd Presta cartoon with title 'The Peer Code Review'.
-      A terrified person is strapped to a round board with swords being thrown at him."
+      A terrified person is strapped to a round board with knives being thrown at him."
+  width={600}
 />
 
 <aside className="notes">
@@ -968,54 +837,59 @@ choices={["This code is perfect!", "You should make all these changes..."]}
 
 <Slide>
 
-## Why Seek Feedback?
+### Poll: Why should you get feedback on your code?
 
-Early in your career (and throughout it), others can see things about your work that you can't.
-
-- Your code might have patterns you don't notice
-- Your communication style might be unclear in ways you don't realize
-- Seeking feedback is how you accelerate your own growth
-
-**The catch:** Many people wait for feedback to come to them, or only hear it during formal reviews.
-
-Proactively seeking feedback—especially when it's uncomfortable—is what separates professionals who grow quickly from those who plateau.
+<PollSlide username="espertus"/>
 
 <aside className="notes">
-- Feedback is a professional skill, not just something you receive passively
-- Transition: How do you seek feedback effectively?
+- Open-ended survey
 </aside>
 
 </Slide>
 
 <Slide>
 
-## How to Seek Feedback Effectively
+### Revised poll
 
-**Ask specific questions:**
-- ❌ "What did you think of my code?"
-- ✅ "I'm trying to improve my API design. Were the method signatures in this PR clear? What would have made them clearer?"
+~~What do you want to hear from someone who reviews your code?~~<br/>
+Would you like to be a better programmer today than you were yesterday?
 
-**Ask the right people:**
-- Someone who will be honest with you (not just nice)
-- Someone with relevant expertise or perspective
-- Someone who has observed your work directly
-
-**Make it safe to be honest:**
-- "I'm genuinely trying to improve—honest feedback helps more than kind feedback."
-- Don't argue or defend when receiving feedback
-- Thank people for critical feedback (it's harder to give than praise)
+A. ~~This code is perfect!~~ &nbsp; I'm not going to help you.<br/>
+B. ~~You should make all these changes~~ Here's how you can level up
 
 <aside className="notes">
-- Specific questions get useful answers
-- Generic questions get generic responses
-- Transition: Once you get feedback, how do you receive it?
+- Don't actually give poll
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Remember: You Are Not Your Code
+### My Experience: The five stages of dealing with a code review
+
+<ol>
+<li className='fragment'>Disbelief: "How could someone find so much to complain about in my
+code?!"</li>
+
+<li className='fragment'>Anger: "How dare someone suggest that a hash-map of hash-maps
+isn't an efficient way of storing data?"</li>
+
+<li className='fragment'>Bargaining: "Maybe if I add the comments the reviewer requested in
+one file, I won't have to fix the tricky Unicode issues in another."</li>
+
+<li className='fragment'>Depression: "There was so much wrong with my code. How can I
+show my face to the person who reviewed my code?"</li>
+
+<li className='fragment'>Acceptance: "Wow, my code is a lot better due to the feedback. This
+is a useful process, although I bet it's occasionally painful for
+everyone."</li>
+</ol>
+
+</Slide>
+
+<Slide>
+
+### Remember: You Are Not Your Code
 <Img src="/img/lectures/web/l22-debugging-teams-you-are-not-your-code.png"
   alt="A cartoon communicationg the message that you are not your code.
       In the middle is the not-equals sign (!=).
@@ -1033,13 +907,24 @@ Picture is from Debugging Teams.
 
 <Slide>
 
-## The Underlying Message
+### The Underlying Message
 
 <Img src="/img/lectures/web/l22-code-review-good-better.png"
   alt="The top half of the meme has caption 'code is good' and shows Pedro Pascal pointing with a serious expression.
       The bottom half has the caption 'but it can be better' and shows Pedro Pascal with his hand outstretched and a friendly expression"
 />
 
+</Slide>
+
+<Slide>
+
+## Communication on GitHub
+
+* [Projects](https://github.com/orgs/kubernetes/projects)
+* Issues
+* Commits
+* Pull Requests
+
 <aside className="notes">
 
 </aside>
@@ -1048,154 +933,48 @@ Picture is from Debugging Teams.
 
 <Slide>
 
-## Receiving Feedback Without Defensiveness
+### Issues
 
-When you receive feedback, your instinct may be to explain, defend, or minimize. Resist this urge.
+**Issues** are the fundamental unit of work tracking:
 
-**Instead:**
+- Each issue represents a bug, feature, or task
+- Issues can be assigned to team members
+- Labels help categorize and filter (bug, enhancement, documentation, etc.)
+- Milestones group issues into releases or sprints
 
-1. **Say "thank you"** before responding (creates space between reaction and response)
-2. **Ask clarifying questions** if you don't understand: "Can you give me an example?"
-3. **Reflect before reacting** - you don't have to agree immediately
-4. **Follow up** - after you've processed, decide what to act on and tell the person what you changed
-
-**The discomfort is the point:** Useful feedback often feels uncomfortable because it reveals blind spots. If all feedback feels good, you're probably only hearing from people who tell you what you want to hear.
+Let's look at [Pawtograder issues](https://github.com/pawtograder/platform/issues)...
 
 <aside className="notes">
-- Defensiveness shuts down future feedback
-- People stop being honest if you argue every time
-- The most valuable feedback is often the hardest to hear
-</aside>
-
-</Slide>
-
-
-{/* ============================================ */}
-{/* ARC 5: WRITING CLEAR AND SPECIFIC GITHUB ISSUES...  */}
-{/* ============================================ */}
-
-<Slide>
-
-## Anatomy of a Good Issue
-
-A well-written issue makes it easy for someone else (or future-you) to understand and address the problem.
-
-**A clear, specific title:**
-- ❌ "Unable to login"
-- ✅ "Login fails silently when password contains special characters"
-
-**However:** If you're not certain about the exact problem, don't assume. If you've only tried one password, "Unable to login" is better than guessing the cause.
-
-<aside className="notes">
-- Balance specificity with accuracy
-- Don't claim to know the root cause if you're not sure
-- Transition: What else goes in a good issue?
+- Issues make work visible and trackable
+- Show what sort of information is helpful
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Good Issues Include Context
+### Commits
 
-**Description with context:**
-- What were you trying to do?
-- What did you expect to happen?
-- What actually happened?
+* Each commit should ideally be a logical set of changes
 
-**Reproduction steps** (for bugs):
-1. Go to the login page
-2. Enter username "testuser"
-3. Enter password "p@ss#word!"
-4. Click "Sign In"
-5. Observe: nothing happens, no error message displayed
+* Commit messages should be meaningful
+   - ❌ "fix bug"
+   - ❌ "WIP"
+   - ✅ "Add regex validation for password special characters"
+   - ✅ "Display error toast when login validation fails"
+
+* First line should be no more than 50 characters
 
 <aside className="notes">
-- Reproduction steps let others confirm the bug
-- Without steps, developers have to guess
-- Transition: What other details help?
+
 </aside>
 
 </Slide>
 
-<Slide>
-
-## Additional Issue Details
-
-**Environment details** (when relevant):
-- Browser/OS version
-- Relevant configuration
-- Error messages or logs
-
-**Screenshots or recordings** (for UI issues):
-- Annotate to highlight the problem area
-- Screen recordings show interactive issues
-
-Good issues save everyone time—both the person fixing it and future developers who encounter similar problems.
-
-<aside className="notes">
-- Environment details help reproduce issues
-- Screenshots are worth 1000 words for UI bugs
-- Well-written issues are documentation of known problems
-- Transition: Pull requests are another key communication tool
-</aside>
-
-</Slide>
 
 <Slide>
 
-## Pull Request Best Practices
-
-Pull requests are both a code integration mechanism and a knowledge-sharing opportunity.
-
-**Link to the issue they address:**
-```markdown
-Fixes #42
-
-This PR adds input validation for special characters in passwords.
-```
-
-**Keep changes small and focused:**
-- One logical change per PR
-- Easier to review, easier to revert if needed
-- Aim for PRs that can be reviewed in 15-30 minutes
-
-<aside className="notes">
-- Linking to issues creates traceability
-- Small PRs get reviewed faster and more thoroughly
-- Large PRs often get rubber-stamped or ignored
-- Transition: Commit messages matter too
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Meaningful Commit Messages
-
-**Include meaningful commit messages:**
-- ❌ "fix bug"
-- ❌ "WIP"
-- ✅ "Add regex validation for password special characters"
-- ✅ "Display error toast when login validation fails"
-
-**Explain the "why," not just the "what":**
-- The code shows *what* changed
-- The description should explain *why* this approach was chosen
-- The first line should be no more than 50 characters, but additional lines can be longer.
-
-<aside className="notes">
-- Future developers (including you) need to understand decisions
-- "Why" is often lost if not documented in commit/PR
-- Good commit messages are part of project documentation
-- Transtion: The way github displays commit messages led to a convention of limiting the first line to 50 characters...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## How GitHub Displays Commit Messages
+### How GitHub Displays Commit Messages
 
 <Img src="/img/lectures/web/l22-github-screenshot.png"
   alt="Screenshot of main github page for a repo with commit messages to the right of folder names.
@@ -1214,190 +993,43 @@ This PR adds input validation for special characters in passwords.
 
 <Slide>
 
-## Code Review as Knowledge Sharing
+### How Commits are Displayed
 
-Code review serves multiple purposes beyond catching bugs:
-
-- **Knowledge transfer:** Reviewers learn about parts of the codebase they didn't write
-- **Consistency:** Team members align on style and patterns
-- **Mentorship:** Junior developers learn from feedback; senior developers articulate their reasoning
-
-**When reviewing code, apply HRT principles:**
-- **Ask questions** rather than making demands: "What if we used X here?" vs. "Use X."
-- **Explain your reasoning:** "This could cause a null pointer if Y because Z."
-- **Acknowledge good work:** "Nice refactor here—much cleaner than before!"
-- **Critique the code, not the person:** "This function is hard to follow" vs. "You wrote confusing code"
-
-<aside className="notes">
-- Code review is a learning opportunity for everyone involved
-- Even senior developers learn new approaches from juniors
-- As mentioned before, HRT makes reviews productive instead of defensive
-- Transition: Now let's talk about asking technical questions effectively
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Poll: What Feedback do you Receive from Graders?
-
-<PollSlide
-  choices={["negative comments", "positive comments", "encouragement", "no comments"]}
+<Img src='/img/lectures/web/l22-github-commit-display.png'
+  alt='Screenshot of cs3100-public-resources commit 773e455, showing a change to line 631 of a lecture'
 />
 
 <aside className="notes">
-- We encourage graders to be positive and encouraging.
-- We'd like to know what you think about the feedback you've gotten?
-</aside>
 
-</Slide>
-
-{/* ============================================ */}
-{/* ARC 6: Ask Technical Questions Effectively */}
-{/* ============================================ */}
-
-<Slide>
-
-## The Anatomy of a Bad Question
-
-[Real Stack Overflow question](https://stackoverflow.com/questions/31279359/new-to-coding-can-anyone-assist-me):
-
-**Title:** "New To Coding. Can anyone assist me?"
-
-**Body:** "I am trying to make a word counter and I just can't seem to get it. Can anyone help?"
-
-*[Code included but omitted here]*
-
-**Result:** Downvoted, no helpful answers.
-
-<aside className="notes">
-- Why did this fail?
-- Title is vague, doesn't describe the problem
-- "Can't seem to get it" doesn't explain what's wrong
-- No error message or unexpected behavior described
-- No indication of what was already tried
-- Wastes everyone's time, including asker's
-- Transition: What makes a good question?
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Bad vs. Good Technical Questions
+### Pull Requests
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.7em'}}>
+**Pull Requests** are proposals to copy changes from one repo or branch
+into another.
 
-<div style={{backgroundColor: 'rgba(255,100,100,0.1)', padding: '1em', borderRadius: '8px'}}>
+<Img src='/img/lectures/web/l22-pull-request.png'
+  alt='Diagram showing a feature branch workflow: a feature branch splits off from the main branch, developers make several commits, then submit a pull request which triggers code review comments, and finally the feature branch merges back into main.'
+/>
 
-**Bad Question ❌**
 
-**Title:** "HashMap not working"
+Let's look at [Pawtograder PRs](https://github.com/pawtograder/platform/pulls)...
 
-**Body:** "I'm trying to use a HashMap and it just doesn't work. Can anyone help?"
-```java
-HashMap<String, Recipe> recipes = new HashMap<>();
-recipes.put("pasta", carbonara);
-// ...
-```
-
+<div style={{ fontSize: '.8em' }}>
+Image based on one in [Axolo blog post](https://axolo.co/blog/p/part-1-what-are-github-pull-requests)
 </div>
-
-<div style={{backgroundColor: 'rgba(100,255,100,0.1)', padding: '1em', borderRadius: '8px'}}>
-
-**Good Question ✅**
-
-**Title:** "HashMap.get() returns null for key that was just added"
-
-**Body:** "I'm trying to store recipes by name so I can look them up later. I'm using a custom Recipe class as the value. When I call `get()` immediately after `put()`, it returns null.
-
-I've checked the Java docs and tried printing the key—it's not null. My tech stack is Java 17.
-
-I think the problem might be related to how Recipe implements equals/hashCode, but I'm not sure how to verify this."
-
-</div>
-
-</div>
-
-Often writing a detailed question leads to your fixing the problem yourself!
-
 <aside className="notes">
-- Bad: vague title, no specific problem, no context
-- Good: specific problem, clear goal, what was tried, hypothesis
-- Good questions get good answers
-- Transition: What makes this template work?
 </aside>
 
 </Slide>
 
 <Slide>
+## Conclusion
 
-## Make It Easy for People to Help You
-
-A good technical question follows this template:
-
-**I am trying to** [goal] **so that I can** [context/motivation].
-
-**I am running into** [specific problem—error message, unexpected behavior, etc.].
-
-**I have looked at** [resources consulted] **and tried** [approaches attempted].
-
-**My tech stack is:** [relevant versions and configuration].
-
-**I think the problem could be** [your hypothesis, if you have one].
-
-<aside className="notes">
-- Goal and context help others understand what you actually need
-- Specific problem lets people diagnose without guessing
-- Resources consulted shows you've done homework
-- Hypothesis gives experts a starting point
-- Transition: Before asking, search first
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Avoid Duplication: Search First
-
-Before asking a question, **search**:
-
-- Stack Overflow and relevant forums
-- Your team's Slack/Discord history
-- Project documentation and wikis
-- Closed GitHub issues
-
-If you find a partial answer, reference it: "I found [this thread], but it doesn't address [specific aspect]."
-
-<aside className="notes">
-- Your question has probably been asked before
-- Searching respects others' time
-- Shows you've done due diligence
-- Transition: When you get an answer, pay it forward
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Archive and Share Answers
-
-When you solve a problem (or someone helps you solve it), **document the solution**:
-
-- Update the original thread with what worked
-- Add to your team's wiki or FAQ
-- Consider writing a blog post for common issues
-
-You're probably not the only one who will encounter this problem. The time you spend documenting saves future team members from duplicating your struggle—and that future team member might be you in six months.
-
-This connects back to **scalable knowledge sharing**: every documented solution is one less interruption for your teammates.
-
-<aside className="notes">
-- Documentation reduces future interruptions
-- Closes the loop on knowledge sharing from earlier in lecture
-- You in 6 months will thank you from today
-- This is the last section of the lecture
-</aside>
 
 </Slide>
 
@@ -1405,11 +1037,10 @@ This connects back to **scalable knowledge sharing**: every documented solution 
 
 ## Bonus Slide
 
-<Img src="/img/lectures/web/l22-everyone-forgets-semicolon.webp"
+<Img src="/img/lectures/web/l22-all-programmers-make-mistakes.jpg"
   alt="Meme with Bell Curve template in which the low IQ person, crying average IQ person,
-  and high IQ person all say 'Damn, I forgot the ;"
+  and high IQ person all say 'I make mistakes'"
 />
-
 
 </Slide>
 
