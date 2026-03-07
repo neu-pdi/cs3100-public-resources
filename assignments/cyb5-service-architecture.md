@@ -103,6 +103,16 @@ An ideal design might require you to create dozens of new classes. While you cer
 
 :::
 
+:::danger Start Early — Design Takes Time
+
+**Good design requires iteration.** You'll make better architectural decisions if you have time to sketch ideas, sleep on them, get feedback in office hours, and refine before implementing. Students who start early can explore multiple service decompositions before committing.
+
+**Early Bird Bonus (+10 points):** Get the full **Librarian suite** (`GeneralCommandTests` + `LibraryCommandTests`) passing by **Friday, March 13 at 11:59 PM EDT** and earn +10 bonus points. The bonus is added to the numerator of your final score after all other adjustments (i.e., your final score can be up to 110/100). This milestone covers the library management commands (`help`, `collections`, `collection create`, `recipes`, `conversions`, `conversion add/remove`, `import json`, `search`, `delete`) — roughly half the CLI functionality. Getting here early means you've designed and implemented your Librarian service and can focus the remaining time on Cook mode, Planner tools, and polishing your ADRs.
+
+**Submission limits:** You can submit up to **15 times per rolling 24-hour period.** Use these submissions throughout the assignment — each one gives you feedback on what's working and what needs fixing.
+
+:::
+
 ## Technical Specifications
 
 ### Command Summary
@@ -1192,14 +1202,21 @@ This rubric emphasizes design quality equally with implementation. Passing all t
 
 **We provide the test suite.** Run `./gradlew test` locally to verify functionality before submitting.
 
+#### Library Commands (15 points) — Required for Early Bird Bonus
+
 | Component | Points |
 |-----------|--------|
 | `help` (list and per-command) | 3 |
 | `collections` (correct listing) | 3 |
 | `collection create` (correct behavior + error handling) | 3 |
 | `conversions` / `conversion add` / `conversion remove` | 3 |
-| Data persistence (`cyb-library.json` load/save) | 3 |
 | `recipes <collection>` (correct listing + error handling) | 3 |
+
+#### Remaining Commands (23 points)
+
+| Component | Points |
+|-----------|--------|
+| Data persistence (`cyb-library.json` load/save) | 3 |
 | `show <recipe>` (correct display + error handling) | 2 |
 | `search <ingredient>` (correct results + no results) | 3 |
 | `import json` (success + error cases) | 3 |
@@ -1213,14 +1230,6 @@ This rubric emphasizes design quality equally with implementation. Passing all t
 ### Instructor-Run Formatting Tests (12 points)
 
 These tests exercise formatting and visual layout paths that keyword-based automated tests cannot fully verify. **`ManualDemoTest` is provided in the handout** — it is not something you write. It drives your CLI through three scripted workflows and writes the output to files that graders review manually.
-
-**To run these tests:**
-
-```bash
-./gradlew test --tests ManualDemoTest -Djunit.jupiter.conditions.deactivate=org.junit.jupiter.api.condition.DisabledCondition
-```
-
-(The tests are annotated `@Disabled` so they do not run during normal `./gradlew test`; the JVM argument above enables them for this explicit run.)
 
 Output files are written to `build/manual-demo-output/`:
 - `recipe-transform-demo.txt`
