@@ -195,7 +195,7 @@ with the first failure scenario:
 
 Once the CLI starts, first try a **working** device to see normal behavior:
 
-```
+```text
 sceneitall> list
 sceneitall> on living-room-thermostat
 sceneitall> off living-room-thermostat
@@ -203,7 +203,7 @@ sceneitall> off living-room-thermostat
 
 The thermostat responds immediately. Now try an **unreliable** device:
 
-```
+```text
 sceneitall> on porch-camera
 ```
 
@@ -339,7 +339,12 @@ while (attempts < MAX_ATTEMPTS) {
         attempts++;
         if (attempts >= MAX_ATTEMPTS) throw new DeviceGatewayException("Device unreachable after " + MAX_ATTEMPTS + " attempts", e);
         long waitMs = (long) Math.pow(2, attempts) * 1000;  // 2s, 4s, 8s
-        Thread.sleep(waitMs);
+        try {
+            Thread.sleep(waitMs);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            throw new DeviceGatewayException("Retry interrupted", ie);
+        }
     }
 }
 ```
@@ -599,7 +604,7 @@ Two example approaches:
 
 **Option A — Minimal:**
 
-```
+```text
 porch-camera      [camera]       REACHABLE  — on
 front-door-lock   [lock]         UNREACHABLE
 living-room-light [dimmable]     REACHABLE  — 60%
@@ -608,7 +613,7 @@ thermostat-main   [thermostat]   PARTIAL    — state unknown
 
 **Option B — Verbose:**
 
-```
+```text
 porch-camera (camera)
   Status: REACHABLE
   Current state: on

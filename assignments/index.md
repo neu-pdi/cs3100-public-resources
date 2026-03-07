@@ -133,8 +133,8 @@ Assignments are structured to provide a steady, manageable pace throughout the s
     - Import recipes from JSON files and images (via OCR) through CLI
     - Export recipes and cookbooks to markdown
     - Batch operations (import directory of images, export entire cookbook)
-- [**Lab 9: Serverless**](/labs/lab9-network-cli)
-  - Deploy recipe API to cloud platform
+- [**Lab 9: Network Fault Tolerance**](/labs/lab9-network-cli)
+  - Timeout, retry with backoff, and graceful degradation in a CLI for unreliable devices
 
 ## **Module 3: Design for Users (Group Work Begins)**
 
