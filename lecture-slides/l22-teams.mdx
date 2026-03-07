@@ -888,7 +888,63 @@ When the build is broken, <em>nobody</em> on the team can merge their work until
 - If CI fails on the main branch, everyone is blocked
 - This is why teams use branches and PRs—to catch failures before they affect everyone
 
-> **Transition:** PRs are how code gets from your branch to the shared codebase...
+> **Transition:** But wait—what's a "branch"? Let's cover that before we talk about PRs...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Git Branching: Working in Parallel
+
+<Img
+  src="/img/lectures/web/l22-git-branching.webp"
+  prompt="A clean educational diagram explaining Git branching for beginners. Timeline flows left to right. No human figures.
+
+MAIN DIAGRAM:
+- A thick horizontal line labeled 'main' (green) represents the main branch. Small circles (commits) appear along this line showing progression over time.
+- Branch 1 (blue line, labeled 'feature-search'): Splits off from main EARLY (left side). Shows 3-4 commit circles along this branch. Merges back into main with a merge commit where the lines rejoin.
+- Branch 2 (purple line, labeled 'fix-login-bug'): Splits off from main LATER (further right, after feature-search already branched). Shows 2 commit circles. Merges back into main AFTER feature-search has already merged.
+
+LABELS on the diagram:
+- 'Branch = your copy to experiment'
+- 'Main = the shared, stable version'
+- 'Merge = bring changes back'
+
+SIDE CALLOUT (separate box to the right, not overlapping the branch diagram):
+A small info box with text: 'What if both branches edit the same file? Merge conflict—you choose which changes to keep.'
+
+BOTTOM: Terminal-style command examples:
+- 'git checkout -b feature-name' (create and switch to a new branch)
+- 'git push -u origin feature-name' (push your branch to GitHub)
+
+Style: Clean, minimal, no human figures. Focus on the branch lines, commits as circles, and clear labels. Similar to GitHub's network graph visualization."
+  alt="Git branching diagram: Green 'main' branch timeline with commits. Blue 'feature-search' splits off early, adds commits, merges back. Purple 'fix-login-bug' splits off later from a more recent point on main, merges after. Side callout explains merge conflicts."
+/>
+
+<aside className="notes">
+**Why branches matter:**
+- Without branches, everyone commits to the same code simultaneously → chaos
+- Branches let you experiment without breaking what works
+- When you're done, you merge back—but only after review
+
+**The mental model:**
+- `main` (or `master`) = the "official" version everyone shares
+- Your branch = your sandbox to try things
+- You never commit directly to main—you merge via PR
+
+**Merge conflicts:**
+- If two branches edit the same lines of the same file → conflict
+- Git can't automatically decide which version to keep
+- You have to manually resolve: choose one version, combine them, or rewrite
+- **This is why clean service boundaries matter:** if teammates work on separate modules, fewer conflicts
+
+**Commands they'll use:**
+- `git checkout -b feature-name` — create and switch to a new branch
+- `git push -u origin feature-name` — share your branch
+- PRs handle the merge (next slide)
+
+> **Transition:** Branches let you work in isolation. Pull Requests are how you propose merging back...
 </aside>
 
 </Slide>
