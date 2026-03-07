@@ -1,6 +1,6 @@
 ---
 title: "Final Project Report"
-sidebar_position: 11
+sidebar_position: 12
 ---
 
 :::warning Preliminary Content
@@ -13,9 +13,9 @@ This assignment is preliminary content and is subject to change until the releas
 
 The final project report is your opportunity to document the complete CookYourBooks application your team has built. You'll create a written report covering your architecture decisions, team collaboration, and lessons learned, along with an infographic poster that visually showcases your work.
 
-This is not a separately graded assignment—instead, it serves as a capstone deliverable and provides an opportunity for peer learning across teams through the infographic gallery.
+The final report is worth **50 points** and serves as the capstone submission for the group project. Infographics will be compiled into a gallery for peer learning across teams.
 
-**Due:** Week 15 (see course schedule for exact date)
+**Due:** Thursday, April 20, 2026 at 11:59 PM Boston Time
 
 ## Deliverables
 
@@ -43,7 +43,7 @@ Present 2-3 key architectural decisions your team made:
 - How MVVM enabled testability and individual accountability
 - How you integrated the Gemini API for recipe import
 - How you handled async operations and UI updates
-- How your team's lexicon evolved during development
+- How your team's UI terminology and naming conventions evolved during development
 - A refactoring that improved code quality
 
 #### "Our Feature" Design Concept (1 page)
@@ -108,7 +108,7 @@ Record a brief screen capture demonstrating your application:
 1. Start with an empty or minimal library
 2. Import a recipe from an image (show Gemini API in action)
 3. Browse the library, search for something
-4. Edit a recipe, scale ingredients
+4. View and edit a recipe
 5. Demonstrate 1-2 of your Feature Buffet selections
 6. Show any unique or polished aspects of your UI
 
@@ -130,35 +130,80 @@ This is a great opportunity to build your portfolio and share your work with fut
 
 **To opt in:** Include a statement in your report submission: "We consent to having our infographic displayed on the public course showcase."
 
+## Grading Rubric
+
+**Total: 50 points.** The individual reflection is a mandatory submission gate (grades not released until submitted) but is not scored separately.
+
+### Written Report (30 points)
+
+| Section | Points | Excellent | Satisfactory | Needs Improvement |
+|---------|--------|-----------|--------------|-------------------|
+| **Project Summary** | 4 | Complete feature list, clear application overview | Feature list present | Vague or missing |
+| **Architecture Highlights** | 10 | 2-3 decisions with problem, alternatives, rationale, and diagram/snippet | Decisions described but thin on alternatives or rationale | Generic or missing architectural discussion |
+| **"Our Feature" Design Concept** | 8 | Clear user need, wireframes, technical considerations, honest scope assessment | User need and design present | Superficial or missing |
+| **Team Reflection** | 4 | Honest, specific, actionable; includes per-member learning | Present but generic | Absent or purely positive |
+| **Sustainability Assessment** | 4 | All four dimensions addressed with specific observations and prioritized v2.0 improvements | Most dimensions covered | Cursory or missing |
+| **Total** | **30** | | | |
+
+### Infographic Poster (10 points)
+
+| Criterion | Points | Excellent | Satisfactory | Needs Improvement |
+|-----------|--------|-----------|--------------|-------------------|
+| **Required elements present** | 5 | Screenshots, architecture diagram, team contributions, key metrics all included | Most elements present | Key elements missing |
+| **Clarity and design** | 5 | Communicates project at a glance; clear visual hierarchy | Readable but cluttered or dense | Difficult to parse |
+
+### Demo Video (10 points)
+
+| Criterion | Points | Excellent | Satisfactory | Needs Improvement |
+|-----------|--------|-----------|--------------|-------------------|
+| **Coverage** | 5 | Shows import, library, search, editor, and 1-2 buffet features; includes error handling | Core flow shown; some features skipped | Minimal coverage |
+| **Clarity** | 5 | Narrated or captioned; realistic data; easy to follow | Followable but unexplained gaps | Hard to follow; placeholder data |
+
+---
+
+## Individual Reflection (submitted separately)
+
+Each team member submits a personal reflection via Pawtograder. **This is a mandatory gate: your individual and team grades for this assignment will not be released until your reflection is submitted.** Write 1–2 paragraphs per question; be honest and specific—generic answers don't demonstrate growth.
+
+### 1. Collaboration and Feedback
+
+Describe a specific moment of collaboration during the group project—a code review, a design discussion, or a moment where you had to give or receive difficult feedback. What happened, and what did you learn from it? If collaboration was difficult at any point, reflect honestly on why and what you'd do differently.
+
+### 2. Navigating Conflict and Change
+
+Describe a moment when something didn't go according to plan: a disagreement with a teammate, a blocked technical approach, or a scope that proved too ambitious. How did you handle it? Do you think you made the right call, and why?
+
+### 3. Working Across Perspectives
+
+Your team members owned different features and brought different ideas and working styles. Describe a moment when someone else's perspective changed how you thought about your own work—or a moment when you wish you'd sought out a different perspective sooner.
+
+### 4. Reflection and Growth
+
+Looking back at the full semester: what's one professional or collaboration skill that this project pushed you to develop? What would you do differently in your next team project, and what concrete habit or practice would you carry forward?
+
+### 5. Feedback on the Project
+
+Give us specific, actionable feedback on the group project: what worked well and should be kept, and what should change? Think about the assignment structure, timeline, grading criteria, provided materials, or anything else. For each piece of feedback, explain the problem it solves and any tradeoffs—just like the feedback you'd want to receive on a code review.
+
+---
+
 ## Submission
 
-Submit to the course website:
+Submit to the course website (team deliverables):
 
 1. **Written Report** (PDF, 3-4 pages)
 2. **Infographic Poster** (PDF or PNG, single landscape page)
 3. **Demo Video** (MP4 or link to unlisted YouTube/Vimeo)
 4. **Public showcase opt-in** (if desired, include statement in report)
 
+Submit via Pawtograder (individual):
+
+5. **Individual Reflection** (answers to the 5 questions above)
+
 ### Checklist
 
-- [ ] Written report includes all 5 sections
+- [ ] Written report includes all 5 sections: Project Summary, Architecture Highlights, "Our Feature" Design Concept, Team Reflection, Sustainability Assessment
 - [ ] Infographic is single landscape page with required elements
 - [ ] Demo video is 2-3 minutes showing key functionality
 - [ ] All team members contributed to and reviewed the deliverables
-
-## Peer Review
-
-After all reports are submitted, you'll have access to other teams' infographics in the gallery. Take time to review what other teams built—this is a valuable learning opportunity.
-
-We'll provide a brief survey to capture:
-- Which infographics were most effective at communicating project scope
-- What you learned from seeing other teams' approaches
-- Any standout features or designs you noticed
-
-This is for feedback purposes and does not affect grades.
-
----
-
-Congratulations on completing CookYourBooks! This project has taken you from basic domain modeling through hexagonal architecture, testing with mocks, CLI and GUI development, team collaboration, and user-centered design. These skills form the foundation for professional software development.
-
-Good luck with your final reports!
+- [ ] Individual reflection submitted separately by each team member

@@ -1,6 +1,6 @@
 ---
 title: "Group Assignment 2: Feature Buffet"
-sidebar_position: 10
+sidebar_position: 11
 ---
 
 :::warning Preliminary Content
@@ -17,7 +17,7 @@ This approach reflects real-world software development: a well-documented, well-
 
 **Due:** Thursday, April 16, 2026 at 11:59 PM Boston Time
 
-**Prerequisites:** GA1 (Core Features) must be complete. Your core features should be integrated and working.
+**Prerequisites:** GA1 (Core Features) must be complete. Your core features should be integrated and working. You will build on this foundation for your GA2 features.
 
 ## Learning Outcomes
 
@@ -40,7 +40,7 @@ Use AI as a tool, but ensure the *thinking* is yours.
 
 ## TA Mentor Meetings
 
-Throughout GA2, your team will have **weekly 30-minute meetings** with your assigned TA mentor. These meetings serve multiple purposes:
+Throughout GA2, your team will have **weekly 30-minute meetings** with your assigned TA mentor. **These meetings are an accountability mechanism, not just a scheduling requirement.** If you cannot attend, notify your TA *before* the meeting and provide a written update on your work status—this demonstrates accountability. Missing a meeting without prior notice signals a lack of accountability and will likely result in a grade of zero for that week's individual accountability component. These meetings serve multiple purposes:
 
 - **Code walks:** Each team member explains what they worked on and their design choices
 - **Progress check-ins:** Are you on track? Stuck anywhere?
@@ -73,7 +73,6 @@ Choose **2-3 features** from the buffet below.
 | **Recipe Chatbot** | "What should I make?" meal suggestion assistant using Gemini API | Medium-High |
 | **Meal Planning** | Calendar-based meal planning with recipe scheduling | High |
 | **Nutritional Info** | API integration for nutritional data | High |
-| **Voice Control** | Hands-free recipe navigation while cooking | High |
 
 ## Process Portfolio
 
@@ -123,39 +122,41 @@ Document your implementation process:
 |----------|-------------------|
 | Feature complete, excellent process documentation, meaningful iteration | A (90-100%) |
 | Feature complete, minimal process documentation | B- (75-80%) |
+| Feature complete, no documentation | C- (70-72%) |
 | Feature partially complete, excellent process documentation | B+ (85-88%) |
 | Feature partially complete, minimal process documentation | C (70-75%) |
-| Feature broken, but excellent documentation of what was attempted | C+ (75-78%) |
-| Feature complete, no documentation | C- (70-72%) |
+| Feature generally broken, but excellent documentation of what was attempted | B- (75-78%) |
 
 ## Grading Rubric
 
-### Per-Feature Grade (applied to each buffet selection)
+**Total: 50 points** — 40 points team (Process Portfolios) + 10 points individual (contribution evidence).
 
-| Component | Weight | Excellent | Satisfactory | Needs Improvement |
+### Team: Process Portfolio (40 points)
+
+Each feature is scored out of 40 points. If your team implements 2–3 features, scores are **averaged** to produce the 40-point team component. Components scored zero (entirely missing) will produce grades below the philosophy ranges above.
+
+| Component | Points | Excellent | Satisfactory | Needs Improvement |
 |-----------|--------|-----------|--------------|-------------------|
-| **Design Rationale** | 10% | Clear user need, thoughtful alternatives | User need stated | Generic/missing rationale |
-| **Design Iteration** | 25% | 3+ versions with clear evolution | 2 versions shown | Single design, no iteration |
-| **Implementation Journal** | 20% | Regular commits, quality PRs, decisions documented | Some commits, basic PRs | Large commits, no discussion |
-| **Testing & Quality** | 20% | Comprehensive tests, accessibility verified | Basic tests present | Minimal testing |
-| **Demo & Reflection** | 25% | Insightful reflection, specific lessons | Generic reflection | Missing or superficial |
+| **Design Rationale** | 4 | Clear user need, thoughtful alternatives considered | User need stated | Generic or missing rationale |
+| **Design Iteration** | 10 | 3+ versions with clearly documented evolution | 2 versions shown | Single design, no iteration |
+| **Implementation Journal** | 8 | Regular commits, quality PRs, decisions documented | Some commits, basic PRs | Large commits, no discussion |
+| **Testing & Quality** | 8 | Comprehensive tests; known limitations documented | Basic tests present | Minimal or no testing |
+| **Demo & Reflection** | 10 | Insightful reflection with specific lessons; demo shows working feature *or* thoroughly documents what was attempted for incomplete/broken features | Generic reflection; demo present | Superficial reflection; no demo |
+| **Total** | **40** | | | |
 
-### Team Grade Distribution
+### Individual Contribution (10 points)
 
-- **20% Individual:** Each member's contribution evidenced in commits, PRs, reviews
-- **80% Team:** Overall quality of process portfolios and feature integration
+Scored per team member based on evidence of personal engagement:
 
-### Individual Accountability
+| Component | Points | Excellent | Satisfactory | Needs Improvement |
+|-----------|--------|-----------|--------------|-------------------|
+| **Commit history & PR activity** | 5 | Regular, meaningful commits; substantive PR participation | Some commits and PRs | Minimal commits; one large dump at the end |
+| **Code review quality** | 5 | Substantive, specific review comments | Reviews present but surface-level | "LGTM" only or no reviews |
+| **Total** | **10** | | | |
 
-Your individual grade may be adjusted based on multiple factors that demonstrate your contribution and engagement:
+### Individual Accountability Adjustment
 
-- **Commit history and PR activity:** Regular, meaningful commits (not one giant commit at the end)
-- **Code review quality:** Substantive feedback on teammates' PRs, not just "LGTM"
-- **TA meeting observations:** Can you explain your code and design decisions?
-- **Weekly collaboration surveys:** Brief check-ins on team dynamics
-- **Peer evaluation:** After submission, each team member rates their teammates
-
-These factors can adjust individual grades by **±10%**. If a team member cannot explain their code in TA meetings while the rest of the team succeeds, their grade may be reduced accordingly.
+TA meeting observations, collaboration surveys, and peer evaluation can adjust an individual's final grade by **±20 points**. If a team member cannot explain their code in TA meetings while the rest of the team succeeds, their grade may be reduced. Teammates who compensate may receive a small boost. The weekly collaboration surveys (due Mar 16, Mar 23, Mar 30, Apr 6, Apr 13) and peer evaluation submitted after the assignment inform this adjustment.
 
 ## Submission
 
@@ -183,15 +184,6 @@ These factors can adjust individual grades by **±10%**. If a team member cannot
 - [ ] All features integrated into main application
 - [ ] Peer evaluation survey completed (separate submission)
 
-### Peer Evaluation
-
-Submit separately via course website:
-- Rate each team member's contribution (1-5 scale)
-- Provide specific examples of positive contributions
-- Note any collaboration challenges (confidential)
-
----
-
 ## Reflection Questions for Team Discussion
 
 Before submitting, discuss as a team:
@@ -201,8 +193,4 @@ Before submitting, discuss as a team:
 3. What would you do differently if starting the group project over?
 4. What's one thing each team member learned from another team member?
 
-These don't need to be submitted, but inform your individual reflections in the process portfolios.
-
----
-
-This assignment emphasizes that **how you work matters as much as what you produce**. The skills of documenting decisions, iterating on designs, and reflecting on process are essential for professional software development—and they're much harder to fake than feature completeness.
+These don't need to be submitted, but inform your individual reflections in the weekly team collaboration surveys and the final individual reflection.

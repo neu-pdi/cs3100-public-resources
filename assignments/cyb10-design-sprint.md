@@ -17,10 +17,6 @@ Each team member will create personas, wireframes, and accessibility considerati
 
 **Due:** Thursday, March 26, 2026 at 11:59 PM Boston Time
 
-**Prerequisites:** 
-- [Team Charter](/assignments/team-charter) must be complete (this established your team's working agreements)
-- A5 solution (provided) — you should be familiar with the service layer architecture and CLI implementation
-
 ## Learning Outcomes
 
 By completing this assignment, you will demonstrate proficiency in:
@@ -28,11 +24,11 @@ By completing this assignment, you will demonstrate proficiency in:
 - **Applying User-Centered Design** through personas, wireframes, and prototyping ([L27: User-Centered Design](/lecture-notes/l27-ucd))
 - **Considering accessibility** in interface design from the start ([L28: Accessibility and Inclusivity](/lecture-notes/l28-accessibility))
 - **Evaluating usability** using Nielsen's heuristics ([L24: Usability](/lecture-notes/l24-usability))
-- **Connecting design to architecture** by mapping ViewModels to existing services ([L19: Thinking Architecturally](/lecture-notes/l18-architecture-design))
+- **Connecting design to architecture** by mapping ViewModels to existing services ([L18: Thinking Architecturally](/lecture-notes/l18-architecture-design))
 
 ## AI Policy for This Assignment
 
-AI tools are **encouraged** for this assignment, particularly for:
+AI tools are **encouraged** for this assignment, and you might consider using them to support you with tasks like:
 - Generating persona templates and user journey frameworks
 - Creating wireframe ideas and layout suggestions
 - Brainstorming feature concepts
@@ -45,10 +41,11 @@ Before starting individual work, your team must assign ownership of the four cor
 
 - **Library View** (Owner: _____): Browse and manage recipe collections
 - **Recipe Editor** (Owner: _____): View and edit recipe content
-- **Import Interface** (Owner: _____): Import recipes from images using the Gemini API
+- **Import Interface** (Owner: _____): Import recipes from images using the Gemini API or copy/paste from text
 - **Search & Filter** (Owner: _____): Find recipes across collections
 
 Each team member owns **one** feature and is responsible for the individual deliverables for that feature.
+If you have a team of 3, it is OK to drop the "Search & Filter" feature and only assign the first three.
 
 ## Individual Deliverables
 
@@ -114,9 +111,11 @@ This ensures consistency across all four features.
 
 ### 4. Feature Buffet Selection
 
-Select **2-3 features** from the Feature Buffet that your team will implement in GA2. Document your selection in `design/buffet-selection.md`:
+Select **2-3 features** from the Feature Buffet that your team will implement in GA2.
+GA2 will be graded primarily on *process* rather than on *product*, so you if you choose a set of features that ultimately proves to be too ambitious, you can still receive high marks by demonstrating thoughtful design, iteration, and reflection in your implementation journal. Choose features that you want to work on, not just the ones that seem easiest.
+Document your selection in `design/buffet-selection.md`:
 
-**Available options:**
+**Standard Features:**
 - Recipe scaling calculator with serving size adjustment
 - Shopping list generation from selected recipes
 - Export to formatted PDF or styled Markdown
@@ -124,7 +123,14 @@ Select **2-3 features** from the Feature Buffet that your team will implement in
 - Keyboard shortcuts and accessibility polish
 - Dark mode / theme customization
 - Cooking timer integration for recipe steps
+
+**Advanced Features:**
 - Multi-page recipe import (multiple files at once, multi-page PDF, recipe continuation detection)
+- Recipe Chatbot: "What should I make?" meal suggestion assistant using Gemini API
+- Meal Planning: calendar-based meal planning with recipe scheduling
+- Nutritional Info: API integration for nutritional data
+
+See [GA2: Feature Buffet](/assignments/cyb12-feature-buffet) for full descriptions and complexity estimates.
 
 For each selected feature, briefly explain (2-3 sentences):
 - Why your team chose this feature
@@ -160,8 +166,7 @@ This is your chance to exercise full UCD creativity without implementation const
    - Scope? Complexity? Time? Dependencies?
    - This honest assessment demonstrates mature engineering judgment
 
-**Examples of good "Our Feature" ideas:**
-- Voice-controlled recipe reading for hands-free cooking
+**Examples of good "Our Feature" ideas** (must be something *not* on the Feature Buffet):
 - Recipe version history with diff view
 - Collaborative cookbook sharing with permissions
 - Ingredient substitution suggestions

@@ -1,6 +1,6 @@
 ---
 title: "Group Assignment 1: Core Features"
-sidebar_position: 9
+sidebar_position: 10
 ---
 
 :::warning Preliminary Content
@@ -17,7 +17,7 @@ The key architectural insight of this assignment is that **ViewModels are the te
 
 **Due:** Thursday, April 9, 2026 at 11:59 PM Boston Time
 
-**Prerequisites:** This assignment builds on GA0 (Design Sprint). You should have your team charter, lexicon, and design artifacts complete.
+**Prerequisites:** This assignment builds on GA0 (Design Sprint). You should have your team charter and design artifacts complete.
 
 ## Learning Outcomes
 
@@ -41,7 +41,7 @@ Remember: the ViewModel interfaces are your contract. AI can help you implement 
 
 ## TA Mentor Meetings
 
-Throughout GA1, your team will have **weekly 30-minute meetings** with your assigned TA mentor. These meetings serve multiple purposes:
+Throughout GA1, your team will have **weekly 30-minute meetings** with your assigned TA mentor. **These meetings are an accountability mechanism, not just a scheduling requirement.** If you cannot attend, notify your TA *before* the meeting and provide a written update on your work status—this demonstrates accountability. Missing a meeting without prior notice signals a lack of accountability and will likely result in a grade of zero for that week's individual accountability component. These meetings serve multiple purposes:
 
 - **Code walks:** Each team member explains what they worked on and their design choices
 - **Progress check-ins:** Are you on track? Stuck anywhere?
@@ -139,7 +139,7 @@ Find recipes across all collections.
 - Implement your assigned ViewModel interface
 - All provided automated tests must pass
 - Use dependency injection to receive services (constructor injection)
-- Follow your team's lexicon for naming
+- Follow your team's user-facing terminology for naming
 
 ### View Implementation
 
@@ -221,39 +221,41 @@ void selectCollection_updatesRecipeList() {
 
 ## Grading Rubric
 
-### Individual Components (70%)
+**Total: 50 points** — 35 points individual (ViewModel + View) + 15 points team (integration).
+
+### Individual Components (35 points)
 
 | Component | Points | Criteria |
 |-----------|--------|----------|
-| **ViewModel Tests Pass** | 40 | All provided automated tests pass |
-| **View Implementation** | 15 | FXML + controller binds correctly, follows design |
-| **Additional Tests** | 10 | 5+ meaningful tests covering edge cases |
-| **Code Quality** | 5 | Follows lexicon, clean code, appropriate documentation |
+| **ViewModel Tests Pass** | 20 | All provided automated tests pass |
+| **View Implementation** | 8 | FXML + controller binds correctly, follows design |
+| **Additional Tests** | 5 | 5+ meaningful tests covering edge cases |
+| **Code Quality** | 2 | Follows UI terminology, clean code, appropriate documentation |
+| **Total** | **35** | |
 
-### Team Components (30%)
+### Team Components (15 points)
 
 | Component | Points | Criteria |
 |-----------|--------|----------|
-| **Integration Works** | 10 | All features work together, navigation functions |
-| **Shared Infrastructure** | 8 | Consistent theming, navigation, error handling |
-| **Integration Tests** | 7 | 3+ tests verifying cross-feature behavior |
-| **Code Review Quality** | 5 | PRs have substantive reviews, HRT evident |
+| **Integration Works** | 5 | All features work together, navigation functions |
+| **Shared Infrastructure** | 4 | Consistent theming, navigation, error handling |
+| **Integration Tests** | 4 | 3+ tests verifying cross-feature behavior |
+| **Code Review Quality** | 2 | PRs have substantive reviews, HRT evident |
+| **Total** | **15** | |
 
-### Individual Accountability
+### Individual Accountability Adjustment
 
-Your individual grade may be adjusted based on multiple factors that demonstrate your contribution and engagement:
-
-- **Commit history and PR activity:** Regular, meaningful commits (not one giant commit at the end)
-- **Code review quality:** Substantive feedback on teammates' PRs, not just "LGTM"
-- **TA meeting observations:** Can you explain your code and design decisions?
-- **Weekly collaboration surveys:** Brief check-ins on team dynamics
-- **Peer evaluation:** After submission, each team member rates their teammates
-
-These factors can adjust individual grades by **±10%**. If a team member cannot explain their code in TA meetings while the rest of the team succeeds, their grade may be reduced accordingly.
-
-**Total: 100 points**
+TA meeting observations, collaboration surveys, and peer evaluation can adjust an individual's final grade by **±20 points**. If a team member cannot explain their code in TA meetings while the rest of the team succeeds, their grade may be reduced. Teammates who compensate may receive a small boost. The weekly collaboration surveys (due Mar 16, Mar 23, Mar 30, Apr 6, Apr 13) and peer evaluation submitted after the assignment inform this adjustment.
 
 ## Submission
+
+Your team repository should follow this structure (plan it from day one):
+
+```
+/design/                        ← GA0 artifacts (personas, wireframes, etc.)
+/src/                           ← application source code
+/menu-features/                 ← GA2 process portfolios (one subfolder per feature)
+```
 
 1. **Push to team repository:** All code in your team's GitHub repository
 2. **Tag release:** Create a git tag `ga1-submission` on your final commit
@@ -267,7 +269,3 @@ Answer these questions (1-2 paragraphs each):
 2. How did your GA0 design artifacts help (or not help) during implementation?
 3. Describe one code review interaction that improved your code or understanding.
 4. What would you do differently in GA2 based on this experience?
-
----
-
-This assignment demonstrates the power of good architecture: the ViewModel interfaces create clear boundaries that enable individual accountability while requiring team collaboration on integration. The same pattern scales to professional software development.
