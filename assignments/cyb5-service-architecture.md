@@ -14,6 +14,9 @@ Your assignment has two parts:
 1. **Design and implement CLI-oriented services** that coordinate the domain model and repositories for what your CLI needs
 2. **Build an interactive CLI** on top of those services — with command parsing, tab completion, and an interactive cooking mode
 
+![8-bit lo-fi pixel art illustration for a programming assignment cover. Kitchen/bakery setting with warm wooden cabinets and countertops in browns and tans. Scene composition (left to right): LEFT SIDE - Three actors represented as distinct pixel art personas at separate workstations: (1) "The Librarian" at a filing cabinet organizing recipe cards with labels "collections", "import", "search", (2) "The Cook" at a stovetop with a step-by-step instruction card showing "Step 2 of 5" with navigation arrows, (3) "The Planner" at a desk with shopping lists and a calculator showing scaled amounts. CENTER - A large retro computer terminal labeled "CookYourBooks CLI" with a glowing green command prompt showing "cyb>" and visible commands: "cook", "scale", "shopping-list". Tab completion suggestions float above the keyboard. The robot AI assistant stands beside the terminal, holding a clipboard labeled "ADR-001" with architectural diagrams. The chef supervises, pointing at a hexagonal diagram on the wall labeled "Driving Adapter" with arrows flowing from CLI to a question mark box labeled "Your Design". RIGHT SIDE - Multiple empty service boxes connected by cyan data flow arrows with question marks inside, representing design decisions the student must make. POST-IT NOTES: Yellow sticky reading "Design before you code!" and another "Who are your actors?". TOP BANNER: Metallic blue banner with white pixel text "A5: Interactive CLI". BOTTOM TEXT: "CS 3100: Program Design & Implementation 2". SUBTLE DETAILS: Recipe cards showing "Preview → Save?" workflow, ADR documents stacked neatly, small sparkles around the actor workstations to show separation of concerns. Color palette: Warm browns/tans for kitchen, cyan/teal for data flow and terminal glow, green for CLI text, cream for recipe cards. Same visual style as A4 service cover.](/img/assignments/web/a5.png)
+
+
 This is a **design-heavy assignment.** We provide the commands your CLI must support at a high level, and we provide explicit guidance on service boundaries through the **actor heuristic** and other boundary heuristics from [L18: Thinking Architecturally](/lecture-notes/l18-architecture-design). But *how* you decompose the service layer — which specific methods each service exposes, how they coordinate, and where you draw the lines — requires you to apply those heuristics thoughtfully. You'll document your decisions using Architecture Decision Records (ADRs) from L18.
 
 :::danger Design Quality Is Equally Weighted with Implementation
@@ -41,7 +44,7 @@ The goal is to demonstrate that you can apply the architectural thinking from le
 
 **What you'll test:** End-to-end CLI behavior using JLine's dumb terminal mode. The provided test suite covers all required functionality.
 
-**How you'll be graded:** 50 pts automated (command correctness via provided tests), 50 pts design documentation and reflection (ADRs, reflection questions), minus up to 30 pts for design quality issues. **Design quality is weighted equally with implementation.** See [Grading Rubric](#grading-rubric).
+**How you'll be graded:** 50 pts implementation (38 automated + 12 manual formatting review), 50 pts design documentation and reflection (ADRs, reflection questions), minus up to 30 pts for design quality issues. **Design quality is weighted equally with implementation.** See [Grading Rubric](#grading-rubric).
 
 ## Learning Outcomes
 
@@ -157,10 +160,12 @@ CookYourBooks serves three distinct actors, each representing a different way pe
 | Actor | Goals | Key Commands |
 |---------|-------|--------------|
 | **The Librarian** | Organizes and curates their recipe collection. Imports new recipes from JSON files, creates collections, searches for recipes, manages house conversion rules. | `collections`, `collection create`, `recipes`, `conversions`, `conversion add/remove`, `import json`, `search`, `delete` |
-| **The Cook** | Follows recipes step-by-step while cooking. Needs hands-free navigation, clear ingredient lists. | `cook`, `show` |
+| **The Cook** | Follows recipes step-by-step while cooking. Needs hands-free navigation, clear ingredient lists. | `cook`, `show`* |
 | **The Planner** | Plans meals and shopping trips. Aggregates ingredients across multiple recipes, generates shopping lists, scales and converts recipes, exports recipes to share. | `shopping-list`, `scale`, `convert`, `export` |
 
 **The Transformer** (scaling and unit conversion) is a **shared capability** — it primarily serves the Planner today (scaling for different group sizes, converting units for shopping), but the Cook or Librarian could benefit from it in the future (e.g., displaying a recipe in metric while cooking, or converting units on import). Extracting it into its own service boundary keeps this logic reusable and testable independent of any single actor.
+
+\* `show` is useful to all three actors (a Librarian browses recipes, a Cook previews before entering cook mode, a Planner checks ingredients before scaling). It appears in the Cook column because it directly supports the cook workflow, but your recipe lookup capability should be accessible across service boundaries.
 
 Your architecture should support cohesive feature sets for each actor that can evolve together. This matters for your group project: your four-member team will divide the GUI work by actor — one teammate builds the Cook's step-by-step interface, another builds the Librarian's collection management views, etc. If your service boundaries align with actors, teammates can work in parallel without stepping on each other's code. This is Conway's Law in action — the structure of your code mirrors the structure of your team. A change to how the Cook experiences step navigation shouldn't require touching the Librarian's import logic.
 
@@ -646,9 +651,13 @@ Saved converted recipe 'Beef Stew (converted to GRAM)'.
 cyb> shopping-list "Chocolate Chip Cookies" "Classic Pancakes"
 ```
 
-Aggregates ingredients across the specified recipes into a shopping list. Recipes are identified by title. Your service layer should handle the lookup and aggregation.
+Aggregates ingredients across the specified recipes into a shopping list. Recipes are looked up using the standard recipe lookup order — first by short ID prefix, then by case-insensitive title — consistent with all other recipe commands. Your service layer should handle the lookup and aggregation.
 
 **Aggregation behavior:** Use the same ingredient aggregation logic from A4 — ingredients with the same name and compatible units are combined; incompatible units (e.g., cups and grams of flour) are listed separately; vague ingredients are deduplicated by name.
+
+**Error handling:**
+- Any recipe argument not found: `Recipe not found: 'Unknown Recipe'. Use 'search' to find recipes by ingredient.`
+- Any recipe argument with multiple matches: Display using the standard [ambiguous match format](#ambiguous-match-format). If any argument is ambiguous or not found, the entire command is aborted — no partial shopping list is generated.
 
 **Example output:**
 ```text
@@ -757,12 +766,12 @@ cook> next
 #### `export <recipe> <file>` — Export Recipe to Markdown
 
 ```text
-cyb> export "Chocolate Chip Cookies" ~/cookies.md
+cyb> export "Chocolate Chip Cookies" /path/to/cookies.md
 ```
 
 Uses the provided `MarkdownExporter` to export a recipe to a Markdown file.
 
-**On success:** `Exported 'Chocolate Chip Cookies' to /Users/you/cookies.md`
+**On success:** `Exported 'Chocolate Chip Cookies' to /path/to/cookies.md`
 
 **Error handling:**
 - Recipe not found: `Recipe not found: 'Unknown Recipe'. Use 'search' to find recipes.`
@@ -791,8 +800,12 @@ Your CLI must provide tab completion for:
    - `cook <recipe>`
    - `export <recipe>`
    - `shopping-list <recipe1> [recipe2] ...` (all recipe arguments)
-3. **Unit names** — after `convert <recipe>`, Tab should suggest valid unit names (the names accepted by `Unit.parse()`: `gram`, `cup`, `tsp`, `tbsp`, `oz`, `lb`, `ml`, `l`, etc.)
-4. **Cook mode commands** — while in cook mode, Tab should suggest the available sub-commands: `next`, `prev`, `ingredients`, `quit`
+3. **Collection names** — any command that takes a collection parameter must offer tab completion for available collection titles:
+   - `recipes <collection>`
+   - `import json <file> <collection>` (the collection argument, i.e. the fourth token)
+4. **Unit names** — after `convert <recipe>`, Tab should suggest valid unit names (the names accepted by `Unit.parse()`: `gram`, `cup`, `tsp`, `tbsp`, `oz`, `lb`, `ml`, `l`, etc.)
+5. **Conversion rule identifiers** — after `conversion remove`, Tab should suggest the identifiers of all currently defined house conversion rules (e.g., `stick butter`, `cup flour`, `tbsp any`)
+6. **Cook mode commands** — while in cook mode, Tab should suggest the available sub-commands: `next`, `prev`, `ingredients`, `quit`
 
 Use JLine's [`Completer` interface](https://jline.org/docs/tab-completion#custom-completers) to implement this. You may find a combination of the built-in completers to be helpful (e.g. `AggregateCompleter`, `StringsCompleter`).
 
