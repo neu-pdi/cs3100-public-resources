@@ -161,21 +161,24 @@ Find recipes across all collections.
 
 ### Integrated Application
 
-- All four features working together in one application
-- Consistent navigation between features
+- All implemented core features working together in one application (four features, or three if your team dropped Search & Filter per the 3-person-team exception)
+- Consistent navigation between those features
 - Shared application state where appropriate
 
 ### Shared Infrastructure
 
-- Navigation component (how do users move between features?)
+- Navigation component (how do users move between implemented features?)
 - Theming/styling (consistent look and feel)
 - Error handling (how are errors displayed to users?)
 - Application startup and shutdown
 
+**3-person teams:** Shared infrastructure applies to your three implemented features; you are not required to support navigation or UI for the omitted feature.
+
 ### Integration Tests
 
-- At least 3 integration tests verifying feature interactions
-- Example: "User searches for recipe → selects result → recipe displays in editor"
+- At least 3 integration tests verifying interactions between your implemented core features
+- Example: "User selects collection → selects recipe → recipe displays in editor" (or similar cross-feature flows for the features you built)
+- **3-person teams:** Tests cover the three features you implemented; you do not need tests involving Search & Filter.
 
 ### Code Review Evidence
 
@@ -240,9 +243,9 @@ void selectCollection_updatesRecipeList() {
 
 | Component | Points | Criteria |
 |-----------|--------|----------|
-| **Integration Works** | 5 | All features work together, navigation functions |
-| **Shared Infrastructure** | 4 | Consistent theming, navigation, error handling |
-| **Integration Tests** | 4 | 3+ tests verifying cross-feature behavior |
+| **Integration Works** | 5 | All implemented core features work together, navigation functions |
+| **Shared Infrastructure** | 4 | Consistent theming, navigation, error handling across implemented features |
+| **Integration Tests** | 4 | 3+ tests verifying cross-feature behavior for implemented core features |
 | **Code Review Quality** | 2 | PRs have substantive reviews, HRT evident |
 | **Total** | **15** | |
 

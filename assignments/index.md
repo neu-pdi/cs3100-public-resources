@@ -13,15 +13,15 @@ Throughout this semester, you will build CookYourBooks, a comprehensive desktop 
 
 The project follows a carefully scaffolded approach where each weekly assignment builds upon the previous one, with our solution to each assignment provided as the foundation for the next. You'll begin in Module 1 (Design in the Small) by implementing the core domain model—learning to design rich object hierarchies for ingredients, quantities, and recipes while practicing fundamental OO principles like inheritance, polymorphism, and encapsulation. As you progress into Module 2 (Design in the Large), you'll add persistence through custom JSON serialization, build comprehensive test suites with mocking, create service layers that separate business logic from infrastructure concerns, and explore architecture patterns for distributed systems. Starting in Assignment 3 (Week 5-6), you'll incorporate AI coding assistants into your workflow, learning to leverage these tools effectively while maintaining code quality and understanding.
 
-The final phase of the project (Module 3: Design for Users) emphasizes user-centered design, team collaboration, and building complete systems. You'll implement both CLI and GUI interfaces, focusing on usability, accessibility, and user experience while managing the complexity of asynchronous operations such as Gemini API–based recipe import. Working in teams of four during this module, each team member takes ownership of one core GUI feature while collaborating on shared infrastructure, integration, and optional "menu" features. Teams establish working agreements through a **team charter**, align on user-facing terminology for consistent naming, and practice the HRT (Humility, Respect, Trust) principles from professional software development. The group assignments are structured to enable individual accountability—each core feature has a defined ViewModel interface that all implementations must satisfy—while still requiring meaningful collaboration on design, code review, and integration. Throughout this journey, you'll not only master Java and JavaFX, but also develop crucial software engineering skills: interpreting requirements, designing for change, writing maintainable code, and collaborating effectively in a team.
+The final phase of the project (Module 3: Design for Users) emphasizes user-centered design, team collaboration, and building complete systems. You'll implement both CLI and GUI interfaces, focusing on usability, accessibility, and user experience while managing the complexity of asynchronous operations such as Gemini API–based recipe import. Working in teams of four (or three; see the 3-person-team exception below), each team member takes ownership of one core GUI feature while collaborating on shared infrastructure, integration, and optional "menu" features. Teams establish working agreements through a **team charter**, align on user-facing terminology for consistent naming, and practice the HRT (Humility, Respect, Trust) principles from professional software development. The group assignments are structured to enable individual accountability—each core feature has a defined ViewModel interface that all implementations must satisfy—while still requiring meaningful collaboration on design, code review, and integration. Throughout this journey, you'll not only master Java and JavaFX, but also develop crucial software engineering skills: interpreting requirements, designing for change, writing maintainable code, and collaborating effectively in a team.
 
 Assignments are structured to provide a steady, manageable pace throughout the semester. Each assignment is due on a Thursday at 11:59 PM, with a minimum of 3-4 days between assignment due dates to ensure adequate time for implementation, testing, and reflection. Some weeks' tasks have been intentionally merged to combine related concepts and create more substantial programming tasks that better reflect real-world development work. 
 
 **Notes:**
 - Each assignment builds on the provided solution from the previous week. Students are trusted to not share these solutions, or to seek them out.
 - AI coding assistants are introduced in Week 5 (Assignment 3) and encouraged thereafter. Students are strongly discouraged from using them in the first two assignments.
-- Group work begins in Week 10 (teams of 4 formed by Week 8). Each team member owns one core GUI feature while collaborating on shared infrastructure and the Feature Buffet.
-- The group project (GA1+GA2+Final) is released as **one specification** with accountability checkpoints. **Features must be delivered incrementally**—it is not possible to complete the project at the last minute. Students receive automated grading feedback at checkpoints; full instructor feedback comes at the end. Core features are graded individually via automated tests against defined ViewModel interfaces. Feature Buffet items are graded primarily on **process** (design iteration, code review quality, documentation) rather than product.
+- Group work begins in Week 10 (teams of 4 formed by Week 8, or teams of 3). Each team member owns one core GUI feature while collaborating on shared infrastructure and the Feature Buffet. **3-person teams:** You may omit the Search & Filter core feature; each member then owns one of the remaining three (Library View, Recipe Editor, Import Interface). Ownership and grading apply only to the features you implement. Automated grading and checkpoint tests run only against the ViewModel interfaces for those features (three or four); Feature Buffet and process-grading expectations are unchanged for 3- and 4-person teams.
+- The group project (GA1+GA2+Final) is released as **one specification** with accountability checkpoints. **Features must be delivered incrementally**—it is not possible to complete the project at the last minute. Students receive automated grading feedback at checkpoints; full instructor feedback comes at the end. Core features are graded individually via automated tests against the defined ViewModel interfaces for the features your team implements (four, or three if you use the 3-person-team exception). Feature Buffet items are graded primarily on **process** (design iteration, code review quality, documentation) rather than product.
 - Labs complement but don't depend on the main project assignments - they always build on a solution from a week earlier.
 
 
@@ -130,7 +130,7 @@ Assignments are structured to provide a steady, manageable pace throughout the s
     - Graceful error handling with actionable error messages
     - Support for both interactive and scripted (non-interactive) modes
   - **Import/Export Workflows:**
-    - Import recipes from JSON files and images (via OCR) through CLI
+    - Import recipes from JSON files and images via the Gemini API through CLI
     - Export recipes and cookbooks to markdown
     - Batch operations (import directory of images, export entire cookbook)
 - [**Lab 9: Serverless**](/labs/lab9-serverless)
@@ -181,7 +181,7 @@ The accountability adjustments are not punitive—they exist to protect teammate
   - Build on A5 solution (provided)
   - **Team Foundation:**
     - Create **Team Charter**: communication norms, availability, decision-making process, conflict resolution plan, accountability expectations
-    - Assign feature ownership: each member claims one of the four core features
+    - Assign feature ownership: each member claims one of the four core features (or three if your team has three members and omits Search & Filter)
   - **Individual Deliverables (per team member):**
     - User persona for your feature area (who uses this feature? what are their goals?)
     - Low-fidelity wireframes for your feature
@@ -206,22 +206,22 @@ The accountability adjustments are not punitive—they exist to protect teammate
   - Practice with CompletableFutures
 
   #### **Checkpoint 1: Core Features** (Due 2026-04-09)
-  - **You are provided:** ViewModel interfaces (contracts) for each of the four core features, plus a shared test suite
+  - **You are provided:** ViewModel interfaces (contracts) for each of the four core features (or three if your team uses the 3-person exception and omits Search & Filter), plus a shared test suite. Automated tests run only against the ViewModel interfaces for the features your team implements.
   - **Core Features (one owner per team member):**
     1. **Library View**: Browse cookbooks/collections, navigation, collection management
     2. **Recipe Details/Editor**: View and edit recipe content, ingredient list, validation
-    3. **Import Interface**: Image upload, OCR progress feedback, error handling, async operations
-    4. **Search & Filter**: Search by title/ingredient, tag filtering, keyboard navigation
+    3. **Import Interface**: Image upload, Gemini-based import progress feedback, error handling, async operations
+    4. **Search & Filter**: Search by title/ingredient, tag filtering, keyboard navigation *(3-person teams omit this feature; each member owns one of 1–3)*
   - **Individual Deliverables:**
-    - ViewModel implementation that passes the provided automated tests
+    - ViewModel implementation that passes the provided automated tests for your feature
     - View implementation (FXML + controller) that binds to your ViewModel
     - Additional unit tests beyond the provided suite
   - **Team Deliverables:**
-    - Integrated application with all four features working together
-    - Shared infrastructure: navigation, theming, error handling components
-    - Integration tests verifying feature interactions
+    - Integrated application with all implemented core features working together (four, or three for 3-person teams)
+    - Shared infrastructure: navigation, theming, error handling components (for implemented features)
+    - Integration tests verifying interactions between implemented core features
     - Evidence of code review (meaningful PR comments applying HRT principles)
-  - *Checkpoint grading: 70% individual (ViewModel tests), 30% team (integration)*
+  - *Checkpoint grading: 70% individual (ViewModel tests), 30% team (integration). Same for 3- and 4-person teams; grading applies only to implemented features.*
 
 - [**Lab 14: Prep for Future of Programming**](/labs/lab14-future-prep) (Week 15)
   - Explore emerging trends in software development

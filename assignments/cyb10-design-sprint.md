@@ -95,22 +95,25 @@ Create a diagram showing:
 ### 2. Integrated Wireframe Document
 
 Combine individual wireframes into a single document (`design/integrated-wireframes.md`) showing:
-- How navigation flows between the four features
+- How navigation flows between the features your team is implementing (four features, or three if you are a 3-person team that dropped Search & Filter)
 - Shared UI elements (header, navigation, common buttons)
 - Any design decisions that affect multiple features
+
+**3-person teams:** You may exclude the omitted feature (Search & Filter) from the combined wireframe, but the document must explicitly state which feature was omitted (e.g., "Our team is implementing Library View, Recipe Editor, and Import Interface; Search & Filter is not in scope.").
 
 This doesn't need to be high-fidelity—annotated sketches showing how features connect are sufficient.
 
 ### 3. User-Facing Terminology
 
-Establish the terminology users will see in the UI. Consistency in naming reduces confusion:
+Establish the terminology users will see in the UI for the features you are implementing. Consistency in naming reduces confusion. Include entries only for the features in scope (e.g., "Cookbook", "My Cookbooks", "Add Recipe" for Library, Import, and Recipe Editor).
 
+Example entries:
 - **RecipeCollection** → "Cookbook" (Users think in cookbooks, not collections)
 - **Library** → "My Cookbooks" (Friendly, possessive)
 - **ImportService** → "Add Recipe" (Action-oriented, not technical)
-- *(Add terms for all major UI elements)*
+- *(Add terms for all major UI elements in your included features)*
 
-This ensures consistency across all four features.
+**3-person teams:** You need terminology only for the three features you are implementing. You may exclude terms that would apply solely to the omitted feature (Search & Filter), but note in the document which feature was omitted so graders know the scope.
 
 ### 4. Feature Buffet Selection
 
