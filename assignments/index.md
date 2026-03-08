@@ -133,7 +133,8 @@ Assignments are structured to provide a steady, manageable pace throughout the s
     - Import recipes from JSON files through CLI
     - Import recipes from images using **Google Gemini API** (`gemini-3-flash-preview`) — implement a `RecipeOcrService` driven adapter with graceful error handling for network failures, API errors, and unrecognizable images
     - Export recipes and cookbooks to markdown
-- [**Lab 9: Serverless**](/labs/lab9-serverless)
+    - Batch operations (import directory of images, export entire cookbook)
+- [**Lab 9: Network & CLI**](/labs/lab9-network-cli)
   - Deploy recipe API to cloud platform
 
 ## **Module 3: Design for Users (Group Work Begins)**

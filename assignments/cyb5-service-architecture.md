@@ -16,7 +16,6 @@ Your assignment has two parts:
 
 ![8-bit lo-fi pixel art illustration for a programming assignment cover. Kitchen/bakery setting with warm wooden cabinets and countertops in browns and tans. Scene composition (left to right): LEFT SIDE - Three actors represented as distinct pixel art personas at separate workstations: (1) "The Librarian" at a filing cabinet organizing recipe cards with labels "collections", "import", "search", (2) "The Cook" at a stovetop with a step-by-step instruction card showing "Step 2 of 5" with navigation arrows, (3) "The Planner" at a desk with shopping lists and a calculator showing scaled amounts. CENTER - A large retro computer terminal labeled "CookYourBooks CLI" with a glowing green command prompt showing "cyb>" and visible commands: "cook", "scale", "shopping-list". Tab completion suggestions float above the keyboard. The robot AI assistant stands beside the terminal, holding a clipboard labeled "ADR-001" with architectural diagrams. The chef supervises, pointing at a hexagonal diagram on the wall labeled "Driving Adapter" with arrows flowing from CLI to a question mark box labeled "Your Design". RIGHT SIDE - Multiple empty service boxes connected by cyan data flow arrows with question marks inside, representing design decisions the student must make. POST-IT NOTES: Yellow sticky reading "Design before you code!" and another "Who are your actors?". TOP BANNER: Metallic blue banner with white pixel text "A5: Interactive CLI". BOTTOM TEXT: "CS 3100: Program Design & Implementation 2". SUBTLE DETAILS: Recipe cards showing "Preview → Save?" workflow, ADR documents stacked neatly, small sparkles around the actor workstations to show separation of concerns. Color palette: Warm browns/tans for kitchen, cyan/teal for data flow and terminal glow, green for CLI text, cream for recipe cards. Same visual style as A4 service cover.](/img/assignments/web/a5.png)
 
-
 This is a **design-heavy assignment.** We provide the commands your CLI must support at a high level, and we provide explicit guidance on service boundaries through the **actor heuristic** and other boundary heuristics from [L18: Thinking Architecturally](/lecture-notes/l18-architecture-design). But *how* you decompose the service layer — which specific methods each service exposes, how they coordinate, and where you draw the lines — requires you to apply those heuristics thoughtfully. You'll document your decisions using Architecture Decision Records (ADRs) from L18.
 
 :::danger Design Quality Is Equally Weighted with Implementation
@@ -102,12 +101,11 @@ An ideal design might require you to create dozens of new classes. While you cer
 **Do not manually select expensive AI models** (like Claude Opus, GPT-5, or other premium models) for coursework in this class. **Always use "Auto" mode** in Copilot or Cursor.
 
 :::
-
 :::danger Start Early — Design Takes Time
 
 **Good design requires iteration.** You'll make better architectural decisions if you have time to sketch ideas, sleep on them, get feedback in office hours, and refine before implementing. Students who start early can explore multiple service decompositions before committing.
 
-**Early Bird Bonus (+10 points):** Get the full **Librarian suite** (`GeneralCommandTests` + `LibraryCommandTests`) passing by **Friday, March 13 at 11:59 PM EDT** and earn +10 bonus points. The bonus is added to the numerator of your final score after all other adjustments (i.e., your final score can be up to 110/100). This milestone covers the library management commands (`help`, `collections`, `collection create`, `recipes`, `conversions`, `conversion add/remove`, `import json`, `search`, `delete`) — roughly half the CLI functionality. Getting here early means you've designed and implemented your Librarian service and can focus the remaining time on Cook mode, Planner tools, and polishing your ADRs.
+**Early Bird Bonus (+10 points):** Get the full **Librarian suite** (`GeneralCommandTests` + `LibraryCommandTests`) passing by **Friday, March 13 at 11:59 PM EDT** and earn +10 bonus points. The bonus is added to the numerator of your final score after all other adjustments (i.e., your final score can be up to 110/100). This milestone covers the library management commands (`help`, `collections`, `collection create`, `recipes`, `conversions`, `conversion add/remove`, `import json`, `import image`, `search`, `delete`) — roughly half the CLI functionality. Getting here early means you've designed and implemented your Librarian service and can focus the remaining time on Cook mode, Planner tools, and polishing your ADRs.
 
 **Submission limits:** You can submit up to **15 times per rolling 24-hour period.** Use these submissions throughout the assignment — each one gives you feedback on what's working and what needs fixing.
 
@@ -175,8 +173,6 @@ CookYourBooks serves three distinct actors, each representing a different way pe
 
 **The Transformer** (scaling and unit conversion) is a **shared capability** — it primarily serves the Planner today (scaling for different group sizes, converting units for shopping), but the Cook or Librarian could benefit from it in the future (e.g., displaying a recipe in metric while cooking, or converting units on import). Extracting it into its own service boundary keeps this logic reusable and testable independent of any single actor.
 
-\* `show` is useful to all three actors (a Librarian browses recipes, a Cook previews before entering cook mode, a Planner checks ingredients before scaling). It appears in the Cook column because it directly supports the cook workflow, but your recipe lookup capability should be accessible across service boundaries.
-
 Your architecture should support cohesive feature sets for each actor that can evolve together. This matters for your group project: your four-member team will divide the GUI work by actor — one teammate builds the Cook's step-by-step interface, another builds the Librarian's collection management views, etc. If your service boundaries align with actors, teammates can work in parallel without stepping on each other's code. This is Conway's Law in action — the structure of your code mirrors the structure of your team. A change to how the Cook experiences step navigation shouldn't require touching the Librarian's import logic.
 
 :::warning Actor-Aligned Services Required
@@ -198,6 +194,83 @@ A monolithic "CookYourBooksService" that handles all functionality in one class 
 3. **Interface Segregation** — Each part of your CLI should depend only on the service capabilities it actually needs. For example, the code that implements `cook` mode needs recipe lookup — it doesn't need import or shopping list generation. The code that implements `shopping-list` needs ingredient aggregation and recipe lookup — it doesn't need cook mode session state. Avoid fat service interfaces that force callers to depend on methods they don't use.
 
 4. **Testability** — Things that need independent testing should be separable. Can you test your scaling logic without involving file I/O? Can you test your command dispatcher without a real terminal? Pure transformation logic (scaling, conversion) should be testable with just domain objects. Formatting logic should be testable with sample data and string assertions.
+
+#### The OCR Service: A Driven Adapter for Image Import
+
+The `import image` command introduces a new **driven adapter**: a service that calls the Google Gemini API to extract a recipe from an image. Like `RecipeRepository`, this is a dependency your application drives — it calls out to an external system on behalf of the user.
+
+You must implement a `RecipeOcrService` port interface and a `GeminiOcrAdapter` that implements it using the official Google GenAI SDK for Java (included in the handout Gradle configuration):
+
+```java
+public interface RecipeOcrService {
+    /**
+     * Extract a recipe from an image file.
+     * @param imagePath path to the image (JPEG, PNG, or WebP)
+     * @return the extracted Recipe
+     * @throws OcrException if extraction fails for any reason
+     */
+    Recipe extractRecipe(Path imagePath) throws OcrException;
+}
+```
+
+`GeminiOcrAdapter` should:
+1. Read and base64-encode the image file
+2. Send it to Gemini (`gemini-3-flash-preview`) using the provided prompt (see below)
+3. Parse the JSON response using the **existing Recipe JSON parser** from A3/A4 (inject it via the constructor)
+4. Wrap all errors in meaningful `OcrException` subtypes
+
+**Prompt for Gemini (provided in handout — do not modify):**
+
+```
+[INSTRUCTOR WILL PROVIDE THIS PROMPT BEFORE HANDOUT RELEASE]
+```
+
+**Implementing error handling — apply the Fallacies of Distributed Computing (L20):**
+
+The network is not reliable, latency is not zero, and the API can fail in many ways. Your adapter must handle each case and throw an `OcrException` with an actionable message:
+
+| Failure scenario | What to detect | `OcrException` message |
+|-----------------|----------------|------------------------|
+| Image file unreadable | `IOException` reading file | Include the file path |
+| Network timeout | SDK timeout exception | `"request timed out"` |
+| HTTP 401/403 | API error status | `"API key error"` |
+| HTTP 429 | Rate limit response | Suggest waiting and retrying |
+| HTTP 5xx | Server error | Include status code |
+| Response not parseable as Recipe | `ImportException` from parser | Indicate image may not be a recipe |
+
+**API key configuration:** The adapter reads the key from the environment variable `GOOGLE_API_KEY`. The handout provides a `GeminiOcrAdapter` skeleton showing how to initialize the SDK client.
+
+:::info What is an environment variable?
+
+An **environment variable** is a named value stored in your shell session — outside your code. Programs can read these values at runtime using `System.getenv("VAR_NAME")`. They are the standard way to pass secrets (like API keys) to applications without hardcoding them into source code.
+
+**Setting `GOOGLE_API_KEY` for your session:**
+
+On macOS/Linux, run this in your terminal before starting the app:
+```bash
+export GOOGLE_API_KEY=your-api-key-here
+```
+
+This sets the variable for the current terminal session. To make it permanent, add that line to your `~/.zshrc` (or `~/.bashrc`). In VS Code, you can also set environment variables in a `.env` file at the project root and configure your launch configuration to load it — see the [VS Code docs on environment variables](https://code.visualstudio.com/docs/editor/debugging#_launchjson-attributes).
+
+:::
+
+:::warning API Key Security
+
+Your `GOOGLE_API_KEY` must **not** be committed to version control — treat it like a password. Never put it directly in a `.java` file. The provided test suite uses a **mock `RecipeOcrService`** and does not require a real API key — you can run all tests without one.
+
+:::
+
+**Wiring in `CookYourBooksApp`:**
+
+```java
+// Provided in the handout skeleton — add your OCR service wiring:
+String apiKey = System.getenv("GOOGLE_API_KEY");
+RecipeOcrService ocrService = new GeminiOcrAdapter(apiKey, recipeJsonParser);
+// Pass ocrService to your Librarian service or CLI wiring
+```
+
+**The testability heuristic in action:** Because `RecipeOcrService` is a port interface, your E2E CLI tests can inject a mock implementation that returns a pre-built `Recipe` — no real network calls needed. This is the same principle as mocking `RecipeRepository` in A4.
 
 ### JLine: Rich Terminal Interaction
 
@@ -553,7 +626,7 @@ Found 3 recipes.
 cyb> import json /path/to/recipe.json "Holiday Favorites"
 ```
 
-Imports a recipe from a JSON file and adds it to the specified collection. Your service layer should handle JSON deserialization, saving the recipe, and updating the collection. The JSON format is the same format used in A4 (the handout provides the deserializer).
+Imports a recipe from a JSON file and adds it to the specified collection. Your service layer should handle JSON deserialization, saving the recipe, and updating the collection. The JSON format is the same format used in A4 + A5 (the handout provides the deserializer).
 
 **On success:** Displays a confirmation with the imported recipe's title.
 ```text
@@ -616,7 +689,7 @@ Scaling discarded.
 **Requirements:**
 - Display side-by-side comparison of original and scaled ingredients
 - VagueIngredients display unchanged (e.g., "to taste")
-- Ask whether to save (y: persists the scaled recipe as a new recipe in the **first collection** that contains the original recipe; n: discards)
+- Ask whether to save (y: persists the scaled recipe as a new recipe in the same collection as the original; n: discards)
 - If the recipe has no servings information: `Cannot scale 'Recipe Name': no serving information available.`
 
 **Error handling:**
@@ -1179,6 +1252,7 @@ Update `REFLECTION.md` to address:
 
 5. **E2E Testing Experience:** This assignment used E2E tests with a dumb terminal instead of mocks. Compare this to A4's mock-based approach. Which bugs did E2E testing catch (or would catch) that mocks might miss? Were there situations where you wished you had finer-grained unit tests? What's your takeaway about when to use each approach?
 
+
 6. **AI Collaboration:** Which parts of the CLI did AI help you build most effectively? Where did you need to think independently about design? Did AI help or hinder your architectural thinking — for example, did it suggest designs that violated the boundary heuristics, or did it help you apply them?
 
 ## Quality Requirements
@@ -1227,7 +1301,7 @@ This rubric emphasizes design quality equally with implementation. Passing all t
 | `cook` mode (navigation, ingredients, done/quit) | 2 |
 | `export` (correct Markdown output) | 1 |
 
-### Instructor-Run Formatting Tests (12 points)
+## Manual Demo Tests (12 points)
 
 These tests exercise formatting and visual layout paths that keyword-based automated tests cannot fully verify. **`ManualDemoTest` is provided in the handout** — it is not something you write. It drives your CLI through three scripted workflows and writes the output to files that graders review manually.
 
