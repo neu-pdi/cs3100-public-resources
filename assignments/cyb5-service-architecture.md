@@ -16,7 +16,7 @@ Your assignment has two parts:
 
 ![8-bit lo-fi pixel art illustration for a programming assignment cover. Kitchen/bakery setting with warm wooden cabinets and countertops in browns and tans. Scene composition (left to right): LEFT SIDE - Three actors represented as distinct pixel art personas at separate workstations: (1) "The Librarian" at a filing cabinet organizing recipe cards with labels "collections", "import", "search", (2) "The Cook" at a stovetop with a step-by-step instruction card showing "Step 2 of 5" with navigation arrows, (3) "The Planner" at a desk with shopping lists and a calculator showing scaled amounts. CENTER - A large retro computer terminal labeled "CookYourBooks CLI" with a glowing green command prompt showing "cyb>" and visible commands: "cook", "scale", "shopping-list". Tab completion suggestions float above the keyboard. The robot AI assistant stands beside the terminal, holding a clipboard labeled "ADR-001" with architectural diagrams. The chef supervises, pointing at a hexagonal diagram on the wall labeled "Driving Adapter" with arrows flowing from CLI to a question mark box labeled "Your Design". RIGHT SIDE - Multiple empty service boxes connected by cyan data flow arrows with question marks inside, representing design decisions the student must make. POST-IT NOTES: Yellow sticky reading "Design before you code!" and another "Who are your actors?". TOP BANNER: Metallic blue banner with white pixel text "A5: Interactive CLI". BOTTOM TEXT: "CS 3100: Program Design & Implementation 2". SUBTLE DETAILS: Recipe cards showing "Preview → Save?" workflow, ADR documents stacked neatly, small sparkles around the actor workstations to show separation of concerns. Color palette: Warm browns/tans for kitchen, cyan/teal for data flow and terminal glow, green for CLI text, cream for recipe cards. Same visual style as A4 service cover.](/img/assignments/web/a5.png)
 
-This is a **design-heavy assignment.** We provide the commands your CLI must support at a high level, and we provide explicit guidance on service boundaries through the **actor heuristic** and other boundary heuristics from [L18: Thinking Architecturally](/lecture-notes/l18-architecture-design). But *how* you decompose the service layer — which specific methods each service exposes, how they coordinate, and where you draw the lines — requires you to apply those heuristics thoughtfully. You'll document your decisions using Architecture Decision Records (ADRs) from L18.
+This is a **design-heavy assignment.** We provide the commands your CLI must support at a high level, and we provide explicit guidance on service boundaries through the **actor heuristic** and other boundary heuristics from [L18: Thinking Architecturally](/lecture-notes/l18-architecture-design). But *how* you decompose the service layer — which specific methods each service exposes, how they coordinate, and where you draw the lines — requires you to apply those heuristics thoughtfully. You'll document your decisions using Architecture Decision Records (ADRs) from L18 — see the [ADR section and sample in L18](/lecture-notes/l18-architecture-design#architecture-decision-records-adrs); your ADRs can be just as short as that example.
 
 :::danger Design Quality Is Equally Weighted with Implementation
 
@@ -32,6 +32,8 @@ The goal is to demonstrate that you can apply the architectural thinking from le
 :::
 
 **Due:** Thursday, March 19, 2026 at 11:59 PM Boston Time
+
+**Early Bird Bonus:** +10 points for completing the Library Commands by Friday, March 13 at 11:59 PM EDT. See [Grading Rubric](#grading-rubric) for details.
 
 **Prerequisites:** This assignment builds on the A4 sample implementation (provided). You should be familiar with `RecipeRepository`, `RecipeCollectionRepository`, `ConversionRegistry`, and the domain model. You should also understand why the A4 `RecipeService` interface was problematic — that understanding drives your service design in this assignment.
 
@@ -50,7 +52,7 @@ The goal is to demonstrate that you can apply the architectural thinking from le
 By completing this assignment, you will demonstrate proficiency in:
 
 - **Applying service boundary heuristics** — using the four heuristics from [L18: Thinking Architecturally](/lecture-notes/l18-architecture-design) (rate of change, actor, interface segregation, testability) to decompose your service layer
-- **Writing Architecture Decision Records (ADRs)** — documenting the *why* behind your service boundaries and design choices ([L18](/lecture-notes/l18-architecture-design))
+- **Writing Architecture Decision Records (ADRs)** — documenting the *why* behind your service boundaries and design choices ([L18 ADR section](/lecture-notes/l18-architecture-design#architecture-decision-records-adrs); ADRs can be just as short as the sample)
 - **Designing a UI-agnostic service layer** — creating application services that can be consumed by multiple driving adapters (CLI now, GUI in Group Deliverable 1), informed by what you learned about bad service design in A4 and hexagonal architecture ([L16: Testability](/lecture-notes/l16-testing2), [L19: Architectural Qualities](/lecture-notes/l19-monoliths))
 - **Building a driving adapter** — implementing the CLI as a hexagonal driving adapter (it *drives* the application on behalf of the user) that consumes your services without leaking domain logic into the presentation layer; preparing for a second driving adapter (GUI) in the group project
 - **Designing a command architecture** — creating an extensible system for dispatching, parsing, and executing commands
@@ -94,6 +96,12 @@ You are encouraged to use AI to implement your design. As-per our 6-step [AI wor
 The ADRs and design documentation that you must generate for this assignment are great inputs to provide to an AI coding assistant to help you implement it in code. Use the "Plan" mode in your Copilot or Cursor chat to generate an implementation plan from your design. Review it and refine it with the chat agent. Once you are satisfied with the plan, use the "Build" mode to generate the code from the plan.
 
 An ideal design might require you to create dozens of new classes. While you certainly *can* do this by hand, our expectation is that you spend most of your time focusing on the design, and learn to leverage AI to help you implement it quickly.
+:::
+
+:::danger Do Not Use AI to Write Your Reflections
+
+**Your reflection answers in `REFLECTION.md` must be written by you.** Do not use AI to draft, expand, or paraphrase your reflection responses. The reflection questions are for you to think through your design process and document your own insights; using AI undermines that learning. Graders expect your voice and your specific references to your code and decisions.
+
 :::
 
 :::danger AI Resource Consumption — Use "Auto" Mode Only
@@ -173,6 +181,8 @@ CookYourBooks serves three distinct actors, each representing a different way pe
 
 **The Transformer** (scaling and unit conversion) is a **shared capability** — it primarily serves the Planner today (scaling for different group sizes, converting units for shopping), but the Cook or Librarian could benefit from it in the future (e.g., displaying a recipe in metric while cooking, or converting units on import). Extracting it into its own service boundary keeps this logic reusable and testable independent of any single actor.
 
+\* `show` is useful to all three actors (a Librarian browses recipes, a Cook previews before entering cook mode, a Planner checks ingredients before scaling). It appears in the Cook column because it directly supports the cook workflow, but your recipe lookup capability should be accessible across service boundaries.
+
 Your architecture should support cohesive feature sets for each actor that can evolve together. This matters for your group project: your four-member team will divide the GUI work by actor — one teammate builds the Cook's step-by-step interface, another builds the Librarian's collection management views, etc. If your service boundaries align with actors, teammates can work in parallel without stepping on each other's code. This is Conway's Law in action — the structure of your code mirrors the structure of your team. A change to how the Cook experiences step navigation shouldn't require touching the Librarian's import logic.
 
 :::warning Actor-Aligned Services Required
@@ -194,83 +204,6 @@ A monolithic "CookYourBooksService" that handles all functionality in one class 
 3. **Interface Segregation** — Each part of your CLI should depend only on the service capabilities it actually needs. For example, the code that implements `cook` mode needs recipe lookup — it doesn't need import or shopping list generation. The code that implements `shopping-list` needs ingredient aggregation and recipe lookup — it doesn't need cook mode session state. Avoid fat service interfaces that force callers to depend on methods they don't use.
 
 4. **Testability** — Things that need independent testing should be separable. Can you test your scaling logic without involving file I/O? Can you test your command dispatcher without a real terminal? Pure transformation logic (scaling, conversion) should be testable with just domain objects. Formatting logic should be testable with sample data and string assertions.
-
-#### The OCR Service: A Driven Adapter for Image Import
-
-The `import image` command introduces a new **driven adapter**: a service that calls the Google Gemini API to extract a recipe from an image. Like `RecipeRepository`, this is a dependency your application drives — it calls out to an external system on behalf of the user.
-
-You must implement a `RecipeOcrService` port interface and a `GeminiOcrAdapter` that implements it using the official Google GenAI SDK for Java (included in the handout Gradle configuration):
-
-```java
-public interface RecipeOcrService {
-    /**
-     * Extract a recipe from an image file.
-     * @param imagePath path to the image (JPEG, PNG, or WebP)
-     * @return the extracted Recipe
-     * @throws OcrException if extraction fails for any reason
-     */
-    Recipe extractRecipe(Path imagePath) throws OcrException;
-}
-```
-
-`GeminiOcrAdapter` should:
-1. Read and base64-encode the image file
-2. Send it to Gemini (`gemini-3-flash-preview`) using the provided prompt (see below)
-3. Parse the JSON response using the **existing Recipe JSON parser** from A3/A4 (inject it via the constructor)
-4. Wrap all errors in meaningful `OcrException` subtypes
-
-**Prompt for Gemini (provided in handout — do not modify):**
-
-```
-[INSTRUCTOR WILL PROVIDE THIS PROMPT BEFORE HANDOUT RELEASE]
-```
-
-**Implementing error handling — apply the Fallacies of Distributed Computing (L20):**
-
-The network is not reliable, latency is not zero, and the API can fail in many ways. Your adapter must handle each case and throw an `OcrException` with an actionable message:
-
-| Failure scenario | What to detect | `OcrException` message |
-|-----------------|----------------|------------------------|
-| Image file unreadable | `IOException` reading file | Include the file path |
-| Network timeout | SDK timeout exception | `"request timed out"` |
-| HTTP 401/403 | API error status | `"API key error"` |
-| HTTP 429 | Rate limit response | Suggest waiting and retrying |
-| HTTP 5xx | Server error | Include status code |
-| Response not parseable as Recipe | `ImportException` from parser | Indicate image may not be a recipe |
-
-**API key configuration:** The adapter reads the key from the environment variable `GOOGLE_API_KEY`. The handout provides a `GeminiOcrAdapter` skeleton showing how to initialize the SDK client.
-
-:::info What is an environment variable?
-
-An **environment variable** is a named value stored in your shell session — outside your code. Programs can read these values at runtime using `System.getenv("VAR_NAME")`. They are the standard way to pass secrets (like API keys) to applications without hardcoding them into source code.
-
-**Setting `GOOGLE_API_KEY` for your session:**
-
-On macOS/Linux, run this in your terminal before starting the app:
-```bash
-export GOOGLE_API_KEY=your-api-key-here
-```
-
-This sets the variable for the current terminal session. To make it permanent, add that line to your `~/.zshrc` (or `~/.bashrc`). In VS Code, you can also set environment variables in a `.env` file at the project root and configure your launch configuration to load it — see the [VS Code docs on environment variables](https://code.visualstudio.com/docs/editor/debugging#_launchjson-attributes).
-
-:::
-
-:::warning API Key Security
-
-Your `GOOGLE_API_KEY` must **not** be committed to version control — treat it like a password. Never put it directly in a `.java` file. The provided test suite uses a **mock `RecipeOcrService`** and does not require a real API key — you can run all tests without one.
-
-:::
-
-**Wiring in `CookYourBooksApp`:**
-
-```java
-// Provided in the handout skeleton — add your OCR service wiring:
-String apiKey = System.getenv("GOOGLE_API_KEY");
-RecipeOcrService ocrService = new GeminiOcrAdapter(apiKey, recipeJsonParser);
-// Pass ocrService to your Librarian service or CLI wiring
-```
-
-**The testability heuristic in action:** Because `RecipeOcrService` is a port interface, your E2E CLI tests can inject a mock implementation that returns a pre-built `Recipe` — no real network calls needed. This is the same principle as mocking `RecipeRepository` in A4.
 
 ### JLine: Rich Terminal Interaction
 
@@ -689,7 +622,7 @@ Scaling discarded.
 **Requirements:**
 - Display side-by-side comparison of original and scaled ingredients
 - VagueIngredients display unchanged (e.g., "to taste")
-- Ask whether to save (y: persists the scaled recipe as a new recipe in the same collection as the original; n: discards)
+- Ask whether to save (y: persists the scaled recipe as a new recipe in the **first collection** that contains the original recipe; n: discards)
 - If the recipe has no servings information: `Cannot scale 'Recipe Name': no serving information available.`
 
 **Error handling:**
@@ -953,7 +886,7 @@ You must submit design documentation that captures your architectural decisions.
 
 **Required: Architecture Decision Records (ADRs)**
 
-Create exactly **4 ADRs** in a `docs/adr/` folder. Each ADR documents a significant design decision using the format from [L18](/lecture-notes/l18-architecture-design):
+Create exactly **4 ADRs** in a `docs/adr/` folder. Each ADR documents a significant design decision using the format from [L18's Architecture Decision Records section](/lecture-notes/l18-architecture-design#architecture-decision-records-adrs) — your ADRs can be just as short as the sample there:
 
 ```markdown
 # ADR-001: [Title of Decision]
@@ -1240,6 +1173,8 @@ Goodbye!
 
 ## Reflection
 
+**Do not use AI to write your reflection.** Your answers must be your own; the reflection is for you to document your design thinking and process.
+
 Update `REFLECTION.md` to address:
 
 1. **Applying Boundary Heuristics:** Which of the four L18 heuristics (rate of change, actor, interface segregation, testability) most influenced your service layer design? Give a concrete example: describe a specific boundary you drew (or chose not to draw) and explain which heuristic(s) informed that decision. How did the three actors (Librarian, Cook, Planner) influence your thinking? If multiple heuristics pointed in different directions, how did you resolve the tension?
@@ -1275,6 +1210,12 @@ This rubric emphasizes design quality equally with implementation. Passing all t
 ### Automated Testing (38 points)
 
 **We provide the test suite.** Run `./gradlew test` locally to verify functionality before submitting.
+
+:::tip Early Bird Bonus (+10 points)
+
+Complete the **Library Commands** section below by **Friday, March 13 at 11:59 PM EDT** for a **+10 point bonus**. You must pass all tests in that section (27 tests total) to earn the bonus. This encourages you to get your CLI architecture and Librarian service working early.
+
+:::
 
 #### Library Commands (15 points) — Required for Early Bird Bonus
 
