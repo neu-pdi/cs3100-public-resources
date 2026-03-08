@@ -115,17 +115,18 @@ This ensures consistency across all four features.
 ### 4. Feature Buffet Selection
 
 Select **2-3 features** from the Feature Buffet that your team will implement in GA2.
-GA2 will be graded primarily on *process* rather than on *product*, so you if you choose a set of features that ultimately proves to be too ambitious, you can still receive high marks by demonstrating thoughtful design, iteration, and reflection in your implementation journal. Choose features that you want to work on, not just the ones that seem easiest.
+GA2 will be graded primarily on *process* rather than on *product*, so if you choose a set of features that ultimately proves to be too ambitious, you can still receive high marks by demonstrating thoughtful design, iteration, and reflection in your implementation journal. Choose features that you want to work on, not just the ones that seem easiest.
 Document your selection in `design/buffet-selection.md`:
 
 **Standard Features:**
-- Recipe scaling calculator with serving size adjustment
-- Shopping list generation from selected recipes
-- Export to formatted PDF or styled Markdown
-- Unit conversion toggle (metric ↔ imperial throughout app)
-- Keyboard shortcuts and accessibility polish
-- Dark mode / theme customization
-- Cooking timer integration for recipe steps
+- Recipe Scaling
+- Shopping List
+- Export to PDF
+- Unit Conversion
+- Keyboard Shortcuts
+- Dark Mode
+- Cooking Timer
+- Cooking Mode
 
 **Advanced Features:**
 - Multi-page recipe import (multiple files at once, multi-page PDF, recipe continuation detection)

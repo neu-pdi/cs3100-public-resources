@@ -166,7 +166,7 @@ TA meeting observations, collaboration surveys, and peer evaluation can adjust a
 
 ### Repository Contents
 
-```
+```text
 /menu-features/
   /feature-name-1/
     RATIONALE.md

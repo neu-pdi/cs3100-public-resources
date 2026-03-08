@@ -18,7 +18,7 @@ The final project report is your opportunity to document the complete CookYourBo
 
 The final report is worth **50 points** and serves as the capstone submission for the group project. Infographics will be compiled into a gallery for peer learning across teams.
 
-**Due:** Thursday, April 20, 2026 at 11:59 PM Boston Time
+**Due:** Monday, April 20, 2026 at 11:59 PM Boston Time
 
 ## Deliverables
 
