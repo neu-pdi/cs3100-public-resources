@@ -1,6 +1,7 @@
 ---
 title: "Final Project Report"
 sidebar_position: 12
+image: /img/assignments/web/final.png
 ---
 
 :::warning Preliminary Content
@@ -12,6 +13,8 @@ This assignment is preliminary content and is subject to change until the releas
 ## Overview
 
 The final project report is your opportunity to document the complete CookYourBooks application your team has built. You'll create a written report covering your architecture decisions, team collaboration, and lessons learned, along with an infographic poster that visually showcases your work.
+
+![8-bit lo-fi pixel art illustration for a programming assignment cover. Kitchen/bakery setting with warm wooden cabinets and countertops in browns and tans, now transformed into a celebratory exhibition hall. Scene composition: CENTER - A large widescreen monitor on a polished kitchen counter displays the completed CookYourBooks application with a polished GUI showing the library view with cookbook shelves, a recipe detail panel, search bar with filter tags, and a dark mode toggle — all four core features visibly integrated and working together. All text beyond what is specified here such as ingredients, instructions, and fine details are illegible skeleton placeholders, not readable words. The screen glows with a subtle golden border indicating a finished product. LEFT SIDE - A diverse team of four pixel art characters (varying gender, skin tone, and hair style) stands proudly beside an easel displaying their infographic poster: a colorful single landscape page with a Java modular monolith architecture diagram at the top showing layered boxes for ViewModels, Services, and Persistence (no database icon) and screenshots of key features in the middle. One character points at the poster while another takes notes. A "Gallery Showcase" ribbon hangs above the easel. RIGHT SIDE - A wooden desk holds the team's deliverables neatly arranged: a bound written report document (3-4 pages visible with section headers "Architecture Decisions", "Team Reflection", "Sustainability"), a laptop showing a demo video paused mid-recording with a play button overlay and "2:37" timestamp, and a stack of completed peer evaluation forms with checkmarks. FOREGROUND - Small celebration details: confetti pixels floating in the air, a "Semester Complete!" banner draped across the top of the scene, small achievement badge icons (a star, a code bracket, a team icon, a magnifying glass) floating near each team member. POST-IT NOTE: "Reflect on the journey, not just the destination." TOP BANNER: Metallic blue banner with white pixel text "Final Project Report". BOTTOM TEXT: "CS 3100: Program Design & Implementation 2". Color palette: Warm browns/tans for kitchen, golden accents for the finished product glow, cyan/teal for architecture diagrams and connections, confetti in team accent colors (blue, green, orange, purple from GA1). 8-bit lo-fi pixel art style, clean outlines, retro game aesthetic with subtle CRT screen texture, 16:9 aspect ratio.](/img/assignments/web/final.png)
 
 The final report is worth **50 points** and serves as the capstone submission for the group project. Infographics will be compiled into a gallery for peer learning across teams.
 

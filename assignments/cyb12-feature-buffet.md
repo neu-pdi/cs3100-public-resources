@@ -1,6 +1,7 @@
 ---
 title: "Group Assignment 2: Feature Buffet"
 sidebar_position: 11
+image: /img/assignments/web/ga2.png
 ---
 
 :::warning Preliminary Content
@@ -12,6 +13,8 @@ This assignment is preliminary content and is subject to change until the releas
 ## Overview
 
 In this final implementation assignment, your team selects and implements 2-3 features from a provided menu. Unlike GA1, this assignment is graded primarily on **process rather than product**—demonstrating thoughtful design iteration, quality code review, and professional documentation matters more than feature completeness.
+
+![8-bit lo-fi pixel art illustration for a programming assignment cover. Kitchen/bakery setting with warm wooden cabinets and countertops in browns and tans. Scene composition: A grand kitchen buffet table stretching across the scene from left to right, laden with serving stations — each station represents a selectable software feature displayed as an appetizing pixel art dish on a labeled platter. STANDARD TIER (silver platters on the left half): "Recipe Scaling" shows a recipe card with a size slider growing from small to large, "Shopping List" displays a notepad with aggregated ingredient checkboxes, "Export to PDF" features a printer outputting a formatted page, "Unit Conversion" shows a balance scale with metric weights on one side and imperial on the other, "Keyboard Shortcuts" displays a glowing keyboard with highlighted keys, "Dark Mode" shows a monitor split half-light half-dark, "Cooking Timer" has a pixel stopwatch with steam rising. ADVANCED TIER (golden platters on the right half, slightly elevated): "Multi-Page Import" shows a stack of cookbook pages feeding into a scanner, "Recipe Chatbot" features a chat window with a friendly chatbot giving recipe suggestions, "Meal Planning" displays a weekly calendar grid with recipe thumbnails in each day slot, "Nutritional Info" shows a pie chart with macronutrient segments. FOREGROUND - Floating process portfolio documents are visible above the platters: wireframe sketches showing Version 1 and Version 2 iterations, a git log with commit messages, PR review comment bubbles with checkmarks, and a testing checklist. A sign at the buffet entrance reads "Choose wisely — process over product!" POST-IT NOTE: "Document your journey, not just the destination." TOP BANNER: Metallic blue banner with white pixel text "GA2: Feature Buffet". BOTTOM TEXT: "CS 3100: Program Design & Implementation 2". Color palette: Warm browns/tans for kitchen, silver and gold for platters, cyan/teal for selection highlights and process document accents, cream for recipe cards. 8-bit lo-fi pixel art style, clean outlines, retro game aesthetic with subtle CRT screen texture, 16:9 aspect ratio.](/img/assignments/web/ga2.png)
 
 This approach reflects real-world software development: a well-documented, well-tested partial feature is more valuable than a hastily-implemented complete feature with no documentation or tests.
 
@@ -64,6 +67,7 @@ Choose **2-3 features** from the buffet below.
 | **Keyboard Shortcuts** | Comprehensive keyboard navigation and shortcuts | Medium |
 | **Dark Mode** | Theme switcher with system preference detection | Low-Medium |
 | **Cooking Timer** | Timers linked to recipe instruction steps | Medium-High |
+| **Cooking Mode** | Step-by-step cooking interface: one instruction per screen with referenced ingredients, large easy-to-tap navigation buttons, and previous/next step controls | Medium |
 
 ### Advanced Features
 

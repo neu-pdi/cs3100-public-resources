@@ -1,6 +1,7 @@
 ---
 title: "Team Charter"
 sidebar_position: 8
+image: /img/assignments/web/team-charter.png
 ---
 
 :::warning Preliminary Content
@@ -12,6 +13,8 @@ This assignment is preliminary content and is subject to change until the releas
 ## Overview
 
 Your team has been formed. Your first task is to hold your **first official team meeting** where you'll collaboratively create a **Team Charter**—a short document capturing how you'll work together.
+
+![8-bit lo-fi pixel art illustration for a programming assignment cover. Kitchen/bakery setting with warm wooden cabinets and countertops in browns and tans. Scene composition: Four diverse pixel art student characters seated around a large round wooden kitchen table, each holding a different colored pen or marker. In the center of the table lies a large parchment document titled "Team Charter" with visible section headers: "Communication Norms", "Availability", "Decision-Making", "Conflict Resolution". Each character has a small speech bubble — one shows a calendar icon, another a chat icon, a third a handshake, and the fourth a checklist. Behind the group, a warm kitchen wall displays a whiteboard with a weekly meeting schedule grid and sticky notes reading "HRT: Humility, Respect, Trust". A small bookshelf holds copies of "Debugging Teams" and a mug that reads "Teamwork". Cyan/teal accent lines connect the four team members in a diamond pattern, symbolizing collaboration. TOP BANNER: Metallic blue banner with white pixel text "Team Charter". BOTTOM TEXT: "CS 3100: Program Design & Implementation 2". Color palette: Warm browns/tans for kitchen, cyan/teal for connection lines, cream for the charter document, soft accent colors for each team member's contributions. 8-bit lo-fi pixel art style, clean outlines, retro game aesthetic with subtle CRT screen texture, 16:9 aspect ratio.](/img/assignments/web/team-charter.png)
 
 This isn't busywork. Teams who explicitly discuss expectations upfront navigate conflict more effectively than teams who assume everyone is "on the same page."
 

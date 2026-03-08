@@ -150,7 +150,7 @@ Group assignments are structured around **individual accountability with team co
 
 Two recurring processes run throughout the group project and are **required** for full credit:
 
-**Weekly Team Collaboration Surveys** — Due each Sunday (Mar 16, Mar 23, Mar 30, Apr 6, Apr 13) via Pawtograder. Each survey asks you to briefly reflect on the team's dynamics, your own contributions that week, and any blockers or tensions. These are confidential from your teammates and feed directly into the individual accountability adjustments for GA1, GA2, and the Final Report.
+**Weekly Team Collaboration Surveys** — Due each Monday (Mar 16, Mar 23, Mar 30, Apr 6, Apr 13) via Pawtograder. Each survey asks you to briefly reflect on the team's dynamics, your own contributions that week, and any blockers or tensions. Responses are not shared with teammates but are visible to your TA group mentor, who uses them to lead retrospectives and guide team dynamics. They feed directly into the individual accountability adjustments for GA1, GA2, and the Final Report.
 
 **Weekly TA Mentor Meetings** — Your team meets with your assigned TA mentor for 30 minutes each week. Every team member is expected to attend and to explain what they worked on—including the design decisions behind their code. The meeting also covers progress relative to upcoming checkpoints and next steps. These meetings are not a scheduling formality; they are the primary mechanism by which TA mentors verify that each team member understands their own code and is contributing meaningfully.
 
@@ -228,7 +228,7 @@ The accountability adjustments are not punitive—they exist to protect teammate
 
   #### **Checkpoint 2: Feature Buffet** (Due 2026-04-16)
   - **Choose 2-3 features from the menu** (see [GA2: Feature Buffet](/assignments/cyb12-feature-buffet) for full descriptions):
-    - *Standard:* Recipe Scaling, Shopping List, Export to PDF, Unit Conversion, Keyboard Shortcuts, Dark Mode, Cooking Timer
+    - *Standard:* Recipe Scaling, Shopping List, Export to PDF, Unit Conversion, Keyboard Shortcuts, Dark Mode, Cooking Timer, Cooking Mode
     - *Advanced:* Multi-Page Import, Recipe Chatbot, Meal Planning, Nutritional Info
   - **Process Portfolio (required for each feature):**
     - Design rationale: why this feature? what user need?

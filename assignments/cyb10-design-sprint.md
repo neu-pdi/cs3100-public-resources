@@ -1,6 +1,7 @@
 ---
 title: "Group Assignment 0: Design Sprint"
 sidebar_position: 9
+image: /img/assignments/web/ga0.png
 ---
 
 :::warning Preliminary Content
@@ -12,6 +13,8 @@ This assignment is preliminary content and is subject to change until the releas
 ## Overview
 
 With your Team Charter established, it's time to design your group project. In this Design Sprint, your team will apply User-Centered Design principles to create the design artifacts that will guide your implementation in GA1 and GA2.
+
+![8-bit lo-fi pixel art illustration for a programming assignment cover. Kitchen/bakery setting transformed into a design studio with warm wooden cabinets and countertops in browns and tans. Scene composition: A team of four pixel art characters gathered around a large whiteboard that dominates the center of the scene. The whiteboard is covered with design artifacts: low-fidelity wireframe sketches of a recipe app GUI showing four distinct screens (library view, recipe editor, import interface, search panel), connected by navigation flow arrows in cyan. LEFT SIDE - One character pins a user persona card to the board ("Home Cook Hannah" with goals and frustrations listed), while another sketches wireframes with a thick marker, showing iteration (Version 1 crossed out, Version 2 highlighted). RIGHT SIDE - A third character reviews an architecture diagram showing ViewModel boxes connected via cyan arrows to a box labeled 'A5 Service Architecture'. The fourth character evaluates accessibility icons pinned to the board: a keyboard icon and a contrast ratio checker. FOREGROUND - A table with scattered materials: colored sticky notes with feature names ("Recipe Scaling", "Dark Mode", "Shopping List"), a "Feature Buffet Menu" card listing Standard and Advanced options, and a special golden card labeled "Our Feature" with a lightbulb icon and question mark. POST-IT NOTES: "Design before you code!" and "Who is your user?" TOP BANNER: Metallic blue banner with white pixel text "GA0: Design Sprint". BOTTOM TEXT: "CS 3100: Program Design & Implementation 2". Color palette: Warm browns/tans for kitchen, cyan/teal for wireframe arrows and architecture flows, cream for persona cards, yellow for sticky notes, gold accent for "Our Feature" card. 8-bit lo-fi pixel art style, clean outlines, retro game aesthetic with subtle CRT screen texture, 16:9 aspect ratio.](/img/assignments/web/ga0.png)
 
 Each team member will create personas, wireframes, and accessibility considerations for their assigned core feature. You'll also select your **Feature Buffet** items for GA2 and design **"Our Feature"**—a custom feature concept that you'll include (but not implement) in your final report.
 
