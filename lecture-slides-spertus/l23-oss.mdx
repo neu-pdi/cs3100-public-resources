@@ -15,7 +15,7 @@ import Img from '@site/src/components/Img';
 
 <Slide>
   <Img
-    src="/img/lectures/web/l23c.png"
+    src="/img/lectures/web/l23.png"
     prompt="Concept: 'Open Source Frameworks' (Program Design & Implementation 2). A pixel art educational illustration depicting a global open-source bazaar marketplace. In the center, a vibrant marketplace with stalls and booths, each labeled with famous OSS projects: Linux, Jackson, Spring, React, TensorFlow. Developers from around the world collaborate, contributing packages TO the marketplace and taking packages FROM it. Above the marketplace, commercial skyscrapers (labeled Netflix, Amazon, Google, Microsoft) are supported by the open-source foundation below them. The visual metaphor: the commercial world stands on open-source shoulders. Package boxes flow in both directions. A globe in the background shows worldwide connections. Tagline: 'Modern Software Stands on Open Source Shoulders'. Retro pixel art style with teals, blues, purples, and warm accents."
     alt="A pixel art illustration of a global open-source marketplace. Developers worldwide collaborate, contributing to and taking from stalls labeled Linux, Jackson, Spring, React. Commercial buildings above are supported by the OSS foundation. Tagline: Modern Software Stands on Open Source Shoulders."
   />
@@ -169,10 +169,10 @@ graph TD
     App["Your Application"] --> Databind["jackson-databind:2.15.0"]
     App --> JSR310["jackson-datatype-jsr310:2.15.0"]
     App --> JDK8["jackson-datatype-jdk8:2.15.0"]
-    
+
     Databind --> Core["jackson-core:2.15.0"]
     Databind --> Annotations["jackson-annotations:2.15.0"]
-    
+
     JSR310 --> Databind
     JDK8 --> Databind
 ```
@@ -218,18 +218,18 @@ graph TD
     App --> JDK8["jackson-datatype-jdk8:2.15.0"]
     App --> XML["jackson-dataformat-xml:2.15.0"]
     App --> YAML["jackson-dataformat-yaml:2.15.0"]
-    
+
     Databind --> Core["jackson-core:2.15.0"]
     Databind --> Annotations["jackson-annotations:2.15.0"]
-    
+
     JSR310 --> Databind
     JDK8 --> Databind
     XML --> Databind
     YAML --> Databind
-    
+
     XML --> Stax2["stax2-api:4.2.1<br/>(org.codehaus.woodstox)"]
     XML --> Woodstox["woodstox-core:6.5.1<br/>(com.fasterxml.woodstox)"]
-    
+
     YAML --> SnakeYAML["snakeyaml:2.0<br/>(org.yaml)"]
 ```
 
@@ -1257,6 +1257,26 @@ An attacker compromises a package deep in the dependency tree. Your app pulls it
 </aside>
 
 </Slide>
+
+<Slide>
+
+## The Internet Was Weeks Away from Disaster and No One Knew (Veritasium)
+
+<Img src='/img/lectures/web/l23-veritasium-xz.png'
+  alt='Screenshot of the YouTube page for the Veritasium video "The Internet Was Weeks Away from Disaster and No One Knew"'
+/>
+
+https://www.youtube.com/watch?v=aoag03mSuXQ
+
+<aside className="notes">
+- Play from start to "So, how could we ever let ourselves get this vulnerable?"
+First link: https://youtu.be/aoag03mSuXQ?si=yw_MPh60uOLTdAV7
+- Play from 8:47 to "one that could give him access to almost every computer on the internet" (12:02)
+Second link: https://youtu.be/aoag03mSuXQ?si=mkmCwU0NiEAxfCby&t=527
+</aside>
+
+</Slide>
+
 
 <Slide>
 
