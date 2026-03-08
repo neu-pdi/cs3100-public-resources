@@ -27,7 +27,10 @@ By completing this assignment, you will:
 
 ## Instructions
 
-Schedule and hold your first team meeting. **All team members must be present.** During this meeting, discuss and agree on each section of the charter together.
+Schedule and hold your first team meeting. **All team members must be present.**
+We suggest that you meet in-person, but if that's not possible, a video call is fine (we suggest *against* having a hybrid option with some teammates together physically and others virtual).
+Use a tool like [When2Meet](https://www.when2meet.com/) to find a 30-minute time that works for everyone.
+During this meeting, discuss and agree on each section of the charter together.
 
 Update `README.md` in your repository root with the following sections:
 
