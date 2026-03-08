@@ -94,7 +94,7 @@ Retro 8-bit pixel art with cohesive color palette. Progression from isolated coo
 />
 
 <aside className="notes">
-- Discuss every row.
+- Discuss every row
 → One of the ways we try to help students is with office hours
 </aside>
 
@@ -127,12 +127,12 @@ Retro 8-bit pixel art with cohesive color palette. Progression from isolated coo
 <div className='fragment'>
 * Ask yourself what you think of people who ask questions or make mistakes.
 </div>
+
 <aside className="notes">
 Share my experiences
 - When I visited UCB team
-- Tell story about student failing at research
+- Tell story about grad student failing at research
 - I write my strongest letters for people who ask questions and don't mind making mistakes
-
 </aside>
 
 </Slide>
@@ -210,133 +210,6 @@ Credit for exercise: Prof. Judy Goldsmith, University of Kentucky
 
 </Slide>
 
-{/* ============================================ */}
-{/* LOOKING AHEAD */}
-{/* ============================================ */}
-
-<Slide>
-
-## Looking Ahead
-
-* Midterm
-  * Practice midterm distributed today
-  * In-class review, next Monday
-  * Exam, next Wednesday, March 18
-
-* Assignment 5
-
-* Group project
-
-<aside className="notes">
-
-</aside>
-
-</Slide>
-
-<Slide>
-
-### Introducing A5: Designing Services for Your Team (Individual Assignment)
-
-<p style={{fontSize: '0.8em'}}>
-A4's <code>RecipeService</code> bundled everything into one interface—scaling, conversion, import, search. That was intentionally problematic. <strong>A5 asks you to fix it</strong> by designing services aligned with <strong>actors</strong>:
-</p>
-
-<div style={{fontSize: '0.7em', marginTop: '0.5em'}}>
-
-| Actor | A5 Service Responsibility | Group Project GUI Component |
-|-------|---------------------------|-------------------------|
-| **Librarian** | Collections, import, search | Library View, Import Interface, Search |
-| **Cook** | Step-by-step navigation | Recipe Details/Editor |
-| **Planner** | Shopping lists, scaling, export | (Feature Buffet options) |
-
-</div>
-
-<div className="fragment" style={{backgroundColor: 'rgba(255, 200, 100, 0.2)', padding: '0.5em', borderRadius: '8px', fontSize: '0.8em', marginTop: '0.5em', border: '2px solid rgba(255, 180, 0, 0.5)'}}>
-
-**Same architecture, CLI → GUI:** Your A5 services become the foundation for the group project. Each teammate's GUI component consumes specific services—clean boundaries = parallel work without conflicts.
-
-</div>
-
-<aside className="notes">
-**A4 → A5 connection:**
-- A4's `RecipeService` was a "facade"—one giant interface that did everything
-- Problem: no way to preview before saving, tight coupling, hard to test in isolation
-- A5 asks: "Now that you see why that's bad, design something better"
-
-**The key insight:** This isn't two separate designs—it's ONE architecture that spans A5 and the group project.
-
-**Conway's Law applied forward:**
-- Design the services NOW thinking about how your TEAM will divide work
-- Team boundaries will follow service boundaries
-- Poor service design in A5 = painful integration in group project
-
-> **Transition:** Brooks' Law tells us communication doesn't scale—so we need practices that do. But before we learn the practices, we need to understand the mindset that makes them work...
-</aside>
-
-</Slide>
-
-<Slide>
-
-### Team Project: CookYourBooks GUI
-
-<p style={{fontSize: '0.85em'}}>
-You've met your team. Here's what you'll build together:
-</p>
-
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.7em', marginTop: '0.5em'}}>
-
-<div style={{backgroundColor: 'rgba(100,150,255,0.1)', padding: '0.5em', borderRadius: '8px'}}>
-
-**What you're building:**
-- Full JavaFX GUI for CookYourBooks
-- Each team member owns one **core feature**:
-  - Library View (browse cookbooks)
-  - Recipe Details/Editor
-  - Import Interface (OCR integration)
-  - Search & Filter
-- Plus shared infrastructure and "Feature Buffet" extras
-
-</div>
-
-<div style={{backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.5em', borderRadius: '8px'}}>
-
-**The timeline:**
-- **Now:**
-  - Team Charter (due Friday, March 13)
-  - Final individual assignment (due Thursday, March 19)
-- **March 26:** Design Sprint (wireframes, personas)
-- **April 9:** Checkpoint 1 (core features)
-- **April 16:** Checkpoint 2 (Feature Buffet)
-- **April 20:** Final submission
-
-**The structure:**
-- One spec, released upfront
-- Incremental delivery required
-- Code review on all PRs
-
-</div>
-
-</div>
-
-<div className="fragment" style={{backgroundColor: 'rgba(255, 200, 100, 0.2)', padding: '0.5em', borderRadius: '8px', fontSize: '0.8em', marginTop: '0.5em', border: '2px solid rgba(255, 180, 0, 0.5)'}}>
-
-**This lecture:** The principles, practices, and agreements you need to succeed. We'll return to the **team charter** at the end with specific guidance.
-
-</div>
-
-<aside className="notes">
-**Set expectations:**
-- This is a real team project, not a group assignment where you divide and conquer
-- Each person owns one core feature (individual accountability via GUI tests)
-- But you collaborate on shared infrastructure, integration, and Feature Buffet
-- You cannot wait until the end—checkpoints require working features
-
-**The goal of this lecture:** Give them the tools they need to succeed in the team project, then end with concrete guidance on the team charter.
-
-> **Transition:** Let's start with why this matters—what separates teams that ship from teams that implode...
-</aside>
-
-</Slide>
 
 
 {/* ============================================ */}
@@ -411,6 +284,123 @@ Frame everything that follows as answering: "How do we avoid the common failure 
 
 </Slide>
 
+
+{/* ============================================ */}
+{/* LOOKING AHEAD */}
+{/* ============================================ */}
+
+<Slide>
+
+## Looking Ahead
+
+* Midterm
+  * Practice midterm distributed today
+  * In-class review, next Monday
+  * Exam, next Wednesday, March 18
+
+* Assignment 5
+
+* Group project
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+### Introducing A5: Designing Services for Your Team (Individual Assignment)
+
+<p style={{fontSize: '0.8em'}}>
+A4's <code>RecipeService</code> bundled everything into one interface—scaling, conversion, import, search. That was intentionally problematic. <strong>A5 asks you to fix it</strong> by designing services aligned with <strong>actors</strong>:
+</p>
+
+<div style={{fontSize: '0.7em', marginTop: '0.5em'}}>
+
+| Actor | A5 Service Responsibility | Group Project GUI Component |
+|-------|---------------------------|-------------------------|
+| **Librarian** | Collections, import, search | Library View, Import Interface, Search |
+| **Cook** | Step-by-step navigation | Recipe Details/Editor |
+| **Planner** | Shopping lists, scaling, export | (Feature Buffet options) |
+
+</div>
+
+<div className="fragment" style={{backgroundColor: 'rgba(255, 200, 100, 0.2)', padding: '0.5em', borderRadius: '8px', fontSize: '0.8em', marginTop: '0.5em', border: '2px solid rgba(255, 180, 0, 0.5)'}}>
+
+**Same architecture, CLI → GUI:** Your A5 services become the foundation for the group project. Each teammate's GUI component consumes specific services—clean boundaries = parallel work without conflicts.
+
+</div>
+
+<aside className="notes">
+- A4's `RecipeService` was a giant interface that did too much
+- Problem: tight coupling, hard to test in isolation
+- A5 asks: "Now that you see why that's bad, design something better"
+- A good division will help with the team project...
+</aside>
+
+</Slide>
+
+<Slide>
+
+### Team Project: CookYourBooks GUI
+
+<p style={{fontSize: '0.85em'}}>
+You've met your team. Here's what you'll build together:
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.7em', marginTop: '0.5em'}}>
+
+<div style={{backgroundColor: 'rgba(100,150,255,0.1)', padding: '0.5em', borderRadius: '8px'}}>
+
+**What you're building:**
+- Full JavaFX GUI for CookYourBooks
+- Each team member owns one **core feature**:
+  - Library View (browse cookbooks)
+  - Recipe Details/Editor
+  - Import Interface (OCR integration)
+  - Search & Filter
+- Plus shared infrastructure and "Feature Buffet" extras
+
+</div>
+
+<div style={{backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.5em', borderRadius: '8px'}}>
+
+**The timeline:**
+- **Now:**
+  - Team Charter (due Friday, March 13)
+  - Final individual assignment (due Thursday, March 19)
+- **March 26:** Design Sprint (wireframes, personas)
+- **April 9:** Checkpoint 1 (core features)
+- **April 16:** Checkpoint 2 (Feature Buffet)
+- **April 20:** Final submission
+
+**The structure:**
+- One spec, released upfront
+- Incremental delivery required
+- Code review on all PRs
+
+</div>
+
+</div>
+
+<div className="fragment" style={{backgroundColor: 'rgba(255, 200, 100, 0.2)', padding: '0.5em', borderRadius: '8px', fontSize: '0.8em', marginTop: '0.5em', border: '2px solid rgba(255, 180, 0, 0.5)'}}>
+
+**This lecture:** The principles, practices, and agreements you need to succeed.
+</div>
+
+<aside className="notes">
+**Set expectations:**
+- Not just divide and conquer
+- Shared infrastructure, integration, and "feature buffet"
+- Checkpoints require working features
+
+→ Let's look at how software is created...
+
+</aside>
+
+</Slide>
+
 {/* ============================================ */}
 {/* ARC 1: TEAM COMPOSITION */}
 {/* ============================================ */}
@@ -428,13 +418,8 @@ Frame everything that follows as answering: "How do we avoid the common failure 
 
 <aside className="notes">
 **The reality:**
-- Individual skill varies, but the "10x" framing misses the point
-- A brilliant coder who can't communicate may slow the team down
-- Teams let individuals contribute strengths and compensate for weaknesses
-
-**Scale of this course:** ~500 students, ~30 TAs, 4 instructors. This course itself only works because of teamwork.
-
-> **Transition:** Beyond complementary skills, teams benefit from something else...
+- Teams require multiple people with different skills
+→ but bigger isn't always better
 </aside>
 
 </Slide>
@@ -449,7 +434,7 @@ Frame everything that follows as answering: "How do we avoid the common failure 
   credit="David.Monniaux CC BY-SA 3.0"
     />
   Fred Brooks managed the development of IBM's System/360 computers and
-  wrote <em>The Mythical Man-Month</em> to share how hard it is to manage
+  wrote <em>The Mythical Man-Month</em> (1975) to share what he learned about
   large software projects.
 
 <aside className="notes">
@@ -469,9 +454,23 @@ Frame everything that follows as answering: "How do we avoid the common failure 
 
 <aside className="notes">
 - Acknowledge that the term "man-month" is dated.
-- Poll should be open-ended or word cloud.
-- Tell students which format is used.
+- Poll should be open-ended.
 </aside>
+</Slide>
+
+<Slide>
+
+### Why Man-Months are Mythical
+
+<Img src="/img/lectures/web/l22-dilbert-add-to-team.webp"
+  alt="Dilbert comic strip: Boss asks 'How long will your project take if I add two people?' Engineer responds 'Add one month for training, one month for extra complexity, and one month to deal with their drama.' Boss says 'But after all that...' Engineer finishes 'They'll be as useful as this meeting.'"
+  width={800}
+  />
+
+<aside className="notes">
+
+</aside>
+
 </Slide>
 
 <Slide>
@@ -525,15 +524,15 @@ two large pizzas.
 
 </div>
 
-<div className="fragment" style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em', marginTop: '0.5em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em', marginTop: '0.5em'}}>
 
-<div style={{backgroundColor: 'rgba(255,100,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
+<div className="fragment"  style={{backgroundColor: 'rgba(255,100,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
 
 **Example:** Three teams working on one app → three separate services that need integration
 
 </div>
 
-<div style={{backgroundColor: 'rgba(100,255,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
+<div className="fragment" style={{backgroundColor: 'rgba(100,255,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
 
 **Inverse Conway:** Design the team structure you *want* to match the architecture you *need*
 
@@ -566,63 +565,23 @@ two large pizzas.
 
 <Slide>
 
-## The Three Pillars of Team Interaction: HRT
+## Debugging Teams (HRT)
 
-<Img
-  src="/img/lectures/web/l22-hrt-shield.webp"
-  prompt="An illustration showing HRT (Humility, Respect, Trust) as a protective shield for teams. The image is divided into two halves:
-
-LEFT SIDE - 'WITHOUT HRT' (darker, chaotic): A team in disarray. Show three toxic patterns attacking them like dark clouds or monsters, each with TWO example behaviors:
-
-EGO monster (lack of humility):
-- Scene 1: Someone with arms crossed, refusing to admit mistakes, speech bubble: 'I'm never wrong'
-- Scene 2: Someone struggling alone at their desk, refusing to ask for help, thought bubble: 'I should be able to figure this out myself'
-
-DISMISSIVENESS creature (lack of respect):
-- Scene 1: Someone with headphones ignoring a teammate trying to speak, speech bubble: 'Whatever...'
-- Scene 2: Someone taking credit for another's idea, speech bubble: 'I came up with this'
-
-MICROMANAGEMENT specter (lack of trust):
-- Scene 1: Someone hovering over another's shoulder, watching every keystroke, speech bubble: 'Let me see that'
-- Scene 2: Someone rewriting a teammate's code without discussing it first, deleting their work
-
-The team members look stressed, isolated, and frustrated.
-
-RIGHT SIDE - 'WITH HRT' (bright, harmonious): The same team, now protected by a glowing heart-shaped shield divided into three sections. Each section shows TWO small example scenes:
-
-HUMILITY (visual cues: blue glow):
-- Scene 1: Person looking at their own code, finding a bug, saying 'My mistake—let me fix it'
-- Scene 2: Someone raising their hand saying 'I don't know, but I'll learn'
-
-RESPECT (visual cues: green glow):
-- Scene 1: Two people in conversation, one actively listening (ear icon) while the other speaks
-- Scene 2: Someone giving credit: 'Great idea, Sarah!' with a thumbs up
-
-TRUST (visual cues: purple glow):
-- Scene 1: One person handing off a task to another and walking away calmly (not hovering)
-- Scene 2: Someone asking for help openly: 'Can you help me with this?' without shame
-
-The shield has 'HRT' emblazoned on it with a small note '(pronounced: heart)'. Arrows show the toxic patterns bouncing off the shield.
-
-Style: Clean, modern illustration with clear contrast between the two sides. The right side should feel warm and collaborative."
-  alt="HRT as a protective shield: Left side shows a team attacked by Ego, Dismissiveness, and Micromanagement monsters. Right side shows the same team protected by a heart-shaped HRT shield with three sections, each with two example behaviors. Humility (blue): admitting mistakes, asking to learn. Respect (green): active listening, giving credit. Trust (purple): delegating calmly, asking for help openly."
+<QuoteSlide
+ quote="Engineering is easy. People are hard."
+ author="Bill Coughran, former SVP of Engineering at Google"
+ imageSrc="/img/lectures/web/l22-debugging-teams.jpg"
+ imageAlt="Cover of the book 'Debugging Teams: Better Production Through Collaboration' by Brian Fitzpatrick and Ben Collins-Sussman"
 />
-
-<p style={{fontSize: '0.75em', marginTop: '0.5em'}}>
-From <em>Team Geek</em> / <em>Debugging Teams</em> by Fitzpatrick & Collins-Sussman.
-</p>
+<div className='fragment'>
+The authors (Google engineers) present a strategy with three pillars:
+* Humility
+* Respect
+* Trust
+</div>
 
 <aside className="notes">
-**HRT (pronounced "heart"):**
-- **Humility:** You're not omniscient or infallible
-- **Respect:** You genuinely care about your teammates
-- **Trust:** You believe others are competent
-
-**Why HRT comes first:** Every team practice we'll discuss—PRs, code review, conflict resolution—depends on these pillars. Without HRT, the best processes break down. With HRT, even imperfect processes work.
-
-**These are pillars we will hold you accountable to in group work in this course.**
-
-> **Transition:** Let's see what each pillar means in practice...
+- Authors were Google engineers
 </aside>
 
 </Slide>
@@ -668,18 +627,9 @@ Humility isn't self-deprecation—it's honest self-assessment and openness to gr
 <aside className="notes">
 **Core insight:** Humility is about accurate self-perception, not false modesty.
 
-**Why it matters for teams:**
-- A teammate who can't admit mistakes creates a culture where bugs get hidden
-- Someone who won't ask questions stays stuck longer than necessary
-- Defending bad code wastes everyone's time in code review
-
-**Lab connections:**
-- Lab 4's "I think X because Y" = stating positions without demanding
-- Lab 6's "reject suggestions you don't understand" = humility to question even "smart" sources
-
 **The paradox:** The best engineers are often the most humble because they've seen enough to know how much they don't know.
 
-> **Transition:** The second pillar is about how you treat others...
+→  The second pillar is about how you treat others...
 </aside>
 
 </Slide>
@@ -719,18 +669,14 @@ Humility isn't self-deprecation—it's honest self-assessment and openness to gr
 </div>
 
 <p className="fragment" style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#32CD32'}}>
-Respect isn't just politeness—it's genuine care for your teammates as people and professionals.
+Respect isn't just politeness—it's treating teammates as capable and valuable colleagues.
 </p>
 
 <aside className="notes">
-**Core insight:** Respect means treating teammates as capable colleagues, not obstacles to work around.
-
 **Why it matters for teams:**
 - People who feel respected contribute more ideas
 - Disrespect creates psychological unsafety—people stop speaking up
 - Credit-hogging destroys collaboration faster than almost anything
-
-**The test:** When a junior teammate suggests something, do you genuinely consider it? Or do you dismiss it because of who said it?
 
 **Respect also means:** Direct, honest feedback. "You're doing great!" when they're not isn't respect—it's condescension.
 
@@ -785,11 +731,9 @@ Trust isn't blind faith—it's giving people the benefit of the doubt and room t
 - People can't grow if they're never allowed to make mistakes
 - Rewriting code without discussion signals "I don't respect your work"
 
-**Trust is built, not given:** Start with reasonable trust, then adjust based on evidence. Someone who consistently delivers earns more autonomy. Someone who consistently misses deadlines needs more check-ins—but delivered respectfully.
+**Trust is built, not given:** Start with reasonable trust, then adjust based on evidence.
 
-**The flip side:** Trust also means trusting yourself to ask for help. Struggling silently because you're afraid to look incompetent isn't heroic—it's a trust failure.
-
-> **Transition:** Let's see all three pillars working together...
+→  Let's see all three pillars working together...
 </aside>
 
 </Slide>
@@ -835,24 +779,16 @@ Trust isn't blind faith—it's giving people the benefit of the doubt and room t
 
 </div>
 
-<p className="fragment" style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
-The pillars reinforce each other: humility enables respect, respect builds trust, and trust requires humility.
+<p className="fragment" style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#32CD32'}}>
+⚠️ Not everyone who talks the talk walks the walk.
 </p>
 
 <aside className="notes">
-**The three pillars are interconnected:**
-- Without humility, you can't truly respect others (you think you're better)
-- Without respect, trust can't develop (why would you trust someone who dismisses you?)
-- Without trust, humility feels risky (admitting weakness to someone who might exploit it)
-
-**You've practiced this across labs:**
-- Lab 4: "I think X because Y" (Humility), "What's driving your preference?" (Respect), "Be willing to be persuaded" (Trust)
-- Lab 6: Explaining bugs, receiving "what was clear vs. confusing" feedback (all three pillars)
-- Lab 8: "I chose X because Y. I considered Z, but..." (Humility—defending without demanding)
+If you find yourself in a toxic team, get out!
 
 **The test:** Think about your best team experience. Which pillars were present? Think about your worst. Which were missing?
 
-> **Transition:** HRT is the mindset. Now let's see how professional teams put these principles into practice with specific tools and workflows...
+→ HRT is the mindset. Now let's see how professional teams put these principles into practice with specific tools and workflows...
 </aside>
 
 </Slide>
@@ -887,12 +823,7 @@ You'll use all these in your group projects. Let's understand each one.
 </p>
 
 <aside className="notes">
-**Why introduce these now:**
-- Students need to understand these concepts before we discuss team dynamics
-- HRT, conflict resolution, and feedback all happen in the context of these processes
-- They've been using CI (autograder) but may not know the broader picture
-
-> **Transition:** Let's start with CI—you've actually been using it all semester...
+→ Issues
 </aside>
 
 </Slide>
@@ -913,7 +844,7 @@ You'll use all these in your group projects. Let's understand each one.
 
 </div>
 
-<div className='fragment ' style={{backgroundColor: 'rgba(100,255,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
+<div className='fragment' style={{backgroundColor: 'rgba(100,255,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
 
 **Good issue**
 
@@ -934,20 +865,12 @@ You'll use all these in your group projects. Let's understand each one.
 
 </div>
 
+<div className='fragment'>
+See [Pawtograder issues](https://github.com/pawtograder/platform/issues).
+</div>
+
 <aside className="notes">
-**A good issue includes:**
-- Clear, specific title
-- Context: what you were trying to do
-- Reproduction steps (for bugs)
-- Expected vs. actual behavior
-- Environment details
-- Screenshots (for UI issues)
-
-**This is HRT in action:** A well-written issue respects your teammates' time. It shows you've done the work to help them help you.
-
-**Caveat:** If you're not certain about the root cause, don't assume—"Unable to login" may be better than guessing wrong.
-
-> **Transition:** Similar principles apply to pull requests...
+→ Let's now look at commits
 </aside>
 
 </Slide>
@@ -976,17 +899,15 @@ Version control lets teammates work on the same codebase simultaneously—withou
 </div>
 
 <p className="fragment" style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
-Keep the first line of the commit message brief (&le;50 chars) for display on github
-</p>
-<p className="fragment" style={{fontSize: '0.85em', marginTop: '-.5em', fontWeight: 'bold', color: '#9370DB'}}>
 Include issue numbers for mutual links
 </p>
-<div className='fragment'>
-You can look at [Pawtograder issues](https://github.com/pawtograder/platform/issues)
-</div>
+<p className="fragment" style={{fontSize: '0.85em', marginTop: '-.5em', fontWeight: 'bold', color: '#9370DB'}}>
+Keep the first line of the commit message brief (&le;50 chars) for display on github
+</p>
 
 <aside className="notes">
-> **Transition:** Once you have commits, you need a way to share them—and work in parallel without stepping on each other. That's where branches come in...
+- Call out issue number in last commit message
+→ Why keep commit messages to 50 characters?
 </aside>
 
 </Slide>
@@ -1004,8 +925,7 @@ You can look at [Pawtograder issues](https://github.com/pawtograder/platform/iss
 <aside className="notes">
 - The commit message is 50 characters to fit in the code browsing view.
 - There can be additional longer lines.
-- Transition: Code review serves multiple purposes
-
+→ Here's what you see if you click through to a commit...
 </aside>
 
 </Slide>
@@ -1019,7 +939,7 @@ You can look at [Pawtograder issues](https://github.com/pawtograder/platform/iss
 />
 
 <aside className="notes">
-
+→ Let's know look at how we know commits are safe...
 </aside>
 
 </Slide>
@@ -1056,9 +976,12 @@ You've been using CI all semester—the <strong>autograder</strong> that runs wh
 
 </div>
 
-<p className="fragment" style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
-When the build is broken, <em>nobody</em> on the team can merge their work until it's fixed
-</p>
+<div className="fragment" style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
+When the build is broken, <em>nobody</em> on the team can merge their work until it's fixed.
+
+That's why it's best to work on a branch...
+</div>
+
 
 <aside className="notes">
 **Connect to their experience:**
@@ -1105,28 +1028,12 @@ Style: Clean, minimal, no human figures. Focus on the branch lines, commits as c
 />
 
 <aside className="notes">
-**Why branches matter:**
-- Without branches, everyone commits to the same code simultaneously → chaos
-- Branches let you experiment without breaking what works
-- When you're done, you merge back—but only after review
+- Individual work is done independently on branches.
+- It's only merged into main after review.
+- If change simultaneously happens on multiple branches, it can be hard to merge.
+- That's one reason clean service boundaries matter.
 
-**The mental model:**
-- `main` (or `master`) = the "official" version everyone shares
-- Your branch = your sandbox to try things
-- You never commit directly to main—you merge via PR
-
-**Merge conflicts:**
-- If two branches edit the same lines of the same file → conflict
-- Git can't automatically decide which version to keep
-- You have to manually resolve: choose one version, combine them, or rewrite
-- **This is why clean service boundaries matter:** if teammates work on separate modules, fewer conflicts
-
-**Commands they'll use:**
-- `git checkout -b feature-name` — create and switch to a new branch
-- `git push -u origin feature-name` — share your branch
-- PRs handle the merge (next slide)
-
-> **Transition:** Branches let you work in isolation. Pull Requests are how you propose merging back...
+→ To get a review, make a pull request...
 </aside>
 
 </Slide>
@@ -1172,14 +1079,9 @@ You can look at [Pawtograder PRs](https://github.com/pawtograder/platform/pulls)
 </div>
 
 <aside className="notes">
-**Key insight:** PRs create a structured place for discussion before code becomes permanent.
+PRs create a structured place for discussion before code becomes permanent.
 
-**This is why "committed directly to main, breaking the build" is a problem:**
-- Skipped the review checkpoint
-- CI failure now affects everyone
-- No chance for teammates to catch the issue first
-
-> **Transition:** Code review is what happens between steps 5 and 7...
+→ Code review occurs in steps 5-6
 </aside>
 
 </Slide>
@@ -1219,14 +1121,7 @@ Before your PR is merged, teammates read your changes and leave comments.
 </div>
 
 <aside className="notes">
-**Set expectations:**
-- Code review is standard practice in professional teams
-- You'll do this in your group projects
-- It can feel uncomfortable at first to have others critique your code
-
-**Key point:** Code review is where HRT principles become concrete. The next slide shows the difference between reviews that build teams and reviews that erode them.
-
-> **Transition:** Let's see HRT applied to code review...
+→ Let's talk about code reviews and how they feel...
 </aside>
 
 </Slide>
@@ -1271,7 +1166,7 @@ B. You should make all these changes...
 />
 
 <aside className="notes">
-
+→ Let's find a different way to frame it...
 </aside>
 
 </Slide>
@@ -1281,15 +1176,14 @@ B. You should make all these changes...
 ### Revised poll
 
 ~~What do you want to hear from someone who reviews your code?~~<br/>
-<div className='fragment'>
+
 Would you like to be a better programmer today than you were yesterday?
-</div>
-<div className='fragment'>
+
 Would you like your mistakes to be caught early?
-</div>
 
 <aside className="notes">
 - Don't actually give poll
+→ Yes, you make mistakes. Do you know who makes mistakes...
 </aside>
 
 </Slide>
@@ -1336,12 +1230,15 @@ everyone."</li>
       In the middle is the not-equals sign (!=).
       On the left is a framed picture labeled 'YOU'.
       On the right is a framed picture labeled 'YOUR CODE'."
+  width={1000}
 />
 <div style={{fontSize: '0.7em'}}>
 Source: Brian W. Fitzpatrick and Ben Collins-Sussman [BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/us/)
 </div>
 <aside className="notes">
-Picture is from Debugging Teams.
+- Picture is from Debugging Teams.
+- Anyone recognize the code? It's from Unix.
+→ Here's how you should interpret feedback...
 </aside>
 
 </Slide>
@@ -1351,10 +1248,14 @@ Picture is from Debugging Teams.
 ### The Underlying Message
 
 <Img src="/img/lectures/web/l22-code-review-good-better.png"
+  width={800}
   alt="The top half of the meme has caption 'code is good' and shows Pedro Pascal pointing with a serious expression.
       The bottom half has the caption 'but it can be better' and shows Pedro Pascal with his hand outstretched and a friendly expression"
 />
 
+<aside className="notes">
+→ Let's look at how to apply HRT to code review
+</aside>
 </Slide>
 
 <Slide>
@@ -1388,25 +1289,15 @@ Picture is from Debugging Teams.
 Same technical goals. The HRT version treats the author as a capable colleague, not a subordinate to be corrected.
 </p>
 
-
 <aside className="notes">
-**Key patterns for HRT code review:**
-- Ask questions rather than making demands
-- Explain your reasoning—help the author learn
-- Acknowledge good work, not just problems
-- Critique the code, not the person
-
-**The silence row:** Reviewers who only comment on problems—never acknowledge good work—erode morale over time. A quick "nice refactor" costs nothing.
-
-> **Transition:** Let's look at how to write effective GitHub issues and PRs with these principles...
+→ Let's look at what people learn from group projects
 </aside>
 
 </Slide>
 
-
 <Slide>
 
-## Group Projects
+## Team Dynamics
 
 <Img src="/img/lectures/web/l22-group-projects-side-by-side.png"
 
@@ -1536,7 +1427,7 @@ Explicitly discuss and document expectations <strong>before</strong> conflicts a
 ### Your First Team Deliverable: The Team Charter
 
 <p style={{fontSize: '0.9em', fontWeight: 'bold', color: '#9370DB'}}>
-Your team charter is live now, due **March 13**. This is not a formality—it's the foundation for everything that follows.
+This is not a formality—it's the foundation for everything that follows.
 </p>
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em', marginTop: '0.5em'}}>
@@ -1572,33 +1463,34 @@ Your team charter is live now, due **March 13**. This is not a formality—it's 
 
 **The goal:** Have the hard conversations now, while stakes are low and everyone is fresh.
 
-> **Transition:** Here's how to approach it...
+→ Let's take a closer look at what you will do...
 </aside>
 
 </Slide>
 
 <Slide>
 
-### Completing Your Team Charter
+### Completing Your Team Charter (due: Friday, March 13)
 
-<div style={{fontSize: '0.8em'}}>
-
+<div className='fragment'>
 **Step 1: Schedule a team meeting this week**
 - Everyone should be present for this conversation
 - Don't just divide up sections and merge—discuss together
-
+</div>
+<div className='fragment'>
 **Step 2: Have the awkward conversations**
 - "What hours do you actually work?" (not what sounds good)
 - "What happens if someone misses a deadline?"
 - "How do we decide when we disagree?"
-
+</div>
+<div className='fragment'>
 **Step 3: Be specific, not aspirational**
 - ❌ "We'll communicate regularly"
 - ✓ "We'll post daily updates in Discord by 9 PM"
-
 </div>
 
-<div className="fragment" style={{backgroundColor: 'rgba(255, 200, 100, 0.2)', padding: '0.5em', borderRadius: '8px', fontSize: '0.8em', marginTop: '0.5em', border: '2px solid rgba(255, 180, 0, 0.5)'}}>
+
+<div className="fragment" style={{backgroundColor: 'rgba(255, 200, 100, 0.2)', padding: '0.5em', borderRadius: '8px', fontSize: '0.8em', marginTop: '1em', border: '2px solid rgba(255, 180, 0, 0.5)'}}>
 
 **HRT in action:** Approach this with humility ("my preferences aren't the only valid ones"), respect ("everyone's constraints matter"), and trust ("we'll all follow what we agree to").
 
@@ -1656,25 +1548,28 @@ Your team charter is live now, due **March 13**. This is not a formality—it's 
 
 <Slide>
 
-### Accountability: Being Someone Your Team Can Rely On
+### Accountability: Be Someone Your Team Can Rely On
 
-<ul style={{fontSize: '0.8em'}}>
+<ul>
   <li><strong>Own your commitments:</strong> If you say you'll do something, do it—or communicate early if you can't. Don't wait until the deadline.</li>
   <li className="fragment"><strong>Take responsibility for outcomes, not just effort:</strong> "I worked hard on it" isn't the same as "it's done and working."</li>
   <li className="fragment"><strong>Support team outcomes:</strong> If a teammate is struggling, offer help before being asked. The team succeeds or fails together.</li>
 </ul>
 
-<p className="fragment" style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB'}}>
+<p className="fragment" style={{marginTop: '1em', color: '#9370DB'}}>
 Accountability builds trust. When teammates can count on you, the whole team moves faster.
 </p>
+<div className='fragment'>
+🤔 How did my admitting mistakes and apologizing change your opinion of me?
+</div>
 
 <aside className="notes">
-**Accountability isn't blame—it's reliability.**
 - Struggling silently isn't heroic—ask for help
 - When you make a mistake, acknowledge it and focus on the fix
 - If you finish early, ask what else needs doing
+- Question is rhetorical
 
-> **Transition:** Accountability means being open to feedback. Let's talk about how to seek and receive it effectively...
+→ Part of accountability is being open to feedback...
 </aside>
 
 </Slide>
@@ -1703,10 +1598,7 @@ The discomfort is the point. If all feedback feels good, you're only hearing fro
 - The most useful feedback is the most uncomfortable
 - It reveals blind spots you didn't know you had
 - Seek out people who will challenge you
-
-**Lab 6's feedback model:** Partner asks a clarifying question, then shares "what was clear vs. confusing"—not "you're wrong," but specific, constructive observations.
-
-> **Transition:** Conflicts and feedback are important—but they're one-time events. Knowledge sharing is ongoing. And remember Brooks' Law: as teams grow, you need communication that scales better than O(n²). Let's talk about how to make that happen...
+→ Let's look at today's key takeaways...
 </aside>
 
 </Slide>
@@ -1715,11 +1607,11 @@ The discomfort is the point. If all feedback feels good, you're only hearing fro
 
 ## Key Takeaways: What Separates Teams That Ship
 
-<p style={{fontSize: '0.85em', fontStyle: 'italic', color: '#666', marginBottom: '0.5em'}}>
+<p style={{fontStyle: 'italic', color: '#666', marginBottom: '0.5em'}}>
 Team projects rarely fail because of technical skill—they fail because of collaboration. Here's what makes the difference:
 </p>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5em', fontSize: '0.7em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5em'}}>
 
 <div style={{backgroundColor: 'rgba(100,150,255,0.1)', padding: '0.5em', borderRadius: '8px'}}>
 
