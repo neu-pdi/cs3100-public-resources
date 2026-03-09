@@ -146,7 +146,9 @@ public Completer getCompleter() {
 }
 ```
 
-You don't need to understand JLine3 deeply—follow the patterns in `ListCommand.java`. :::
+You don't need to understand JLine3 deeply—follow the patterns in `ListCommand.java`.
+
+:::
 
 ---
 
