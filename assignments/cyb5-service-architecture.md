@@ -113,7 +113,7 @@ An ideal design might require you to create dozens of new classes. While you cer
 
 **Good design requires iteration.** You'll make better architectural decisions if you have time to sketch ideas, sleep on them, get feedback in office hours, and refine before implementing. Students who start early can explore multiple service decompositions before committing.
 
-**Early Bird Bonus (+10 points):** Get the full **Librarian suite** (`GeneralCommandTests` + `LibraryCommandTests`) passing by **Friday, March 13 at 11:59 PM EDT** and earn +10 bonus points. The bonus is added to the numerator of your final score after all other adjustments (i.e., your final score can be up to 110/100). This milestone covers the library management commands (`help`, `collections`, `collection create`, `recipes`, `conversions`, `conversion add/remove`, `import json`, `import image`, `search`, `delete`) — roughly half the CLI functionality. Getting here early means you've designed and implemented your Librarian service and can focus the remaining time on Cook mode, Planner tools, and polishing your ADRs.
+**Early Bird Bonus (+10 points):** Get the full **Librarian suite** passing by **Friday, March 13 at 11:59 PM EDT** and earn +10 bonus points — that means passing all tests in **GeneralCommandTests** and **LibraryCommandTests** (the [Library Commands](#library-commands-15-points--required-for-early-bird-bonus) rubric section). The bonus is added to the numerator of your final score after all other adjustments (i.e., your final score can be up to 110/100). This milestone covers exactly those commands: `help`, `collections`, `collection create`, `recipes`, `conversions`, `conversion add`, and `conversion remove`. Getting here early means you've designed and implemented your Librarian service and can focus the remaining time on Cook mode, Planner tools, and polishing your ADRs.
 
 **Submission limits:** You can submit up to **15 times per rolling 24-hour period.** Use these submissions throughout the assignment — each one gives you feedback on what's working and what needs fixing.
 
@@ -1045,7 +1045,7 @@ To compile and run the CLI, see [Build and Run](#build-and-run).
 Here's a complete example session showing the CLI in action:
 
 ```text
-$ java -jar cookyourbooks.jar
+$ java -jar build/libs/cookyourbooks-all.jar
 
 Welcome to CookYourBooks! Type 'help' to get started.
 
@@ -1246,12 +1246,18 @@ Complete the **Library Commands** section below by **Friday, March 13 at 11:59 P
 
 These tests exercise formatting and visual layout paths that keyword-based automated tests cannot fully verify. **`ManualDemoTest` is provided in the handout** — it is not something you write. It drives your CLI through three scripted workflows and writes the output to files that graders review manually.
 
-Output files are written to `build/manual-demo-output/`:
+**To generate the output files:** From your project root (where `gradlew` lives), run:
+
+```bash
+./gradlew test --tests "*ManualDemoTest"
+```
+
+This runs the provided **`ManualDemoTest`** class and writes three files into **`build/manual-demo-output/`**:
 - `recipe-transform-demo.txt`
 - `cook-mode-demo.txt`
 - `library-lists-demo.txt`
 
-The command above generates these files; graders inspect them against the criteria below.
+The autograder will run these tests automatically and collect the output files - you do not need to submit them, and they should not be committed to your repository.
 
 | Test | Output File | Points | Grading Criteria |
 |------|-------------|--------|------------------|
