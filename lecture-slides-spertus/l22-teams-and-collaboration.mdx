@@ -69,7 +69,7 @@ Retro 8-bit pixel art with cohesive color palette. Progression from isolated coo
 
 ## Lecture 22: Teams & Collaboration
 
-<p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
+<p style={{marginTop: '2em', color: '#666'}}>
   ©2026 Jonathan Bell & Ellen Spertus, CC-BY-SA
 </p>
 
@@ -210,8 +210,6 @@ Credit for exercise: Prof. Judy Goldsmith, University of Kentucky
 
 </Slide>
 
-
-
 {/* ============================================ */}
 {/* LEARNING OBJECTIVES */}
 {/* ============================================ */}
@@ -219,12 +217,10 @@ Credit for exercise: Prof. Judy Goldsmith, University of Kentucky
 <Slide>
 
 ## Learning Objectives
-
-<p style={{fontSize: '0.85em', textAlign: 'left'}}>
+>
 After this lecture, you will be able to:
-</p>
 
-<ol style={{fontSize: '0.75em', textAlign: 'left'}}>
+<ol style={{textAlign: 'left'}}>
   <li>Explain key advantages of working in a team and sharing information with your team</li>
   <li>Describe the stages of team formation and strategies for establishing productive working agreements</li>
   <li>Describe the HRT pillars of social interaction and strategies for resolving team conflicts</li>
@@ -233,14 +229,12 @@ After this lecture, you will be able to:
   <li>Ask technical questions effectively</li>
 </ol>
 
-
 <aside className="notes">
 Professional software development is almost always done on teams.
 → Who should be on a team?
 </aside>
 
 </Slide>
-
 
 {/* ============================================ */}
 {/* SPINE STATEMENT - The Central Question      */}
@@ -254,17 +248,17 @@ Professional software development is almost always done on teams.
 Team projects rarely fail because of technical skill. They fail because of collaboration.
 </p>
 
-<p style={{fontSize: '0.9em', marginTop: '1em'}}>
+<p style={{marginTop: '1em'}}>
 Today you'll learn:
 </p>
 
-<ul style={{fontSize: '0.85em'}}>
+<ul>
   <li><strong>The principles</strong> that make collaboration work (HRT, scalable knowledge)</li>
   <li><strong>The practices</strong> that professional teams use (CI, PRs, code review, issues)</li>
   <li><strong>The agreements</strong> that prevent conflicts (team charters, shared expectations)</li>
 </ul>
 
-<p className="fragment" style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
+<p className="fragment" style={{marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
 These separate teams that ship from teams that implode.
 </p>
 
@@ -283,7 +277,6 @@ Frame everything that follows as answering: "How do we avoid the common failure 
 </aside>
 
 </Slide>
-
 
 {/* ============================================ */}
 {/* LOOKING AHEAD */}
@@ -312,11 +305,11 @@ Frame everything that follows as answering: "How do we avoid the common failure 
 
 ### Introducing A5: Designing Services for Your Team (Individual Assignment)
 
-<p style={{fontSize: '0.8em'}}>
+<p>
 A4's <code>RecipeService</code> bundled everything into one interface—scaling, conversion, import, search. That was intentionally problematic. <strong>A5 asks you to fix it</strong> by designing services aligned with <strong>actors</strong>:
 </p>
 
-<div style={{fontSize: '0.7em', marginTop: '0.5em'}}>
+<div style={{marginTop: '0.5em'}}>
 
 | Actor | A5 Service Responsibility | Group Project GUI Component |
 |-------|---------------------------|-------------------------|
@@ -330,6 +323,10 @@ A4's <code>RecipeService</code> bundled everything into one interface—scaling,
 
 **Same architecture, CLI → GUI:** Your A5 services become the foundation for the group project. Each teammate's GUI component consumes specific services—clean boundaries = parallel work without conflicts.
 
+</div>
+
+<div className="fragment" style={{backgroundColor: 'rgba(100,150,255,0.1)', padding: '0.5em', borderRadius: '8px', fontSize: '0.8em', marginTop: '0.5em', border: '2px solid rgba(100,150,255,0.1)'}}>
+I will discuss on Wednesday how to approach the assignment. I recommend reading it before then.
 </div>
 
 <aside className="notes">
@@ -518,13 +515,13 @@ two large pizzas.
   author="Melvin Conway, 1967"
 />
 
-<div className="fragment" style={{fontSize: '0.8em', marginTop: '1em'}}>
+<div className="fragment" style={{marginTop: '1em'}}>
 
 **Translation:** Your software's architecture will mirror your team's structure—whether you plan for it or not.
 
 </div>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em', marginTop: '0.5em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', marginTop: '0.5em'}}>
 
 <div className="fragment"  style={{backgroundColor: 'rgba(255,100,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
 
@@ -590,11 +587,11 @@ The authors (Google engineers) present a strategy with three pillars:
 
 ### Pillar 1: Humility
 
-<p style={{fontSize: '0.85em'}}>
+<p>
 <strong>You are not the center of the universe</strong> (nor is your code!). You're neither omniscient nor infallible. You're open to self-improvement.
 </p>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em', marginTop: '0.5em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', marginTop: '0.5em'}}>
 
 <div style={{backgroundColor: 'rgba(255,100,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
 
@@ -620,7 +617,7 @@ The authors (Google engineers) present a strategy with three pillars:
 
 </div>
 
-<p className="fragment" style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#6495ED'}}>
+<p className="fragment" style={{marginTop: '1em', fontWeight: 'bold', color: '#6495ED'}}>
 Humility isn't self-deprecation—it's honest self-assessment and openness to growth.
 </p>
 
@@ -638,11 +635,11 @@ Humility isn't self-deprecation—it's honest self-assessment and openness to gr
 
 ### Pillar 2: Respect
 
-<p style={{fontSize: '0.85em'}}>
+<p>
 <strong>You genuinely care about others you work with.</strong> You treat them kindly and appreciate their abilities and accomplishments.
 </p>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em', marginTop: '0.5em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', marginTop: '0.5em'}}>
 
 <div style={{backgroundColor: 'rgba(255,100,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
 
@@ -668,7 +665,7 @@ Humility isn't self-deprecation—it's honest self-assessment and openness to gr
 
 </div>
 
-<p className="fragment" style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#32CD32'}}>
+<p className="fragment" style={{marginTop: '1em', fontWeight: 'bold', color: '#32CD32'}}>
 Respect isn't just politeness—it's treating teammates as capable and valuable colleagues.
 </p>
 
@@ -689,11 +686,11 @@ Respect isn't just politeness—it's treating teammates as capable and valuable 
 
 ### Pillar 3: Trust
 
-<p style={{fontSize: '0.85em'}}>
+<p>
 <strong>You believe others are competent</strong> and will do the right thing. You're OK with letting them drive when appropriate.
 </p>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em', marginTop: '0.5em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', marginTop: '0.5em'}}>
 
 <div style={{backgroundColor: 'rgba(255,100,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
 
@@ -719,7 +716,7 @@ Respect isn't just politeness—it's treating teammates as capable and valuable 
 
 </div>
 
-<p className="fragment" style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
+<p className="fragment" style={{marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
 Trust isn't blind faith—it's giving people the benefit of the doubt and room to grow.
 </p>
 
@@ -742,9 +739,9 @@ Trust isn't blind faith—it's giving people the benefit of the doubt and room t
 
 ### HRT in Practice: All Three Together
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5em', fontSize: '0.65em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.25em', fontSize: '0.7em'}}>
 
-<div style={{backgroundColor: 'rgba(100,150,255,0.1)', padding: '0.5em', borderRadius: '8px'}}>
+<div style={{backgroundColor: 'rgba(100,150,255,0.1)', padding: '0.25em', borderRadius: '4px'}}>
 
 **Humility**
 
@@ -755,7 +752,7 @@ Trust isn't blind faith—it's giving people the benefit of the doubt and room t
 
 </div>
 
-<div style={{backgroundColor: 'rgba(100,255,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
+<div style={{backgroundColor: 'rgba(100,255,100,0.1)', padding: '0.25em', borderRadius: '4px'}}>
 
 **Respect**
 
@@ -766,7 +763,7 @@ Trust isn't blind faith—it's giving people the benefit of the doubt and room t
 
 </div>
 
-<div style={{backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.5em', borderRadius: '8px'}}>
+<div style={{backgroundColor: 'rgba(147,112,219,0.15)', padding: '0.25em', borderRadius: '4px'}}>
 
 **Trust**
 
@@ -802,11 +799,9 @@ If you find yourself in a toxic team, get out!
 
 ## How Professional Teams Ship Code
 
-<p style={{fontSize: '0.85em'}}>
+<p>
 Modern software teams don't just write code—they have processes to keep the codebase healthy.
 </p>
-
-<div style={{fontSize: '0.75em'}}>
 
 | Concept | What It Is | Why It Matters |
 |---------|-----------|----------------|
@@ -816,9 +811,8 @@ Modern software teams don't just write code—they have processes to keep the co
 | **Pull Requests (PRs)** | A proposal to merge your changes into the shared codebase | Creates a checkpoint for review |
 | **Code Review** | Teammates read and comment on your code before it's merged | Catches issues, shares knowledge |
 
-</div>
 
-<p className="fragment" style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
+<p className="fragment" style={{marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
 You'll use all these in your group projects. Let's understand each one.
 </p>
 
@@ -832,7 +826,7 @@ You'll use all these in your group projects. Let's understand each one.
 
 ### Anatomy of a Good GitHub Issue
 
-<div style={{display: 'flex', flexDirection: 'column', gap: '0.5em', fontSize: '0.7em'}}>
+<div style={{display: 'flex', flexDirection: 'column', gap: '0.5em', fontSize: '0.9em'}}>
 
 <div style={{backgroundColor: 'rgba(255,100,100,0.1)', padding: '0.5em', borderRadius: '8px'}}>
 
@@ -899,10 +893,10 @@ Version control lets teammates work on the same codebase simultaneously—withou
 </div>
 
 <p className="fragment" style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
-Include issue numbers for mutual links
+Include issue numbers for mutual links.
 </p>
 <p className="fragment" style={{fontSize: '0.85em', marginTop: '-.5em', fontWeight: 'bold', color: '#9370DB'}}>
-Keep the first line of the commit message brief (&le;50 chars) for display on GitHub
+Keep the first line of the commit message brief (&le;50 chars) for display on GitHub.
 </p>
 
 <aside className="notes">
@@ -948,11 +942,11 @@ Keep the first line of the commit message brief (&le;50 chars) for display on Gi
 
 ### Continuous Integration (CI)
 
-<p style={{fontSize: '0.85em'}}>
+<p>
 You've been using CI all semester—the <strong>autograder</strong> that runs when you push code.
 </p>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em', marginTop: '0.5em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.9em', marginTop: '0.5em'}}>
 
 <div style={{backgroundColor: 'rgba(100,150,255,0.1)', padding: '0.5em', borderRadius: '8px'}}>
 
@@ -1042,11 +1036,11 @@ Style: Clean, minimal, no human figures. Focus on the branch lines, commits as c
 
 ### Pull Requests: The Gateway to Shared Code
 
-<p style={{fontSize: '0.85em'}}>
+<p>
 A Pull Request (PR) is a formal proposal: "I'd like to merge these changes into our shared codebase."
 </p>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em', marginTop: '0.5em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.9em', marginTop: '0.5em'}}>
 
 <div style={{backgroundColor: 'rgba(100,150,255,0.1)', padding: '0.5em', borderRadius: '8px'}}>
 
@@ -1194,6 +1188,7 @@ Would you like your mistakes to be caught early?
 <Img src="/img/lectures/web/l22-all-programmers-make-mistakes.jpg"
   alt="Meme with Bell Curve template in which the low IQ person, crying average IQ person,
   and high IQ person all say 'I make mistakes'"
+  width={1000}
 />
 
 </Slide>
@@ -1262,7 +1257,7 @@ Source: Brian W. Fitzpatrick and Ben Collins-Sussman [BY-NC-SA 3.0](https://crea
 
 ### Applying HRT to Code Review
 
-<div style={{fontSize: '0.72em', marginTop: '0.3em', color: 'black'}}>
+<div style={{fontSize: '0.9em', marginTop: '0.3em', color: 'black'}}>
 
 <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 1em'}}>
 
@@ -1285,7 +1280,7 @@ Source: Brian W. Fitzpatrick and Ben Collins-Sussman [BY-NC-SA 3.0](https://crea
 
 </div>
 
-<p className="fragment" style={{fontSize: '0.78em', marginTop: '0.6em', color: '#9370DB', fontWeight: 'bold'}}>
+<p className="fragment" style={{marginTop: '0.6em', color: '#9370DB', fontWeight: 'bold'}}>
 Same technical goals. The HRT version treats the author as a capable colleague, not a subordinate to be corrected.
 </p>
 
@@ -1367,11 +1362,11 @@ Conflict is normal and part of the process.
 
 ### Team Charters Accelerate Norming
 
-<p style={{fontSize: '0.85em'}}>
+<p style={{fontSize: '1em'}}>
 Explicitly discuss and document expectations <strong>before</strong> conflicts arise:
 </p>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.75em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.9em'}}>
 
 <div>
 
@@ -1391,13 +1386,13 @@ Explicitly discuss and document expectations <strong>before</strong> conflicts a
 
 </div>
 
-<div className="fragment" style={{backgroundColor: 'rgba(147, 112, 219, 0.1)', padding: '0.5em', borderRadius: '8px', fontSize: '0.8em', marginTop: '0.5em'}}>
+<div className="fragment" style={{backgroundColor: 'rgba(147, 112, 219, 0.1)', padding: '0.5em', borderRadius: '8px', fontSize: '1em', marginTop: '0.5em'}}>
 
 **Example conflict prevented:** A team member who starts work early and one who works best under deadline pressure can negotiate expectations upfront—rather than discovering the mismatch mid-project.
 
 </div>
 
-<div className="fragment" style={{backgroundColor: 'rgba(255, 200, 100, 0.2)', padding: '0.5em', borderRadius: '8px', fontSize: '0.8em', marginTop: '0.5em', border: '2px solid rgba(255, 180, 0, 0.5)'}}>
+<div className="fragment" style={{backgroundColor: 'rgba(255, 200, 100, 0.2)', padding: '0.5em', borderRadius: '8px', fontSize: '1em', marginTop: '0.5em', border: '2px solid rgba(255, 180, 0, 0.5)'}}>
 
 **For this class:** Your team charter is <strong>live now</strong>—it's your first team deliverable.
 
@@ -1520,7 +1515,7 @@ This is not a formality—it's the foundation for everything that follows.
 
 ### Conflict Resolution: Six Steps
 
-<div style={{fontSize: '0.75em'}}>
+<div>
 
 | Step | Action | Example |
 |------|--------|---------|
@@ -1578,18 +1573,18 @@ Accountability builds trust. When teammates can count on you, the whole team mov
 
 ### Receiving Feedback Without Defensiveness
 
-<p style={{fontSize: '0.85em'}}>
+<p>
 Your instinct may be to explain, defend, or minimize. Resist.
 </p>
 
-<ol style={{fontSize: '0.8em'}}>
+<ol>
   <li><strong>Say "thank you"</strong> before responding — it creates space between reaction and response</li>
   <li><strong>Ask clarifying questions</strong> — "Can you give me an example?"</li>
   <li><strong>Reflect before reacting</strong> — you don't have to agree immediately, but don't dismiss</li>
   <li><strong>Follow up</strong> — tell them what you changed. It encourages future feedback.</li>
 </ol>
 
-<p className="fragment" style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
+<p className="fragment" style={{marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
 The discomfort is the point. If all feedback feels good, you're only hearing from people who tell you what you want to hear.
 </p>
 
@@ -1652,7 +1647,7 @@ Team projects rarely fail because of technical skill—they fail because of coll
 
 </div>
 
-<div className="fragment" style={{backgroundColor: 'rgba(255, 200, 100, 0.2)', padding: '0.5em', borderRadius: '8px', fontSize: '0.75em', marginTop: '0.5em', border: '2px solid rgba(255, 180, 0, 0.5)'}}>
+<div className="fragment" style={{backgroundColor: 'rgba(255, 200, 100, 0.2)', padding: '0.5em', borderRadius: '8px', fontSize: '1em', marginTop: '0.5em', border: '2px solid rgba(255, 180, 0, 0.5)'}}>
 
 **Your first deliverable:** The team charter is due **March 13**. Apply these principles *this week* with your new team.
 
