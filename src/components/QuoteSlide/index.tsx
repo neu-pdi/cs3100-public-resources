@@ -77,7 +77,7 @@ export default function QuoteSlide({
           textAlign: 'left',
           margin: 0,
         }}>
-          "{quote}"
+          “{quote}”
           {author && (
             <footer style={{
               fontSize: '0.7em',
