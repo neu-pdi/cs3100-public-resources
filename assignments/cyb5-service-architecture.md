@@ -622,7 +622,7 @@ Scaling discarded.
 **Requirements:**
 - Display side-by-side comparison of original and scaled ingredients
 - VagueIngredients display unchanged (e.g., "to taste")
-- Ask whether to save (y: persists the scaled recipe as a new recipe in the **first collection** that contains the original recipe; n: discards)
+- Ask whether to save (y: persists the scaled recipe as a new recipe in some collection that contains the original recipe; n: discards). Which collection is used is implementation-defined and will not be tested.
 - If the recipe has no servings information: `Cannot scale 'Recipe Name': no serving information available.`
 
 **Error handling:**
@@ -636,7 +636,7 @@ Scaling discarded.
 cyb> convert "Beef Stew" gram
 ```
 
-Converts all measured ingredients to the specified unit using the provided `ConversionRegistry` (which includes house conversion rules). Displays the converted recipe and asks whether to save as a new recipe in the **first collection** that contains the original recipe. The conversion should happen through your service layer — the CLI sees the result and decides whether to persist it.
+Converts all measured ingredients to the specified unit using the provided `ConversionRegistry` (which includes house conversion rules). Displays the converted recipe and asks whether to save as a new recipe in some collection that contains the original recipe. Which collection is used is implementation-defined and will not be tested. The conversion should happen through your service layer — the CLI sees the result and decides whether to persist it.
 
 **Example interaction:**
 ```text
@@ -667,7 +667,7 @@ Saved converted recipe 'Beef Stew (converted to GRAM)'.
 cyb> shopping-list "Chocolate Chip Cookies" "Classic Pancakes"
 ```
 
-Aggregates ingredients across the specified recipes into a shopping list. Recipes are looked up using the standard recipe lookup order — first by short ID prefix, then by case-insensitive title — consistent with all other recipe commands. Your service layer should handle the lookup and aggregation.
+Aggregates ingredients across the specified recipes into a shopping list. Recipes are looked up using the standard recipe lookup order (short ID prefix when argument length ≥ 3, otherwise title match; see [ambiguous match format](#ambiguous-match-format)) — consistent with all other recipe commands. Your service layer should handle the lookup and aggregation.
 
 **Aggregation behavior:** Use the same ingredient aggregation logic from A4 — ingredients with the same name and compatible units are combined; incompatible units (e.g., cups and grams of flour) are listed separately; vague ingredients are deduplicated by name.
 
@@ -874,7 +874,7 @@ Please specify the full collection name.
 
 The command is **not re-prompted** — the user must re-enter the entire command with a more specific name or short ID. This keeps the CLI stateless and simplifies testing.
 
-**Recipe lookup order:** Any command that accepts a `<recipe>` argument should first try to match the argument as a short ID prefix (case-insensitive, no minimum length — even a single character is a valid prefix). If no ID match is found, fall back to title matching (case-insensitive substring). This means `show ab3fc891` targets a specific recipe by ID, while `show "Chocolate Chip Cookies"` searches by title.
+**Recipe lookup order:** Any command that accepts a `<recipe>` argument must use the following rule. If the argument has fewer than 3 characters, skip ID-prefix lookup and match by title only (case-insensitive substring). If the argument has 3 or more characters, first try to match as a short ID prefix (case-insensitive); if no ID match is found, fall back to title matching (case-insensitive substring). So `show ab3fc891` targets a recipe by ID, `show "Chocolate Chip Cookies"` by title, and short inputs like `show a` or `show ab` are treated as title search only (no single- or two-character ID prefix).
 
 ### Design Requirements
 
