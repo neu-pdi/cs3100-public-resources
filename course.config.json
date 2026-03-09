@@ -1349,7 +1349,7 @@
       "dueDate": "2026-04-09",
       "dueTime": "23:59",
       "points": 50,
-      "url": "/assignments/cyb11-gui-advanced"
+      "url": "/assignments/cyb11-core-features"
     },
     {
       "id": "cyb12",
@@ -1359,7 +1359,7 @@
       "dueDate": "2026-04-16",
       "dueTime": "23:59",
       "points": 50,
-      "url": "/assignments/cyb11-gui-advanced"
+      "url": "/assignments/cyb12-feature-buffet"
     },
     {
       "id": "cyb13",
@@ -1369,7 +1369,7 @@
       "dueDate": "2026-04-20",
       "dueTime": "23:59",
       "points": 50,
-      "url": "/assignments/cyb11-gui-advanced"
+      "url": "/assignments/cyb13-final-report"
     }
   ],
   "scheduleNotes": [
