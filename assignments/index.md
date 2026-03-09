@@ -130,11 +130,10 @@ Assignments are structured to provide a steady, manageable pace throughout the s
     - Graceful error handling with actionable error messages
     - Support for both interactive and scripted (non-interactive) modes
   - **Import/Export Workflows:**
-    - Import recipes from JSON files and images via the Gemini API through CLI
-    - Export recipes and cookbooks to markdown
-    - Batch operations (import directory of images, export entire cookbook)
-- [**Lab 9: Serverless**](/labs/lab9-network-cli)
-  - Deploy recipe API to cloud platform
+    - Import recipes from JSON files through CLI
+    - Export recipes to markdown
+- [**Lab 9: Network & CLI**](/labs/lab9-network-cli)
+  - Practice with JLine3 and the Command pattern
 - [**Lab 10: Usability**](/labs/lab10-usability) (Week 11)
   - Conduct heuristic evaluation on provided interfaces
 
