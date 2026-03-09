@@ -368,7 +368,7 @@ Try `on porch-camera` several times. With retry logic, most attempts should even
 
 ### 🔄 Sync Point 2 — Requirements Change (5 minutes)
 
-**Lab leader will make an announcement.**
+**Lab leader will make an announcement. DeviceGateway will now also need to handle partial failures.**
 
 After the announcement, discuss with your partner:
 
