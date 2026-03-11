@@ -72,11 +72,10 @@ import PollSlide from '@site/src/components/PollSlide';
 
 <Slide>
 
-# Poll: Have you had a chance to look at Assignment 5?
+## Poll: Have you had a chance to look at Assignment 5?
 
-<PollSlide
-  question="Have you had a chance to look at Assignment 5?"
-  answers={[
+<PollSlide username='espertus'
+  choices={[
     'Not yet',
     "I've glanced at it",
     "I started reading it but didn't finish",
@@ -89,7 +88,7 @@ import PollSlide from '@site/src/components/PollSlide';
 
 <Slide>
 
-### Introducing A5: Designing Services for Your Team (Individual Assignment)
+## Introducing A5: Designing Services for Your Team (Individual Assignment)
 
 <div style={{ fontSize: '.7em' }}>
 A4's <code>RecipeService</code> bundled everything into one interface—scaling, conversion, import, search.
@@ -170,18 +169,19 @@ Tip: Have AI generate the table for you.
 <Slide>
 
 ## What's the difference between ISP and Actor?
-
+<div style={{ fontSize: '.7em' }}>
 <div className='fragment'>
-The actor heuristic says to split things used by different actors.
+The Actor heuristic says to split things used by different actors.
 
-The ISP says to split things used by different clients.
+Interface Segregation says to split things used by different clients.
 
-What's the difference?
+What's the difference between an Actor and a client?
 </div>
 <div className='fragment'>
-Different clients used by a patron could be:
+Different clients used by a single Actor (Patron or Librarian) could be:
 * the Holds screen vs. the Fines screen
 * a mobile app vs. a web app
+</div>
 </div>
 
 <aside className="notes">
@@ -259,7 +259,7 @@ classDiagram
 ```
 
 </div>
-<div className='fragment' style={{flex: 1}}>
+<div className='fragment' style={{flex: 2, borderLeft: '2px solid #888', paddingLeft: '2rem'}}>
 ```mermaid
 classDiagram
     class HoldWaitlistService {
@@ -299,8 +299,7 @@ A separate `HoldWaitlistService` requires mocking only one class to test
 <div className='fragment'>
 **Context**: The client used by the Patron needs to be able to make requests of
 a service layer that applies business logic to repositories. We were
-constrained to prioritize the Actor service boundary heuristic and to apply at
-least one other heuristic.
+constrained to prioritize the Actor service boundary heuristic.
 </div>
 <div className='fragment'>
 **Decision**: We will have these separate service interfaces supporting these commands:
@@ -324,6 +323,14 @@ even though that method does not reference `BookRepository`.
 
 </aside>
 
+</Slide>
+
+<Slide>
+## Poll: Was the exercise helpful?
+
+<PollSlide username='espertus'
+  choices={["Yes, I now understand what to do", "Somewhat", "I'm still lost", "I understood what to do already"]}
+/>
 </Slide>
 
 {/* ============================================ */}
@@ -1145,7 +1152,7 @@ Style: Warm, clean editorial illustration. Three equal-width panels with clear v
 
 **The SSPL controversy:**
 - MongoDB moved from AGPL to SSPL
-- SSPL: if you offer the software as a service, open-source your ENTIRE stack, including any related tools or infrastructure tha tyou use to MANAGE that software-as-a-service operation!
+- SSPL: if you offer the software as a service, open-source your ENTIRE stack, including any related tools or infrastructure that you use to MANAGE that software-as-a-service operation!
 - OSI says this isn't "open source" — it's "source available"
 
 → **Transition:** Now let's talk about evaluating dependencies...
@@ -1688,7 +1695,7 @@ The same heuristics from L18 apply to dependency decisions:
 ## Bonus cartoon
 
 <Img src='/img/lectures/web/l23-open-source-cartoon.gif'
-  alt="Three-panel USER FRIENDLY by Iliad carton.
+  alt="Three-panel USER FRIENDLY by Iliad cartoon.
   Panel 1: Speaker at podium reading from notes: 'Ladies and gentlemen, it is my pleasure to introduce
   our first speaker, mister Mike Floyd, a network engineer employed by Columbia Internet.
   Tonight, he will be discussing...uhh...'
