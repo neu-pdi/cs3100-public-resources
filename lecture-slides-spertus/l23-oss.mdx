@@ -66,6 +66,16 @@ import PollSlide from '@site/src/components/PollSlide';
 
 </Slide>
 
+<Slide>
+
+## Announcements
+
+* You may not have gotten the team you expected because one of your requested teammates did not complete the survey.
+
+* Keep an eye out for important Canvas announcements.
+
+</Slide>
+
 {/* ============================================ */}
 {/* ARC 0: Getting Started with Assignment 5 */}
 {/* ============================================ */}
@@ -364,6 +374,14 @@ After this lecture, you will be able to:
 
 → **Transition:** Let's start with a simple example...
 </aside>
+
+</Slide>
+
+<Slide>
+
+## Poll: What does "open source" mean? Is it the same as "free software"?
+
+<PollSlide username="espertus" />
 
 </Slide>
 
@@ -741,19 +759,6 @@ These registries make it trivial to declare a dependency and have it automatical
 </p>
 </div>
 
-<aside className="notes">
-**Each ecosystem has its registry:**
-- Maven Central for Java — you've been using this with Gradle
-- npm for JavaScript — 2+ million packages
-- PyPI for Python — the `pip install` command
-
-**The magic:**
-- Declare what you need
-- Build tool downloads it automatically
-- Transitive dependencies resolved for you
-
-→ **Transition:** But libraries evolve. How do we know if an update will break our code?
-</aside>
 
 </Slide>
 
@@ -800,12 +805,9 @@ implementation 'com.fasterxml.jackson.core:jackson-databind:2.+'
 - Strict versions: reproducible builds, but you must manually update
 - Flexible ranges: automatic security patches, but risk unexpected breakage
 
-**Real-world complications:**
 - Not everyone follows SemVer perfectly
-- "Breaking change" is sometimes subjective
-- Hyrum's Law: "With sufficient users, every observable behavior becomes a dependency"
 
-→ **Transition:** This ecosystem brings enormous benefits — and risks...
+→ Let's look at benefits and risks...
 </aside>
 
 </Slide>
@@ -845,19 +847,9 @@ We'll explore the risks — licensing and evaluation — in the rest of this lec
 </div>
 
 <aside className="notes">
-**The benefits are real:**
-- Jackson is better than anything you'd write for JSON
-- Spring Security is better than rolling your own auth
-- TensorFlow is better than implementing neural nets from scratch
+These risks are manageable — if you're aware of them.
 
-**But the risks are real too:**
-- left-pad: 11-line npm package deleted, broke thousands of builds
-- Log4Shell: critical vulnerability in ubiquitous logging library
-- License surprises: GPL code in your proprietary product
-
-**These risks are manageable — if you're aware of them.**
-
-→ **Transition:** Let's start with licensing...
+→ Let's start with licensing...
 </aside>
 
 </Slide>
@@ -896,14 +888,8 @@ You legally **cannot** use it — even if the author clearly intended to share i
 **Copyright is the foundation:**
 - You don't need to register — it's automatic
 - Without explicit permission, the default is "you can't use this"
-- This is why licenses exist: to grant specific permissions
 
-**Common misconception:**
-- "It's on GitHub, so I can use it" — NO!
-- "The author meant to share it" — doesn't matter legally
-- Always check for a LICENSE file
-
-→ **Transition:** Licenses grant permissions — but with different conditions...
+→ Licenses grant permissions — but with different conditions...
 </aside>
 
 </Slide>
@@ -1009,50 +995,6 @@ Style: Warm educational illustration, clear visual contrast between the two benc
 
 </Slide>
 
-<Slide>
-
-## Permissive vs. Copyleft: Quick Reference
-
-<div style={{fontSize: '0.75em', marginTop: '1em'}}>
-
-| Question | Permissive (MIT, Apache, BSD) | Copyleft (GPL, LGPL, AGPL) |
-|----------|-------------------------------|----------------------------|
-| **Can I use it in proprietary software?** | Yes | Usually requires open-sourcing your code |
-| **Must I share my modifications?** | No | Yes, if you distribute |
-| **Philosophy** | Maximize adoption | Protect the commons |
-| **Popular examples** | React, Jackson, Spring | Linux kernel, GCC, WordPress |
-
-</div>
-
-<div className="fragment" style={{marginTop: '1.5em'}}>
-<p style={{fontSize: '0.8em'}}>
-<strong>Most popular libraries use permissive licenses:</strong> React (MIT), Jackson (Apache 2.0), Spring (Apache 2.0), TensorFlow (Apache 2.0)
-</p>
-<p style={{fontSize: '0.8em', marginTop: '0.5em'}}>
-<strong>GPL powers critical infrastructure:</strong> Linux kernel, many Linux utilities (maintained by GNU), forces community participation
-</p>
-</div>
-
-<aside className="notes">
-**Why permissive licenses dominate libraries:**
-- Companies can adopt without legal review
-- Startups can use without worrying about open-sourcing
-- Maximizes adoption → maximizes maintainers
-
-**Why GPL for operating systems:**
-- Ensures the commons stays open
-- Companies CAN'T embrace-extend-extinguish
-- Linux wouldn't be what it is without GPL protection
-
-**The SaaS loophole:**
-- GPL requires sharing if you DISTRIBUTE
-- Running software as a service isn't "distribution"
-- This is why MongoDB moved to SSPL — to close that loophole
-
-→ **Transition:** Practical guidance...
-</aside>
-
-</Slide>
 
 <Slide>
 
@@ -1106,6 +1048,47 @@ Image: 'Open Source', xkcd.com/225, Randall Munroe, CC BY-NC 2.5
 <aside className="notes">
 - Play until "So say, 'free software,' and you're helping us every time"
 - about a minute
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Permissive vs. Copyleft: Quick Reference
+
+<div style={{fontSize: '0.75em', marginTop: '1em'}}>
+
+| Question | Permissive (MIT, Apache, BSD) | Copyleft (GPL, LGPL, AGPL) |
+|----------|-------------------------------|----------------------------|
+| **Can I use it in proprietary software?** | Yes | Usually requires open-sourcing your code |
+| **Must I share my modifications?** | No | Yes, if you distribute |
+| **Philosophy** | Maximize adoption | Protect the commons |
+| **Popular examples** | React, Jackson, Spring | Linux kernel, GCC, WordPress |
+
+</div>
+
+
+<p className='fragment' style={{fontSize: '0.8em'}}>
+<strong>Most popular libraries use permissive licenses:</strong> React (MIT), Jackson (Apache 2.0), Spring (Apache 2.0), TensorFlow (Apache 2.0)
+</p>
+<p className='fragment' style={{fontSize: '0.8em'}}>
+<strong>GPL powers critical infrastructure:</strong> Linux kernel, many Linux utilities (maintained by GNU), forces community participation
+</p>
+
+
+
+<aside className="notes">
+**Why permissive licenses dominate libraries:**
+- Companies can adopt without legal review
+- Startups can use without worrying about open-sourcing
+- Maximizes adoption → maximizes maintainers
+
+**Why GPL for operating systems:**
+- Ensures the commons stays open
+- Companies CAN'T embrace-extend-extinguish
+- Linux wouldn't be what it is without GPL protection
+
+→ Practical guidance...
 </aside>
 
 </Slide>
