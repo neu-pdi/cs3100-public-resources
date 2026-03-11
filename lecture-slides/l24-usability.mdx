@@ -26,14 +26,14 @@ import Img from '@site/src/components/Img';
 - **Prerequisites:** Students understand requirements analysis (L9), domain modeling (L12)
 - **Connects to:** User-centered design (next lecture), Safety and Reliability (L35)
 
-**Structure:**
-- Arc 1: Why Usability Matters (~15 min) — five aspects, trade-offs
-- Arc 2: Mental Models (~5 min) — user expectations
-- Arc 3: Stakeholders and Personas (~12 min) — different needs, making trade-offs explicit
-- Arc 4: Usability and Safety (~5 min) — human error types
-- Arc 5: Evaluating Usability (~5 min) — approaches and trade-offs
-- Arc 6: Nielsen's 10 Heuristics (~15 min) — systematic evaluation
-- Key Takeaways (~3 min)
+**Structure (~32 slides):**
+- Arc 1: Why Usability Matters (~10 min) — five aspects building incrementally, trade-offs
+- Arc 2: Stakeholders and Personas (~10 min) — who we're designing for, trade-offs explicit
+- Arc 3: Mental Models (~4 min) — Marcus vs Dorothy expectations, strategies
+- Arc 4: Usability and Safety (~5 min) — error taxonomy, safety risks
+- Arc 5: Evaluating Usability (~3 min) — approaches overview
+- Arc 6: Nielsen's 10 Heuristics (~16 min) — systematic evaluation, one slide each
+- Key Takeaways (~2 min)
 
 **Running example:** SceneItAll IoT/smarthome control platform (familiar from L2, L8, L9)
 
@@ -93,10 +93,10 @@ After this lecture, you will be able to:
 
 <aside className="notes">
 **Time allocation:**
-- Objective 1: Five aspects of usability (~15 min)
-- Objective 2-3: Stakeholders and personas (~12 min)
+- Objective 1: Five aspects of usability (~12 min)
+- Objective 2-3: Stakeholders and personas (~10 min)
 - Objective 4: Usability and safety (~5 min)
-- Objective 5: Nielsen's heuristics (~15 min)
+- Objective 5: Nielsen's heuristics (~18 min)
 
 **Why this matters:** Most software projects don't fail because of bugs — they fail because users can't figure out how to use them, or hate using them.
 
@@ -106,7 +106,7 @@ After this lecture, you will be able to:
 </Slide>
 
 {/* ============================================ */}
-{/* ARC 1: WHY USABILITY MATTERS (~15 min) */}
+{/* ARC 1: WHY USABILITY MATTERS (~10 min) */}
 {/* ============================================ */}
 
 <Slide>
@@ -176,127 +176,66 @@ Connection to L9: We identified stakeholders and their needs. Usability asks: ca
 
 <Slide>
 
-## The Five Aspects of Usability Are Distinct But Interconnected
+## Learnability and Effectiveness: Can Users Figure It Out and Succeed?
 
-```mermaid
-graph LR
-    L[Learnability] --> E[Effectiveness]
-    E --> P[Productivity]
-    L --> R[Retainability]
-    R --> P
-    P --> S[Satisfiability]
-    S --> L
-    
-    style L fill:#4a9,stroke:#2d7
-    style E fill:#49a,stroke:#27d
-    style P fill:#94a,stroke:#72d
-    style R fill:#a94,stroke:#d72
-    style S fill:#9a4,stroke:#7d2
-```
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.8em'}}>
 
-<div style={{fontSize: '0.75em', marginTop: '0.5em'}}>
+<div style={{backgroundColor: 'rgba(74,153,153,0.15)', padding: '0.8em', borderRadius: '8px'}}>
 
-| Aspect | Question |
-|--------|----------|
-| **Learnability** | How easy is it for users to accomplish tasks the *first time*? |
-| **Effectiveness** | Can users *successfully complete* their intended tasks? |
-| **Productivity** | How *efficiently* can users accomplish tasks once learned? |
-| **Retainability** | How well do users *maintain proficiency* over time? |
-| **Satisfiability** | How *pleasant* is the experience of using the system? |
+**Learnability** <span style={{color: '#4a9'}}>●</span>
+
+*How easy is it for users to accomplish tasks the first time?*
+
+**SceneItAll test:** Can a new user turn off living room lights without a tutorial?
+
+- ✓ High: See "Living Room" → tap → adjust
+- ✗ Low: See "Area Hierarchy Browser" → confused
 
 </div>
 
-<aside className="notes">
-**The five aspects:**
-- Each captures a different dimension of usability
-- They reinforce each other (learnable → retainable → productive → satisfying)
-- But they can also conflict (we'll see trade-offs shortly)
+<div style={{backgroundColor: 'rgba(73,154,170,0.15)', padding: '0.8em', borderRadius: '8px'}}>
 
-**Mental model for students:**
-- Think of these as five different "grades" you could give an interface
-- A system could score high on some and low on others
+**Effectiveness** <span style={{color: '#49a'}}>●</span>
 
-> **Transition:** Let's examine each aspect with SceneItAll examples...
-</aside>
+*Can users successfully complete their intended tasks?*
 
-</Slide>
+**SceneItAll test:** Can users create a "Movie Night" scene?
 
-<Slide>
+- Working ≠ Discoverable
+- Attempted ≠ Completed
+- Completed ≠ Correct
 
-## Learnability: First-Time Success Builds User Confidence
+</div>
 
-<p style={{fontSize: '0.9em', fontWeight: 'bold', color: '#4a9'}}>
-How easy is it for users to accomplish tasks the first time they encounter the system?
-</p>
+</div>
 
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
-<strong>SceneItAll test:</strong> Can a new user figure out how to turn off all the living room lights without a tutorial?
-</p>
+```mermaid
+graph LR
+    L[Learnability] -->|"enables"| E[Effectiveness]
+    
+    style L fill:#c8f0dc,stroke:#4a9,color:#000
+    style E fill:#c8e6f0,stroke:#49a,color:#000
+```
 
-<ul style={{fontSize: '0.8em', marginTop: '0.5em'}}>
-  <li>High learnability: User opens app, sees "Living Room", taps it, sees light controls, adjusts them</li>
-  <li>Low learnability: User opens app, sees "Area Hierarchy Browser", doesn't know where to start</li>
-</ul>
-
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
-Learnability depends heavily on <strong>mental models</strong> — how well the interface matches users' existing understanding of how things work.
+<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
+<strong>Relationship:</strong> Users must first <em>learn</em> the interface before they can be <em>effective</em>. First impressions matter — users who fail early may never try again.
 </p>
 
 <aside className="notes">
-**Key insight:**
+**Learnability:**
 - First impressions matter enormously
-- Users who fail early may never try again
-- Learnability is about matching user expectations
+- Depends on mental models — matching user expectations
+- Connection to L12: Domain vocabulary should align with user vocabulary
 
-**Connection to domain modeling (L12):**
-- If our domain model uses "Area" but users think "Room", there's a mismatch
-- Domain vocabulary should align with user vocabulary
-
-**Mental models preview:**
-- We'll cover this more shortly when we discuss mental models
-- Users bring expectations from physical world and other apps
-
-> **Transition:** Once users learn the basics, can they actually accomplish their goals?
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Effectiveness: Users Must Actually Achieve Their Goals
-
-<p style={{fontSize: '0.9em', fontWeight: 'bold', color: '#49a'}}>
-Can users successfully complete their intended tasks?
-</p>
-
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
-<strong>SceneItAll test:</strong> Can users actually create a "Movie Night" scene that dims lights, closes shades, and sets the fan to low?
-</p>
-
-<ul style={{fontSize: '0.8em', marginTop: '0.5em'}}>
-  <li><strong>Working ≠ Discoverable:</strong> The feature might exist, but can users find it?</li>
-  <li><strong>Attempted ≠ Completed:</strong> Users might try but fail at some step</li>
-  <li><strong>Completed ≠ Correct:</strong> Users might think they succeeded but actually didn't</li>
-</ul>
-
-<p style={{fontSize: '0.85em', marginTop: '1em', color: '#FF9800'}}>
-⚠ It's surprisingly easy to build interfaces where users *think* they've completed a task but haven't.
-</p>
-
-<aside className="notes">
-**The distinctions matter:**
+**Effectiveness:**
 - Feature exists but hidden → discoverability problem
-- User tries but gets stuck → workflow problem
+- User tries but gets stuck → workflow problem  
 - User thinks done but isn't → feedback problem
 
-**SceneItAll example:**
-- User creates a scene, saves it, but it never runs
-- Why? They didn't realize they also needed to *schedule* it or *assign* it to a button
-- The system "worked" but the user failed
-
-**Connection to L9:**
-- Requirements might say "users can create scenes"
-- Effectiveness asks: do users *actually* create scenes successfully?
+**The relationship:**
+- Learnability is the gateway to effectiveness
+- Can't be effective if you can't figure out how to start
+- But being learnable doesn't guarantee effectiveness (user might learn wrong thing)
 
 > **Transition:** Once effective, how much effort does ongoing use require?
 </aside>
@@ -305,159 +244,153 @@ Can users successfully complete their intended tasks?
 
 <Slide>
 
-## Productivity: Ongoing Cost of Using the System
+## Productivity and Retainability: Efficiency Over Time
 
-<Img
-  src="/img/lectures/web/l24-productivity.webp"
-  prompt="A side-by-side comparison showing two ways to turn off all downstairs lights in SceneItAll. LEFT SIDE (Low Productivity): A flowchart showing 12+ steps: Open app → Navigate to Areas → Expand Downstairs → Select Living Room → Tap each light individually → Toggle off → Go back → Select Kitchen → Tap each light → Toggle off → etc. Show a frustrated user with a stopwatch showing 2+ minutes. Label: '12+ taps, 2 minutes'. RIGHT SIDE (High Productivity): A simple two-step flow: Open app → Tap 'Downstairs Off' button (or say 'Hey SceneItAll, downstairs off'). Show a relaxed user with stopwatch showing 3 seconds. Label: '1 tap, 3 seconds'. Both achieve the same outcome. Clean, modern infographic style with flat design, professional flowchart aesthetics, teal and purple color scheme."
-  alt="Two paths to turn off downstairs lights: Left shows 12+ tap journey taking 2 minutes through nested menus. Right shows single 'Downstairs Off' button taking 3 seconds. Same outcome, vastly different effort."
-/>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', fontSize: '0.8em'}}>
 
-<p style={{fontSize: '0.85em', marginTop: '0.5em', fontWeight: 'bold', color: '#94a'}}>
-Same outcome. Vastly different effort. Both are *effective*, but only one is *productive*.
-</p>
+<div style={{backgroundColor: 'rgba(148,74,170,0.15)', padding: '0.8em', borderRadius: '8px'}}>
 
-<aside className="notes">
-**Productivity vs. Effectiveness:**
-- Effectiveness: Can you do it at all?
-- Productivity: How much time/effort does it take?
+**Productivity** <span style={{color: '#94a'}}>●</span>
 
-**Why productivity matters:**
-- Users do tasks repeatedly
-- Small inefficiencies compound into major frustrations
-- Productive systems "disappear" — users focus on goals, not the tool
+*How efficiently can users accomplish tasks once learned?*
 
-**Design implications:**
-- Shortcuts for common operations
-- Batch operations for repetitive tasks
-- Predictive/smart defaults
+**SceneItAll test:** Turn off all downstairs lights
 
-> **Transition:** But users don't interact constantly...
-</aside>
+- Low: 12+ taps through nested menus (2 min)
+- High: One "Downstairs Off" button (3 sec)
 
-</Slide>
-
-<Slide>
-
-## Retainability: Users Should Pick Up Where They Left Off Months Later
-
-<p style={{fontSize: '0.9em', fontWeight: 'bold', color: '#a94'}}>
-How well do users maintain their proficiency over time?
-</p>
-
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
-Users don't interact with most software constantly. They learn it, then come back days, weeks, or months later.
-</p>
-
-<ul style={{fontSize: '0.8em', marginTop: '0.5em'}}>
-  <li><strong>SceneItAll guests:</strong> Visit once, come back next holiday — can they still turn on lights?</li>
-  <li><strong>Seasonal features:</strong> User sets up holiday lighting in December, wants to adjust it next December</li>
-  <li><strong>Rare operations:</strong> Adding a new device happens infrequently but shouldn't require re-learning</li>
-</ul>
-
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
-Retainability is closely tied to learnability — interfaces that match natural mental models are easier to both learn and remember.
-</p>
-
-<aside className="notes">
-**The challenge:**
-- Most users are "occasional" users of most features
-- Muscle memory fades; abstract procedures are forgotten
-- Users shouldn't need to re-learn every time
-
-**Design implications:**
-- Consistent patterns reduce memory burden
-- Visual cues help recognition (vs. recall)
-- Good structure mirrors how users think about tasks
-
-**Connection to mental models:**
-- If the interface matches how users naturally think, it's easier to remember
-- If it's arbitrary or technical, users forget the arbitrary mappings
-
-> **Transition:** Finally, how do users *feel* about using it?
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Satisfiability: Emotional Response Determines Whether Users Return
-
-<p style={{fontSize: '0.9em', fontWeight: 'bold', color: '#9a4'}}>
-How pleasant is the experience of using the system?
-</p>
-
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
-This might seem "soft" compared to the other aspects, but it matters enormously:
-</p>
-
-<ul style={{fontSize: '0.8em', marginTop: '0.5em'}}>
-  <li>Users who find SceneItAll <strong>satisfying</strong> explore automation features and forgive occasional connectivity issues</li>
-  <li>Users who find it <strong>frustrating</strong> abandon it and use physical switches</li>
-  <li>Satisfying experiences lead to recommendations; frustrating ones lead to negative reviews</li>
-</ul>
-
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
-Do users feel confident and in control, or frustrated and confused?
-</p>
-
-<aside className="notes">
-**Why satisfaction matters:**
-- Satisfied users use more features → more value
-- Satisfied users forgive occasional problems
-- Satisfied users recommend to others
-- Frustrated users abandon at first opportunity
-
-**Satisfaction is holistic:**
-- Combines all the other aspects
-- But also includes aesthetics, responsiveness, delight
-- Small touches matter (animations, feedback, polish)
-
-**The test:**
-- Would users *choose* to use this if they had alternatives?
-- Do they dread or enjoy opening the app?
-
-> **Transition:** These aspects don't always align...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Design Decisions Create Trade-offs Between Usability Aspects
-
-<div style={{fontSize: '0.75em'}}>
-
-| Design Decision | Helps | Hurts |
-|-----------------|-------|-------|
-| Add detailed onboarding tutorial | Learnability | Satisfiability (impatient users skip or resent) |
-| Provide voice command shortcuts | Productivity | Learnability (more features to discover) |
-| Show all device options on one screen | Productivity (fewer navigations) | Learnability (overwhelming for beginners) |
-| Use custom creative scene icons | Satisfiability (personal, distinctive) | Learnability (unfamiliar symbols) |
+*Same outcome, vastly different effort.*
 
 </div>
 
-<p style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
-Good usability design requires understanding which aspects matter most for *your users* and *your context*.
+<div style={{backgroundColor: 'rgba(169,148,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**Retainability** <span style={{color: '#a94'}}>●</span>
+
+*How well do users maintain proficiency over time?*
+
+**SceneItAll test:** Guest returns next holiday — can they still use it?
+
+- Seasonal features (holiday lights yearly)
+- Rare operations (adding new device)
+- Occasional users shouldn't re-learn
+
+</div>
+
+</div>
+
+```mermaid
+graph LR
+    L[Learnability] -->|"enables"| E[Effectiveness]
+    E -->|"repeated use"| P[Productivity]
+    L -->|"good learning sticks"| R[Retainability]
+    R -->|"remembering enables"| P
+    
+    style L fill:#c8f0dc,stroke:#4a9,color:#000
+    style E fill:#c8e6f0,stroke:#49a,color:#000
+    style P fill:#e6c8f0,stroke:#94a,color:#000
+    style R fill:#f0dcc8,stroke:#a94,color:#000
+```
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
+<strong>Relationships:</strong> Effectiveness leads to productivity through practice. Learnability enables retainability — interfaces matching mental models are easier to remember. Retainability feeds back into productivity.
 </p>
 
 <aside className="notes">
-**The fundamental tension:**
-- You can't maximize everything
-- Design is about trade-offs
-- Different users have different priorities
+**Productivity:**
+- Users do tasks repeatedly; small inefficiencies compound
+- Productive systems "disappear" — users focus on goals, not the tool
+- Design: shortcuts, batch operations, smart defaults
 
-**Examples unpacked:**
-- Tutorial: Great for confused newbies, annoying for tech-savvy users
-- Voice shortcuts: Power users love them, but new users don't know to try
-- Dense screens: Experts want everything visible, beginners get lost
+**Retainability:**
+- Most users are "occasional" users of most features
+- Muscle memory fades; arbitrary procedures are forgotten
+- Design: consistent patterns, visual cues, natural structure
+
+**The relationships:**
+- Effectiveness → Productivity: Once you CAN do it, how FAST can you do it?
+- Learnability → Retainability: Easy to learn = easy to remember
+- Retainability → Productivity: Remembering means no re-learning overhead
+
+> **Transition:** Finally, how do users *feel* about all this?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Satisfiability Connects Everything: The Complete Picture
+
+<div style={{display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '1em', alignItems: 'center'}}>
+
+<div>
+
+```mermaid
+graph LR
+    L[Learnability] --> E[Effectiveness]
+    E --> P[Productivity]
+    L --> R[Retainability]
+    R --> P
+    P --> S[Satisfiability]
+    S -->|"satisfying experiences encourage more learning"| L
+    
+    style L fill:#c8f0dc,stroke:#4a9,color:#000
+    style E fill:#c8e6f0,stroke:#49a,color:#000
+    style P fill:#e6c8f0,stroke:#94a,color:#000
+    style R fill:#f0dcc8,stroke:#a94,color:#000
+    style S fill:#ddf0c8,stroke:#9a4,color:#000
+```
+
+</div>
+
+<div style={{fontSize: '0.75em', backgroundColor: 'rgba(154,164,74,0.15)', padding: '0.8em', borderRadius: '8px'}}>
+
+**Satisfiability** <span style={{color: '#9a4'}}>●</span>
+
+*How pleasant is the experience?*
+
+- Satisfied users explore more features
+- Satisfied users forgive occasional issues
+- Frustrated users abandon for alternatives
+
+**The feedback loop:** Satisfaction → willingness to learn more → deeper effectiveness → greater productivity → more satisfaction
+
+</div>
+
+</div>
+
+<div style={{fontSize: '0.7em', marginTop: '0.5em'}}>
+
+| Design Decision | Helps | Hurts |
+|-----------------|-------|-------|
+| Detailed onboarding tutorial | Learnability | Satisfiability (impatient users) |
+| Voice command shortcuts | Productivity | Learnability (more to discover) |
+| All options on one screen | Productivity | Learnability (overwhelming) |
+
+</div>
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em', fontWeight: 'bold', color: '#9370DB'}}>
+You can't maximize everything — good design requires knowing which aspects matter most for *your users*.
+</p>
+
+<aside className="notes">
+**Satisfiability:**
+- Might seem "soft" but matters enormously
+- Satisfied users recommend; frustrated users leave negative reviews
+- Includes aesthetics, responsiveness, delight — small touches matter
+
+**The complete picture:**
+- Five aspects form a reinforcing cycle
+- But they also create trade-offs (table examples)
+- Tutorial: Great for newbies, annoying for experts
+- Dense screens: Experts want it, beginners get lost
 
 **The question becomes:**
 - Who are we designing for?
 - Which trade-offs are right for them?
-- This leads us to personas (coming up next)
+- This leads us to personas...
 
-> **Transition:** Here's a concrete example of trade-offs...
+> **Transition:** Here's a concrete example of these trade-offs...
 </aside>
 
 </Slide>
@@ -526,150 +459,24 @@ Neither is "better" — it depends on who's using it and for what.
 - Students worked with SceneItAll CLI
 - They've experienced both sides of this trade-off
 
-> **Transition:** Much of usability depends on matching user expectations...
+> **Transition:** But who are we designing for? Different stakeholders have different priorities...
 </aside>
 
 </Slide>
 
 {/* ============================================ */}
-{/* ARC 2: MENTAL MODELS (~5 min) */}
+{/* ARC 2: STAKEHOLDERS AND PERSONAS (~12 min) */}
 {/* ============================================ */}
 
 <Slide>
 
-## Usability Problems Arise When System Behavior Diverges From User Expectations
+## Different Stakeholders Prioritize Usability Aspects Differently
 
-<Img
-  src="/img/lectures/web/l24-mental-models2.webp"
-  prompt="Three users looking at a SceneItAll smart home app showing a hierarchy: 'Downstairs' contains 'Living Room' which contains 'Reading Nook'. User taps 'All Lights Off' on Living Room. Each user has a thought bubble showing what they expect to happen. USER 1's bubble (teal): 'Only Living Room lights turn off' - shows just the middle level affected, parent and child unchanged. USER 2's bubble (purple): 'Cascades UP - Downstairs lights also turn off' - shows effect flowing upward to parent area. USER 3's bubble (orange): 'Cascades DOWN - Reading Nook lights also turn off' - shows effect flowing downward to child area. All three are reasonable interpretations of 'All Lights Off' in a hierarchy. A question mark floats above the phone: 'What ACTUALLY happens?' Clean, modern illustration style with flat design, three distinct colored thought bubbles, professional infographic aesthetic showing a simple three-level hierarchy diagram."
-  alt="Three users viewing SceneItAll with a hierarchy (Downstairs > Living Room > Reading Nook). When tapping 'All Lights Off' on Living Room, User 1 expects only Living Room affected, User 2 expects cascade up to Downstairs, User 3 expects cascade down to Reading Nook. All reasonable but contradictory."
-/>
-
-<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
-Whatever SceneItAll <em>actually</em> does, it violates <em>someone's</em> mental model.
+<p style={{fontSize: '0.85em'}}>
+Remember from L9: stakeholders are anyone who affects or is affected by the system. Different stakeholders care about different usability aspects.
 </p>
 
-<aside className="notes">
-**The fundamental problem:**
-- Different users bring different expectations about hierarchy behavior
-- All three mental models are reasonable based on prior experience:
-  - User 1: "All Lights Off" means this room only — most specific interpretation
-  - User 2: Parent areas should include children, so turning off Downstairs means Living Room too
-  - User 3: "All" means everything below this point in the hierarchy
-- Each user has seen apps that work each of these ways!
-
-**Design dilemma:**
-- You can only pick one actual behavior
-- Some users will be surprised/confused no matter what you choose
-- This is why usability is hard — it's not about finding the "right" answer
-
-> **Transition:** So what can we do about this?
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Good Design Either Matches Mental Models or Makes Actual Behavior Visible
-
-<div style={{fontSize: '0.85em'}}>
-
-**Strategy 1: Match the most common mental model**
-- Research which expectation is most prevalent
-- Design behavior to match that expectation
-- Accept some users will need to adjust
-
-**Strategy 2: Make actual behavior clearly visible**
-- Show cascade indicators: "This will affect 3 other areas"
-- Preview affected devices before confirming
-- Use animations that reveal what's happening
-
-**Strategy 3: Both**
-- Choose sensible defaults that match common expectations
-- AND provide clear feedback about what's happening
-
-</div>
-
-<p style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
-When you can't match expectations, at least don't surprise users silently.
-</p>
-
-<aside className="notes">
-**Strategy 1 example:**
-- If 80% of users expect "edit Living Room only affects Living Room", do that
-- The 20% who expected cascade can learn
-
-**Strategy 2 example:**
-- When user edits Living Room, show: "✓ Living Room (editing) | Downstairs (unchanged)"
-- Now even users with different mental models understand what's happening
-
-**Strategy 3 is best:**
-- Defaults match common expectations
-- But interface always shows what's actually happening
-- No invisible side effects
-
-**Connection to L12:**
-- Domain modeling helps us understand the *system's* model
-- Mental models are the *users'* model
-- Usability is aligning these two
-
-> **Transition:** Different users have different mental models because they have different backgrounds and needs...
-</aside>
-
-</Slide>
-
-{/* ============================================ */}
-{/* ARC 3: STAKEHOLDERS AND PERSONAS (~12 min) */}
-{/* ============================================ */}
-
-<Slide>
-
-## Different Stakeholders Prioritize the Five Aspects Differently
-
-<p style={{fontSize: '0.9em'}}>
-Remember from L9: stakeholders are anyone who affects or is affected by the system.
-</p>
-
-<ul style={{fontSize: '0.8em', marginTop: '0.5em'}}>
-  <li><strong>Direct stakeholders:</strong> Actually use the system (homeowners, family, guests)</li>
-  <li><strong>Indirect stakeholders:</strong> Affected without using it (neighbors, utility companies)</li>
-</ul>
-
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
-Different stakeholders care about different usability aspects:
-</p>
-
-<ul style={{fontSize: '0.8em'}}>
-  <li>Daily power users → Productivity, Satisfiability</li>
-  <li>Occasional users → Learnability, Retainability</li>
-  <li>First-time users → Learnability, Effectiveness</li>
-</ul>
-
-<aside className="notes">
-**Connection to L9:**
-- We already identified stakeholder categories
-- Now we analyze *which usability aspects* each category cares about most
-- This drives design decisions
-
-**Example:**
-- Power user: "Don't make me click through 5 screens to do something I do every day"
-- Guest: "I just want to turn on the bathroom light without breaking anything"
-- Installer: "I need to configure 50 devices efficiently, not click pretty buttons"
-
-**The insight:**
-- You can't make everyone equally happy
-- But you can make intentional choices about priorities
-
-> **Transition:** Let's map SceneItAll stakeholders to their usability concerns...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## SceneItAll Stakeholders Have Distinct Usability Concerns
-
-<div style={{fontSize: '0.75em'}}>
+<div style={{fontSize: '0.7em', marginTop: '0.5em'}}>
 
 | Stakeholder | Usage Pattern | Usability Priorities |
 |-------------|---------------|---------------------|
@@ -681,90 +488,50 @@ Different stakeholders care about different usability aspects:
 
 </div>
 
-<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB'}}>
-Same system, same features — but each stakeholder cares about different aspects.
+<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
+Same system, same features — but you can't optimize for everyone. You must make intentional choices about priorities.
 </p>
 
 <aside className="notes">
+**Connection to L9:**
+- We already identified stakeholder categories
+- Now we analyze *which usability aspects* each category cares about most
+- This drives design decisions
+
 **Stakeholder breakdown:**
 
 **Primary owner (daily):**
 - Uses app constantly, wants maximum productivity
-- Cares about satisfiability because they chose this system
 - Priority: "Make common operations fast"
 
 **Family members (daily):**
 - Didn't choose the system but must live with it
-- Need things to work reliably without deep knowledge
 - Priority: "Don't make me feel stupid"
 
 **Guests (occasional):**
 - Visit once, then months later
-- Must figure out basics quickly and remember them next time
 - Priority: "Intuitive for strangers"
 
 **Installer (professional):**
 - Configures system once, needs efficiency
-- Effectiveness matters — must complete setup correctly
 - Priority: "Don't waste my time"
 
 **Neighbors (indirect):**
-- Affected by outdoor lights, security system behavior
 - Can't use the app, but impacted by its usability failures
 - Priority: Usability problems shouldn't create safety/nuisance issues
 
-> **Transition:** These stakeholders are still pretty abstract. Let's make them more concrete...
+> **Transition:** These stakeholders are still pretty abstract. Let's make them more concrete with personas...
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Personas Make Abstract Stakeholders Concrete and Memorable
+## Personas Make Stakeholders Concrete: Meet Marcus and Dorothy
 
-<p style={{fontSize: '0.9em'}}>
-<strong>Persona:</strong> A fictional but realistic description of a typical user, based on research about real users.
+<p style={{fontSize: '0.8em'}}>
+<strong>Persona:</strong> A fictional but realistic user that makes trade-off discussions concrete — "Would Marcus find this useful? Would Dorothy be confused?"
 </p>
-
-<div style={{fontSize: '0.8em', marginTop: '1em'}}>
-
-**Why personas help:**
-
-- Force explicit decisions about who you're designing for
-- Make trade-off discussions concrete ("Would Marcus find this useful?")
-- Prevent designing for yourself or an imaginary "average user"
-- Create shared reference point across the team
-
-</div>
-
-<p style={{fontSize: '0.85em', marginTop: '1em', color: '#9370DB'}}>
-Instead of "users might want...", we can say "Marcus needs... but Dorothy needs..."
-</p>
-
-<aside className="notes">
-**Why not just use stakeholder categories?**
-- "Occasional user" is abstract — hard to reason about
-- "Dorothy, Marcus's 72-year-old mother visiting for the holidays" is concrete
-- You can imagine Dorothy's reactions, frustrations, needs
-
-**Based on research:**
-- Good personas come from user research, interviews, data
-- Not made up out of thin air
-- But even educated personas are better than no personas
-
-**Team alignment:**
-- Everyone knows who Marcus and Dorothy are
-- Discussions become "Would Dorothy find this confusing?" not "Some users might..."
-- Prevents designing for developers' mental models
-
-> **Transition:** Let's meet some SceneItAll personas...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## SceneItAll Personas: Marcus and Dorothy
 
 <Img
   src="/img/lectures/web/l24-personas.webp"
@@ -772,27 +539,30 @@ Instead of "users might want...", we can say "Marcus needs... but Dorothy needs.
   alt="Two persona cards: Marcus (45, tech-savvy, wants productivity and flexibility, quote: 'Don't hide features from me') and Dorothy (72, visiting grandparent, wants learnability and simplicity, quote: 'I don't want to break anything')."
 />
 
-<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#9370DB'}}>
-Same app. Same functionality. Vastly different needs.
+<p style={{fontSize: '0.8em', marginTop: '0.3em', color: '#9370DB'}}>
+Features Marcus loves (automations, shortcuts) overwhelm Dorothy. Simplicity Dorothy needs frustrates Marcus.
 </p>
 
 <aside className="notes">
+**Why personas over stakeholder categories?**
+- "Occasional user" is abstract — hard to reason about
+- "Dorothy, Marcus's 72-year-old mother visiting for the holidays" is concrete
+- You can imagine her reactions, frustrations, needs
+- Good personas come from user research, but even educated personas help
+
 **Marcus represents:**
 - Power users who invested in the ecosystem
 - Users who want depth and control
-- Users who will read documentation (maybe)
+- Priority: Productivity, Flexibility
 
 **Dorothy represents:**
 - Occasional users who didn't choose the system
 - Users who want simplicity above all
-- Users who will give up if confused
+- Priority: Learnability, Retainability
 
 **The tension:**
-- Features Marcus loves (automations, rules, shortcuts) overwhelm Dorothy
-- Simplicity Dorothy needs (big buttons, limited options) frustrates Marcus
-
-**Design questions:**
-- Can we serve both?
+- Features Marcus loves overwhelm Dorothy
+- Simplicity Dorothy needs frustrates Marcus
 - How do we decide which needs win when they conflict?
 
 > **Transition:** Let's see how personas help us make trade-off decisions...
@@ -880,7 +650,95 @@ Good design often means designing *multiple experiences* within one product.
 - Flexibility adds complexity to implementation
 - But it's often the right answer when personas have conflicting needs
 
-> **Transition:** Let's shift to a more serious topic — when usability has safety implications...
+> **Transition:** Marcus and Dorothy don't just have different priorities — they have different *mental models*...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 3: MENTAL MODELS (~4 min) */}
+{/* ============================================ */}
+
+<Slide>
+
+## Marcus and Dorothy Have Different Mental Models
+
+<Img
+  src="/img/lectures/web/l24-mental-models2.webp"
+  prompt="Three users looking at a SceneItAll smart home app showing a hierarchy: 'Downstairs' contains 'Living Room' which contains 'Reading Nook'. User taps 'All Lights Off' on Living Room. Each user has a thought bubble showing what they expect to happen. USER 1's bubble (teal): 'Only Living Room lights turn off' - shows just the middle level affected, parent and child unchanged. USER 2's bubble (purple): 'Cascades UP - Downstairs lights also turn off' - shows effect flowing upward to parent area. USER 3's bubble (orange): 'Cascades DOWN - Reading Nook lights also turn off' - shows effect flowing downward to child area. All three are reasonable interpretations of 'All Lights Off' in a hierarchy. A question mark floats above the phone: 'What ACTUALLY happens?' Clean, modern illustration style with flat design, three distinct colored thought bubbles, professional infographic aesthetic showing a simple three-level hierarchy diagram."
+  alt="Three users viewing SceneItAll with a hierarchy (Downstairs > Living Room > Reading Nook). When tapping 'All Lights Off' on Living Room, User 1 expects only Living Room affected, User 2 expects cascade up to Downstairs, User 3 expects cascade down to Reading Nook. All reasonable but contradictory."
+/>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+Whatever SceneItAll <em>actually</em> does, it violates <em>someone's</em> mental model.
+</p>
+
+<aside className="notes">
+**Connect to personas:**
+- Marcus (power user) might expect cascade down — he thinks hierarchically
+- Dorothy might expect only this room — simpler, more literal interpretation
+- The installer might expect something else entirely!
+
+**The fundamental problem:**
+- Different users bring different expectations based on their backgrounds
+- All three mental models are reasonable based on prior experience
+- Each user has seen apps that work each of these ways!
+
+**Design dilemma:**
+- You can only pick one actual behavior
+- Some users will be surprised/confused no matter what you choose
+
+> **Transition:** So what can we do about this?
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Good Design Either Matches Mental Models or Makes Behavior Visible
+
+<div style={{fontSize: '0.85em'}}>
+
+**Strategy 1: Match the most common mental model**
+- Research which expectation is most prevalent
+- Design behavior to match that expectation
+- Accept some users will need to adjust
+
+**Strategy 2: Make actual behavior clearly visible**
+- Show cascade indicators: "This will affect 3 other areas"
+- Preview affected devices before confirming
+- Use animations that reveal what's happening
+
+**Strategy 3: Both**
+- Choose sensible defaults that match common expectations
+- AND provide clear feedback about what's happening
+
+</div>
+
+<p style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
+When you can't match expectations, at least don't surprise users silently.
+</p>
+
+<aside className="notes">
+**Strategy 1 example:**
+- If 80% of users expect "edit Living Room only affects Living Room", do that
+- The 20% who expected cascade can learn
+
+**Strategy 2 example:**
+- When user edits Living Room, show: "✓ Living Room (editing) | Downstairs (unchanged)"
+- Now even users with different mental models understand what's happening
+
+**Strategy 3 is best:**
+- Defaults match common expectations
+- But interface always shows what's actually happening
+- No invisible side effects
+
+**Connection to L12:**
+- Domain modeling helps us understand the *system's* model
+- Mental models are the *users'* model
+- Usability is aligning these two
+
+> **Transition:** When mental models are wrong, it's not just annoying — it can be dangerous...
 </aside>
 
 </Slide>
@@ -891,65 +749,42 @@ Good design often means designing *multiple experiences* within one product.
 
 <Slide>
 
-## Poor Usability Increases Human Error Probability
+## Usability Failures Create Real Safety Risks
 
-<Img
-  src="/img/lectures/web/l24-error-types.webp"
-  prompt="Three distinct panels showing human error types in SceneItAll. SLIP (red panel): Shows a finger hitting 'All Lights Off' instead of the adjacent 'Living Room Off' button on a phone screen, with an arrow showing the intended vs actual tap location. Caption: 'SLIP: Finger hits wrong target'. LAPSE (purple panel): Shows a user starting to create a scene, then a doorbell icon interrupting, then the home in a weird half-configured state with some lights on and some off. Caption: 'LAPSE: Task interrupted, forgotten'. MISTAKE (blue panel): Shows a user activating 'Away' mode with a thought bubble showing 'dims lights?' but the actual result shows locked doors and armed security system. Caption: 'MISTAKE: Wrong mental model'. Clean, modern infographic style with flat design, three-column layout, professional iconography and clear visual explanations."
-  alt="Three error types: Slip shows finger hitting wrong adjacent button. Lapse shows interrupted task left incomplete. Mistake shows mental model mismatch where user thought Away mode just dims lights but it locked all doors."
-/>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', fontSize: '0.7em'}}>
 
-<aside className="notes">
-**Three types of human error:**
+<div>
 
-**Slips:**
-- User intended to do the right thing
-- But executed the wrong action (motor error)
-- Finger slipped, clicked wrong button
-- Made worse by: small targets, adjacent similar buttons
+**Safety isn't just physical:**
 
-**Lapses:**
-- User forgot something
-- Interrupted mid-task, never completed
-- Forgot to save, forgot step in process
-- Made worse by: long multi-step processes, no progress indicators
-
-**Mistakes:**
-- User intentionally did the "wrong" thing
-- But their mental model was wrong
-- They thought they understood, but didn't
-- Made worse by: confusing terminology, hidden side effects
-
-**Design implications:**
-- Slips: Make targets bigger, separate dangerous buttons
-- Lapses: Save state, remind users of incomplete tasks
-- Mistakes: Match mental models, make behavior visible
-
-> **Transition:** Why does this matter for a smart home app?
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Usability Problems Create Real Safety Risks
-
-<div style={{fontSize: '0.8em'}}>
-
-**Safety isn't just physical — usability failures can cause many kinds of harm:**
-
-| Category | SceneItAll Example | Broader Examples |
-|----------|-------------------|------------------|
-| **Physical** | Stairway lights off while someone's on stairs | Medical device misconfiguration |
-| **Security** | Outdoor lights "always off" creates vulnerability | Accidentally sharing credentials |
-| **Privacy** | Guest can see all family schedules | Unintended data exposure |
-| **Financial** | Accidental bulk purchase of smart bulbs | Wrong billing settings |
-| **Operational** | Disabling smoke detector integration | Corrupting critical data |
+| Category | SceneItAll Example |
+|----------|-------------------|
+| **Physical** | Stairway lights off while someone's on stairs |
+| **Security** | Outdoor lights "always off" creates vulnerability |
+| **Privacy** | Guest can see all family schedules |
+| **Financial** | Accidental bulk purchase of smart bulbs |
+| **Operational** | Disabling smoke detector integration |
 
 </div>
 
-<p style={{fontSize: '0.85em', marginTop: '0.5em', color: '#FF9800'}}>
-⚠ The same usability failures (slips, lapses, mistakes) that cause minor annoyance in most apps can cause real harm here.
+<div>
+
+**Many "usability" issues are actually safety requirements:**
+
+- "Confirm before locking all doors" — enhancement or safety?
+- "Show who is home before Away mode" — convenience or preventing lockout?
+- "Re-authenticate to share access" — friction or security?
+
+<p style={{marginTop: '0.5em', fontSize: '0.9em', color: '#FF9800'}}>
+⚠ Ask: "What could go wrong if a user misunderstands?"
+</p>
+
+</div>
+
+</div>
+
+<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
+<strong>Forward reference:</strong> We'll return to safety-critical systems in L35 (Safety and Reliability).
 </p>
 
 <aside className="notes">
@@ -961,51 +796,52 @@ Good design often means designing *multiple experiences* within one product.
 - Security: Accidentally exposing access, disabling protections
 - Privacy: Unintended data sharing, visibility to wrong users
 - Financial: Accidental purchases, subscription changes, billing errors
-- Operational: Data loss, system corruption, service disruption
 
 **Design responsibilities:**
 - Safety-critical actions need confirmation
 - Dangerous operations should be hard to do accidentally
 - Undo should be available for reversible operations
 
-> **Transition:** This is a preview of a later lecture...
+**The insight:**
+- Requirements analysis (L9) should have caught these
+- But safety requirements often hide until we think about usability
+- "What could go wrong if a user misunderstands?" reveals safety needs
+
+> **Transition:** These failures happen because of human error — but what kind?
 </aside>
 
 </Slide>
 
 <Slide>
 
-## Safety Requirements Hide in Usability Problems
+## Human Error Has a Taxonomy: Reason's Classification
 
-<p style={{fontSize: '0.9em'}}>
-Many "usability" issues are actually <strong>safety requirements</strong> that weren't identified:
-</p>
-
-<ul style={{fontSize: '0.8em', marginTop: '0.5em'}}>
-  <li>"Confirm before locking all doors" — usability enhancement or safety requirement?</li>
-  <li>"Show who is home before activating Away mode" — convenience or preventing lockout?</li>
-  <li>"Require re-authentication to share access" — friction or security protection?</li>
-</ul>
-
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
-<strong>Forward reference:</strong> We'll return to safety-critical systems in L35 (Safety and Reliability).
-</p>
+<Img
+  src="/img/lectures/web/l24-error-taxonomy.webp"
+  prompt="A flowchart diagram showing James Reason's human error taxonomy. Left side: oval labeled UNSAFE ACTS with two branches. Top branch: UNINTENDED ACTION leads to a dashed box labeled BASIC ERROR TYPES containing SLIP (with sub-box: Attentional failures - Intrusion, Omission, Reversal, Misordering, Mistiming) and LAPSE (with sub-box: Memory failures - Omitting planned items, Place-losing, Forgetting intentions). Bottom branch: INTENDED ACTION leads to two paths - one to MISTAKE (with sub-box showing Rule-based mistakes: Misapplication of good rule, Application of bad rule, and Knowledge-based mistakes: Many variable forms) and one to VIOLATION (with sub-box: Routine violations, Exceptional violations, Acts of sabotage). Clean flowchart style, black and white or grayscale, professional technical diagram aesthetic like from a textbook."
+  alt="Reason's error taxonomy: Unsafe acts split into Unintended (Slips from attention failures, Lapses from memory failures) and Intended (Mistakes from wrong rules/knowledge, Violations from deliberate deviation)."
+/>
 
 <aside className="notes">
-**The insight:**
-- Requirements analysis (L9) should have caught these
-- But safety requirements often hide until we think about usability
-- "What could go wrong if a user misunderstands?" reveals safety needs
+**Apply taxonomy to examples from previous slide:**
 
-**For SceneItAll:**
-- What happens if user misunderstands a scene's effects?
-- What happens if user accidentally shares access with wrong person?
-- What happens if user forgets app is still in "Away" mode?
+**Stairway lights off (Physical safety):**
+- Slip: Meant to tap "Bedroom" but hit "Stairway" (adjacent buttons)
+- Lapse: Forgot stairway lights were part of the "Upstairs" group
+- Mistake: Thought "Away mode" only affects first floor
+- Violation: Turned off manually to save energy, ignoring safety
 
-**Preview of L35:**
-- Safety-critical systems require special design approaches
-- Defense in depth, fail-safe defaults, confirmation for dangerous actions
-- Usability analysis helps identify where safety features are needed
+**The fix depends on the error type!**
+- Slips: Better button spacing, confirmation for "All Off"
+- Lapses: Show affected areas before confirming, state indicators
+- Mistakes: Clearer mental models, preview consequences
+- Violations: Understand why — maybe add "Energy Saver" mode that excludes safety lights
+
+**Guest privacy issue:**
+- Probably a Mistake — guest thought "view schedule" meant their own
+- Fix: Clearer scope labels, progressive disclosure
+
+**Key insight:** Same outcome, different causes → different solutions
 
 > **Transition:** Now let's talk about how we evaluate usability systematically...
 </aside>
@@ -1013,7 +849,7 @@ Many "usability" issues are actually <strong>safety requirements</strong> that w
 </Slide>
 
 {/* ============================================ */}
-{/* ARC 5: EVALUATING USABILITY (~5 min) */}
+{/* ARC 5: EVALUATING USABILITY (~3 min) */}
 {/* ============================================ */}
 
 <Slide>
@@ -1050,97 +886,73 @@ Many "usability" issues are actually <strong>safety requirements</strong> that w
 
 ## Three Approaches to Usability Evaluation
 
-<div style={{fontSize: '0.8em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.8em', fontSize: '0.7em'}}>
 
-**1. User Studies and Usability Testing**
-- Watch real users try to accomplish tasks
-- "Set up a Movie Night scene in SceneItAll" while observing
-- Gold standard but expensive (recruitment, compensation, time)
+<div style={{backgroundColor: 'rgba(74,153,153,0.15)', padding: '0.6em', borderRadius: '8px'}}>
 
-**2. Surveys and Feedback Mechanisms**
-- App store reviews, in-app feedback buttons, post-task surveys
-- Large sample sizes, real usage context
-- But self-reported; users may not know why they struggled
+**User Studies**
 
-**3. Heuristic Evaluation (Expert Review)**
-- Experts evaluate interface against established principles
-- No user recruitment needed; can be done on prototypes
-- Today's focus: Nielsen's 10 heuristics
+Watch real users accomplish tasks
+
+✓ Gold standard — direct evidence
+
+✗ Expensive, time-consuming
 
 </div>
 
-<p style={{fontSize: '0.8em', marginTop: '0.5em', color: '#9370DB'}}>
-<strong>Connection to L9:</strong> Similar trade-offs to requirements elicitation methods (interviews vs. surveys vs. observation).
+<div style={{backgroundColor: 'rgba(148,74,170,0.15)', padding: '0.6em', borderRadius: '8px'}}>
+
+**Surveys & Feedback**
+
+App reviews, in-app feedback
+
+✓ Large samples, real context
+
+✗ Self-reported, no observation
+
+</div>
+
+<div style={{backgroundColor: 'rgba(154,164,74,0.15)', padding: '0.6em', borderRadius: '8px'}}>
+
+**Heuristic Evaluation**
+
+Experts check against principles
+
+✓ Fast, cheap, works on prototypes
+
+✗ May miss domain-specific issues
+
+</div>
+
+</div>
+
+<div style={{fontSize: '0.8em', marginTop: '0.8em'}}>
+
+**Today's focus: Heuristic Evaluation** — experts systematically check interface against established principles. Nielsen found 3-5 evaluators catch ~75% of usability problems.
+
+<p style={{marginTop: '0.5em', fontWeight: 'bold', color: '#9370DB'}}>
+Nielsen's 10 Usability Heuristics: a 30-year-old framework that remains remarkably effective.
 </p>
 
+</div>
+
 <aside className="notes">
-**User studies:**
-- Most direct evidence
-- Watch confusion in real-time
-- But: expensive, time-consuming, small samples
-
-**Surveys/feedback:**
-- Easy to collect at scale
-- Real users, real context
-- But: self-reported, no observation of struggle
-
-**Heuristic evaluation:**
-- Experts apply principles systematically
-- Can do early, on paper prototypes
-- But: experts might miss things real users encounter
-
 **Common approach:**
 - Heuristic evaluation early and often (cheap)
 - User testing at key milestones (validate assumptions)
 - Ongoing feedback collection (track real-world issues)
 
-> **Transition:** Let's focus on heuristic evaluation...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## Heuristic Evaluation: Expert Review Without User Recruitment
-
-<p style={{fontSize: '0.9em'}}>
-<strong>Heuristic evaluation</strong> is a method where experts systematically check an interface against established usability principles.
-</p>
-
-<div style={{fontSize: '0.85em', marginTop: '1em'}}>
-
-**Advantages:**
-- Can be done early (on wireframes, prototypes)
-- No user recruitment or scheduling
-- Relatively fast and inexpensive
-- Finds many common problems
-
-**Limitations:**
-- Experts aren't real users — may miss domain-specific issues
-- Different experts find different problems
-- Doesn't reveal *how severe* problems are for real users
-
-</div>
-
-<p style={{fontSize: '0.85em', marginTop: '1em', fontWeight: 'bold', color: '#9370DB'}}>
-Today's focus: Nielsen's 10 Usability Heuristics — a 30-year-old framework that remains remarkably effective.
-</p>
-
-<aside className="notes">
 **Why heuristics?**
 - You can start evaluating immediately
 - Don't need working software
 - Paper prototype → apply heuristics → find problems → fix → iterate
 
+**Connection to L9:** Similar trade-offs to requirements elicitation methods (interviews vs. surveys vs. observation).
+
 **Research backing:**
 - Nielsen found 3-5 evaluators catch ~75% of usability problems
 - Each evaluator finds different subset
 - Multiple evaluators provide coverage
-
-**Our approach:**
-- Learn the heuristics (coming up next)
-- Apply them to SceneItAll examples
-- Gives you a checklist for your own projects
 
 > **Transition:** Let's dive into Nielsen's 10 heuristics...
 </aside>
@@ -1148,7 +960,7 @@ Today's focus: Nielsen's 10 Usability Heuristics — a 30-year-old framework tha
 </Slide>
 
 {/* ============================================ */}
-{/* ARC 6: NIELSEN'S 10 USABILITY HEURISTICS (~15 min) */}
+{/* ARC 6: NIELSEN'S 10 USABILITY HEURISTICS (~18 min) */}
 {/* ============================================ */}
 
 <Slide>
@@ -1658,48 +1470,6 @@ The best help is <strong>available where and when users need it</strong>.
 - In-app tooltips
 - Contextual help buttons
 - Smart search that understands questions
-
-> **Transition:** Let's wrap up the heuristics...
-</aside>
-
-</Slide>
-
-<Slide>
-
-## The Heuristics Overlap and Reinforce Each Other
-
-<div style={{fontSize: '0.85em'}}>
-
-Don't treat the heuristics as 10 independent checkboxes. They form a coherent system:
-
-- **H1 violations** (no status) often accompany **H9 violations** (bad error messages) — if users can't see what's happening, they can't tell when it fails
-
-- **H2 violations** (developer language) undermine **H6** (recognition over recall) — unfamiliar terms can't be recognized
-
-- **H5** (error prevention) reduces the need for **H3** (emergency exits) and **H9** (error recovery)
-
-</div>
-
-<p style={{fontSize: '0.85em', marginTop: '1em'}}>
-Use the heuristics as a <strong>systematic checklist</strong>, but remember they describe one coherent vision of usable software.
-</p>
-
-<aside className="notes">
-**Practical application:**
-- Go through each heuristic systematically
-- Document specific violations (not just "violates H3")
-- Note severity (minor annoyance vs. task failure)
-- Prioritize fixes based on impact
-
-**Multiple evaluators:**
-- Different people catch different problems
-- 3-5 evaluators catches most issues
-- Compare findings, deduplicate, prioritize
-
-**For your projects:**
-- Apply heuristics to your own work
-- Better to catch problems early than hear about them from users
-- Even paper prototypes can be heuristically evaluated
 
 > **Transition:** Let's wrap up with key takeaways...
 </aside>
