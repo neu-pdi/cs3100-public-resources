@@ -408,16 +408,13 @@ Three JARs for one "dependency." But this is just the beginning...
 </div>
 
 <aside className="notes">
-**Start simple:**
+
 - One line in build.gradle brings in Jackson
 - Run `gradle dependencies` and you see the tree
 - Three JARs for one "dependency"
+- But that's just the beginning...
 
-**Set up the reveal:**
-- "But this is just the beginning..."
-- We're about to show them how deep the rabbit hole goes
-
-→ **Transition:** What if we want the full Jackson ecosystem?
+→ What if we want the full Jackson ecosystem?
 </aside>
 
 </Slide>
@@ -454,18 +451,29 @@ Notice the <strong>diamond dependencies</strong> — multiple paths to jackson-d
 </div>
 
 <aside className="notes">
-**Expanding complexity:**
-- Full Jackson usage typically includes date/time support (jsr310), Optional handling (jdk8)
-- Each module depends on the core — creating diamond dependencies
-- Maven/Gradle deduplicates, but version mismatches can cause runtime errors
-
 **The diamond problem:**
-- If jackson-datatype-jsr310 wants databind 2.14.0 but you declared 2.15.0...
-- Build tool picks one (usually newest), but this can break assumptions
+- If jackson-datatype-jsr310 wants databind 2.14.0 but you specified 2.15.0...
+- Build tool picks one (usually newest), but this doesn't always work...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Dependency Hell
+
+<Img src='/img/lectures/web/l23-library-update.png'
+  width={700}
+  alt="Four-panel comic titled 'UPDATE' from monkeyuser.com. Panel 1: A stick figure happily holds a colorful Tetris-like block, saying 'Nothing better than keeping your libraries up to date,' next to a neatly stacked arrangement of colored blocks. Panel 2: After inserting the block, the stack has shifted and doesn't fit together well; the figure frowns and says 'Looks like a compatibility issue! Better update the others too!' Panel 3: Labeled 'Many hours later...' -- the figure is buried under a chaotic, tangled pile of mismatched blocks, surrounded by wires and random objects including a fish tank. Panel 4: A second figure asks 'Are you setting up a new project?' The buried figure, now starting from scratch with just two small blocks, replies 'Yep!'"
+/>
+
+
+<aside className="notes">
 - "It worked on my machine" often traces back to dependency version differences
 
-→ **Transition:** What if you need XML and YAML support too?
+→ What if you need XML and YAML support too?
 </aside>
+
 
 </Slide>
 
@@ -557,9 +565,9 @@ com.example:jackson-deps:jar:1.0-SNAPSHOT
 
 </div>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', marginTop: '1em', fontSize: '0.7em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1em', marginTop: '0em', fontSize: '0.7em'}}>
 
-<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+<div style={{padding: '0.5em', border: '2px solid #4CAF50', borderRadius: '4px'}}>
 
 **What you wrote:**
 - 5 dependency declarations
@@ -567,7 +575,7 @@ com.example:jackson-deps:jar:1.0-SNAPSHOT
 
 </div>
 
-<div style={{padding: '0.75em', border: '2px solid #9370DB', borderRadius: '8px'}}>
+<div style={{padding: '0.5em', border: '2px solid #9370DB', borderRadius: '4px'}}>
 
 **What you're running:**
 - 10 JAR files
@@ -579,7 +587,7 @@ com.example:jackson-deps:jar:1.0-SNAPSHOT
 </div>
 
 <div className="fragment">
-<p style={{fontSize: '0.82em', marginTop: '1em', fontWeight: 'bold', color: '#FF9800'}}>
+<p style={{fontSize: '0.7em', marginTop: '1em', fontWeight: 'bold', color: '#FF9800'}}>
 Your JSON/XML/YAML handling stands on the shoulders of developers you've never met, at organizations you may not have heard of.
 </p>
 </div>
@@ -693,49 +701,16 @@ Style: Warm, educational illustration with clear visual contrast between the clo
 
 <Slide>
 
-## Open Source Won the Platform Wars
+## Eric Raymond on the Cathedral and the Bazaar
 
-<Img
-  src="/img/lectures/web/l23-oss-won2.webp"
-  prompt="An educational timeline illustration showing how open source won the browser wars. No title.
-
-TOP: A timeline from 1995 to today, showing the rise and fall of proprietary browsers.
-
-1995-1998: Internet Explorer (shown as a menacing warship with Microsoft logo) attacks and sinks Netscape (a smaller ship going down). The warship flies a battle flag reading 'Embrace, Extend, Extinguish'. IE dominates with 95% market share. BUT: as Netscape sinks, a life raft labeled 'Mozilla' escapes carrying the source code.
-
-2004: Mozilla Firefox emerges (a phoenix rising from the water where Netscape sank)
-
-2003: Apple fires a cannonball labeled 'WebKit' at the IE warship. Safari launches with WebKit engine (open source, forked from KHTML) — Apple bets on open source instead of licensing IE.
-
-2008: Chrome launches with Chromium engine (open source, initially based on WebKit).
-
-2015: IE is shown rusting and abandoned. Microsoft launches Edge with proprietary EdgeHTML engine.
-
-2019: Microsoft Edge crosses out 'EdgeHTML' and writes 'Chromium' — the former browser killer now runs on open source.
-
-TODAY: Three browser logos (Chrome, Safari, Edge) all connected by lines to a central 'Open Source Core' hub. The hub glows. IE's rusted hulk sits in the background, abandoned.
-
-CALLOUT: 'IE won the battle. Open source won the war.'
-
-Style: Clean educational timeline with warm colors, showing IE's rise and fall, and the ultimate convergence toward open source."
-  alt="Timeline: IE (1995) kills Netscape, but Mozilla escapes with source code. Firefox rises (2004). Chrome/Safari launch with open source engines. Edge abandons proprietary engine for Chromium (2019). IE rusts abandoned. Callout: IE won the battle, open source won the war."
+<Img src='/img/lectures/web/l23-cathedral-bazaar-cover.jpg'
+  width={450}
+  alt="Cover of 'The Cathedral and the Bazaar: Musings on Linux and Open Source by an Accidental Revolutionary' by Eric S. Raymond"
 />
 
+https://youtu.be/69ZyX5sN2NA?si=htuNoh9toixDxim8&t=106
 <aside className="notes">
-**The browser story:**
-- 1998: Netscape, facing extinction from IE, open-sourced their browser as Mozilla
-- Netscape the company died, Firefox eventually lost market share
-- But look at today: Chrome (Chromium), Safari (WebKit), Edge (Chromium) — ALL open source cores
-
-**The pattern repeats across the industry:**
-- Linux runs Android, AWS, most web servers
-- SQLite is in every iPhone, Android device, browser
-- Jackson, Spring, JUnit power most Java enterprise software
-- React, TensorFlow, PyTorch — all open source foundations
-
-**Many projects maintained by surprisingly small teams — yet support billions in commercial software.**
-
-→ **Transition:** How does all this code get distributed?
+- play until end (about 1:20)
 </aside>
 
 </Slide>
@@ -941,7 +916,7 @@ You legally **cannot** use it — even if the author clearly intended to share i
 The two licensing philosophies grew from the <strong>same code lineage</strong> — but diverged on a fundamental question about freedom.
 </p>
 
-<div style={{fontSize: '0.75em', marginTop: '1em'}}>
+<div style={{fontSize: '0.75em', marginTop: '0em'}}>
 
 | Year | Event | Philosophy |
 |------|-------|------------|
@@ -951,7 +926,7 @@ The two licensing philosophies grew from the <strong>same code lineage</strong> 
 
 </div>
 
-<div className="fragment" style={{marginTop: '1em', fontSize: '0.75em'}}>
+<div className="fragment" style={{marginTop: '0em', fontSize: '0.75em'}}>
 
 **Both philosophies shaped the modern world:**
 
@@ -1075,6 +1050,62 @@ Style: Warm educational illustration, clear visual contrast between the two benc
 - This is why MongoDB moved to SSPL — to close that loophole
 
 → **Transition:** Practical guidance...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Eric Raymond on Open Source and Free Software
+
+<Img src='/img/lectures/web/l23-Eric_S_Raymond_portrait.jpg'
+  width={400}
+  alt='Photo of Eric S. Raymond'
+/>
+
+https://youtu.be/69ZyX5sN2NA?si=htuNoh9toixDxim8
+
+<div style={{ fontSize: '.6em' }}>
+Image CC BY-SA 2.0 [Bilby](https://commons.wikimedia.org/wiki/File:Eric_S_Raymond_portrait.jpg), [jerone2](https://commons.wikimedia.org/wiki/File:Erc_S_Raymond_and_company.jpg)
+</div>
+
+<aside className="notes">
+- 1:40 until start of previous slide
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Richard Stallman (RMS) on Open Source and Free Software
+
+<Img src='/img/lectures/web/l23-rms-xkcd.png'
+  width={800}
+  alt="[The first panel has the second panel inside it. It also has a slightly light gray background color. Just above the inlaid second panel is Richard Stallman lying in his bed sleeping, the bottom part at the foot of the bed hidden behind the second panel below. Below his bed under his head lies a katana sword in its sheath, and another one hangs in its sheath behind the end of the bed. Two ninjas with swords and black cloths around their heads jump through the skylight, smashing it so glass scatters around them. Each of them is hanging one-handed from the same rope coming down from the skylight. The rope ends just above the inlaid frame below. The two ninjas shout at Richard Stallman, from four speech bubbles that have pointy ends to indicate how the two alternately speak. (These bubbles are white, not gray.)]
+Richard Stallman: Zzzz
+Top Ninja: Richard Stallman! Your viral open source licenses have grown too powerful.
+Bottom Ninja: The GPL must be stopped.
+Top Ninja: At the source.
+Bottom Ninja: You.
+[In the second inlaid panel (with normal white background), Richard Stallman wakes up immediately, and while sitting up in bed, he pulls out both his katana swords from their sheaths, leaving the sheaths under and behind the bed. One hand is up in the air with the sword from behind the bed, and the other is still pointing down with the swords from below the bed. Lines indicate the fast movement of the swords. His three speech bubbles are like those of the ninjas, the last two even breaking the panel entering into the large first panel.]
+Katana swords: Shing! Shing!
+Richard Stallman: Hah! Microsoft lackeys! So it has come to this!
+Richard Stallman: A night of blood I've long awaited. But be this my death or yours, free software will carry on! For a GNU dawn! For freedom!
+Richard Stallman: ...Hey, where are you going?
+[An outside scene at night with black sky. Richard Stallman's gray house can be seen with the broken white skylight on the roof. The ninjas are jumping out of a window at ground height while taking off their ninja cloth around their heads, holding them in their hand, thus revealing that they both look like Cueball. The first one is already on the grassy ground beneath the window, his sword pointing down and to the left; the other just jumps from the window pane, his sword pointing up and to the right. Again, they have speech bubbles like before. It is not possible to tell which of the two ninjas from before is first out the window.]
+Ninja in window: Man, you're right, that never gets old.
+Ninja on the grass: Let's do Eric S. Raymond next.
+Ninja in window: Or Linus Torvalds. I hear he sleeps with nunchucks."
+/>
+
+https://youtu.be/Ag1AKIl_2GM?si=21E_IZFYRm_flMBY&t=525
+<div style={{ fontSize: '.5em' }}>
+Image: 'Open Source', xkcd.com/225, Randall Munroe, CC BY-NC 2.5
+</div>
+
+<aside className="notes">
+- Play until "So say, 'free software,' and you're helping us every time"
+- about a minute
 </aside>
 
 </Slide>
@@ -1554,7 +1585,7 @@ Second link: https://youtu.be/aoag03mSuXQ?si=mkmCwU0NiEAxfCby&t=527
 You're not just a consumer of open source — you're a participant. L22's HRT principles apply to the global community, not just your team.
 </p>
 
-<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', marginTop: '1em', fontSize: '0.72em'}}>
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', marginTop: '0em', fontSize: '0.72em'}}>
 
 <div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
 
@@ -1607,48 +1638,6 @@ You're not just a consumer of open source — you're a participant. L22's HRT pr
 {/* ============================================ */}
 {/* CLOSING - SYNTHESIS WITH ARCHITECTURE */}
 {/* ============================================ */}
-
-<Slide>
-
-## The Architecture Connection
-
-<p style={{fontSize: '0.85em'}}>
-Open source isn't separate from architecture — it's the foundation your architecture stands on.
-</p>
-
-<div style={{fontSize: '0.7em', marginTop: '1em'}}>
-
-| We Asked... | We Learned... | OSS Adds... |
-|-------------|---------------|-------------|
-| **L17:** How do we wire components? | Inject dependencies, don't hardcode | The `ObjectMapper` you inject is Jackson — 10 JARs from 4 orgs |
-| **L18:** Where do boundaries go? | Rate of change, actor ownership | OSS changes at ITS rate — you don't control it |
-| **L18:** Build vs. buy? | Coupling vs. capability tradeoffs | "Buy" usually means "adopt OSS" — same tradeoffs apply |
-| **L19:** What qualities matter? | Maintainability, testability, security | OSS choices directly impact every -ility |
-
-</div>
-
-<p className="fragment" style={{marginTop: '1.25em', fontSize: '0.85em', fontWeight: 'bold', color: '#9370DB'}}>
-Every architectural decision implicitly trusts dozens of OSS maintainers.
-</p>
-
-<aside className="notes">
-**The throughline across lectures:**
-
-**L17 (DI):** We learned to inject dependencies rather than hardcode them. Today: those injected dependencies are often open source libraries. The `ObjectMapper` you inject? That's Jackson — 10 JARs from 4 organizations.
-
-**L18 (Boundaries):** We asked "where do service boundaries go?" One key heuristic was "rate of change." Today: OSS libraries change at their OWN rate — you don't control it. This affects where you draw boundaries.
-
-**L18 (Build vs. Buy):** We compared Pawtograder (thick action) vs Bottlenose (platform-driven). Today: "buy" often means "adopt OSS." The same tradeoffs apply — coupling, changeability, testability.
-
-**L19 (Quality Attributes):** We learned that architecture affects -ilities. Today: OSS choices directly impact:
-- **Maintainability:** Who fixes bugs when the maintainer burns out?
-- **Security:** Supply chain attacks propagate through dependencies
-- **Changeability:** License changes can force rewrites
-
-**The synthesis:** Every architectural decision implicitly trusts dozens of OSS maintainers. "Build vs. buy" is really "build vs. adopt OSS vs. pay for commercial."
-</aside>
-
-</Slide>
 
 <Slide>
 
