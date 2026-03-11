@@ -1,10 +1,19 @@
 ---
 sidebar_position: 24
-title: "L23 exercise"
+title: "Assignment 5 Prep Exercise"
 ---
+# Assignment 5 Prep Exercise: Designing a Service Layer for LibTrack
 
+:::info
+This exercise is designed to prepare you for the design task in [Assignment 5](https://neu-pdi.github.io/cs3100-public-resources/assignments/cyb5-service-architecture).
+We will determine service boundaries using the actor heuristic and at least one of the other 3
+[service boundary heuristics from L18](https://neu-pdi.github.io/cs3100-public-resources/lecture-slides-spertus/l18-architecture-design#/11):
+1. **Actor**📌: Things used by different actors should be separate.
+2. **Rate of Change**: Things that change at different speeds should be separate.
+3. **Interface Segregation**: Clients that need different things should get different interfaces.
+4. **Testability**: Things that need independent testing should be separable.
 
-# In-Class Exercise: Designing a Service Layer for LibTrack
+:::
 
 **LibTrack** is a small command-line application for managing a public library. The following classes are already implemented and available for your services to use:
 
@@ -12,15 +21,21 @@ title: "L23 exercise"
 |---|---|
 | `BookRepository` | Stores and retrieves books by ID, title, or author |
 | `PatronRepository` | Stores and retrieves patron accounts |
-| `HoldQueue` | Manages the ordered queue of holds on a given book |
+| `HoldRepository` | Manages the ordered queue of holds on a given book |
 | `LoanRepository` | Records active and historical loans (checkouts/checkins) |
+| `FineRepository` | Stores and retrieves fines associated with patrons and loans |
+
+**Data model notes:**
+- Patron records in `PatronRepository` contain only basic account information (name, contact details, library card number). Fines, loans, and holds are stored exclusively in their respective repositories, linked to a patron by ID.
+- Patron account format is stable and unlikely to change. Loan policies (loan period, renewal limits) change every few years. The library plans to actively experiment with hold and fine policies (grace periods, fine rates, hold expiry, waiver rules).
+- Checking in a book includes assessing any overdue fine based on current fine policy.
 
 LibTrack serves two distinct groups of users:
 
 | Actor | Goals | Key Commands |
 |---|---|---|
-| **The Patron** | Browses the catalog, manages their holds, and reviews their borrowing history | `search`, `hold`, `holds`, `history`, `my account` |
-| **The Librarian** | Handles checkouts and returns, manages the catalog, and looks up patron accounts | `search`, `checkout`, `checkin`, `catalog add`, `catalog remove`, `patron lookup` |
+| **The Patron** | Browses the catalog, manages their holds, reviews their borrowing history, and manages their fines | `search`, `hold`, `holds`, `history`, `my account`, `my fines`, `pay fine` |
+| **The Librarian** | Handles checkouts and returns, manages the catalog, looks up patron accounts, and manages fines | `search`, `checkout`, `checkin`, `catalog add`, `catalog remove`, `patron lookup`, `patron fines`, `waive fine` |
 
 ## Commands
 
@@ -33,6 +48,8 @@ LibTrack serves two distinct groups of users:
 | `holds` | List the current patron's active holds |
 | `history` | Show the current patron's borrowing history |
 | `my account` | Show the current patron's account details and borrowing status |
+| `my fines` | Show all outstanding fines for the current patron |
+| `pay fine <fine>` | Pay an outstanding fine |
 
 ### Librarian Commands
 
@@ -40,10 +57,12 @@ LibTrack serves two distinct groups of users:
 |---|---|
 | `search <title>` | Search the catalog by title or author (case-insensitive substring) |
 | `checkout <book> <patron>` | Check a book out to a patron and record the loan |
-| `checkin <book>` | Check a returned book back in and notify the next patron with a hold |
+| `checkin <book>` | Check a returned book back in, assess any overdue fine per current fine policy, and notify the next patron with a hold |
 | `catalog add <title> <author> <isbn>` | Add a new title to the catalog |
 | `catalog remove <book>` | Remove a title from the catalog |
 | `patron lookup <name>` | Look up a patron's account and current borrowing status |
+| `patron fines <name>` | View all outstanding fines for a patron |
+| `waive fine <fine>` | Waive an outstanding fine for a patron |
 
 ## Your Task
 
@@ -64,5 +83,9 @@ Write **ADR-001: Service Boundaries** documenting how you would decompose LibTra
 
 Your ADR should:
 - Name your services and state which commands each one owns
-- Justify each boundary using at least two L18 heuristics (actor, rate of change, interface segregation, testability)
+- Justify each boundary using the actor heuristic and at least one other heuristic (rate of change, interface segregation, testability)
 - Discuss at least one tradeoff — something your decomposition handles well and something it makes harder
+
+:::warning Actor-Aligned Services Required
+Your service layer **must** have separate services aligned with the two actors, plus a separate Search service.
+:::

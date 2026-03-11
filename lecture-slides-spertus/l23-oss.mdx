@@ -6,6 +6,7 @@ image: /img/lectures/web/l23.png
 
 import RevealJS, { Slide } from '@site/src/components/RevealJS';
 import Img from '@site/src/components/Img';
+import PollSlide from '@site/src/components/PollSlide';
 
 <RevealJS transition="slide">
 
@@ -49,7 +50,7 @@ import Img from '@site/src/components/Img';
 ## Lecture 23: Open Source Frameworks
 
 <p style={{marginTop: '2em', fontSize: '0.8em', color: '#666'}}>
-  ©2026 Jonathan Bell, CC-BY-SA
+  ©2026 Jonathan Bell & Ellen Spertus, CC-BY-SA
 </p>
 
 <aside className="notes">
@@ -61,6 +62,266 @@ import Img from '@site/src/components/Img';
 **Key message:** "Your code depends on thousands of developers you've never met. Today we learn how to be a responsible participant in that ecosystem."
 
 → **Transition:** Here's what you'll be able to do after today...
+</aside>
+
+</Slide>
+
+{/* ============================================ */}
+{/* ARC 0: Getting Started with Assignment 5 */}
+{/* ============================================ */}
+
+<Slide>
+
+# Poll: Have you had a chance to look at Assignment 5?
+
+<PollSlide
+  question="Have you had a chance to look at Assignment 5?"
+  answers={[
+    'Not yet',
+    "I've glanced at it",
+    "I started reading it but didn't finish",
+    "I read it all but haven't started working",
+    'I read it and have started working',
+  ]}
+/>
+
+</Slide>
+
+<Slide>
+
+### Introducing A5: Designing Services for Your Team (Individual Assignment)
+
+<div style={{ fontSize: '.7em' }}>
+A4's <code>RecipeService</code> bundled everything into one interface—scaling, conversion, import, search.
+That was intentionally problematic. <strong>A5 asks you to fix it</strong> by designing services aligned
+with <strong>actors</strong>:
+
+<div style={{fontSize: '0.7em', marginTop: '0.5em'}}>
+
+| Actor | A5 Service Responsibility | Group Project GUI Component |
+|-------|---------------------------|-------------------------|
+| **Librarian** | Collections, import, search | Library View, Import Interface, Search |
+| **Cook** | Step-by-step navigation | Recipe Details/Editor |
+| **Planner** | Shopping lists, scaling, export | (Feature Buffet options) |
+
+</div>
+
+<div className='fragment'>
+You are required to use the first service boundary heuristic and at least one of the other heuristics:
+
+1. **Actor**: Things used by different actors should be separate.
+2. **Rate of Change**: Things that change at different speeds should be separate.
+3. **Interface Segregation**: Clients that need different things should get different interfaces.
+4. **Testability**: Things that need independent testing should be separable.
+</div>
+</div>
+
+<aside className="notes">
+- A4's `RecipeService` was a giant interface that did too much
+- Problem: tight coupling, hard to test in isolation
+- A5 asks: "Now that you see why that's bad, design something better"
+- A good division will help with the team project...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## In-Class Exercise: LibTrack
+<div style={{ fontSize: '.8em' }}>
+Read [Assignment 5 Prep Exercise](https://neu-pdi.github.io/cs3100-public-resources/lecture-slides-spertus/l23-exercise).
+
+Begin thinking about and discussing how many services there should be for **patron**.
+Consider:
+* rate of change
+* interface segregation principle
+* testability
+
+</div>
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Consider Repositories Used and Rate of Change
+
+<div style={{ fontSize: '.8em' }}>
+
+| Command | Description | Repositories |
+|---|---|---|
+| `hold <book>` 🏎️ | Place a hold on a book for the current patron | `BookRepository`, `HoldRepository` |
+| `holds` | List the current patron's active holds | `BookRepository`, `HoldRepository` |
+| `history`🐢 | Show the current patron's borrowing history | `LoanRepository`, `BookRepository` |
+| `my account` 🐢 | Show the current patron's account details and borrowing status | `LoanRepository`, `BookRepository` |
+| `my fines` 🏎️ | Show all outstanding fines for the current patron | `FineRepository` |
+| `pay fine <fine>` 🏎️ | Pay an outstanding fine | `FineRepository` |
+
+Tip: Have AI generate the table for you.
+</div>
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## What's the difference between ISP and Actor?
+
+<div className='fragment'>
+The actor heuristic says to split things used by different actors.
+
+The ISP says to split things used by different clients.
+
+What's the difference?
+</div>
+<div className='fragment'>
+Different clients used by a patron could be:
+* the Holds screen vs. the Fines screen
+* a mobile app vs. a web app
+</div>
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## One Possible Patron Service Layer
+```mermaid
+graph TB
+    subgraph Services
+        HS[HoldService]
+        LOS[LoanService]
+        AS[AccountService]
+        FS[FineService]
+    end
+
+    subgraph Repositories
+        BR[BookRepository]
+        PR[PatronRepository]
+        HR[HoldRepository]
+        LR[LoanRepository]
+        FR[FineRepository]
+    end
+
+    HS --> BR
+    HS --> HR
+    LOS --> BR
+    LOS --> PR
+    LOS --> LR
+    LOS --> HS
+    LOS --> FS
+    AS --> PR
+    AS --> LR
+    FS --> FR
+```
+<div style={{ fontSize: '.7em' }}>
+Note: This diagram does not separate interfaces from implementations.
+</div>
+
+<aside className="notes">
+
+</aside>
+
+</Slide>
+
+<Slide>
+
+## Where does testability fit in?
+
+<div style={{ fontSize: '.6em' }}>
+The single `HoldService` requires mocking two classes to test `isPermittedToPlaceHold()`.
+</div>
+
+<div style={{display: 'flex', gap: '2rem'}}>
+<div style={{flex: 1}}>
+
+```mermaid
+classDiagram
+    class HoldService {
+      isPermittedToPlaceHold(Patron) boolean
+      isEligibleForHold(Book) boolean
+      placeHold(Patron, Book) boolean
+    }
+
+    class BookRepository
+    class HoldRepository
+
+    HoldService --> BookRepository
+    HoldService --> HoldRepository
+
+```
+
+</div>
+<div className='fragment' style={{flex: 1}}>
+```mermaid
+classDiagram
+    class HoldWaitlistService {
+      isPermittedToPlaceHold(Patron, Book) boolean
+    }
+    class BookAvailabilityService {
+      isEligibleForHold(Book) boolean
+    }
+
+    class BookRepository
+    class HoldRepository
+
+    HoldWaitlistService --> HoldRepository
+    BookAvailabilityService --> BookRepository
+```
+
+</div>
+</div>
+
+<div className='fragment' style={{ textAlign: 'right', fontSize: '.6em' }}>
+A separate `HoldWaitlistService` requires mocking only one class to test
+`isPermittedToPlaceHold()`.
+
+(We'd have to add a facade to call the two services.)
+</div>
+
+<aside className="notes">
+→ Now let's star the ADR...
+</aside>
+
+</Slide>
+
+<Slide>
+
+## ADR-001: Patron Service Boundaries
+<div style={{ fontSize: '.8em' }}>
+<div className='fragment'>
+**Context**: The client used by the Patron needs to be able to make requests of
+a service layer that applies business logic to repositories. We were
+constrained to prioritize the Actor service boundary heuristic and to apply at
+least one other heuristic.
+</div>
+<div className='fragment'>
+**Decision**: We will have these separate service interfaces supporting these commands:
+* `HoldService`
+  * `hold book`
+  * `holds`
+[remainder omitted]
+
+We separated `HoldService` from other services, such as `AccountService` because of the former's greater rate of change.
+</div>
+
+<div className='fragment'>
+**Consequences**:
+* ✅ Decoupling: Changes to hold policy affect only `HoldService` and its implementations,
+not other services, such as `AccountService`.
+* ⚠️ Testability: We need to mock `BookRepository` to test the method `isPermittedToPlaceHold()`,
+even though that method does not reference `BookRepository`.
+</div>
+</div>
+<aside className="notes">
+
 </aside>
 
 </Slide>
@@ -96,21 +357,6 @@ After this lecture, you will be able to:
 
 → **Transition:** Let's start with a simple example...
 </aside>
-
-</Slide>
-
-{/* ============================================ */}
-{/* ARC 0: Getting Started with Assignment 5 */}
-{/* ============================================ */}
-
-<Slide>
-
-# Survey
-
-* Have you had a chance to look at Assignment 5?
-
-* What does the rate-of-change heuristic mean?
-
 
 </Slide>
 
