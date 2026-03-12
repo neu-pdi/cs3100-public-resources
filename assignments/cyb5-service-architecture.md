@@ -807,7 +807,7 @@ Exits the application gracefully.
 
 Your CLI must provide tab completion for:
 
-1. **Command names** — typing `sc` + Tab should suggest `scale`, `search`; `col` should suggest `collection`, `collections`; `sh` should suggest `shopping-list`, `show`; `co` should suggest `convert`, `cook`, `collection`, `collections`
+1. **Command names** — typing `sc` + Tab should suggest `scale`; `col` should suggest `collection`, `collections`; `sh` should suggest `shopping-list`, `show`; `co` should suggest `convert`, `cook`, `collection`, `collections`
 2. **Recipe titles and short IDs** — any command that takes a recipe parameter must offer tab completion for available recipe titles *and* short IDs (first 8 characters of the recipe's internal ID). This lets users tab-complete even when disambiguating by ID after an ambiguous match:
    - `show <recipe>`
    - `delete <recipe>`
