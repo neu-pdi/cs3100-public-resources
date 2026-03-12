@@ -1,0 +1,70 @@
+---
+sidebar_position: 25
+title: "Exercise: Too Many Cooks in the Kitchen"
+---
+
+import RevealJS, { Slide } from '@site/src/components/RevealJS';
+import Img from '@site/src/components/Img';
+import PollSlide from '@site/src/components/PollSlide';
+
+<RevealJS transition="slide">
+
+<Slide>
+
+## Preparation
+
+<div style={{fontSize: '0.8em'}}>
+* Accept the invitation to `espertusnu/cs3100-github-exercise`.
+* Open your browser to https://github.com/espertusnu/cs3100-github-exercise.
+* Clone the repository in VS Code.
+* Open the project in VS Code (although you can make changes directly on github).
+</div>
+
+</Slide>
+
+<Slide>
+
+## Process
+
+<div style={{fontSize: '0.7em', lineHeight: '1.6'}}>
+<ol style={{paddingLeft: '1.5em'}}>
+<li>Look over the repository contents.</li>
+<li>Create an issue either<div style={{marginLeft: '1em'}}>– proposing a new recipe<br/>– proposing a change to a recipe</div></li>
+<li>Assign the issue to yourself.</li>
+<li>Create a branch with a meaningful name, such as <code>add-pineapple-to-pizza</code><div style={{marginLeft: '1em'}}>– in VS Code GUI<br/>– in terminal: <code>git checkout -b add-pineapple-to-pizza</code><br/>– on github [instructions online]</div></li>
+<li>Add/change the appropriate file.</li>
+<li>Commit your change with a meaningful message (<code>Add pineapple #67</code>).</li>
+<li>Push your change.</li>
+<li>Go through the PR process on github [next slide].</li>
+</ol>
+</div>
+
+</Slide>
+
+<Slide>
+
+## Pull Requests 
+
+<div style={{fontSize: '0.7em'}}>
+1. Create a pull request (PR) from your branch to `main`.
+2. Make sure it contains the correct changes.
+3. Include `Closes #67` in the PR description.
+4. Ask someone to review it.
+5. Make any changes they request.
+6. Once they approve it, squash and merge it, and delete the branch. (This only deletes the branch from github, not from your computer.) You may have to deal with merge conflicts.
+7. Make sure the issue is marked closed.
+
+Help your classmates by reviewing their PRs.
+</div>
+
+</Slide>
+
+<Slide>
+## Bonus Slide
+
+<Img src="/img/lectures/web/l24-git-merge-mentos.webp"
+ alt="Meme showing a divider being removed from tanks of Mentos and Coca-Cola. Title is 'When you are gonna merge two branches after long time'."/>
+
+</Slide>
+
+</RevealJS>
