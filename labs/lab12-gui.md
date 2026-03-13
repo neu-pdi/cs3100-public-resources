@@ -1,8 +1,9 @@
 ---
-sidebar_position: 11
+sidebar_position: 12
+title: "Lab 12: GUI Design and Implementation"
 ---
 
-# Lab 12: GUI Design and Implementation
+# GUI Design and Implementation
 
 ## Learning Objectives
 

@@ -1,8 +1,10 @@
 ---
 sidebar_position: 32
 lecture_number: 32
-title: "Concurrency II: Asynchronous Programming"
+title: "L32: Concurrency II: Asynchronous Programming"
 ---
+
+# Concurrency II: Asynchronous Programming
 
 ## Compare and contrast the use of threads and asynchronous programming (10 minutes)
 

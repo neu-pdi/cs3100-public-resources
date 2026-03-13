@@ -1,8 +1,9 @@
 ---
 sidebar_position: 10
+title: "Lab 10: Usability"
 ---
 
-# Lab 10: Usability
+# Usability
 
 ## Learning Objectives
 

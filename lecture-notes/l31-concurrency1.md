@@ -1,8 +1,10 @@
 ---
 sidebar_position: 31
 lecture_number: 31
-title: Concurrency I
+title: "L31: Concurrency I"
 ---
+
+# Concurrency I
 
 ## Describe the role of threads as a concurrency mechanism and understand the concept of "interrupts" (15 minutes)
 
