@@ -1063,7 +1063,7 @@
     },
     {
       "id": "lab9-mon",
-      "title": "Lab 9: Serverless",
+      "title": "Lab 9: Network Fault Tolerance",
       "dates": [
         "2026-03-09"
       ],
@@ -1079,11 +1079,11 @@
         "L13",
         "L14"
       ],
-      "url": "/labs/lab9-serverless"
+      "url": "/labs/lab9-network-cli"
     },
     {
       "id": "lab9-tue",
-      "title": "Lab 9: Serverless",
+      "title": "Lab 9: Network Fault Tolerance",
       "dates": [
         "2026-03-10"
       ],
@@ -1092,7 +1092,7 @@
         "L02",
         "L04"
       ],
-      "url": "/labs/lab9-serverless"
+      "url": "/labs/lab9-network-cli"
     },
     {
       "id": "lab10-mon",
@@ -1349,7 +1349,7 @@
       "dueDate": "2026-04-09",
       "dueTime": "23:59",
       "points": 50,
-      "url": "/assignments/cyb11-gui-advanced"
+      "url": "/assignments/cyb11-core-features"
     },
     {
       "id": "cyb12",
@@ -1359,7 +1359,7 @@
       "dueDate": "2026-04-16",
       "dueTime": "23:59",
       "points": 50,
-      "url": "/assignments/cyb11-gui-advanced"
+      "url": "/assignments/cyb12-feature-buffet"
     },
     {
       "id": "cyb13",
@@ -1369,7 +1369,7 @@
       "dueDate": "2026-04-20",
       "dueTime": "23:59",
       "points": 50,
-      "url": "/assignments/cyb11-gui-advanced"
+      "url": "/assignments/cyb13-final-report"
     }
   ],
   "scheduleNotes": [

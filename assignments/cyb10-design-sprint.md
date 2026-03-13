@@ -1,6 +1,7 @@
 ---
 title: "Group Assignment 0: Design Sprint"
 sidebar_position: 9
+image: /img/assignments/web/ga0.png
 ---
 
 # Design Sprint
@@ -15,13 +16,11 @@ This assignment is preliminary content and is subject to change until the releas
 
 With your Team Charter established, it's time to design your group project. In this Design Sprint, your team will apply User-Centered Design principles to create the design artifacts that will guide your implementation in GA1 and GA2.
 
-Each team member will create personas, wireframes, and accessibility considerations for their assigned core feature. You'll also select your **Feature Buffet** items for GA2 and design **"Our Feature"**—a custom feature concept that you'll present (but not implement) in your final presentation.
+![8-bit lo-fi pixel art illustration for a programming assignment cover. Kitchen/bakery setting transformed into a design studio with warm wooden cabinets and countertops in browns and tans. Scene composition: A team of four pixel art characters gathered around a large whiteboard that dominates the center of the scene. The whiteboard is covered with design artifacts: low-fidelity wireframe sketches of a recipe app GUI showing four distinct screens (library view, recipe editor, import interface, search panel), connected by navigation flow arrows in cyan. LEFT SIDE - One character pins a user persona card to the board ("Home Cook Hannah" with goals and frustrations listed), while another sketches wireframes with a thick marker, showing iteration (Version 1 crossed out, Version 2 highlighted). RIGHT SIDE - A third character reviews an architecture diagram showing ViewModel boxes connected via cyan arrows to a box labeled 'A5 Service Architecture'. The fourth character evaluates accessibility icons pinned to the board: a keyboard icon and a contrast ratio checker. FOREGROUND - A table with scattered materials: colored sticky notes with feature names ("Recipe Scaling", "Dark Mode", "Shopping List"), a "Feature Buffet Menu" card listing Standard and Advanced options, and a special golden card labeled "Our Feature" with a lightbulb icon and question mark. POST-IT NOTES: "Design before you code!" and "Who is your user?" TOP BANNER: Metallic blue banner with white pixel text "GA0: Design Sprint". BOTTOM TEXT: "CS 3100: Program Design & Implementation 2". Color palette: Warm browns/tans for kitchen, cyan/teal for wireframe arrows and architecture flows, cream for persona cards, yellow for sticky notes, gold accent for "Our Feature" card. 8-bit lo-fi pixel art style, clean outlines, retro game aesthetic with subtle CRT screen texture, 16:9 aspect ratio.](/img/assignments/web/ga0.png)
+
+Each team member will create personas, wireframes, and accessibility considerations for their assigned core feature. You'll also select your **Feature Buffet** items for GA2 and design **"Our Feature"**—a custom feature concept that you'll include (but not implement) in your final report.
 
 **Due:** Thursday, March 26, 2026 at 11:59 PM Boston Time
-
-**Prerequisites:** 
-- [Team Charter](/assignments/team-charter) must be complete (this established your team's working agreements)
-- A5 solution (provided) — you should be familiar with the service layer architecture and CLI implementation
 
 ## Learning Outcomes
 
@@ -30,11 +29,11 @@ By completing this assignment, you will demonstrate proficiency in:
 - **Applying User-Centered Design** through personas, wireframes, and prototyping ([L27: User-Centered Design](/lecture-notes/l27-ucd))
 - **Considering accessibility** in interface design from the start ([L28: Accessibility and Inclusivity](/lecture-notes/l28-accessibility))
 - **Evaluating usability** using Nielsen's heuristics ([L24: Usability](/lecture-notes/l24-usability))
-- **Connecting design to architecture** by mapping ViewModels to existing services ([L19: Thinking Architecturally](/lecture-notes/l18-architecture-design))
+- **Connecting design to architecture** by mapping ViewModels to existing services ([L18: Thinking Architecturally](/lecture-notes/l18-architecture-design))
 
 ## AI Policy for This Assignment
 
-AI tools are **encouraged** for this assignment, particularly for:
+AI tools are **encouraged** for this assignment, and you might consider using them to support you with tasks like:
 - Generating persona templates and user journey frameworks
 - Creating wireframe ideas and layout suggestions
 - Brainstorming feature concepts
@@ -47,16 +46,19 @@ Before starting individual work, your team must assign ownership of the four cor
 
 - **Library View** (Owner: _____): Browse and manage recipe collections
 - **Recipe Editor** (Owner: _____): View and edit recipe content
-- **Import Interface** (Owner: _____): Import recipes from images via OCR
+- **Import Interface** (Owner: _____): Import recipes from images using the Gemini API or copy/paste from text
 - **Search & Filter** (Owner: _____): Find recipes across collections
 
 Each team member owns **one** feature and is responsible for the individual deliverables for that feature.
+If you have a team of 3, it is OK to drop the "Search & Filter" feature and only assign the first three.
 
 ## Individual Deliverables
 
 Each team member creates the following for **their assigned core feature**:
 
 ### 1. User Persona
+
+A **persona** is a fictional but realistic representation of a target user. Rather than designing for "everyone," personas help you focus on specific user needs, behaviors, and goals. See [L27: User-Centered Design](/lecture-notes/l27-ucd) for examples and templates.
 
 Create a realistic persona (1 page) for a user who primarily uses your feature. Include:
 - Name, background, technical comfort level
@@ -65,6 +67,8 @@ Create a realistic persona (1 page) for a user who primarily uses your feature. 
 - Context: When/where/how do they use the app?
 
 ### 2. Low-Fidelity Wireframes
+
+A **wireframe** is a simple sketch of a user interface that shows layout and functionality without visual design details. See [L27: User-Centered Design](/lecture-notes/l27-ucd) for wireframe examples and best practices.
 
 Create hand-drawn or simple digital wireframes (3-5 screens) showing:
 - The main view for your feature
@@ -93,36 +97,49 @@ Create a diagram showing:
 ### 2. Integrated Wireframe Document
 
 Combine individual wireframes into a single document (`design/integrated-wireframes.md`) showing:
-- How navigation flows between the four features
+- How navigation flows between the features your team is implementing (four features, or three if you are a 3-person team that dropped Search & Filter)
 - Shared UI elements (header, navigation, common buttons)
 - Any design decisions that affect multiple features
+
+**3-person teams:** You may exclude the omitted feature (Search & Filter) from the combined wireframe, but the document must explicitly state which feature was omitted (e.g., "Our team is implementing Library View, Recipe Editor, and Import Interface; Search & Filter is not in scope.").
 
 This doesn't need to be high-fidelity—annotated sketches showing how features connect are sufficient.
 
 ### 3. User-Facing Terminology
 
-Establish the terminology users will see in the UI. Consistency in naming reduces confusion:
+Establish the terminology users will see in the UI for the features you are implementing. Consistency in naming reduces confusion. Include entries only for the features in scope (e.g., "Cookbook", "My Cookbooks", "Add Recipe" for Library, Import, and Recipe Editor).
 
+Example entries:
 - **RecipeCollection** → "Cookbook" (Users think in cookbooks, not collections)
 - **Library** → "My Cookbooks" (Friendly, possessive)
 - **ImportService** → "Add Recipe" (Action-oriented, not technical)
-- *(Add terms for all major UI elements)*
+- *(Add terms for all major UI elements in your included features)*
 
-This ensures consistency across all four features.
+**3-person teams:** You need terminology only for the three features you are implementing. You may exclude terms that would apply solely to the omitted feature (Search & Filter), but note in the document which feature was omitted so graders know the scope.
 
 ### 4. Feature Buffet Selection
 
-Select **2-3 features** from the Feature Buffet that your team will implement in GA2. Document your selection in `design/buffet-selection.md`:
+Select **2-3 features** from the Feature Buffet that your team will implement in GA2.
+GA2 will be graded primarily on *process* rather than on *product*, so if you choose a set of features that ultimately proves to be too ambitious, you can still receive high marks by demonstrating thoughtful design, iteration, and reflection in your implementation journal. Choose features that you want to work on, not just the ones that seem easiest.
+Document your selection in `design/buffet-selection.md`:
 
-**Available options:**
-- Recipe scaling calculator with serving size adjustment
-- Shopping list generation from selected recipes
-- Export to formatted PDF or styled Markdown
-- Unit conversion toggle (metric ↔ imperial throughout app)
-- Keyboard shortcuts and accessibility polish
-- Dark mode / theme customization
-- Cooking timer integration for recipe steps
-- OCR backend selection (Tesseract vs. Claude API) with Strategy pattern
+**Standard Features:**
+- Recipe Scaling
+- Shopping List
+- Export to PDF
+- Unit Conversion
+- Keyboard Shortcuts
+- Dark Mode
+- Cooking Timer
+- Cooking Mode
+
+**Advanced Features:**
+- Multi-page recipe import (multiple files at once, multi-page PDF, recipe continuation detection)
+- Recipe Chatbot: "What should I make?" meal suggestion assistant using Gemini API
+- Meal Planning: calendar-based meal planning with recipe scheduling
+- Nutritional Info: API integration for nutritional data
+
+See [GA2: Feature Buffet](/assignments/cyb12-feature-buffet) for full descriptions and complexity estimates.
 
 For each selected feature, briefly explain (2-3 sentences):
 - Why your team chose this feature
@@ -131,7 +148,7 @@ For each selected feature, briefly explain (2-3 sentences):
 
 ### 5. "Our Feature" Concept
 
-Design a **custom feature** that is NOT on the Feature Buffet—something your team thinks would genuinely improve CookYourBooks. This feature will be **designed but not implemented**; you'll present it as a design concept in your final presentation.
+Design a **custom feature** that is NOT on the Feature Buffet—something your team thinks would genuinely improve CookYourBooks. This feature will be **designed but not implemented**; you'll include it as a design concept in your final report.
 
 This is your chance to exercise full UCD creativity without implementation constraints!
 
@@ -158,8 +175,7 @@ This is your chance to exercise full UCD creativity without implementation const
    - Scope? Complexity? Time? Dependencies?
    - This honest assessment demonstrates mature engineering judgment
 
-**Examples of good "Our Feature" ideas:**
-- Voice-controlled recipe reading for hands-free cooking
+**Examples of good "Our Feature" ideas** (must be something *not* on the Feature Buffet):
 - Recipe version history with diff view
 - Collaborative cookbook sharing with permissions
 - Ingredient substitution suggestions

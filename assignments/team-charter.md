@@ -1,17 +1,14 @@
 ---
 title: "Team Charter"
 sidebar_position: 8
+image: /img/assignments/web/team-charter.png
 ---
-
-:::warning Preliminary Content
-
-This assignment is preliminary content and is subject to change until the release date of the assignment.
-
-:::
 
 ## Overview
 
 Your team has been formed. Your first task is to hold your **first official team meeting** where you'll collaboratively create a **Team Charter**—a short document capturing how you'll work together.
+
+![8-bit lo-fi pixel art illustration for a programming assignment cover. Kitchen/bakery setting with warm wooden cabinets and countertops in browns and tans. Scene composition: Four diverse pixel art student characters seated around a large round wooden kitchen table, each holding a different colored pen or marker. In the center of the table lies a large parchment document titled "Team Charter" with visible section headers: "Communication Norms", "Availability", "Decision-Making", "Conflict Resolution". Each character has a small speech bubble — one shows a calendar icon, another a chat icon, a third a handshake, and the fourth a checklist. Behind the group, a warm kitchen wall displays a whiteboard with a weekly meeting schedule grid and sticky notes reading "HRT: Humility, Respect, Trust". A small bookshelf holds copies of "Debugging Teams" and a mug that reads "Teamwork". Cyan/teal accent lines connect the four team members in a diamond pattern, symbolizing collaboration. TOP BANNER: Metallic blue banner with white pixel text "Team Charter". BOTTOM TEXT: "CS 3100: Program Design & Implementation 2". Color palette: Warm browns/tans for kitchen, cyan/teal for connection lines, cream for the charter document, soft accent colors for each team member's contributions. 8-bit lo-fi pixel art style, clean outlines, retro game aesthetic with subtle CRT screen texture, 16:9 aspect ratio.](/img/assignments/web/team-charter.png)
 
 This isn't busywork. Teams who explicitly discuss expectations upfront navigate conflict more effectively than teams who assume everyone is "on the same page."
 
@@ -30,9 +27,12 @@ By completing this assignment, you will:
 
 ## Instructions
 
-Schedule and hold your first team meeting. **All team members must be present.** During this meeting, discuss and agree on each section of the charter together.
+Schedule and hold your first team meeting. **All team members must be present.**
+We suggest that you meet in-person, but if that's not possible, a video call is fine (we suggest *against* having a hybrid option with some teammates together physically and others virtual).
+Use a tool like [When2Meet](https://www.when2meet.com/) to find a 30-minute time that works for everyone.
+During this meeting, discuss and agree on each section of the charter together.
 
-Create `TEAM_CHARTER.md` in your repository root with the following sections:
+Update `README.md` in your repository root with the following sections:
 
 ### 1. Team Info & Expectations
 
@@ -72,7 +72,7 @@ Document your first team meeting:
 
 ## Grading Rubric
 
-This assignment is graded on completeness and evidence of genuine discussion. We're not judging whether your agreements are "right"—we're checking that you actually had the conversations.
+This assignment is graded on completeness and evidence of genuine discussion. We're not judging whether your agreements are "right"—we're checking that you actually had the conversations. The goal isn't a perfect document—it's the conversations you have while creating it.
 
 | Component | Points | Criteria |
 |-----------|--------|----------|
@@ -83,17 +83,3 @@ This assignment is graded on completeness and evidence of genuine discussion. We
 
 **Total: 20 points**
 
-## Submission
-
-1. Accept the GitHub Classroom assignment to create your team repository
-2. Add `TEAM_CHARTER.md` to the repository root
-3. Submit the repository link on Canvas
-
-### Submission Checklist
-
-- [ ] `TEAM_CHARTER.md` with all 4 sections complete
-- [ ] Meeting summary with all team members listed as present
-
----
-
-The goal isn't a perfect document—it's the conversations you have while creating it.

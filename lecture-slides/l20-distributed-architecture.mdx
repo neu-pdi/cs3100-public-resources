@@ -122,7 +122,7 @@ TAGLINE: 'When Code Leaves the Building, Everything Changes'"
 **Team Formation Survey Released!**
 - Starting Week 10: teams of 4 for CookYourBooks GUI project
 - Tell us your preferences + availability
-- **Due Friday 2/26 @ 11:59 PM**
+- **Due Friday 2/27 @ 11:59 PM**
 - [Complete the Survey →](https://docs.google.com/forms/d/e/1FAIpQLScP-pp6S2tP4Do1J5buWmFLDDHwO5r8dxAmjZCB5wH20UDDiQ/viewform)
 
 **HW4 Due Thursday Night**
@@ -268,10 +268,10 @@ Light (and electrical signals in fiber) travels roughly **1 ns/ft** — slower i
 | Distance | Min. round-trip |
 |----------|-----------------|
 | Across a server rack (~10 ft) | ~20 ns |
-| Across a data center (~1,000 ft) | ~1,000 ns |
-| Boston → New York (~200 mi) | ~2,000,000 ns |
-| Boston → London (~3,300 mi) | ~33,000,000 ns |
-| Boston → Tokyo (~6,700 mi) | ~67,000,000 ns |
+| Across a data center (~1,000 ft) | ~2,000 ns |
+| Boston → New York (~200 mi) | ~2,100,000 ns (~2.1 ms) |
+| Boston → London (~3,300 mi) | ~35,000,000 ns (~35 ms) |
+| Boston → Tokyo (~6,700 mi) | ~71,000,000 ns (~71 ms) |
 
 *(Actual latency is always higher — routing, switching, queuing add more.)*
 
@@ -288,7 +288,7 @@ Light (and electrical signals in fiber) travels roughly **1 ns/ft** — slower i
 | L3 CPU cache hit | ~10 ns |
 | RAM access | ~100 ns |
 
-An NYC-London call takes **~66,000,000×** longer than an L1 cache hit.
+A Boston-London round-trip takes **~70,000,000×** longer than an L1 cache hit.
 
 A method call in a monolith? Essentially free by comparison.
 
@@ -303,9 +303,9 @@ A method call in a monolith? Essentially free by comparison.
 - The point: the speed of light is a hard ceiling no engineering can break through
 
 **Working through the table:**
-- Boston → New York: ~330 km, speed of light gives ~2 ms round-trip. Real latency: ~7-10 ms
-- Boston → London: ~5,300 km, ~35 ms minimum one-way. Real: ~70-80 ms
-- Boston → Tokyo: ~10,800 km, ~72 ms minimum. Real: ~140-160 ms
+- Boston → New York: ~330 km, speed of light gives ~2.1 ms round-trip. Real latency: ~7-10 ms
+- Boston → London: ~5,300 km, ~35 ms minimum round-trip. Real: ~70-80 ms
+- Boston → Tokyo: ~10,800 km, ~71 ms minimum round-trip. Real: ~140-160 ms
 - The minimums are never achieved — routing takes non-straight paths, every switch adds queuing delay
 
 **The memory comparison is the key insight:**
