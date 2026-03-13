@@ -104,21 +104,35 @@ Pick something your group members actually use (or have tried to use). Real frus
 
 Once you've chosen, open `REFLECTION.md` in your lab repository and fill in **Section 1** (your evaluation target and group members' names).
 
+### Create your personas
+
+A **persona** is a fictional but realistic description of a specific user — their background, goals, technical comfort level, and the context in which they use the application. Personas help you evaluate from a perspective other than your own, which is critical because *you* are not the only user.
+
+Each group member should create a **different persona** to evaluate from. Your persona should be someone who would plausibly use your chosen application but has a different experience than you. Give them a name and a brief description. For example:
+
+> **Marcus, 62, retired teacher.** Just got a smartphone last year. Wants to use Google Maps to find bus routes to visit his grandchildren. Types slowly, doesn't know what "pinch to zoom" means, gets flustered by pop-ups.
+
+> **Priya, 28, data analyst.** Lives in Excel 8 hours a day. Uses keyboard shortcuts for everything. Gets frustrated when she has to reach for the mouse. Knows the product deeply but has no patience for inefficiency.
+
+> **James, 20, freshman CS student.** Just transferred to Northeastern. Needs to find course requirements on the Khoury website but doesn't know Northeastern-specific jargon like "co-op" or "NUpath." Only uses his phone — doesn't own a laptop.
+
+Make sure your group covers a **range of perspectives** — vary technical experience, familiarity with the app, context of use (mobile vs. desktop, time pressure, etc.).
+
+Record your persona in **Section 1** of your `REFLECTION.md`, alongside your name.
+
 ---
 
 ## Part 3: Individual Evaluation (15 min)
 
-Each group member evaluates the application **independently**, considering **all 10 heuristics**. Open the application and actively use it — try common tasks, poke around less-visited areas, and pay attention to moments of confusion, friction, or delight.
+Each group member evaluates the application **independently**, considering **all 10 heuristics** — but through the lens of **your persona**, not yourself.
 
-Think about:
-- What's the first thing a new user would try to do? Is it obvious how?
-- What's something you do regularly that feels harder than it should?
-- Are there features you know exist but can never find?
+As you use the application, stay in character. Ask: would *my persona* understand this? Would *they* be able to recover from this error? Would *they* find this shortcut?
 
-Go through each heuristic and ask: does this application violate it anywhere? Jot down each issue you find, noting:
+Go through each heuristic and look for violations. Jot down each issue you find, noting:
 - **Which heuristic** it violates (H1–H10)
 - **What functionality/screen** you were looking at
 - **What the violation is** — be specific
+- **Why your persona would struggle** — connect it to their background, goals, or context
 
 :::warning
 **Be specific.** "The interface is confusing" is not a usability finding. "On the directions page, switching from driving to transit clears my destination and I have to re-enter it" is.
@@ -127,14 +141,14 @@ Go through each heuristic and ask: does this application violate it anywhere? Jo
 ---
 
 :::info Check-in #1
-**Regroup with your team.** Go around and briefly share what you've each found so far. Between everyone, are you hitting 6+ issues across 4+ heuristics? Did different people notice different things?
+**Regroup with your team.** Go around and briefly introduce your persona and share what you found. Did different personas lead to different issues? Between everyone, are you hitting 6+ issues across 4+ heuristics?
 :::
 
 ---
 
 ## Part 4: Consolidate and Write Up (15 min)
 
-Back in your group of 3–4, share all the issues you each found individually. Discuss which ones are the strongest, resolve any disagreements about severity, and compile the best ones into **Section 2** of your `REFLECTION.md`.
+Back in your group of 3–4, share all the issues you each found individually. Pay attention to how your different personas shaped what you noticed — an issue that's catastrophic for one persona might be invisible to another. Discuss which ones are the strongest, resolve any disagreements about severity, and compile the best ones into **Section 2** of your `REFLECTION.md`.
 
 **Your goal: at least 6 usability issues reflecting at least 4 different heuristics.**
 
@@ -146,6 +160,7 @@ For each issue, use this format:
 **Heuristic:** H[number] — [Heuristic Name]
 **Functionality/Screen:** [What part of the application]
 **Violation:** [Specific description of the usability problem]
+**Who is affected:** [Which persona(s) would struggle with this, and why?]
 **Severity:** [Cosmetic / Minor / Major / Catastrophic]
 **Suggested fix:** [What would you change?]
 ```
@@ -161,8 +176,9 @@ Then complete **Section 3: Reflection** together:
 
 1. Which heuristic was the **easiest** to evaluate for your chosen application, and why?
 2. Which heuristic was the **hardest** to evaluate, and why?
-3. Did different group members find different issues for the same heuristic? What does that tell you about the value of multiple evaluators?
-4. Think about a project you've built (an assignment, a personal project, anything). What's one usability heuristic it probably violates?
+3. How did your **persona** influence what you noticed? Describe at least one issue that you found *because* of your persona that you probably would have missed evaluating as yourself.
+4. Did different personas lead to different severity ratings for the same issue? Give an example.
+5. Think about a project you've built (an assignment, a personal project, anything). What's one usability heuristic it probably violates — and for which users?
 
 ---
 
