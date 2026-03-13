@@ -113,7 +113,7 @@ An ideal design might require you to create dozens of new classes. While you cer
 
 **Good design requires iteration.** You'll make better architectural decisions if you have time to sketch ideas, sleep on them, get feedback in office hours, and refine before implementing. Students who start early can explore multiple service decompositions before committing.
 
-**Early Bird Bonus (+10 points):** Get the full **Librarian suite** passing by **Friday, March 13 at 11:59 PM EDT** and earn +10 bonus points — that means passing all tests in **GeneralCommandTests** and **LibraryCommandTests** (the [Library Commands](#library-commands-15-points--required-for-early-bird-bonus) rubric section). The bonus is added to the numerator of your final score after all other adjustments (i.e., your final score can be up to 110/100). This milestone covers exactly those commands: `help`, `collections`, `collection create`, `recipes`, `conversions`, `conversion add`, and `conversion remove`. Getting here early means you've designed and implemented your Librarian service and can focus the remaining time on Cook mode, Planner tools, and polishing your ADRs.
+**Early Bird Bonus (+10 points):** Get the full **Librarian suite** passing by **Friday, March 13 at 11:59 PM EDT** and earn +10 bonus points — that means passing all tests in **GeneralCommandTests** and **LibraryCommandTests** (the [Library Commands](#library-commands-15-points--required-for-early-bird-bonus) rubric section), including *all* of the **help** feature (list help and per-command help). The bonus is added to the numerator of your final score after all other adjustments (i.e., your final score can be up to 110/100). This milestone covers exactly those commands: `help`, `collections`, `collection create`, `recipes`, `conversions`, `conversion add`, and `conversion remove`. Getting here early means you've designed and implemented your Librarian service and can focus the remaining time on Cook mode, Planner tools, and polishing your ADRs.
 
 **Submission limits:** You can submit up to **15 times per rolling 24-hour period.** Use these submissions throughout the assignment — each one gives you feedback on what's working and what needs fixing.
 
@@ -1213,7 +1213,7 @@ This rubric emphasizes design quality equally with implementation. Passing all t
 
 :::tip Early Bird Bonus (+10 points)
 
-Complete the **Library Commands** section below by **Friday, March 13 at 11:59 PM EDT** for a **+10 point bonus**. You must pass all tests in that section (27 tests total) to earn the bonus. This encourages you to get your CLI architecture and Librarian service working early.
+Complete the **Library Commands** section below by **Friday, March 13 at 11:59 PM EDT** for a **+10 point bonus**. You must pass all tests in that section (27 tests total), including *all* of the **help** feature (list help and per-command help), to earn the bonus. This encourages you to get your CLI architecture and Librarian service working early.
 
 :::
 
