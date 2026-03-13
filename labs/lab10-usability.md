@@ -1,8 +1,11 @@
 ---
 sidebar_position: 10
+image: /img/labs/web/lab10.png
 ---
 
 # Lab 10: Usability Heuristic Evaluation
+
+![Lo-fi pixel art showing a group of three students huddled around a laptop at a table in a cozy study room. On the laptop screen, a website is visible with a highlighted navigation menu and a red circle drawn around a button that has a question mark in it. One student points at the screen while another writes on a checklist titled 'HEURISTIC EVALUATION' with these items: 'H1: Visibility?', 'H2: Real World?', 'H3: Control?' — some checked off, some with question marks. The third student holds a notepad reading 'Where did my undo go?'. On the table: printouts of three different application interfaces (a spreadsheet, a map app, Northeastern University website) fanned out like playing cards. On the whiteboard behind them, two columns are drawn in chalk. The left column is titled 'Nielsen's 10 Heuristics' and lists: '1. Visibility of System Status', '2. Match Real World', '3. User Control & Freedom', '4. Consistency & Standards', '5. Error Prevention', '6. Recognition > Recall', '7. Flexibility & Efficiency', '8. Minimalist Design', '9. Error Recovery', '10. Help & Docs'. The right column is titled 'Severity' and lists: 'Cosmetic', 'Minor', 'Major', 'Catastrophic' with small colored dots next to each (green, yellow, orange, red). A speech bubble from one student says 'That violates H4!' while another says 'I didn't even notice that'. Warm evening lighting, cozy collaborative workspace atmosphere. Title: 'Lab 10: Usability Heuristic Evaluation'.](/img/labs/web/lab10.png)
 
 ## Learning Objectives
 
@@ -25,30 +28,23 @@ These five aspects often trade off against each other. A dense, information-pack
 
 ## Overview
 
-In this lab, you'll conduct a **heuristic evaluation** of a software system you use regularly: **Pawtograder**. You've been using Pawtograder all semester to submit assignments, view grades, and check autograder results — which makes you an experienced user with real opinions about what works and what doesn't.
-
-A heuristic evaluation is a structured inspection method where evaluators examine an interface against a set of established usability principles (heuristics). Unlike user testing — where you observe real users completing tasks — a heuristic evaluation is done by reviewers who systematically check whether the interface follows best practices. It's fast, doesn't require recruiting participants, and can be done at any stage of development (even on paper prototypes).
+In this lab, you'll conduct a **heuristic evaluation** — a structured inspection where you examine a real interface against established usability principles. Unlike user testing (where you observe real users completing tasks), a heuristic evaluation is done by reviewers who systematically check whether the interface follows best practices. It's fast, doesn't require recruiting participants, and can be done at any stage of development.
 
 :::info Why heuristic evaluation?
 Research shows that 3–5 evaluators using heuristic evaluation can identify roughly 75% of usability problems in an interface. It's one of the most cost-effective usability methods available — and a skill you can apply immediately in your own projects.
 :::
 
-### What you'll need
-
-- A computer with a browser (to use Pawtograder)
-- Your lab repository cloned from Pawtograder
-
-### Format
-
-This is a **pair activity**. You'll work with a partner, but each person submits their own evaluation. The comparison step at the end is where the most learning happens — different evaluators almost always find different problems.
-
 ---
 
-## Part 1: Nielsen's 10 Usability Heuristics (10 min)
+## Part 1: Heuristics and Examples (15 min)
 
-Before you start evaluating, read through the 10 heuristics below. These were developed by Jakob Nielsen in the 1990s, and they remain the most widely used framework for heuristic evaluation. They work because they're based on how humans think — not on any particular technology.
+:::note For TAs
+This part is TA-led. Present the heuristics and walk through the examples below **before** students form groups. The goal is to make sure everyone understands what a heuristic violation looks like and can ask questions before they start evaluating on their own.
+:::
 
-For each heuristic, we've included a question you can ask yourself while evaluating.
+### Nielsen's 10 Usability Heuristics
+
+These were developed by Jakob Nielsen in the 1990s, and they remain the most widely used framework for heuristic evaluation. They work because they're based on how humans think — not on any particular technology.
 
 | # | Heuristic | Ask yourself... |
 |---|-----------|----------------|
@@ -67,78 +63,92 @@ For each heuristic, we've included a question you can ask yourself while evaluat
 A single usability problem can violate multiple heuristics — that's fine. If a confusing error message violates both H9 (error recovery) and H2 (match real world), note both.
 :::
 
----
+### Examples of each heuristic
 
-## Part 2: Explore Pawtograder (10 min)
+:::note For TAs
+Walk through one concrete example for each heuristic so students can calibrate what a "violation" looks like. Spend about a minute on each — show or describe the example, name the heuristic, and briefly explain why it's a violation. Feel free to substitute your own examples.
+:::
 
-Before you start formally evaluating, spend 10 minutes **using Pawtograder with fresh eyes**. You use it regularly, but you probably don't think critically about the interface while you're rushing to submit an assignment.
+| # | Heuristic | Example |
+|---|-----------|---------|
+| H1 | Visibility of System Status | **Slack:** When you send a message, it immediately appears in the chat with a subtle timestamp — you know it went through. **Violation:** An online form that shows a blank screen after you click "Submit" with no confirmation. |
+| H2 | Match Between System and Real World | **Violation:** An error message that says `NullPointerException at line 247` instead of "We couldn't find your account — try logging in again." Users aren't developers. |
+| H3 | User Control and Freedom | **Gmail:** If you accidentally delete an email, a "Undo" toast appears for several seconds. **Violation:** A checkout flow with no back button — you can't change your shipping address without starting over. |
+| H4 | Consistency and Standards | **Violation:** A website where some buttons are blue and some are green, but both do the same thing (submit). Or a mobile app where swiping left deletes in one screen but archives in another. |
+| H5 | Error Prevention | **Google Calendar:** When you schedule a meeting at 2 AM, it asks "Did you mean 2 PM?" **Violation:** A form that lets you type your birthday as February 30th and only tells you it's wrong after you submit. |
+| H6 | Recognition Over Recall | **Violation:** A command-line tool that requires you to memorize exact flag names with no `--help` option. Compare: an IDE's autocomplete dropdown that shows you available methods as you type. |
+| H7 | Flexibility and Efficiency of Use | **Google Docs:** Novices use the toolbar to bold text; experts hit Ctrl+B. Both work. **Violation:** An app that forces you through a 5-step wizard every single time, even for a task you do daily. |
+| H8 | Aesthetic and Minimalist Design | **Violation:** A settings page that shows 50 options at once when most users only need 3. Compare: iPhone Settings, which groups related items and hides advanced options. |
+| H9 | Help Users Recognize, Diagnose, and Recover from Errors | **Violation:** A file upload that fails with "Error 500." Better: "Your file is too large (52 MB). The maximum size is 25 MB. Try compressing it or uploading a smaller file." |
+| H10 | Help and Documentation | **Violation:** A "Help" link that takes you to a 200-page PDF manual. Better: contextual tooltips that appear next to the feature you're using (e.g., a "?" icon next to a confusing setting). |
 
-Walk through these common tasks and pay attention to the experience:
-
-1. **Navigate to a course** and find a specific assignment
-2. **View your submission history** for a past assignment
-3. **Check autograder results** — can you understand what passed and what failed?
-4. **Find your grade** for a completed assignment
-5. **Look at any feedback** left by a TA or grader
-6. **Try to find something you've never looked for before** — a setting, a page, a feature you haven't used
-
-As you explore, jot down anything that strikes you — moments of confusion, pleasant surprises, things that feel clunky. Don't worry about mapping to heuristics yet.
-
-**Exercise 2.1:** In your repository, open `EXPLORATION_NOTES.md` and write down 5–8 brief observations from your exploration. These can be positive or negative. Examples:
-- "I couldn't figure out how to get back to the course list from an assignment page"
-- "The submission confirmation was clear and immediate"
-- "I don't know what the difference between 'grade' and 'score' is"
-
----
-
-## Part 3: Conduct Your Heuristic Evaluation (25 min)
-
-Now it's time to do the formal evaluation. Go through each of Nielsen's 10 heuristics and evaluate Pawtograder against it.
-
-**Exercise 3.1:** Open `EVALUATION.md` in your repository. For **each of the 10 heuristics**, fill in the following:
-
-```
-## H[number]: [Heuristic Name]
-
-**Rating:** [No issues / Minor issue / Major issue]
-
-**Observations:**
-[What did you notice? Be specific — reference particular screens, buttons, messages, or workflows.]
-
-**Evidence:**
-[Describe the specific moment or interaction that led to your rating. What were you trying to do? What happened?]
-
-**Suggestion (if applicable):**
-[If you found an issue, what would you change?]
-```
-
-### Guidelines for a good evaluation
-
-- **Be specific.** "The interface is confusing" is not useful. "On the assignment page, the 'Submit' button is below the fold and I didn't realize I needed to scroll" is useful.
-- **Evaluate the interface, not the concept.** You might dislike autograding as a concept — that's not a usability issue. But if autograder output is unreadable, that is.
-- **Note positive findings too.** If Pawtograder does something well for a heuristic, say so. Good design is worth documenting.
-- **Rate honestly.** If you don't see a problem for a heuristic, say "No issues" — don't invent problems.
-
-:::warning Common mistake
-Don't just skim through and write "looks fine" for every heuristic. Spend at least 1–2 minutes on each one. If you think there are no issues, explain what the interface does well for that heuristic.
+:::note For TAs
+After walking through the examples, take questions. Then have students form groups of 3–4 and choose their evaluation target.
 :::
 
 ---
 
-## Part 4: Compare Findings (10 min)
+## Part 2: Form Groups and Choose Your Target (5 min)
 
-Pair up with your partner and compare your evaluations.
+Form groups of **3–4 students**. As a group, pick **one** of the following applications to evaluate:
 
-**Exercise 4.1:** In `COMPARISON.md`, answer these questions:
+| Application | Why it's interesting |
+|---|---|
+| **Microsoft Excel** or **Google Sheets** | Enormously complex feature set, used by novices and power users alike — rich territory for flexibility/efficiency and learnability trade-offs |
+| **Google Maps** | Multi-modal (driving, transit, walking, cycling), used under time pressure, heavy mobile use — great for error prevention, system status, and real-world matching |
+| **Northeastern Khoury College website** | You're the target audience — you can evaluate from genuine experience, not hypotheticals |
 
-1. **What did your partner find that you missed?** List 2–3 problems or observations from your partner's evaluation that you didn't notice.
+:::tip
+Pick something your group members actually use (or have tried to use). Real frustrations make better evaluations than hypothetical ones.
+:::
 
-2. **Where did you disagree?** Did you and your partner rate any heuristic differently? What's the source of the disagreement — different tasks, different expectations, different experience levels?
+Once you've chosen, open `REFLECTION.md` in your lab repository and fill in **Section 1** (your evaluation target and group members' names).
 
-3. **Top 3 issues.** Together, agree on the 3 most important usability problems you found. For each one:
-   - Which heuristic(s) does it violate?
-   - How severe is it? (Cosmetic / Minor / Major / Catastrophic)
-   - What would you recommend to fix it?
+---
+
+## Part 3: Individual Evaluation (15 min)
+
+Each group member evaluates the application **independently**, considering **all 10 heuristics**. Open the application and actively use it — try common tasks, poke around less-visited areas, and pay attention to moments of confusion, friction, or delight.
+
+Think about:
+- What's the first thing a new user would try to do? Is it obvious how?
+- What's something you do regularly that feels harder than it should?
+- Are there features you know exist but can never find?
+
+Go through each heuristic and ask: does this application violate it anywhere? Jot down each issue you find, noting:
+- **Which heuristic** it violates (H1–H10)
+- **What functionality/screen** you were looking at
+- **What the violation is** — be specific
+
+:::warning
+**Be specific.** "The interface is confusing" is not a usability finding. "On the directions page, switching from driving to transit clears my destination and I have to re-enter it" is.
+:::
+
+---
+
+:::info Check-in #1
+**Regroup with your team.** Go around and briefly share what you've each found so far. Between everyone, are you hitting 6+ issues across 4+ heuristics? Did different people notice different things?
+:::
+
+---
+
+## Part 4: Consolidate and Write Up (15 min)
+
+Back in your group of 3–4, share all the issues you each found individually. Discuss which ones are the strongest, resolve any disagreements about severity, and compile the best ones into **Section 2** of your `REFLECTION.md`.
+
+**Your goal: at least 6 usability issues reflecting at least 4 different heuristics.**
+
+For each issue, use this format:
+
+```
+### Issue [number]: [Brief title]
+
+**Heuristic:** H[number] — [Heuristic Name]
+**Functionality/Screen:** [What part of the application]
+**Violation:** [Specific description of the usability problem]
+**Severity:** [Cosmetic / Minor / Major / Catastrophic]
+**Suggested fix:** [What would you change?]
+```
 
 :::info Severity scale
 - **Cosmetic**: Noticed only by careful evaluation; fix if time allows
@@ -147,35 +157,47 @@ Pair up with your partner and compare your evaluations.
 - **Catastrophic**: Prevents users from completing their task; must be fixed
 :::
 
+Then complete **Section 3: Reflection** together:
+
+1. Which heuristic was the **easiest** to evaluate for your chosen application, and why?
+2. Which heuristic was the **hardest** to evaluate, and why?
+3. Did different group members find different issues for the same heuristic? What does that tell you about the value of multiple evaluators?
+4. Think about a project you've built (an assignment, a personal project, anything). What's one usability heuristic it probably violates?
+
 ---
 
-## Part 5: Reflection
+:::info Check-in #2
+**Is your `REFLECTION.md` complete?** Make sure you have at least 6 issues across at least 4 heuristics, and that each issue has all five fields filled in. Pick the 1–2 most interesting issues to share with the class.
+:::
 
-**Exercise 5.1:** Open `REFLECTION.md` and answer the following:
+---
 
-1. Which heuristic was **easiest** to evaluate, and why?
-2. Which heuristic was **hardest** to evaluate, and why?
-3. How did your findings change after comparing with your partner? What does this tell you about the value of multiple evaluators?
-4. If you could fix **one thing** about Pawtograder's usability, what would it be and why?
-5. Think about a project you've built (an assignment, a personal project, anything). What's one usability heuristic it probably violates?
+## Part 5: Class Debrief (15 min)
+
+Each group will briefly share **1–2 of their most interesting usability issues** with the class. For each issue, tell us:
+
+1. What application you evaluated
+2. What the usability problem is
+3. Which heuristic it violates
+4. How severe you rated it
+
+As you listen to other groups, notice:
+- Did groups evaluating the **same application** find different issues?
+- Are certain heuristics violated more often across applications? Why might that be?
+- Were any issues surprising — things you use every day but never noticed as problems?
 
 ---
 
 ## Submission
 
-Submit the following files through your Pawtograder lab repository:
-
-- `EXPLORATION_NOTES.md` (Part 2)
-- `EVALUATION.md` (Part 3)
-- `COMPARISON.md` (Part 4)
-- `REFLECTION.md` (Part 5)
+Submit `REFLECTION.md` through your Pawtograder lab repository.
 
 ## Grading
 
 :::info
-**Option 1:** Complete all parts and submit all files → full credit.
+**Option 1:** Complete all sections of `REFLECTION.md` (evaluation target, 6+ issues across 4+ heuristics, reflection questions) → full credit.
 
-**Option 2:** Submit whatever you complete along with `REFLECTION.md` documenting your progress, what you found challenging, and what you learned → good-faith credit available. Attendance and genuine engagement matter more than perfection.
+**Option 2:** Submit whatever you complete along with the reflection questions documenting your progress, what you found challenging, and what you learned → good-faith credit available. Attendance and genuine engagement matter more than perfection.
 :::
 
 ## Resources
