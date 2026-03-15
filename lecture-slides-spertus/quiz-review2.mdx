@@ -1,0 +1,505 @@
+---
+sidebar_position: 25
+title: "Quiz 2 Review"
+---
+
+import RevealJS, { Slide } from '@site/src/components/RevealJS';
+import Img from '@site/src/components/Img';
+import PollSlide from '@site/src/components/PollSlide';
+import QuizSlide from '@site/src/components/QuizSlide';
+
+<style>
+{`
+  .reveal {
+    font-size: 40px;
+  }
+`}
+</style>
+
+<RevealJS transition="slide">
+
+<Slide>
+
+# CS 3100: Program Design and Implementation II
+
+## Quiz Review 2
+
+<Img src='/img/lectures/web/qr2-a-plus-on-blood-test.jpg'
+  width={800}
+  alt="Meme with triumphant Winnie the Pooh: 'Me getting an A+ on a blood test I didn't study for'"
+/>
+
+
+<p style={{marginTop: '0em', fontSize: '0.7em', color: '#666'}}>
+  ©2026 Ellen Spertus, CC-BY-SA
+</p>
+</Slide>
+
+<Slide>
+
+## How much of the practice quiz did you do?
+
+<PollSlide choices=
+  {["None yet", "I've skimmed it", "A few problems", "Many problems", "All problems"]}
+/>
+</Slide>
+
+<Slide>
+
+## How hard do you think it is?
+
+<PollSlide image="/img/lectures/poll-ev/pollev-smiles.png"
+/>
+<p>
+Click below the faces if you haven't tried it yet.
+</p>
+</Slide>
+
+
+<Slide>
+
+## Question 1: Critical Requirements Error
+
+<QuizSlide
+  question='A team discovers a critical requirements error after the system has been deployed to production.
+According to the cost-of-change model discussed in class, how does the cost of fixing this error
+compare to catching it during requirements analysis?'
+  answers={[
+    'The cost is roughly the same regardless of when it is discovered',
+    'The cost is actually lower in production because the team better understands the system and can make more targeted fixes',
+    'The cost grows exponentially — fixing in production can be 100x more expensive than fixing during requirements',
+    'The cost is approximately 2x higher in production']}/>
+</Slide>
+
+<Slide>
+### Catching Problems Late is expensive
+<div className='fragment'>
+Lecture 1: Systematic Program Design and Implementation Process
+* Bug in requirements = cheap to fix
+* Bug in production = expensive
+
+</div>
+<div className='fragment'>
+Lecture 9: Getting requirements wrong is the most expensive mistake in software engineering.
+</div>
+<div className='fragment'>
+Lecture 12: Domain Models are Expensive to Change
+</div>
+<div className='fragment'>
+Lecture 18: Architectural decisions are the ones that are expensive to change.
+</div>
+<div className='fragment'>
+Lecture 24: Usability
+* The best way to know if users can use your software is to watch them use it
+* But by the time you have working software, changes are expensive
+</div>
+</Slide>
+
+<Slide>
+### Things that aren't expensive to change late?
+
+<aside className="notes">
+- The opening splash screen
+- The text (especially if strings are stored separately)
+- The app's icon
+- The URL of the server (if it's defined in a single place)
+</aside>
+
+</Slide>
+
+<Slide>
+
+### Question 1 Answer
+
+<QuizSlide
+  question='A team discovers a critical requirements error after the system has been deployed to production.
+According to the cost-of-change model discussed in class, how does the cost of fixing this error
+compare to catching it during requirements analysis?'
+  correct={2}
+  answers={[
+    'The cost is roughly the same regardless of when it is discovered',
+    'The cost is actually lower in production because the team better understands the system and can make more targeted fixes',
+    'The cost grows exponentially — fixing in production can be 100x more expensive than fixing during requirements',
+    'The cost is approximately 2x higher in production']}/>
+
+</Slide>
+
+<Slide>
+
+## Question 2: Stakeholder Conflicts
+
+<QuizSlide
+  question='A product manager, a UX designer, and a backend engineer are all stakeholders for a recipe-sharing feature in CookYourBooks. The product manager wants maximum social engagement, the UX designer wants a simple interface, and the engineer wants to minimize API calls. Which requirements analysis principle does this scenario illustrate?'
+  answers={[
+    'Requirements should be gathered only from the person who is paying for the project',
+    'Technical stakeholders should override non-technical stakeholders',
+    'The best approach is to implement all stakeholder requests independently',
+    'Different stakeholders have conflicting values, and requirements analysis must surface and negotiate these conflicts',
+  ]}/>
+
+</Slide>
+
+<Slide>
+### "It depends"
+
+We can't maximize every metric so need to make trade-offs:
+* class design with SOLID principles [Lecture 8]
+* requirements analysis [Lecture 9]
+* object creation patterns [Lecture 17]
+* architectural qualities [Lectures 19, 21]
+* usability measures [Lecture 24, not on quiz]
+
+
+</Slide>
+
+<Slide>
+
+### Question 2 Answer
+
+<QuizSlide
+  question='A product manager, a UX designer, and a backend engineer are all stakeholders for a recipe-sharing feature in CookYourBooks. The product manager wants maximum social engagement, the UX designer wants a simple interface, and the engineer wants to minimize API calls. Which requirements analysis principle does this scenario illustrate?'
+  correct={3}
+  answers={[
+    'Requirements should be gathered only from the person who is paying for the project',
+    'Technical stakeholders should override non-technical stakeholders',
+    'The best approach is to implement all stakeholder requests independently',
+    'Different stakeholders have conflicting values, and requirements analysis must surface and negotiate these conflicts',
+  ]}/>
+
+</Slide>
+
+<Slide>
+
+## Question 3: Responsibility Assignment Pattern
+
+<QuizSlide
+  question='In the Pawtograder domain model, the RegradeRequest class has a method canEscalate() that checks whether the request has responses, whether it is already resolved, and whether 24 hours have passed since the last response. This is an example of which responsibility assignment pattern?'
+  answers={[
+    'Information Expert — RegradeRequest has the data needed to answer the question',
+    'Creator — RegradeRequest creates the escalation',
+    'Singleton — there can only be one active regrade request',
+    'Controller — RegradeRequest handles external system events and coordinates responses across the application',
+  ]}/>
+
+</Slide>
+
+<Slide>
+
+### Responsibility Assignment Determines Code Structure
+
+<p style={{fontSize: '0.9em'}}>
+Now we translate our validated domain model into working code.
+</p>
+
+<p style={{fontSize: '0.85em', marginTop: '1em'}}>
+The critical question: <strong>Which classes own which behaviors?</strong>
+</p>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+We'll use three key heuristics:
+</p>
+
+<ol style={{fontSize: '0.85em'}}>
+  <li><strong>Information Expert</strong> — Who has the data needed?</li>
+  <li><strong>Creator</strong> — Who should create new objects?</li>
+  <li><strong>Controller</strong> — Who coordinates complex operations?</li>
+</ol>
+
+<br/><br/><div style={{ fontSize: '.7em' }}>Lecture 12: Domain Modeling</div>
+
+<aside className="notes">
+**The challenge:**
+- Domain model shows concepts and relationships
+- OO design assigns behavior to classes
+- Wrong assignments lead to tangled code
+
+**Why heuristics:**
+- No single "right" answer
+- Heuristics guide toward good designs
+- Experience refines judgment
+
+→ **Transition:** Let's start with Information Expert...
+</aside>
+
+</Slide>
+
+<Slide>
+
+### Assign Behavior to the Class That Has the Data
+
+<p style={{fontSize: '0.9em', color: '#9370DB'}}>
+<strong>Assign responsibility to the class that has the information needed to fulfill it.</strong>
+</p>
+
+<p style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+Example: Who should determine if a regrade can be escalated?
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.62em'}}>
+
+<div style={{backgroundColor: 'rgba(255,100,100,0.08)', padding: '0.4em', borderRadius: '6px'}}>
+
+**❌ Ignoring the heuristic:**
+```java
+// Service must extract all data from request
+class RegradeService {
+  boolean canEscalate(RegradeRequest req) {
+    List<RegradeResponse> responses =
+        req.getResponses();       // extract
+    RegradeStatus status =
+        req.getStatus();          // extract
+    if (responses.isEmpty()) return false;
+    if (status == RESOLVED) return false;
+    // ... more extraction and logic
+  }
+}
+```
+Service becomes a "logic hog" that pulls data from passive objects.
+
+</div>
+
+<div style={{backgroundColor: 'rgba(100,255,100,0.08)', padding: '0.4em', borderRadius: '6px'}}>
+
+**✓ Following the heuristic:**
+```java
+// RegradeRequest knows its own history
+class RegradeRequest {
+  private List<RegradeResponse> responses;
+  private RegradeStatus status;
+
+  boolean canEscalate() {
+    if (responses.isEmpty()) return false;
+    if (status == RESOLVED) return false;
+    // Data is RIGHT HERE—no extraction
+    return coolingOffPeriodPassed();
+  }
+}
+```
+Data and behavior stay together. Self-contained.
+
+</div>
+
+</div>
+<br/><br/><div style={{ fontSize: '.7em' }}>Lecture 12: Domain Modeling</div>
+<aside className="notes">
+**The contrast:**
+- Left: Service becomes a "god class" that knows everyone's business
+- Right: Each class is expert on its own state
+
+**Connection to L7 (Cohesion):**
+- Left side has *low cohesion*—service does unrelated things
+- Right side has *functional cohesion*—RegradeRequest manages its own lifecycle
+
+**Why this enables changeability:**
+- Escalation rules WILL change (24h → 48h, add new conditions, etc.)
+- Left: hunt through service code that extracts data from multiple objects
+- Right: change ONE method in ONE class
+- The data needed for the decision is already there—no ripple effects
+
+→ **Transition:** Let's see another example...
+</aside>
+
+</Slide>
+
+<Slide>
+
+### The Class That Knows Its Constraints Should Enforce Them
+
+<p style={{fontSize: '0.85em'}}>
+Who should check if a grader can review a regrade?
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.62em'}}>
+
+<div style={{backgroundColor: 'rgba(255,100,100,0.08)', padding: '0.4em', borderRadius: '6px'}}>
+
+**❌ Logic scattered in service:**
+```java
+class RegradeService {
+  boolean canGraderReview(Grader g, RegradeRequest r) {
+    // Pull data from grader
+    GraderType type = g.getType();
+    int activeCount = g.getActiveGradingCount();
+    int max = g.getMaxConcurrentGradings();
+
+    // Pull data from request
+    Grader original = r.getOriginalSession()
+                        .getGrader();
+
+    // Service implements the logic
+    if (original.equals(g)) return false;
+    if (activeCount >= max) return false;
+    return true;
+  }
+}
+```
+Service knows too much about Grader's internals.
+
+</div>
+
+<div style={{backgroundColor: 'rgba(100,255,100,0.08)', padding: '0.4em', borderRadius: '6px'}}>
+
+**✓ Grader is the expert on itself:**
+```java
+class Grader {
+  private GraderType type;
+  private int activeGradingCount;
+
+  boolean canReviewRegrade(RegradeRequest req) {
+    // Can't review own work
+    if (req.getOriginalSession()
+           .getGrader().equals(this)) {
+      return false;
+    }
+    // Check MY workload (I know it!)
+    if (activeGradingCount >= getMax()) {
+      return false;
+    }
+    return true;
+  }
+}
+```
+Grader knows its own constraints. Easy to test.
+</div>
+
+</div>
+<div style={{ fontSize: '.7em' }}>Lecture 12: Domain Modeling</div>
+<aside className="notes">
+**The contrast:**
+- Left: Service has to know Grader's fields, how max is calculated, etc.
+- Right: Grader encapsulates its own rules
+
+**Connection to L6-L8 (Changeability via Hyrum's Law):**
+- Left: Service depends on Grader's internal structure—if fields change, service breaks
+- Right: Grader can change its internals freely—only `canReviewRegrade()` matters
+- Example: "max concurrent gradings" changes from 5 to dynamic based on experience level
+  - Left: hunt through all services that extract `maxConcurrent`
+  - Right: change `getMax()` in Grader only
+
+**Why this matters for testing:**
+- Left: To test this, you need a service AND mock graders
+- Right: To test this, you just create a Grader and call the method
+
+→ **Transition:** Now let's look at Creator...
+</aside>
+
+</Slide>
+
+<Slide>
+
+### Containers Should Create What They Contain
+
+<div style={{fontSize: '0.85em', marginTop: '0.5em'}}>
+Example: Who should create InlineComment objects?
+
+**Key point**: This means where should the `createComment()` method live, not where it should be called from.
+</div>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75em', fontSize: '0.62em'}}>
+
+<div style={{backgroundColor: 'rgba(255,100,100,0.08)', padding: '0.4em', borderRadius: '6px'}}>
+
+**❌ Ignoring the heuristic:**
+```java
+// External service creates comments
+class CommentService {
+  InlineComment createComment(
+      GradingSession session,
+      SourceFile file, int line, String text) {
+    InlineComment c = new InlineComment(
+        session, file, line, text, now());
+    session.getComments().add(c);  // Reaches in!
+    return c;
+  }
+}
+
+
+```
+Service reaches into GradingSession's internals. Session loses control of its own state.
+
+</div>
+
+<div style={{backgroundColor: 'rgba(100,255,100,0.08)', padding: '0.4em', borderRadius: '6px'}}>
+
+**✓ Following the heuristic:**
+```java
+// Container creates what it contains
+class GradingSession {
+  private List<InlineComment> comments = ...;
+
+  InlineComment addComment(
+      SourceFile file, int line, String text) {
+    if (!isActive()) throw new ...;
+    InlineComment c = new InlineComment(
+        this, file, line, text, now());
+    comments.add(c);
+    return c;
+  }
+}
+```
+GradingSession controls its own contents. Can enforce invariants (must be active).
+
+</div>
+
+</div>
+
+<div style={{ fontSize: '.7em' }}>Lecture 12: Domain Modeling</div>
+
+<aside className="notes">
+**The contrast:**
+- Left: Service bypasses GradingSession, reaches into its list directly
+- Right: GradingSession is gatekeeper for its own contents
+
+**Connection to L6 (Information Hiding):**
+- Left *exposes* the comments list (or needs a setter)
+- Right *hides* the list—only GradingSession can modify it
+
+**Connection to L6-L8 (Changeability):**
+- Invariant "can only add comments to active sessions" is likely to evolve:
+  - "Allow comments during grace period"
+  - "Allow TAs to add late comments"
+- Left: hunt for all places creating comments, add checks everywhere
+- Right: change `addComment()` in ONE place
+
+**When to break this heuristic:**
+- Complex creation logic → Factory pattern
+- Creation needs external resources (network, etc.) → Service
+
+→ **Transition:** Sometimes services ARE the right creator...
+</aside>
+
+</Slide>
+
+
+
+<Slide>
+
+### Question 3 Answer
+
+<QuizSlide
+  question='In the Pawtograder domain model, the RegradeRequest class has a method canEscalate() that checks whether the request has responses, whether it is already resolved, and whether 24 hours have passed since the last response. This is an example of which responsibility assignment pattern?'
+  correct={0}
+  answers={[
+    'Information Expert — RegradeRequest has the data needed to answer the question',
+    'Creator — RegradeRequest creates the escalation',
+    'Singleton — there can only be one active regrade request',
+    'Controller — RegradeRequest handles external system events and coordinates responses across the application',
+  ]}/>
+
+</Slide>
+
+<Slide>
+## Bonus Slide
+
+<Img src="/img/lectures/web/qr2-electricity-quiz.gif"
+  alt="Frank and Ernest comic strip in which Frank gives Ernest an electricity quiz.
+  Question 1: 'What do we use to carry electricity?' Ernest answers 'why... err...' [wire] (correct).
+  Question 2: 'What is the name for a unit of energy?' Ernest answers 'What! [Watt]' (correct).
+  Question 3: 'Can you tell me the term for when current passes through your body?'
+  Ernest answers 'Well, that would be a shock!' — which is both the correct answer and his reaction to getting a perfect score."
+/>
+
+
+</Slide>
+
+</RevealJS>
