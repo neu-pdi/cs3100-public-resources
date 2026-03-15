@@ -72,7 +72,7 @@ compare to catching it during requirements analysis?'
 </Slide>
 
 <Slide>
-### Catching Problems Late is expensive
+### Catching Problems Late is Expensive
 <div className='fragment'>
 Lecture 1: Systematic Program Design and Implementation Process
 * Bug in requirements = cheap to fix
@@ -487,6 +487,305 @@ GradingSession controls its own contents. Can enforce invariants (must be active
   ]}/>
 
 </Slide>
+
+
+<Slide>
+
+## Question 4: Domain Modeling
+<div style={{ fontSize: '.6em' }}>
+<span className="fragment fade-out" data-fragment-index="1">
+```java
+// Version A: Technical-focused
+public class SubmissionManager {
+  private Map<String, List<byte[]>> fileStorage = new HashMap<>();
+  private Map<String, Integer> versionCounters = new HashMap<>();
+  private Map<String, Map<String, Object>> gradeData = new HashMap<>();
+}
+
+// Version B: Domain-aligned
+public class Submission {
+  private final Student student;
+  private final Assignment assignment;
+  private final List<SourceFile> files;
+  private GradingSession activeGradingSession;
+}
+```
+</span>
+What is the primary advantage of Version B over Version A?
+
+1. Version B uses less memory because it has fewer fields
+
+2. Version B has a smaller representational gap — its structure mirrors how stakeholders think about the domain
+
+3. Version B compiles faster because it avoids generic types
+
+4. Version B is required by the Java language specification for domain objects, which mandates named types over raw collections in business logic
+</div>
+
+<div className='fragment' data-fragment-index="1" style={{ fontSize: '.8em' }}>
+🤯 You can use *quizmanship* to answer the question without reading the code!
+</div>
+
+</Slide>
+
+<Slide>
+### Poll: What is this class about?
+
+<PollSlide username='espertus'
+  choices={["Slightly reducing memory usage", "Creating understandable programs", "Making compilation faster", "Java syntax"]}
+/>
+
+</Slide>
+
+<Slide>
+
+### Question 4 Answer
+
+<QuizSlide
+  question='What is the primary advantage of Version B over Version A?'
+  correct={1}
+  answers={[
+    'Version B uses less memory because it has fewer fields',
+    'Version B has a smaller representational gap — its structure mirrors how stakeholders think about the domain',
+    'Version B compiles faster because it avoids generic types',
+    'Version B is required by the Java language specification for domain objects, which mandates named types over raw collections in business logic',
+  ]}/>
+
+</Slide>
+
+<Slide>
+### Question 4 Rewrite
+<div style={{ fontSize: '.8em' }}>
+Which version of the code has a smaller representational gap, with structure mirroring how stakeholders think about the domain?
+
+```java
+// Version A: Technical-focused
+public class SubmissionManager {
+  private Map<String, List<byte[]>> fileStorage = new HashMap<>();
+  private Map<String, Integer> versionCounters = new HashMap<>();
+  private Map<String, Map<String, Object>> gradeData = new HashMap<>();
+}
+
+// Version B: Domain-aligned
+public class Submission {
+  private final Student student;
+  private final Assignment assignment;
+  private final List<SourceFile> files;
+  private GradingSession activeGradingSession;
+}
+```
+
+<div className='fragment'>
+The structure of the domain-aligned version (B) mirrors how stakeholders think about the domain.
+</div>
+</div>
+
+</Slide>
+
+<Slide>
+
+## Question 5: AI Collaboration
+
+<QuizSlide
+  question="A developer uses an AI programming agent to generate a complete authentication module without reviewing the generated code or understanding how it works. According to the course's framework for AI collaboration, this is an example of:"
+  answers={[
+    'Effective use of AI to maximize productivity',
+    'Pair programming with an AI partner',
+    'The "vibe coding" trap — accepting AI output without applying domain knowledge to evaluate it',
+    'The recommended approach for boilerplate code',
+  ]}/>
+
+</Slide>
+
+<Slide>
+
+### The Fundamental Principle: Task Familiarity
+
+<Img
+  src="/img/lectures/web/l13-familiarity-quadrant.webp"
+  prompt="Concept: 'The AI Appropriateness Quadrant'. A 2x2 matrix diagram. X-axis: 'Your Domain Expertise' (Low to High). Y-axis: 'Task Complexity' (Low to High). Four quadrants with distinct recommendations: TOP-LEFT (High complexity, Low expertise): RED zone - 'DANGER ZONE: Don't use AI here—you can't evaluate outputs. Learn the fundamentals first.' Icon: warning triangle. TOP-RIGHT (High complexity, High expertise): GREEN zone - 'IDEAL FOR AI: You can evaluate and guide. AI accelerates your work.' Icon: rocket. BOTTOM-LEFT (Low complexity, Low expertise): YELLOW zone - 'LEARNING OPPORTUNITY: Do it manually to build expertise. AI creates learning debt here.' Icon: book/student. BOTTOM-RIGHT (Low complexity, High expertise): GREEN zone - 'EFFICIENT USE: Routine tasks you understand well. Let AI handle the boilerplate.' Icon: speedometer. The diagonal from bottom-left to top-right shows the 'growth path' - build expertise on simple tasks before using AI on complex ones. Style: Clean quadrant diagram with traffic-light colors (red, yellow, green)."
+  alt="2x2 quadrant diagram with Domain Expertise on X-axis and Task Complexity on Y-axis. Top-left (low expertise, high complexity) is red 'Danger Zone'. Top-right (high expertise, high complexity) is green 'Ideal for AI'. Bottom-left (low expertise, low complexity) is yellow 'Learning Opportunity'. Bottom-right (high expertise, low complexity) is green 'Efficient Use'."
+/>
+
+
+<br/><br/><div style={{ fontSize: '.7em' }}>Lecture 13: AI Coding Assistants</div>
+
+<aside className="notes">
+Authentication (and security in general) is hard to get right.
+</aside>
+</Slide>
+
+
+<Slide>
+
+## Fallacy 4: "The Network Is Secure"
+```mermaid
+flowchart LR
+    Client -->|"sends data"| Attacker
+    Attacker -.->|"intercept / modify"| Server
+```
+
+<div style={{ fontSize: '.8em' }}>
+
+Data crossing networks can be intercepted, modified, or spoofed. Every network boundary is a potential attack surface.
+
+*Pawtograder:* Without the OIDC token, anyone could POST fake grades. Without HTTPS, a network observer could read or modify grades in transit.
+
+*(We'll dive deep on security later in this lecture.)*
+</div>
+
+<br/><br/><div style={{ fontSize: '.7em' }}>Lecture 20: Distributed Architecture</div>
+
+<aside className="notes">
+- OIDC (OpenID Connect) is an authentication protocol
+</aside>
+
+</Slide>
+
+<Slide>
+
+### A Well-Maintained Library Beats DIY for Security
+
+<p style={{fontSize: '0.85em'}}>
+Is it safer to use a popular library or write your own? <strong>Almost always use the library</strong> — if it's well-maintained.
+</p>
+
+<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5em', marginTop: '1em', fontSize: '0.7em'}}>
+
+<div style={{padding: '0.75em', border: '2px solid #4CAF50', borderRadius: '8px'}}>
+
+**Why well-maintained libraries win:**
+- Battle-tested by thousands of users
+- Security researchers scrutinize popular projects
+- Vulnerabilities get reported and patched
+- You benefit from specialists' expertise
+
+</div>
+
+<div style={{padding: '0.75em', border: '2px solid #FF9800', borderRadius: '8px'}}>
+
+**When dependencies introduce risk:**
+- Every dependency is an attack surface
+- Transitive dependencies multiply the risk
+- Unmaintained dependencies don't get patches
+- You're trusting code you've never read
+
+</div>
+
+</div>
+
+<br/><br/><div style={{ fontSize: '.7em' }}>Lecture 21: Open-Source Frameworks</div>
+
+</Slide>
+
+<Slide>
+
+### Question 5 Answer
+
+<QuizSlide
+  question="A developer uses an AI programming agent to generate a complete authentication module without reviewing the generated code or understanding how it works. According to the course's framework for AI collaboration, this is an example of:"
+  correct={2}
+  answers={[
+    'Effective use of AI to maximize productivity',
+    'Pair programming with an AI partner',
+    'The "vibe coding" trap — accepting AI output without applying domain knowledge to evaluate it',
+    'The recommended approach for boilerplate code',
+  ]}/>
+</Slide>
+
+<Slide>
+
+## Question 6: Debugging Approach
+
+<QuizSlide
+  question='When debugging, a developer notices that a Recipe object has an unexpected null value for its instructions field. They form the hypothesis: "The instructions field is set to null in the constructor." They then set a breakpoint in the constructor and run the program. This approach is an example of:'
+  answers={[
+    'Rubber duck debugging',
+    'Trial-and-error debugging',
+    'Print-statement debugging',
+    'The scientific method applied to debugging — observe, hypothesize, predict, test',
+  ]}/>
+
+</Slide>
+
+<Slide>
+### Rubber-Duck Debugging
+
+<Img src='/img/lectures/web/qr2-rubber-duck-debugging.avif'
+  width={700}
+  alt="Sketchplanations comic defining rubber ducking as explaining your problem to a rubber duck to help solve it.
+  In the first panel, a developer sits at a laptop with a rubber duck on the desk and says 'I can't figure out what's up. I take each transaction then apply the filters in this order and ... hang on ...' In the second panel, the developer turns toward the duck with a smile and exclaims 'Of course! What was I thinking?! Thank you, rubber duck!'"
+/>
+
+<div style={{ fontSize: '.7em' }}>CC-BY-NC [sketchplanations](https://sketchplanations.com/rubberducking)</div>
+
+</Slide>
+
+<Slide>
+### Ad Hoc Techniques
+
+* Trial-and-error debugging
+* Print-statement debugging
+
+<Img src='/img/lectures/web/qr2-scientific-debugging.jpg'
+  width={800}
+  alt='Two-red button meme with choices "Adding lots of print statements" and "Scientific debugging"'
+/>
+
+</Slide>
+
+<Slide>
+
+### The Scientific Method Applied to Debugging
+
+<div style={{fontSize: '0.85em'}}>
+
+```mermaid
+flowchart LR
+    O[1. Observe] --> H[2. Hypothesize]
+    H --> P[3. Predict]
+    P --> T[4. Test]
+    T --> A[5. Analyze]
+    A -->|hypothesis confirmed| F[6. Fix]
+    A -->|hypothesis refuted| H
+
+    style O fill:#42A5F5,color:white
+    style H fill:#FF9800,color:white
+    style P fill:#AB47BC,color:white
+    style T fill:#66BB6A,color:white
+    style A fill:#EF5350,color:white
+    style F fill:#26A69A,color:white
+```
+
+<ol style={{marginTop: '0.5em'}}>
+  <li><strong>Observe:</strong> Notice unexpected behavior or test failure</li>
+  <li><strong>Hypothesize:</strong> Form a theory about the cause</li>
+  <li><strong>Predict:</strong> What evidence would support or refute this?</li>
+  <li><strong>Test:</strong> Gather evidence (debugger, logging, tests)</li>
+  <li><strong>Analyze:</strong> Does the evidence support the hypothesis?</li>
+  <li><strong>Iterate:</strong> Refine hypothesis or implement fix</li>
+</ol>
+</div>
+<br/><br/><div style={{ fontSize: '.7em' }}>Lecture 14: Program Understanding & Debugging</div>
+
+</Slide>
+
+<Slide>
+
+### Question 6 Answer
+
+<QuizSlide
+  question='When debugging, a developer notices that a Recipe object has an unexpected null value for its instructions field. They form the hypothesis: "The instructions field is set to null in the constructor." They then set a breakpoint in the constructor and run the program. This approach is an example of:'
+  correct={3}
+  answers={[
+    'Rubber duck debugging',
+    'Trial-and-error debugging',
+    'Print-statement debugging',
+    'The scientific method applied to debugging — observe, hypothesize, predict, test',
+  ]}/>
+
+</Slide>
+
 
 <Slide>
 ## Bonus Slide
