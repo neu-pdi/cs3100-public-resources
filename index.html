@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS 3100 — Program Design and Implementation II</title>
+  <meta name="description" content="Course offerings of CS 3100: Program Design and Implementation II at Northeastern University's Khoury College of Computer Sciences.">
+  <link rel="icon" href="img/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f7fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text: #1a202c;
+      --muted: #4a5568;
+      --accent: #0b7285;
+      --accent-hover: #095c6e;
+      --current: #d9480f;
+      --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1a202c;
+        --surface: #2d3748;
+        --border: #4a5568;
+        --text: #f7fafc;
+        --muted: #cbd5e0;
+        --accent: #4fd1c5;
+        --accent-hover: #81e6d9;
+        --current: #ed8936;
+        --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.2);
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 4rem 1.5rem 3rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .logo {
+      width: 72px;
+      height: 72px;
+      margin-bottom: 1.25rem;
+      background: var(--accent);
+      border-radius: 50%;
+      padding: 8px;
+    }
+
+    .logo svg { width: 100%; height: 100%; }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 0 0 0.25rem;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--muted);
+      margin: 0 0 0.5rem;
+    }
+
+    .institution {
+      font-size: 0.95rem;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    h2 {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin: 0 0 1rem;
+    }
+
+    ul.offerings {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 3rem;
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .offering a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.25rem 1.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--text);
+      box-shadow: var(--shadow);
+      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .offering a:hover,
+    .offering a:focus-visible {
+      border-color: var(--accent);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.05);
+      outline: none;
+    }
+
+    .offering .term {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .offering .meta {
+      font-size: 0.9rem;
+      color: var(--muted);
+      display: block;
+      margin-top: 0.15rem;
+    }
+
+    .offering .tag {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      flex-shrink: 0;
+    }
+
+    .tag.current {
+      background: var(--current);
+      color: #fff;
+    }
+
+    .tag.upcoming {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .tag.archived {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .offering.upcoming a {
+      opacity: 0.7;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      padding-top: 2rem;
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 480px) {
+      main { padding: 2.5rem 1rem 2rem; }
+      h1 { font-size: 2rem; }
+      .offering a { padding: 1rem 1.15rem; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <img class="logo" src="img/logo.svg" alt="">
+      <h1>CS 3100</h1>
+      <p class="subtitle">Program Design and Implementation II</p>
+      <p class="institution">Northeastern University · Khoury College of Computer Sciences</p>
+    </header>
+
+    <section>
+      <h2>Course Offerings</h2>
+      <ul class="offerings">
+        <li class="offering upcoming">
+          <a href="https://neu-pdi.github.io/CS3100-Summer-2026/" aria-disabled="true">
+            <span>
+              <span class="term">Summer 2026</span>
+              <span class="meta">In preparation</span>
+            </span>
+            <span class="tag upcoming">Upcoming</span>
+          </a>
+        </li>
+        <li class="offering">
+          <a href="https://neu-pdi.github.io/CS3100-Spring-2026/">
+            <span>
+              <span class="term">Spring 2026</span>
+              <span class="meta">January – April 2026</span>
+            </span>
+            <span class="tag archived">Archived</span>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <footer>
+      <p>
+        Maintained by <a href="https://www.jonbell.net/">Jonathan Bell</a> ·
+        Licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en">CC-BY-NC-SA 4.0</a>
+      </p>
+    </footer>
+  </main>
+</body>
+</html>
