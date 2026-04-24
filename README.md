@@ -17,3 +17,9 @@ Tags: `current`, `upcoming` (adds `.upcoming` class to the `<li>` to disable the
 ## Deployment
 
 Settings → Pages → Deploy from branch → `main` / `/` (root).
+
+## Temporary deep-link redirect
+
+`404.html` rewrites any missing path under `/cs3100-public-resources/` to the corresponding path under `/CS3100-Spring-2026/`. This preserves existing student bookmarks and shared links for the semester that just ended.
+
+**Delete `404.html` when you no longer want this behavior** (e.g., once Summer 2026 is live and links have migrated).

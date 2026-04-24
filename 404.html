@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting… — CS 3100</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="img/favicon.ico">
+  <script>
+    // Temporary redirect: rewrites deep links from the old /cs3100-public-resources/
+    // URL to the new /CS3100-Spring-2026/ archive. Remove this file when retiring.
+    (function () {
+      var oldPrefix = '/cs3100-public-resources/';
+      var newPrefix = '/CS3100-Spring-2026/';
+      var path = window.location.pathname;
+      if (path.indexOf(oldPrefix) === 0) {
+        var rest = path.slice(oldPrefix.length);
+        window.location.replace(newPrefix + rest + window.location.search + window.location.hash);
+      }
+    })();
+  </script>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+      max-width: 520px;
+      margin: 4rem auto;
+      padding: 0 1.25rem;
+      line-height: 1.6;
+      color: #1a202c;
+    }
+    a { color: #0b7285; }
+    h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    @media (prefers-color-scheme: dark) {
+      body { background: #1a202c; color: #f7fafc; }
+      a { color: #4fd1c5; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Redirecting to Spring 2026…</h1>
+  <p>
+    This course material has moved. You should be sent to the Spring 2026 archive automatically.
+  </p>
+  <p>
+    If not, <a id="manual-link" href="https://neu-pdi.github.io/CS3100-Spring-2026/">continue to the Spring 2026 site</a>,
+    or <a href="/cs3100-public-resources/">return to the course hub</a> to pick a different offering.
+  </p>
+  <script>
+    // Fallback: populate the visible link with the path-preserving URL for no-JS redirect users.
+    (function () {
+      var oldPrefix = '/cs3100-public-resources';
+      var newBase = 'https://neu-pdi.github.io/CS3100-Spring-2026';
+      var rest = window.location.pathname.replace(oldPrefix, '');
+      document.getElementById('manual-link').href = newBase + rest + window.location.search + window.location.hash;
+    })();
+  </script>
+</body>
+</html>
